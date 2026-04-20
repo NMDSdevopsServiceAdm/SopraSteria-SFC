@@ -150,8 +150,6 @@ export class UpdatePayForMultipleStaffComponent {
         payValue.setValue(null, { emitEvent: false });
       });
 
-    workerFormControls.setValidators([customValidator]);
-
     this.subscriptions.add(clearPayRateWhenSelectNotKnown);
     this.subscriptions.add(clearNotKnownRadioButtonWhenTypeInPayRate);
 
@@ -254,19 +252,23 @@ export class UpdatePayForMultipleStaffComponent {
   }
 
   public handleSearchEvent(searchEvent: SearchEvent): void {
-    const callback = searchEvent?.callback;
+    const callbackOnSearchResult = searchEvent?.callback;
+    this.callValidator();
+    this.showErrors = true;
+
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.invalid) {
+      this.pauseValidator();
       this.showErrors = true;
+      this.errorSummaryService.scrollToErrorSummary();
 
       if (this.paginationState) {
         this.revertPaginationState();
       }
-      this.errorSummaryService.scrollToErrorSummary();
 
-      if (callback) {
-        callback(false);
+      if (callbackOnSearchResult) {
+        callbackOnSearchResult(false);
       }
 
       return;
@@ -283,8 +285,8 @@ export class UpdatePayForMultipleStaffComponent {
       .subscribe((response) => {
         this.setNewWorkers(response.workers);
         this.currentWorkerCount = response.count;
-        if (callback) {
-          callback(true);
+        if (callbackOnSearchResult) {
+          callbackOnSearchResult(true);
         }
       });
 
@@ -333,9 +335,24 @@ export class UpdatePayForMultipleStaffComponent {
     return updates;
   }
 
+  private callValidator(): void {
+    Object.values(this.workersFormGroup.controls).forEach((workerformControl) => {
+      workerformControl.setValidators([customValidator]);
+      workerformControl.updateValueAndValidity();
+    });
+  }
+
+  private pauseValidator(): void {
+    Object.values(this.workersFormGroup.controls).forEach((workerformControl) => workerformControl.clearValidators());
+  }
+
   public onSubmit(): void {
+    this.callValidator();
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
     this.showErrors = true;
+
     if (this.form.invalid) {
+      this.pauseValidator();
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }

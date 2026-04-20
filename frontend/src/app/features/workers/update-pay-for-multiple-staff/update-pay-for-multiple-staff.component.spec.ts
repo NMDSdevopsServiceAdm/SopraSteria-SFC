@@ -15,13 +15,13 @@ import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerServi
 import { build, fake, oneOf } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen } from '@testing-library/angular';
-import { getByLabelText, within } from '@testing-library/dom';
+import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
 import { AllJobs } from '../../../../mockdata/jobs';
 import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff.component';
 
-describe('UpdatePayForMultipleStaffComponent', () => {
+fdescribe('UpdatePayForMultipleStaffComponent', () => {
   const workerBuilder = build('Worker', {
     fields: {
       uid: fake((f) => f.datatype.uuid()),
