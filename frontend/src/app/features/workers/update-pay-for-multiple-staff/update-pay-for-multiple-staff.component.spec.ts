@@ -1143,9 +1143,12 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
               id: 10,
               title: 'Care worker',
             },
+            annualHourlyPay: {
+              value: null,
+            },
           },
         }) as WorkerWithPayData;
-        const { fixture, getByText, getByLabelText, queryByText, getWorkersWithPayDataSpy } = await setup({
+        const { fixture, getByText, getByLabelText, getWorkersWithPayDataSpy } = await setup({
           totalWorkerCount: 32,
         });
 

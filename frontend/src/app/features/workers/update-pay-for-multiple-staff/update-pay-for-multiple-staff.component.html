@@ -22,7 +22,7 @@
         [sortByValue]="'staffNameAsc'"
         [sortByParamMap]="sortByParamMap"
         [sortOptions]="sortOptions"
-        (fetchData)="getPageOfWorkers($event)"
+        (fetchData)="handleSearchEvent($event)"
       >
         <ng-container placeAboveSearchBox>
           <div class="govuk-grid-column-three-quarters">
