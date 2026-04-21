@@ -124,19 +124,28 @@ export class TablePaginationWrapperComponent implements OnInit {
     this.getData();
   }
 
-  public handleSearchWithCallback(searchTerm: string, callback: SearchWithCallback['callback']): void {
+  public handleSearchWithCallback(searchTerm: string, callback: Function): void {
     if (!callback) {
       this.handleSearch(searchTerm);
       return;
     }
 
-    const patchedCallback = (isSuccess: boolean) => {
-      callback(isSuccess);
-      if (isSuccess) {
+    const patchedCallback = (isSuccessful: boolean) => {
+      callback(isSuccessful);
+      if (isSuccessful) {
         this.searchTerm = searchTerm;
+        this.currentPageIndex = 0;
       }
     };
-    this.getDataWithCallback({ searchTerm, callback: patchedCallback });
+
+    const searchEvent = {
+      ...this.currentSearchParams,
+      index: 0,
+      callback: patchedCallback,
+      searchTerm,
+    };
+
+    this.fetchDataWithParams(searchEvent);
   }
 
   public handlePageUpdate(pageIndex: number): void {
@@ -169,11 +178,10 @@ export class TablePaginationWrapperComponent implements OnInit {
   }
 
   private getData(): void {
-    this.fetchData.emit(this.currentSearchParams);
+    this.fetchDataWithParams(this.currentSearchParams);
   }
 
-  private getDataWithCallback(searchWithCallback: SearchWithCallback): void {
-    const searchEvent = { ...this.currentSearchParams, ...searchWithCallback };
+  private fetchDataWithParams(searchEvent: SearchEvent): void {
     this.fetchData.emit(searchEvent);
   }
 

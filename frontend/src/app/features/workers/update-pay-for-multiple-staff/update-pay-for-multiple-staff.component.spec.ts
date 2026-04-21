@@ -21,7 +21,7 @@ import userEvent from '@testing-library/user-event';
 import { AllJobs } from '../../../../mockdata/jobs';
 import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff.component';
 
-fdescribe('UpdatePayForMultipleStaffComponent', () => {
+describe('UpdatePayForMultipleStaffComponent', () => {
   const workerBuilder = build('Worker', {
     fields: {
       uid: fake((f) => f.datatype.uuid()),
@@ -538,23 +538,25 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       });
 
       it('should search with pageIndex = 0 and the current sortBy setting', async () => {
-        const { fixture, getByText, getByLabelText, getWorkersWithPayDataSpy, queryByTestId } = await setup({
+        const { fixture, getByText, getByLabelText, getWorkersWithPayDataSpy, getByTestId } = await setup({
           totalWorkerCount: 16,
         });
 
         getWorkersWithPayDataSpy.and.callFake((_uid) => {
-          return of({ count: 3, workers: mockWorkers.slice(3) });
+          return of({ count: 16, workers: mockWorkers.slice(3) });
         });
 
-        // go to page 2 and sort by staff name desc
-        userEvent.click(queryByTestId('pageNoLink-1')!);
-
+        // sort by staff name desc and then go to page 2
         const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
         userEvent.selectOptions(sortBySelectBox, getByText('Staff name (Z to A)'));
+        userEvent.click(getByTestId('pageNoLink-1'));
+        await fixture.whenStable();
 
         const searchBox = getByLabelText(/Search by job role/)!;
         userEvent.type(searchBox, 'Care');
         const searchBoxWrapper = searchBox.parentElement!;
+
+        getWorkersWithPayDataSpy.calls.reset();
 
         userEvent.click(within(searchBoxWrapper).getByText('Senior care worker'));
 

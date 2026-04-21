@@ -2,7 +2,7 @@ import lodash from 'lodash';
 import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
-import { Component, ElementRef, signal, ViewChild, WritableSignal } from '@angular/core';
+import { Component, ElementRef, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, UntypedFormGroup, ValidatorFn } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -26,13 +26,13 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { AutoSuggestDataProvider } from '@shared/auto-suggest.model';
+import { SearchInputAutoSuggestComponent } from '@shared/components/search-input-auto-suggest/search-input-auto-suggest.component';
+import { TablePaginationWrapperComponent } from '@shared/components/table-pagination-wrapper/table-pagination-wrapper.component';
 import {
+  buildValidatorsForUpdatePayForMultipleWorkers,
   UpdatePayForMultipleWorkerErrorMessages as ErrorMessages,
   UpdatePayForMultipleWorkerErrorTypes as ErrorTypes,
-  buildValidatorsForUpdatePayForMultipleWorkers,
 } from '@shared/validators/worker-pay-validators';
-import { TablePaginationWrapperComponent } from '@shared/components/table-pagination-wrapper/table-pagination-wrapper.component';
-import { SearchInputAutoSuggestComponent } from '@shared/components/search-input-auto-suggest/search-input-auto-suggest.component';
 
 const radioButtonLabels = [
   { label: 'Hourly', value: 'Hourly', slug: 'hourly' },
@@ -58,19 +58,18 @@ export class UpdatePayForMultipleStaffComponent {
   public totalWorkerCount: number;
   public currentWorkerCount: number;
   public workersToShow: WorkerWithPayData[];
-  public workerUpdated: WorkerWithPayData[];
   public radioButtonLabels = radioButtonLabels;
   public sortByParamMap = StaffSummarySortByParamMap;
   public sortOptions = SortStaffOptionsForUpdatePay;
   public workplaceUid: string;
   public allJobs: Array<Job>;
-  public jobRoleDataProvider: WritableSignal<AutoSuggestDataProvider> = signal(null);
+  public jobRoleDataProvider = signal<AutoSuggestDataProvider>(null);
   public showNewPillForFastTrackLink: boolean = true;
-  public validationIsActive = signal(false);
   public showErrors = false;
 
   private subscriptions: Subscription = new Subscription();
   private paginationState: SearchParams;
+  private validationIsActive = signal(false);
   private payRateValidator: ValidatorFn;
   private payValueValidator: ValidatorFn;
 
@@ -198,7 +197,7 @@ export class UpdatePayForMultipleStaffComponent {
     return errorMap;
   }
 
-  private getErrorMessage(errorType: string, workerNameOrId?: string): string {
+  private getErrorMessage(errorType: ErrorTypes, workerNameOrId?: string): string {
     const errorMessage = ErrorMessages[errorType];
     if (workerNameOrId) {
       return `${errorMessage} (${workerNameOrId})`;
@@ -213,7 +212,7 @@ export class UpdatePayForMultipleStaffComponent {
       return '';
     }
 
-    const errorType = Object.keys(errors)[0];
+    const errorType = Object.keys(errors)[0] as ErrorTypes;
     return this.getErrorMessage(errorType);
   }
 
@@ -354,6 +353,7 @@ export class UpdatePayForMultipleStaffComponent {
 
   private callValidator(): void {
     this.validationIsActive.set(true);
+    this.errorSummaryService.formEl$.next(this.formEl);
     Object.values(this.workersFormGroup.controls).forEach((workerformControl) => {
       workerformControl.get('payRate')!.updateValueAndValidity();
       workerformControl.get('payValue')!.updateValueAndValidity();
