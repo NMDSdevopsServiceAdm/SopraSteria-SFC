@@ -2,6 +2,7 @@ import lodash from 'lodash';
 import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { FILE_UPLOAD_TYPES } from '@core/constants/constants';
 import { jobOptionsEnum } from '@core/model/establishment.model';
+import { Signal } from '@angular/core';
 
 export class CustomValidators extends Validators {
   static maxWords(limit: number): ValidatorFn {
@@ -240,19 +241,14 @@ export class CustomValidators extends Validators {
     return validatorFunction;
   }
 
-  static buildCompositeValidator(validatorFns: ValidatorFn[], customErrorType?: string): ValidatorFn {
-    const validatorFunction = (formControl: AbstractControl) => {
-      const results = validatorFns.map((fn) => fn(formControl));
-      const combinedResults = lodash.merge({}, ...results);
-      const hasError = !lodash.isEmpty(combinedResults);
-
-      if (customErrorType) {
-        return hasError ? { [customErrorType]: true } : null;
+  static withSignalToggle(validatorFn: ValidatorFn, validationIsActive: Signal<boolean>): ValidatorFn {
+    const wrapedValidatorFunction = (formControl: AbstractControl) => {
+      if (!validationIsActive()) {
+        return formControl.errors;
       }
-
-      return hasError ? combinedResults : null;
+      return validatorFn(formControl);
     };
 
-    return validatorFunction;
+    return wrapedValidatorFunction;
   }
 }

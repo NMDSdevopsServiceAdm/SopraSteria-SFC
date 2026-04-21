@@ -32,7 +32,7 @@ import {
   buildValidatorsForUpdatePayForMultipleWorkers,
   UpdatePayForMultipleWorkerErrorMessages as ErrorMessages,
   UpdatePayForMultipleWorkerErrorTypes as ErrorTypes,
-} from '@shared/validators/worker-pay-validators';
+} from '@shared/validators/update-pay-for-multiple-workers-validator';
 
 const radioButtonLabels = [
   { label: 'Hourly', value: 'Hourly', slug: 'hourly' },
@@ -88,27 +88,30 @@ export class UpdatePayForMultipleStaffComponent {
     this.workplace = this.establishmentService.establishment;
     this.workplaceUid = this.workplace.uid;
     this.showNewPillForFastTrackLink = !this.workplace.fastTrackPayByJobRolesViewed;
-    this.buildValidators();
 
-    const totalWorkerCount = this.route.snapshot.data.workersWithPayData?.count;
-    this.currentWorkerCount = totalWorkerCount;
-    this.totalWorkerCount = totalWorkerCount;
+    this.buildValidators();
 
     this.allJobs = this.route.snapshot.data.mainJobRoles;
     this.buildJobDataProvider();
-
-    const firstPageWorkers = this.route.snapshot.data.workersWithPayData?.workers ?? [];
-    this.workersToShow = firstPageWorkers;
     this.setupForm();
-    this.addWorkersToForm(this.workersToShow);
-    this.setupFormErrorsMap();
 
+    this.loadFirstPageWorkers();
     this.backLinkService.showBackLink();
   }
 
   ngAfterViewInit() {
     this.errorSummaryService.formEl$.next(this.formEl);
     this.storePaginationState();
+  }
+
+  private loadFirstPageWorkers(): void {
+    const totalWorkerCount = this.route.snapshot.data.workersWithPayData?.count;
+    this.currentWorkerCount = totalWorkerCount;
+    this.totalWorkerCount = totalWorkerCount;
+
+    const firstPageWorkers = this.route.snapshot.data.workersWithPayData?.workers ?? [];
+
+    this.setNewWorkers(firstPageWorkers);
   }
 
   private setupForm(): void {
