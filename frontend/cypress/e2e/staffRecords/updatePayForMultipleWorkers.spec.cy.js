@@ -49,7 +49,7 @@ describe('Update pay for multiple workers', { tags: '@staffRecords' }, () => {
 
     cy.url().should('contain', 'update-pay-for-multiple-staff');
 
-    cy.contains(testWorkerNames[0]).closest('tr').as('row1');
+    cy.contains(testWorkerNames[0]).closest('[role="row"]').as('row1');
     cy.get('@row1').within(() => {
       cy.getByLabel(/Hourly pay rate or salary/).type('15');
       cy.get('.govuk-radios').within(() => cy.getByLabel('Hourly').click());
@@ -57,7 +57,7 @@ describe('Update pay for multiple workers', { tags: '@staffRecords' }, () => {
 
     cy.getByLabel('Sort by').select(1); // Staff name Z to A
 
-    cy.contains(testWorkerNames[19]).closest('tr').as('row20');
+    cy.contains(testWorkerNames[19]).closest('[role="row"]').as('row20');
     cy.get('@row20').within(() => {
       cy.getByLabel(/Hourly pay rate or salary/).type('30000');
       cy.get('.govuk-radios').within(() => cy.getByLabel('Salary').click());
@@ -66,7 +66,7 @@ describe('Update pay for multiple workers', { tags: '@staffRecords' }, () => {
     cy.getByLabel('Search by job role').type('Senior');
     cy.contains('li', 'Senior management').click();
 
-    cy.contains(testWorkerNames[2]).closest('tr').as('row3');
+    cy.contains(testWorkerNames[2]).closest('[role="row"]').as('row3');
     cy.get('@row3').within(() => {
       cy.get('.govuk-radios').within(() => cy.getByLabel('Not known').click());
     });
