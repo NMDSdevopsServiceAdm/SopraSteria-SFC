@@ -1,3 +1,5 @@
+import { Signal } from '@angular/core';
+import { AbstractControl, ValidatorFn, Validators } from '@angular/forms';
 import {
   ANNUAL_SALARY_PATTERN,
   AnnualSalaryLimits,
@@ -6,8 +8,8 @@ import {
   HourlyPayRateLimits,
   SeniorManagementJobId,
 } from '@core/constants/constants';
+
 import { CustomValidators } from './custom-form-validators';
-import { AbstractControl, ValidatorFn, Validators } from '@angular/forms';
 
 export enum UpdatePayForMultipleWorkerErrorTypes {
   radioButtonNotSelected = 'radioButtonNotSelected',
@@ -21,7 +23,7 @@ export enum UpdatePayForMultipleWorkerErrorTypes {
 }
 const ErrorTypes = UpdatePayForMultipleWorkerErrorTypes;
 
-export const UpdatePayForMultipleWorkerErrorMessages: Record<string, string> = {
+export const UpdatePayForMultipleWorkerErrorMessages: Record<UpdatePayForMultipleWorkerErrorTypes, string> = {
   [ErrorTypes.radioButtonNotSelected]: 'Select hourly or salary for the amount entered',
   [ErrorTypes.hourlyRateInvalid]: `Hourly pay rate must be between ${HourlyPayRateLimits.asString.min} and ${HourlyPayRateLimits.asString.max}`,
   [ErrorTypes.annualSalaryInvalid]: `Salary must be between ${AnnualSalaryLimits.asString.min} and ${AnnualSalaryLimits.asString.max}`,
@@ -34,7 +36,33 @@ export const UpdatePayForMultipleWorkerErrorMessages: Record<string, string> = {
 
 const { alias, buildCompositeValidator } = CustomValidators;
 
-export function buildUpdatePayForMultipleWorkerValidator(): ValidatorFn {
+export function buildValidatorsForUpdatePayForMultipleWorkers(validationIsActive: Signal<boolean>) {
+  const payValueValidator = buildValidatorForPayValue(validationIsActive);
+  const payRateValidator = buildValidatorForPayRate(validationIsActive);
+
+  return { payValueValidator, payRateValidator };
+}
+
+function buildValidatorForPayValue(validationIsActive: Signal<boolean>) {
+  const payValueValidator: ValidatorFn = (payValueControl: AbstractControl) => {
+    if (!validationIsActive()) {
+      return payValueControl.errors;
+    }
+
+    const { payRate } = payValueControl.parent!.value;
+    const payRateIsFilled = payRate !== null && payRate !== '';
+    const radioButtonSelected = payValueControl.value;
+
+    if (payRateIsFilled && !radioButtonSelected) {
+      return { radioButtonNotSelected: true };
+    }
+    return null;
+  };
+
+  return payValueValidator;
+}
+
+function buildValidatorForPayRate(validationIsActive: Signal<boolean>) {
   const hourlyRateInvalidValidator = buildCompositeValidator(
     [Validators.min(HourlyPayRateLimits.min), Validators.max(HourlyPayRateLimits.max)],
     ErrorTypes.hourlyRateInvalid,
@@ -77,42 +105,24 @@ export function buildUpdatePayForMultipleWorkerValidator(): ValidatorFn {
     annualSalaryDecimalPlaceValidator,
   ]);
 
-  const crossFieldValidator = (workerFormControls: AbstractControl) => {
-    const { payRate, payValue, jobId } = workerFormControls.value ?? {};
-    const payRateControl = workerFormControls.get('payRate')!;
-    const payValueControl = workerFormControls.get('payValue')!;
-
-    if (!payValue && payRate) {
-      payValueControl.setErrors({ radioButtonNotSelected: true });
-      return null;
-    } else {
-      payValueControl.setErrors(null);
+  const payRateValidator: ValidatorFn = (payRateControl: AbstractControl) => {
+    if (!validationIsActive()) {
+      return payRateControl.errors;
     }
 
-    let payRateValidator;
+    const { payValue, jobId } = payRateControl.parent!.value;
 
     switch (payValue) {
       case 'Hourly': {
-        payRateValidator = hourlyRateValidator;
-        break;
+        return hourlyRateValidator(payRateControl);
       }
       case 'Annually': {
-        payRateValidator =
+        const validatorToUse =
           jobId === SeniorManagementJobId ? annualSalaryValidatorForSeniorManagement : annualSalaryValidator;
-        break;
-      }
-      default: {
-        payRateValidator = () => {};
+        return validatorToUse(payRateControl);
       }
     }
-
-    const payRateError = payRateValidator(payRateControl);
-    if (payRateError) {
-      payRateControl.setErrors(payRateError);
-    }
-
     return null;
   };
-
-  return crossFieldValidator;
+  return payRateValidator;
 }

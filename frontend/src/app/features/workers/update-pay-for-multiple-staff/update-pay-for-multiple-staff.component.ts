@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
 import { Component, ElementRef, signal, ViewChild, WritableSignal } from '@angular/core';
-import { FormBuilder, FormGroup, UntypedFormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, UntypedFormGroup, ValidatorFn } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import {
@@ -29,7 +29,7 @@ import { AutoSuggestDataProvider } from '@shared/auto-suggest.model';
 import {
   UpdatePayForMultipleWorkerErrorMessages as ErrorMessages,
   UpdatePayForMultipleWorkerErrorTypes as ErrorTypes,
-  buildUpdatePayForMultipleWorkerValidator,
+  buildValidatorsForUpdatePayForMultipleWorkers,
 } from '@shared/validators/worker-pay-validators';
 import { TablePaginationWrapperComponent } from '@shared/components/table-pagination-wrapper/table-pagination-wrapper.component';
 import { SearchInputAutoSuggestComponent } from '@shared/components/search-input-auto-suggest/search-input-auto-suggest.component';
@@ -40,7 +40,6 @@ const radioButtonLabels = [
   { label: 'Not known', value: "Don't know", slug: 'dont-know' },
 ];
 const DontKnow = "Don't know";
-const customValidator = buildUpdatePayForMultipleWorkerValidator();
 
 @Component({
   selector: 'app-update-pay-for-multiple-staff',
@@ -67,11 +66,13 @@ export class UpdatePayForMultipleStaffComponent {
   public allJobs: Array<Job>;
   public jobRoleDataProvider: WritableSignal<AutoSuggestDataProvider> = signal(null);
   public showNewPillForFastTrackLink: boolean = true;
-
+  public validationIsActive = signal(false);
   public showErrors = false;
 
   private subscriptions: Subscription = new Subscription();
   private paginationState: SearchParams;
+  private payRateValidator: ValidatorFn;
+  private payValueValidator: ValidatorFn;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -88,6 +89,7 @@ export class UpdatePayForMultipleStaffComponent {
     this.workplace = this.establishmentService.establishment;
     this.workplaceUid = this.workplace.uid;
     this.showNewPillForFastTrackLink = !this.workplace.fastTrackPayByJobRolesViewed;
+    this.buildValidators();
 
     const totalWorkerCount = this.route.snapshot.data.workersWithPayData?.count;
     this.currentWorkerCount = totalWorkerCount;
@@ -120,6 +122,14 @@ export class UpdatePayForMultipleStaffComponent {
     return this.form.get('workers') as FormGroup;
   }
 
+  private buildValidators(): void {
+    const { payRateValidator, payValueValidator } = buildValidatorsForUpdatePayForMultipleWorkers(
+      this.validationIsActive,
+    );
+    this.payRateValidator = payRateValidator;
+    this.payValueValidator = payValueValidator;
+  }
+
   private addWorkersToForm(workers: WorkerWithPayData[]): void {
     const workersInForm = Object.keys(this.workersFormGroup.controls);
 
@@ -131,8 +141,8 @@ export class UpdatePayForMultipleStaffComponent {
   }
 
   private buildFormControlsForWorker(worker: WorkerWithPayData): FormGroup {
-    const payValue = this.formBuilder.control(worker.annualHourlyPay?.value);
-    const payRate = this.formBuilder.control(worker.annualHourlyPay?.rate);
+    const payValue = this.formBuilder.control<string>(worker.annualHourlyPay?.value);
+    const payRate = this.formBuilder.control<number>(worker.annualHourlyPay?.rate);
     const workerFormControls = this.formBuilder.group({ payValue, payRate, jobId: worker.mainJob.id, uid: worker.uid });
 
     const clearPayRateWhenSelectNotKnown = payValue.valueChanges
@@ -149,6 +159,9 @@ export class UpdatePayForMultipleStaffComponent {
       .subscribe(() => {
         payValue.setValue(null, { emitEvent: false });
       });
+
+    payValue.setValidators([this.payValueValidator]);
+    payRate.setValidators([this.payRateValidator]);
 
     this.subscriptions.add(clearPayRateWhenSelectNotKnown);
     this.subscriptions.add(clearNotKnownRadioButtonWhenTypeInPayRate);
@@ -327,23 +340,28 @@ export class UpdatePayForMultipleStaffComponent {
     const touchedFormControls = Object.values(this.workersFormGroup.controls).filter((control) => {
       return control.dirty;
     });
-    const updates = touchedFormControls.map((formControl) => {
-      const { payValue, payRate, uid } = formControl.value;
-      return { uid, annualHourlyPay: { value: payValue, rate: payRate } };
-    });
+
+    const updates = touchedFormControls
+      .map((formControl) => formControl.value)
+      .filter((formValue) => !!formValue.payValue)
+      .map((formValue) => {
+        const { payValue, payRate, uid } = formValue;
+        return { uid, annualHourlyPay: { value: payValue, rate: payRate } };
+      });
 
     return updates;
   }
 
   private callValidator(): void {
+    this.validationIsActive.set(true);
     Object.values(this.workersFormGroup.controls).forEach((workerformControl) => {
-      workerformControl.setValidators([customValidator]);
-      workerformControl.updateValueAndValidity();
+      workerformControl.get('payRate')!.updateValueAndValidity();
+      workerformControl.get('payValue')!.updateValueAndValidity();
     });
   }
 
   private pauseValidator(): void {
-    Object.values(this.workersFormGroup.controls).forEach((workerformControl) => workerformControl.clearValidators());
+    this.validationIsActive.set(false);
   }
 
   public onSubmit(): void {
