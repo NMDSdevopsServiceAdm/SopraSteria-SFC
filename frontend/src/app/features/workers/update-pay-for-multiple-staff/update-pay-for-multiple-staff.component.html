@@ -80,9 +80,7 @@
                   <div>
                     <div class="govuk-input__wrapper">
                       <div class="govuk-input__prefix asc__white-background" aria-hidden="true">£</div>
-                      <span class="govuk-visually-hidden" [id]="'uid-' + worker.uid + '-payRate-error'">
-                        <!-- dummy anchor to allow error summary set focus -->
-                      </span>
+                      <span class="govuk-visually-hidden" [id]="'uid-' + worker.uid + '-payRate-error'"> </span>
                       <input
                         [attr.data-testid]="'amount-input-box-' + $index"
                         class="govuk-input govuk-input--width-4"
@@ -98,7 +96,6 @@
                           <div class="govuk-radios__item">
                             @if ($index === 0) {
                               <span class="govuk-visually-hidden" [id]="'uid-' + worker.uid + '-payValue-error'">
-                                <!-- dummy anchor to allow error summary set focus -->
                               </span>
                             }
                             <input

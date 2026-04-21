@@ -768,6 +768,26 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       expect(alertServiceSpy).toHaveBeenCalledWith({ type: 'success', message: 'Pay updated in 1 staff record' });
     });
 
+    it('should ignore the change to a worker if user cleared the input in form', async () => {
+      const { fixture, getByRole, updateWorkersSpy, routerSpy, alertServiceSpy } = await setup();
+
+      const workerRow = getWorkerRow(mockWorkers[3].nameOrId);
+
+      const payRateInputBox = within(workerRow).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
+      userEvent.type(payRateInputBox, '25000');
+      userEvent.clear(payRateInputBox);
+
+      const submitButton = getByRole('button', { name: 'Save and return' });
+      userEvent.click(submitButton);
+
+      await fixture.whenStable();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'staff-records' });
+
+      expect(updateWorkersSpy).not.toHaveBeenCalled();
+      expect(alertServiceSpy).not.toHaveBeenCalled();
+    });
+
     it('should handle the update for workers across different pages', async () => {
       const mockWorkers = buildMultipleWorkers(32, { annualHourlyPay: { value: null } });
       const pages = [mockWorkers.slice(0, 15), mockWorkers.slice(15, 30), mockWorkers.slice(30)];
@@ -1178,6 +1198,34 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
         expect(searchBox.value).toEqual('Care worker');
         expect(getByText('Clear search results')).toBeTruthy();
       });
+    });
+
+    it('should keep error message unchanged when user amend form input', async () => {
+      const { fixture, getByText, getByLabelText, getWorkersWithPayDataSpy } = await setup();
+
+      const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
+
+      const worker = mockWorkers[3];
+      const workerRow = getWorkerRow(worker.nameOrId);
+      const inputBox = within(workerRow).getByLabelText(/Hourly pay rate or salary/);
+
+      userEvent.type(within(workerRow).getByLabelText(/Hourly pay rate or salary/), '-100');
+      userEvent.selectOptions(sortBySelectBox, getByText('Staff name (Z to A)'));
+
+      fixture.detectChanges();
+
+      expect(getByText('There is a problem')).toBeTruthy();
+      expect(getWorkersWithPayDataSpy).not.toHaveBeenCalled();
+
+      userEvent.clear(inputBox);
+      userEvent.type(inputBox, '30000');
+      userEvent.click(within(workerRow).getByLabelText('Salary'));
+
+      expect(getByText('There is a problem')).toBeTruthy();
+      const summaryBoxErrorMessage = `${ErrorMessages.radioButtonNotSelected} (${worker.nameOrId})`;
+      expect(getErrorSummaryBox().textContent).toContain(summaryBoxErrorMessage);
+
+      expect(workerRow.textContent).toContain(ErrorMessages.radioButtonNotSelected);
     });
   });
 });
