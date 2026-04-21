@@ -8,6 +8,7 @@ import {
   HourlyPayRateLimits,
   INT_PATTERN,
   SALARY_PATTERN,
+  SeniorManagementJobId,
 } from '@core/constants/constants';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -52,7 +53,8 @@ export class SalaryComponent extends QuestionComponent {
   }
 
   init() {
-    this.annually = this.worker.mainJob.jobId === 26 ? AnnualSalaryLimitsForSeniorManagement : AnnualSalaryLimits;
+    this.annually =
+      this.worker.mainJob.jobId === SeniorManagementJobId ? AnnualSalaryLimitsForSeniorManagement : AnnualSalaryLimits;
     this.setValidators();
     this.setAnnualHourlyPay();
     this.next = this.getRoutePath('care-certificate');
