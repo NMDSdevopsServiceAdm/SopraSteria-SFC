@@ -130,13 +130,13 @@ describe('FastTrackPayUpdatesComponent', () => {
     it('should display the Staff records caption', async () => {
       const { getByTestId } = await setup();
       const caption = getByTestId('caption');
-      expect(caption.textContent).toEqual('Staff records');
+      expect(caption.textContent.trim()).toEqual('Staff records');
     });
 
     it('should display the main heading', async () => {
       const { getByTestId } = await setup();
       const heading = getByTestId('heading');
-      expect(heading.textContent).toEqual('Fast-track pay updates by job roles');
+      expect(heading.textContent.trim()).toEqual('Fast-track pay updates by job roles');
     });
   });
 

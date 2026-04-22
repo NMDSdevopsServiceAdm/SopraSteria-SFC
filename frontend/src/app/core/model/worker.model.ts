@@ -191,6 +191,18 @@ export interface WorkersResponse {
   workerCount: number;
 }
 
+export type WorkerWithPayData = {
+  uid: string;
+  nameOrId: string;
+  mainJob: JobRole;
+  annualHourlyPay: WorkerPay;
+};
+
+export interface WorkersWithPayDataResponse {
+  workers: WorkerWithPayData[];
+  count: number;
+}
+
 export interface WorkerEditResponse {
   uid: string;
 }

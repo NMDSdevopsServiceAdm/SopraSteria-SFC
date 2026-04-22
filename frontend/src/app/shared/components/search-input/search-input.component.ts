@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { SearchInput } from '@core/model/admin/search.model';
 
 @Component({
   selector: 'app-search-input',
@@ -6,10 +7,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrls: ['./search-input.component.scss'],
   standalone: false,
 })
-export class SearchInputComponent {
+export class SearchInputComponent implements SearchInput {
   @Input() ref = 'search';
   @Input() searchButtonName = 'search';
   @Input() label = 'Search';
+  @Input() showSearchIcon: boolean = false;
   @Input() accessibleLabel: string;
   @Input() set prevSearch(value: string) {
     if (value.trim() !== this.searchTerm.trim()) {

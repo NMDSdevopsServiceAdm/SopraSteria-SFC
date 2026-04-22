@@ -2215,7 +2215,7 @@ module.exports = function (sequelize, DataTypes) {
     const jobIdFilter = jobId ? { where: { id: jobId } } : {};
 
     const { count, rows } = await models.worker.findAndCountAll({
-      attributes: ['id', 'uid', ['NameOrIdValue', 'nameOrId'], 'AnnualHourlyPayValue', 'AnnualHourlyPayRate'],
+      attributes: ['uid', ['NameOrIdValue', 'nameOrId'], 'AnnualHourlyPayValue', 'AnnualHourlyPayRate'],
       where: {
         establishmentFk: establishmentId,
         archived: false,
@@ -2250,6 +2250,27 @@ module.exports = function (sequelize, DataTypes) {
     const workers = rows.map(formatWorkerPay);
 
     return { count, workers };
+  };
+
+  Establishment.fetchAllWorkersMainJobRole = async function (establishmentId) {
+    const models = sequelize.models;
+
+    const mainJobsOfAllWorkers = await models.worker.findAll({
+      attributes: [[sequelize.fn('DISTINCT', sequelize.col('MainJobFKValue')), 'mainJobId']],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+      raw: true,
+    });
+
+    const allMainJobRoleIds = mainJobsOfAllWorkers.map((result) => result.mainJobId);
+
+    return await models.job.findAll({
+      attributes: ['title', 'id', 'jobRoleGroup'],
+      where: { id: allMainJobRoleIds },
+      raw: true,
+    });
   };
 
   Establishment.getEstablishmentTrainingRecords = async function (establishmentId, isParent = false) {

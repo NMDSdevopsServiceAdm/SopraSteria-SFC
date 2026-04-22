@@ -280,6 +280,18 @@ export interface adminMoveWorkplace {
   subUid: string;
 }
 
+export const StaffSummarySortByParamMap = {
+  '0_asc': 'staffNameAsc',
+  '0_dsc': 'staffNameDesc',
+  '1_asc': 'jobRoleAsc',
+  '1_dsc': 'jobRoleDesc',
+  '2_meeting': 'wdfMeeting',
+  '2_not_meeting': 'wdfNotMeeting',
+  '3_last_update_newest': 'lastUpdateNewest',
+  '3_last_update_oldest': 'lastUpdateOldest',
+  '4_add_more_details': 'addMoreDetails',
+} as const;
+
 export enum SortStaffOptions {
   '0_asc' = 'Staff name (A to Z)',
   '0_dsc' = 'Staff name (Z to A)',
@@ -288,6 +300,13 @@ export enum SortStaffOptions {
   '3_last_update_newest' = 'Last update (newest)',
   '3_last_update_oldest' = 'Last update (oldest)',
   '4_add_more_details' = 'Add more details',
+}
+
+export enum SortStaffOptionsForUpdatePay {
+  '0_asc' = 'Staff name (A to Z)',
+  '0_dsc' = 'Staff name (Z to A)',
+  '1_asc' = 'Job role (A to Z)',
+  '1_dsc' = 'Job role (Z to A)',
 }
 
 export enum WdfSortStaffOptions {

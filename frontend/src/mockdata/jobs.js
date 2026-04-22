@@ -1,4 +1,4 @@
-module.exports.AllJobs = [
+export const AllJobs = [
   {
     id: 21,
     title: 'Other (not directly involved in providing care)',
@@ -151,7 +151,7 @@ module.exports.AllJobs = [
   },
 ];
 
-module.exports.JobsWithDuplicates = [
+export const JobsWithDuplicates = [
   {
     id: 21,
     title: 'Other (not directly involved in providing care)',
