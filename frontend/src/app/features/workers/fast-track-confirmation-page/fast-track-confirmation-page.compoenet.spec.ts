@@ -140,7 +140,12 @@ describe('FastTrackConfirmationPageComponent', () => {
 
       await fixture.whenStable();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.workplace.uid, 'update-pay-multiple-staff']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'staff-record',
+        'update-pay-for-multiple-staff',
+      ]);
 
       expect(alertServiceSpy).toHaveBeenCalledWith({
         type: 'success',

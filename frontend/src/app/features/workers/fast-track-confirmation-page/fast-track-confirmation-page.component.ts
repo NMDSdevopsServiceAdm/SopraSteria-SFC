@@ -64,11 +64,13 @@ export class FastTrackConfirmationPageComponent implements OnInit {
   }
 
   private onSubmitSuccess(): void {
-    this.router.navigate(['/workplace', this.workplace.uid, 'update-pay-multiple-staff']).then(() => {
-      this.alertService.addAlert({
-        type: 'success',
-        message: 'Pay updated in ' + this.totalCount + ' staff record' + (this.totalCount === 1 ? '' : 's') + '',
+    this.router
+      .navigate(['/workplace', this.workplace.uid, 'staff-record', 'update-pay-for-multiple-staff'])
+      .then(() => {
+        this.alertService.addAlert({
+          type: 'success',
+          message: 'Pay updated in ' + this.totalCount + ' staff record' + (this.totalCount === 1 ? '' : 's') + '',
+        });
       });
-    });
   }
 }
