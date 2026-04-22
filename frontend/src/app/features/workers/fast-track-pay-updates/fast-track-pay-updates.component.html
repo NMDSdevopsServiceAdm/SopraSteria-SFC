@@ -51,6 +51,10 @@
             <td class="govuk-table__cell" style="vertical-align: top; padding-top: 8px">
               <div style="display: flex; align-items: center; flex-wrap: nowrap; gap: 15px">
                 <div class="govuk-input__wrapper">
+                  @if ( submitted && workersFormArray.at($index).get('rate')?.errors && getFirstInvalidIndex('rate') ===
+                  $index ) {
+                  <span id="rate-error" class="govuk-visually-hidden"></span>
+                  }
                   <div class="govuk-input__prefix" aria-hidden="true" style="background-color: #ffffff">£</div>
 
                   <input
@@ -64,11 +68,14 @@
                     type="number"
                   />
                 </div>
-                <!-- <div class="govuk-radios govuk-radios--inline govuk-radios--small govuk-!-margin-bottom-0"> -->
                 <div
                   class="govuk-radios govuk-radios--inline govuk-radios--small govuk-!-margin-bottom-0"
                   [class.govuk-radios--error]="submitted && workersFormArray.at($index).get('value')?.invalid"
                 >
+                  @if (submitted && workersFormArray.at($index).get('value')?.errors) {
+                  <span id="value-error" class="govuk-visually-hidden"></span>
+                  }
+
                   <div class="govuk-radios__item" style="margin-right: 5px">
                     <input
                       class="govuk-radios__input"
@@ -77,7 +84,7 @@
                       type="radio"
                       value="Hourly"
                     />
-                    <label class="govuk-label govuk-radios__label">Hourly</label>
+                    <label class="govuk-label govuk-radios__label" [for]="'hourly-' + $index"> Hourly </label>
                   </div>
 
                   <div class="govuk-radios__item">
@@ -88,42 +95,9 @@
                       type="radio"
                       value="Annually"
                     />
-                    <label class="govuk-label govuk-radios__label">Salary</label>
+                    <label class="govuk-label govuk-radios__label" [for]="'salary-' + $index"> Salary </label>
                   </div>
                 </div>
-                <!-- <div class="govuk-radios__item" style="margin-right: 5px">
-                    @if (submitted && workersFormArray.at($index).get('value')?.errors) {
-                    <span id="value-error" class="govuk-error-message">
-                      <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage($index, 'value') }}
-                    </span>
-                    }
-                    <input
-                      class="govuk-radios__input"
-                      [attr.data-testid]="'hourly-radio-' + $index"
-                      [formControlName]="'value'"
-                      [id]="'hourly-' + $index"
-                      type="radio"
-                      value="Hourly"
-                    />
-                    <label class="govuk-label govuk-radios__label" for="'hourly-' + $index"> Hourly </label>
-                  </div> -->
-                <!-- <div class="govuk-radios__item">
-                    @if (submitted && workersFormArray.at($index).get('value')?.errors) {
-                    <span id="value-error" class="govuk-error-message">
-                      <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage($index, 'value') }}
-                    </span>
-                    }
-                    <input
-                      class="govuk-radios__input"
-                      [attr.data-testid]="'salary-radio-' + $index"
-                      [formControlName]="'value'"
-                      [id]="'salary-' + $index"
-                      type="radio"
-                      value="Annually"
-                    />
-                    <label class="govuk-label govuk-radios__label" for="'salary-' + $index"> Salary </label>
-                  </div> -->
-                <!-- </div> -->
               </div>
             </td>
           </tr>

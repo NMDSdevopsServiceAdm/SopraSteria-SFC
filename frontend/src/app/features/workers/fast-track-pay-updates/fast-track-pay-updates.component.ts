@@ -75,7 +75,7 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
             value: group.annualHourlyPay?.value || null,
             rate: group.annualHourlyPay?.rate || null,
           },
-          { validators: this.validateRow() },
+          { validators: this.validateRow(), updateOn: 'submit' },
         ),
       );
     });
@@ -167,31 +167,22 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
     return summaryForm;
   }
 
-  private focusFirstInvalidField(): void {
+  getFirstInvalidIndex(control: 'rate' | 'value'): number | null {
     for (let i = 0; i < this.workersFormArray.length; i++) {
-      const group = this.workersFormArray.at(i);
-
-      if (group.invalid) {
-        if (group.get('rate')?.invalid) {
-          document.getElementById(`rate-${i}`)?.focus();
-          return;
-        }
-
-        if (group.get('value')?.invalid) {
-          document.getElementById(`hourly-${i}`)?.focus();
-          return;
-        }
+      if (this.workersFormArray.at(i).get(control)?.invalid) {
+        return i;
       }
     }
+    return null;
   }
 
   public onSubmit(): void {
     this.submitted = true;
 
+    this.form.markAllAsTouched();
+
     if (!this.form.valid) {
       this.errorSummaryService.scrollToErrorSummary();
-
-      setTimeout(() => this.focusFirstInvalidField(), 0);
       return;
     }
 
