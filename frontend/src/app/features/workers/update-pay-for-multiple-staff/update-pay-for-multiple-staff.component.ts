@@ -66,6 +66,7 @@ export class UpdatePayForMultipleStaffComponent {
   public jobRoleDataProvider = signal<AutoSuggestDataProvider>(null);
   public showNewPillForFastTrackLink: boolean = true;
   public showErrors = false;
+  public serverError: string | null = null;
 
   private subscriptions: Subscription = new Subscription();
   private paginationState: SearchParams;
@@ -281,7 +282,6 @@ export class UpdatePayForMultipleStaffComponent {
       if (this.paginationState) {
         this.revertPaginationState();
       }
-
       if (callbackOnSearchResult) {
         callbackOnSearchResult(false);
       }
@@ -290,6 +290,7 @@ export class UpdatePayForMultipleStaffComponent {
     }
 
     this.showErrors = false;
+    this.serverError = null;
     this.storePaginationState();
 
     const searchParams = this.convertJobRoleNameToId(parseSearchEvent(searchEvent));
@@ -297,13 +298,16 @@ export class UpdatePayForMultipleStaffComponent {
     const getWorker = this.workerService
       .getWorkersWithPayData(this.workplaceUid, searchParams)
       .pipe(take(1))
-      .subscribe((response) => {
-        this.setNewWorkers(response.workers);
-        this.currentWorkerCount = response.count;
-        if (callbackOnSearchResult) {
-          callbackOnSearchResult(true);
-        }
-      });
+      .subscribe(
+        (response) => {
+          this.setNewWorkers(response.workers);
+          this.currentWorkerCount = response.count;
+          if (callbackOnSearchResult) {
+            callbackOnSearchResult(true);
+          }
+        },
+        (_error) => this.onServerError('Failed to load workers'),
+      );
 
     this.subscriptions.add(getWorker);
   }
@@ -371,6 +375,7 @@ export class UpdatePayForMultipleStaffComponent {
     this.callValidator();
     this.errorSummaryService.syncFormErrorsEvent.next(true);
     this.showErrors = true;
+    this.serverError = null;
 
     if (this.form.invalid) {
       this.pauseValidator();
@@ -386,11 +391,14 @@ export class UpdatePayForMultipleStaffComponent {
 
     const alertMessage = `Pay updated in ${updatedPayData.length} staff record${updatedPayData.length > 1 ? 's' : ''}`;
 
-    const submitCall = this.establishmentService.updateWorkers(this.workplaceUid, updatedPayData).subscribe(() => {
-      this.returnToStaffRecordsPage().then(() => {
-        this.alertService.addAlert({ type: 'success', message: alertMessage });
-      });
-    });
+    const submitCall = this.establishmentService.updateWorkers(this.workplaceUid, updatedPayData).subscribe(
+      () => {
+        this.returnToStaffRecordsPage().then(() => {
+          this.alertService.addAlert({ type: 'success', message: alertMessage });
+        });
+      },
+      (_error) => this.onServerError('Failed to update workers'),
+    );
 
     this.subscriptions.add(submitCall);
   }
@@ -398,6 +406,11 @@ export class UpdatePayForMultipleStaffComponent {
   public onCancel(event: Event): void {
     event.preventDefault();
     this.returnToStaffRecordsPage();
+  }
+
+  private onServerError(errorMessage: string): void {
+    this.showErrors = true;
+    this.serverError = errorMessage;
   }
 
   private returnToStaffRecordsPage(): Promise<boolean> {

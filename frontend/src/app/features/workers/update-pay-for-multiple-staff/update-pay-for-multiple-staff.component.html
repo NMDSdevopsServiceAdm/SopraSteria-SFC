@@ -1,4 +1,4 @@
-@if (showErrors && workersFormGroup.invalid) {
+@if (showErrors && (workersFormGroup.invalid || serverError)) {
   <app-error-summary [formErrorsMap]="formErrorsMap" [form]="workersFormGroup" [serverError]="serverError">
   </app-error-summary>
 }

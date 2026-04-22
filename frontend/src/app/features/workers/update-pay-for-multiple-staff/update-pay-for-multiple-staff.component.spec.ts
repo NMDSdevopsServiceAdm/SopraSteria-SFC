@@ -1,6 +1,6 @@
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
-import { provideHttpClient } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
@@ -663,6 +663,25 @@ describe('UpdatePayForMultipleStaffComponent', () => {
 
       expect(getByText('There are no matching results')).toBeTruthy();
     });
+
+    // it('should handle server error when loading worker', async () => {
+    //   const errorResponse = new HttpErrorResponse({
+    //     status: 500,
+    //   });
+    //   const { fixture, getByText, getByLabelText, getWorkersWithPayDataSpy } = await setup();
+
+    //   getWorkersWithPayDataSpy.and.returnValue(throwError(errorResponse));
+
+    //   const searchBox = getByLabelText(/Search by job role/)!;
+    //   userEvent.type(searchBox, 'Care');
+    //   const searchBoxWrapper = searchBox.parentElement!;
+
+    //   userEvent.click(within(searchBoxWrapper).getByText('Senior care worker'));
+    //   await fixture.whenStable();
+
+    //   expect(getByText('There is a problem')).toBeTruthy();
+    //   // expect(getByText('Failed to load workers')).toBeTruthy();
+    // });
   });
 
   describe('jobRoleDataProvider', () => {
@@ -833,6 +852,28 @@ describe('UpdatePayForMultipleStaffComponent', () => {
       expect(updateWorkersSpy).toHaveBeenCalledWith('mocked-uid', expectedPayload);
 
       expect(alertServiceSpy).toHaveBeenCalledWith({ type: 'success', message: 'Pay updated in 3 staff records' });
+    });
+
+    it('should handle server error', async () => {
+      const errorResponse = new HttpErrorResponse({
+        status: 500,
+      });
+      const { fixture, getByRole, getByText, updateWorkersSpy } = await setup();
+      updateWorkersSpy.and.returnValue(throwError(errorResponse));
+
+      const workerRow = getWorkerRow(mockWorkers[3].nameOrId);
+
+      const payRateInputBox = within(workerRow).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
+      userEvent.click(within(workerRow).getByLabelText('Salary'));
+      userEvent.type(payRateInputBox, '25000');
+
+      const submitButton = getByRole('button', { name: 'Save and return' });
+      userEvent.click(submitButton);
+
+      await fixture.whenStable();
+
+      expect(getByText('There is a problem')).toBeTruthy();
+      expect(getByText('Failed to update workers')).toBeTruthy();
     });
   });
 
