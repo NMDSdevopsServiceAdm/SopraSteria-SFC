@@ -264,7 +264,9 @@ export class UpdatePayForMultipleStaffComponent {
   }
 
   private revertPaginationState(): void {
-    this.paginationWrapper.setStateWithoutEmitSearchEvent(this.paginationState);
+    if (this.paginationState) {
+      this.paginationWrapper.setStateWithoutEmitSearchEvent(this.paginationState);
+    }
   }
 
   public handleSearchEvent(searchEvent: SearchEvent): void {
@@ -279,9 +281,8 @@ export class UpdatePayForMultipleStaffComponent {
       this.showErrors = true;
       this.errorSummaryService.scrollToErrorSummary();
 
-      if (this.paginationState) {
-        this.revertPaginationState();
-      }
+      this.revertPaginationState();
+
       if (callbackOnSearchResult) {
         callbackOnSearchResult(false);
       }
