@@ -1,4 +1,3 @@
-import { EventEmitter } from '@angular/core';
 import { Note } from '../registrations.model';
 
 export interface UserSearchRequest {
@@ -87,8 +86,4 @@ export interface WorkplaceSearchItem {
 export interface GroupSearchRequest {
   employerType: string;
   parent: boolean;
-}
-
-export interface SearchInput {
-  emitInput: EventEmitter<string>;
 }

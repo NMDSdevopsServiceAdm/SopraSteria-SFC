@@ -14,23 +14,18 @@
       </ng-content>
     </div>
   }
-
   @if (count > 1) {
     <div
+      [formGroup]="form"
       data-testid="sortBy"
       id="sort-by-container"
       class="govuk-grid-column-one-quarter govuk-!-margin-bottom-0 govuk-!-padding-top-2 govuk-!-padding-bottom-2 govuk-util__float-right"
     >
       <div class="govuk-form-group">
         <label class="govuk-label" for="sortBy"> Sort by </label>
-        <select
-          class="govuk-select govuk-!-width-full"
-          id="sortBy"
-          name="sortBy"
-          (change)="sortBy($event.target.value)"
-        >
+        <select class="govuk-select govuk-!-width-full" id="sortBy" name="sortBy" formControlName="sortBySelected">
           @for (option of sortOptions | keyvalue; track option.key) {
-            <option value="{{ option.key }}" [selected]="option.key === sortBySelected">
+            <option value="{{ option.key }}">
               {{ option.value }}
             </option>
           }

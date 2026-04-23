@@ -1,8 +1,12 @@
-export interface SearchEvent {
+export interface SearchParams {
   index: number;
   itemsPerPage: number;
   searchTerm?: string;
   sortByValue: string;
+}
+
+export interface SearchEvent extends SearchParams {
+  callback?: (success: boolean) => void;
 }
 
 export interface QueryParamsForBackend {

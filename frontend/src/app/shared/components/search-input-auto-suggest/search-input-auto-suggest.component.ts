@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, viewChild } from '@angular/core';
 import { AutoSuggestDataProvider } from '@shared/auto-suggest.model';
 import { NewAutoSuggestComponent } from '../auto-suggest-new/new-auto-suggest.component';
-import { SearchInput } from '@core/model/admin/search.model';
+import { SearchInput, SearchWithCallback } from '@core/model/search.model';
 
 @Component({
   selector: 'app-search-input-auto-suggest',
@@ -20,7 +20,7 @@ export class SearchInputAutoSuggestComponent implements SearchInput {
   @Input() showClearResults = true;
   @Input() showSearchButton = false;
 
-  @Output() emitInput = new EventEmitter<string>();
+  @Output() emitSearchEvent = new EventEmitter<SearchWithCallback>();
 
   ngOnInit() {
     if (!this.inputBoxId && this.ref) {
@@ -50,13 +50,23 @@ export class SearchInputAutoSuggestComponent implements SearchInput {
   }
 
   private submitSearch(searchTerm: string): void {
-    this.emitInput.emit(searchTerm);
-    this.setSearched(true);
+    const callback = (success: boolean) => {
+      if (success) {
+        this.setSearched(true);
+      }
+    };
+
+    this.emitSearchEvent.emit({ searchTerm, callback });
   }
 
   public handleResetSearch(): void {
-    this.setSearched(false);
-    this.emitInput.emit('');
-    this.searchBox().clearTextInput();
+    const callback = (success: boolean) => {
+      if (success) {
+        this.setSearched(false);
+        this.searchBox().clearTextInput();
+      }
+    };
+
+    this.emitSearchEvent.emit({ searchTerm: '', callback });
   }
 }

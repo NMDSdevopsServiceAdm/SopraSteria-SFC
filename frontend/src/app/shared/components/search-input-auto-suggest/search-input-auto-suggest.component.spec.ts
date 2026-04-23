@@ -71,46 +71,59 @@ describe('SearchInputAutoSuggestComponent', () => {
   it('should emit the suggestion as search term when clicked on a suggestion', async () => {
     const { component, getByLabelText, getByText } = await setup();
 
-    const emitSpy = spyOn(component.emitInput, 'emit');
+    const emitSpy = spyOn(component.emitSearchEvent, 'emit');
 
     userEvent.type(getByLabelText('Search'), 'care');
     userEvent.click(getByText('Care worker'));
 
-    expect(emitSpy).toHaveBeenCalledOnceWith('Care worker');
+    expect(emitSpy).toHaveBeenCalledOnceWith({ searchTerm: 'Care worker', callback: jasmine.any(Function) });
   });
 
   it('should display a "Clear search results" link after user submit a search', async () => {
     const { component, getByLabelText, getByText } = await setup();
 
-    const emitSpy = spyOn(component.emitInput, 'emit');
+    const emitSpy = spyOn(component.emitSearchEvent, 'emit').and.callFake(({ callback }) => callback(true));
     userEvent.type(getByLabelText('Search'), 'care');
 
     userEvent.click(getByText('Care worker'));
-    expect(emitSpy).toHaveBeenCalledOnceWith('Care worker');
+    expect(emitSpy).toHaveBeenCalledOnceWith({ searchTerm: 'Care worker', callback: jasmine.any(Function) });
 
     const clearSearchLink = getByText('Clear search results');
     expect(clearSearchLink).toBeTruthy();
 
     userEvent.click(clearSearchLink);
-    expect(emitSpy).toHaveBeenCalledWith('');
+    expect(emitSpy).toHaveBeenCalledWith({ searchTerm: '', callback: jasmine.any(Function) });
+  });
+
+  it('should not display the "Clear search results" link if search was not successful', async () => {
+    const { component, getByLabelText, getByText, queryByText } = await setup();
+
+    const emitSpy = spyOn(component.emitSearchEvent, 'emit').and.callFake(({ callback }) => callback(false));
+    userEvent.type(getByLabelText('Search'), 'care');
+
+    userEvent.click(getByText('Care worker'));
+    expect(emitSpy).toHaveBeenCalledOnceWith({ searchTerm: 'Care worker', callback: jasmine.any(Function) });
+
+    const clearSearchLink = queryByText('Clear search results');
+    expect(clearSearchLink).toBeFalsy();
   });
 
   it('should emit the user input when search button is clicked', async () => {
     const { component, getByLabelText, getByRole } = await setup({ showSearchButton: true });
 
-    const emitSpy = spyOn(component.emitInput, 'emit');
+    const emitSpy = spyOn(component.emitSearchEvent, 'emit').and.callFake(({ callback }) => callback(true));
 
     userEvent.type(getByLabelText('Search'), 'care');
 
     userEvent.click(getByRole('button', { name: 'search' }));
 
-    expect(emitSpy).toHaveBeenCalledOnceWith('care');
+    expect(emitSpy).toHaveBeenCalledOnceWith({ searchTerm: 'care', callback: jasmine.any(Function) });
   });
 
   it('should not emit search if searchTerm is empty and user clicked search button', async () => {
     const { component, getByRole } = await setup({ showSearchButton: true });
 
-    const emitSpy = spyOn(component.emitInput, 'emit');
+    const emitSpy = spyOn(component.emitSearchEvent, 'emit');
 
     userEvent.click(getByRole('button', { name: 'search' }));
 

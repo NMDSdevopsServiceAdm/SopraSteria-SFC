@@ -20,6 +20,8 @@ describe('NewTabsComponent', () => {
   const allTabs: Tab[] = Object.values(MainDashboardTabs);
 
   const setup = async (overrides: any = {}) => {
+    const activatedRouteOptions = overrides?.activatedRouteOptions ?? {};
+
     const { fixture, getByTestId } = await render(NewTabsComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
@@ -34,9 +36,11 @@ describe('NewTabsComponent', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: new MockActivatedRoute({}),
+          useValue: new MockActivatedRoute(activatedRouteOptions),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       declarations: [],
       componentProperties: {
         tabs: allTabs,
@@ -440,6 +444,29 @@ describe('NewTabsComponent', () => {
       spyOn(parentSubsidiaryViewService, 'getSubsidiaryUid').and.returnValue(subUid);
 
       component.selectTab(new Event(null), index, true, true, false);
+
+      expect(routerSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('setTabOnInit', () => {
+    const mockUid1 = 'c9a65ed6-db19-4add-94cb-af200036653c';
+
+    it('should handle initial url with fragment (#) without error', async () => {
+      const mockUrlArray = ['workplace', mockUid1, 'staff-record', 'update-pay-for-multiple-staff'];
+      const mockUrlFragment = '#some-error-message';
+      const navigateEvent = new NavigationEnd(0, '/dashboard#staff-records', '/dashboard#staff-records');
+
+      const { component, fixture, router, routerSpy } = await setup({
+        activatedRouteOptions: { snapshot: { url: mockUrlArray, fragment: mockUrlFragment } },
+      });
+
+      (router.events as BehaviorSubject<any>).next(navigateEvent);
+      fixture.detectChanges();
+
+      const activeTabs = getAllActiveTabs();
+      expect(activeTabs).toEqual(['staff-records']);
+      expect(component.tabsService.selectedTab).toEqual('staff-records');
 
       expect(routerSpy).not.toHaveBeenCalled();
     });

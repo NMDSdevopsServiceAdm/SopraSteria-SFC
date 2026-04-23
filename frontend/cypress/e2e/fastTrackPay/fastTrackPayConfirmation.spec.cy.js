@@ -60,7 +60,7 @@ describe('Fast Track Pay Updates flow', () => {
   //     expect(body[0].annualHourlyPay.rate).to.equal(10);
   //   });
 
-  //   cy.url().should('include', 'update-pay-multiple-staff');
+  //   cy.url().should('include', 'update-pay-for-multiple-staff');
 
   //   cy.contains('Pay updated in').should('exist');
   // });
