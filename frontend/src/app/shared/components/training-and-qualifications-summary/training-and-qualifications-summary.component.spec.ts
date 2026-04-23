@@ -25,6 +25,8 @@ import { PaginationComponent } from '../pagination/pagination.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
 import { TablePaginationWrapperComponent } from '../table-pagination-wrapper/table-pagination-wrapper.component';
 import { TrainingAndQualificationsSummaryComponent } from './training-and-qualifications-summary.component';
+import { SharedModule } from '@shared/shared.module';
+import { ReactiveFormsModule } from '@angular/forms';
 
 const establishmentBuilder = build('Establishment', {
   fields: {
@@ -51,7 +53,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
   async function setup(totalRecords = 5) {
     const { fixture, getAllByText, getByText, getByLabelText, queryByLabelText, getByTestId, queryByTestId } =
       await render(TrainingAndQualificationsSummaryComponent, {
-        imports: [],
+        imports: [SharedModule, ReactiveFormsModule],
         declarations: [TablePaginationWrapperComponent, PaginationComponent, SearchInputComponent],
         providers: [
           { provide: PermissionsService, useValue: mockPermissionsService },
@@ -59,7 +61,9 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
             provide: WorkerService,
             useClass: MockWorkerService,
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
         componentProperties: {
           workplace: establishmentBuilder() as Establishment,
           workers: workers as Worker[],

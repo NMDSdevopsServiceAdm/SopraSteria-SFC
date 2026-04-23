@@ -84,7 +84,7 @@ export class FastTrackPayUpdatesComponent implements OnInit {
     if (hasAtLeastOneRate) {
       this.router.navigate(['../fast-track-confirmation-page'], { relativeTo: this.route });
     } else {
-      this.router.navigate(['/workplace', this.workplace.uid, 'update-pay-multiple-staff']);
+      this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', 'update-pay-for-multiple-staff']);
     }
   }
 }

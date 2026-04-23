@@ -1,8 +1,10 @@
-import { Component, contentChild, effect, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, contentChild, effect, EventEmitter, Input, OnInit, Output, viewChild } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { SearchInput } from '@core/model/admin/search.model';
+import { SearchInput, SearchWithCallback } from '@core/model/search.model';
 import { SearchEvent } from '@core/model/pagination.model';
 import { Subscription } from 'rxjs';
+import { SearchInputComponent } from '../search-input/search-input.component';
 
 @Component({
   selector: 'app-table-pagination-wrapper',
@@ -12,6 +14,7 @@ import { Subscription } from 'rxjs';
 })
 export class TablePaginationWrapperComponent implements OnInit {
   private customSearchBox = contentChild<SearchInput>('searchBox');
+  private defaultSearchBox = viewChild(SearchInputComponent);
   @Input() maintainedPageIndex: number;
   @Input() totalCount: number;
   @Input() count: number;
@@ -27,10 +30,13 @@ export class TablePaginationWrapperComponent implements OnInit {
   public currentPageIndex = 0;
   private fragment: string;
   private tab: string;
-  public sortBySelected: string;
   private subscriptions: Subscription = new Subscription();
+  public form: FormGroup;
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private formBuilder: FormBuilder,
+  ) {
     effect(() => {
       if (this.customSearchBox()) {
         this.setUpCustomSearchBox();
@@ -39,10 +45,34 @@ export class TablePaginationWrapperComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.sortBySelected = Object.keys(this.sortByParamMap).find((key) => this.sortByParamMap[key] === this.sortByValue);
+    this.setupForm();
     if (this.maintainedPageIndex && this.maintainedPageIndex !== this.currentPageIndex) {
       this.currentPageIndex = this.maintainedPageIndex;
     }
+  }
+
+  get sortBySelected(): string {
+    return this.form.get('sortBySelected')!.value;
+  }
+
+  set sortBySelected(newValue: string) {
+    this.form.patchValue({ sortBySelected: newValue });
+  }
+
+  private setupForm(): void {
+    const sortBySelected = this.sortByParamReverseLookup(this.sortByValue);
+    this.form = this.formBuilder.group({ sortBySelected });
+
+    this.form.get('sortBySelected')!.valueChanges.subscribe((newValue) => {
+      this.sortBy(newValue);
+    });
+  }
+
+  private sortByParamReverseLookup(sortByValue: string) {
+    const sortByKeys = Object.keys(this.sortByParamMap);
+    const defaultValue = sortByKeys.at(0);
+    const sortBySelected = sortByKeys.find((key) => this.sortByParamMap[key] === sortByValue) ?? defaultValue;
+    return sortBySelected;
   }
 
   private checkForFragment(): void {
@@ -78,8 +108,8 @@ export class TablePaginationWrapperComponent implements OnInit {
     }
 
     this.subscriptions.add(
-      customSearchBox.emitInput.subscribe((searchTerm) => {
-        this.handleSearch(searchTerm);
+      customSearchBox.emitSearchEvent.subscribe(({ searchTerm, callback }) => {
+        this.handleSearchWithCallback(searchTerm, callback);
       }),
     );
   }
@@ -91,8 +121,31 @@ export class TablePaginationWrapperComponent implements OnInit {
     if (this.setQueryInParams) {
       this.addQueryParams();
     }
-
     this.getData();
+  }
+
+  public handleSearchWithCallback(searchTerm: string, callback: Function): void {
+    if (!callback) {
+      this.handleSearch(searchTerm);
+      return;
+    }
+
+    const patchedCallback = (isSuccessful: boolean) => {
+      callback(isSuccessful);
+      if (isSuccessful) {
+        this.searchTerm = searchTerm;
+        this.currentPageIndex = 0;
+      }
+    };
+
+    const searchEvent = {
+      ...this.currentSearchParams,
+      index: 0,
+      callback: patchedCallback,
+      searchTerm,
+    };
+
+    this.fetchDataWithParams(searchEvent);
   }
 
   public handlePageUpdate(pageIndex: number): void {
@@ -109,8 +162,27 @@ export class TablePaginationWrapperComponent implements OnInit {
     };
   }
 
+  public setStateWithoutEmitSearchEvent(params: SearchEvent) {
+    const { sortByValue, index, searchTerm } = params;
+
+    this.sortByValue = sortByValue;
+    const sortBySelected = this.sortByParamReverseLookup(sortByValue);
+    this.form.patchValue({ sortBySelected }, { emitEvent: false });
+
+    this.currentPageIndex = index;
+
+    const defaultSearchBox = this.defaultSearchBox();
+    if (defaultSearchBox) {
+      defaultSearchBox.setState({ searchTerm });
+    }
+  }
+
   private getData(): void {
-    this.fetchData.emit(this.currentSearchParams);
+    this.fetchDataWithParams(this.currentSearchParams);
+  }
+
+  private fetchDataWithParams(searchEvent: SearchEvent): void {
+    this.fetchData.emit(searchEvent);
   }
 
   ngOnDestroy(): void {

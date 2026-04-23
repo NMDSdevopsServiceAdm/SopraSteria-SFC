@@ -1,11 +1,7 @@
-<!-- TODO: add form validation in ticket #1903
-<app-error-summary
-  *ngIf="submitted && form.invalid"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
-  [serverError]="serverError"
->
-</app-error-summary> -->
+@if (showErrors && (workersFormGroup.invalid || serverError)) {
+  <app-error-summary [formErrorsMap]="formErrorsMap" [form]="workersFormGroup" [serverError]="serverError">
+  </app-error-summary>
+}
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
@@ -26,7 +22,7 @@
         [sortByValue]="'staffNameAsc'"
         [sortByParamMap]="sortByParamMap"
         [sortOptions]="sortOptions"
-        (fetchData)="getPageOfWorkers($event)"
+        (fetchData)="handleSearchEvent($event)"
       >
         <ng-container placeAboveSearchBox>
           <div class="govuk-grid-column-three-quarters">
@@ -54,28 +50,41 @@
         </ng-container>
 
         @if (workersToShow.length > 0) {
-          <table class="govuk-table govuk-!-margin-bottom-3">
-            <thead class="govuk-table__head">
-              <tr class="govuk-table__row">
-                <th data-testid="name-or-id-header" scope="col" class="govuk-table__header">Name or ID number</th>
-                <th data-testid="job-role-header" scope="col" class="govuk-table__header">Job role</th>
-                <th data-testid="pay-header" scope="col" class="govuk-table__header">Hourly pay rate or salary</th>
-              </tr>
-            </thead>
-            <tbody class="govuk-table__body asc__workers-pay-data-table" [formGroup]="workersFormGroup">
-              @for (worker of workersToShow; track worker.uid; let workerIndex = $index) {
-                <tr
-                  class="govuk-table__row"
-                  [formGroupName]="worker.uid"
-                  [attr.data-testid]="'worker-row-' + workerIndex"
-                >
-                  <td class="govuk-table__cell" [id]="'worker-name-' + workerIndex">
+          <div
+            role="table"
+            class="govuk-table govuk-!-margin-bottom-3 asc__grid-table-with-form"
+            [formGroup]="workersFormGroup"
+          >
+            <div role="rowheader" class="asc__grid-table-with-form--row asc__grid-table-with-form--header-row">
+              <div data-testid="name-or-id-header">Name or ID number</div>
+              <div data-testid="job-role-header">Job role</div>
+              <div data-testid="pay-header">Hourly pay rate or salary</div>
+            </div>
+            @for (worker of workersToShow; track worker.uid; let workerIndex = $index) {
+              @let workerFormControl = workersFormGroup.get(`uid-${worker.uid}`);
+              <div
+                [formGroupName]="'uid-' + worker.uid"
+                class="govuk-form-group"
+                [class.govuk-form-group--error]="showErrors && workerFormControl.invalid"
+              >
+                <div role="row" class="asc__grid-table-with-form--row" [attr.data-testid]="'worker-row-' + workerIndex">
+                  @if (showErrors && workerFormControl.invalid) {
+                    <p class="govuk-error-message" [id]="'uid-' + worker.uid + '-error'">
+                      <span class="govuk-visually-hidden">Error:</span> {{ getInlineErrorMessage(worker) }}
+                    </p>
+                  }
+                  <div [id]="'worker-name-' + workerIndex">
                     {{ worker.nameOrId }}
-                  </td>
-                  <td class="govuk-table__cell">{{ worker?.mainJob?.title }}</td>
-                  <td class="govuk-table__cell">
+                  </div>
+                  <div>{{ worker?.mainJob?.title }}</div>
+                  <div>
                     <div class="govuk-input__wrapper">
                       <div class="govuk-input__prefix asc__white-background" aria-hidden="true">£</div>
+                      <span
+                        class="govuk-visually-hidden asc--align-dummy-anchor-y-axis-to-actual-error-message"
+                        [id]="'uid-' + worker.uid + '-payRate-error'"
+                      >
+                      </span>
                       <input
                         [attr.data-testid]="'amount-input-box-' + $index"
                         class="govuk-input govuk-input--width-4"
@@ -89,6 +98,13 @@
                       <div class="govuk-radios govuk-radios--inline govuk-radios--small govuk-!-margin-bottom-0">
                         @for (button of radioButtonLabels; track $index) {
                           <div class="govuk-radios__item">
+                            @if ($index === 0) {
+                              <span
+                                class="govuk-visually-hidden asc--align-dummy-anchor-y-axis-to-actual-error-message"
+                                [id]="'uid-' + worker.uid + '-payValue-error'"
+                              >
+                              </span>
+                            }
                             <input
                               class="govuk-radios__input"
                               [attr.data-testid]="button.slug + '-radio-' + workerIndex"
@@ -105,11 +121,11 @@
                         }
                       </div>
                     </div>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
         } @else {
           <div class="govuk-!-margin-top-6">
             <p class="govuk-util__bold">There are no matching results</p>
