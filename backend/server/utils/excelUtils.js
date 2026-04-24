@@ -176,7 +176,22 @@ exports.addLink = (tab, range, { text, hyperlink }, fontOptions = {}) => {
   cell.font = font;
 };
 
-exports.setRangeColour = (tab, range, { fill = null, text = null }) => {};
+exports.setColourForRange = (tab, range, { backgroundColour = null, textColour = null }) => {
+  if (!backgroundColour && !textColour) {
+    return;
+  }
+
+  const setCellColour = (cell) => {
+    if (backgroundColour) {
+      cell.fill = { ...cell.fill, type: 'pattern', pattern: 'solid', fgColor: backgroundColour };
+    }
+    if (textColour) {
+      cell.font = { ...cell.font, color: textColour };
+    }
+  };
+
+  forEachCellInRange(tab, range, setCellColour);
+};
 
 const standardFont = { name: 'Serif', family: 4, size: 12 };
 exports.standardFont = standardFont;

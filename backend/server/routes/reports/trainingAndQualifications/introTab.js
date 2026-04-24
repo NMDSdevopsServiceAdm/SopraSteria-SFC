@@ -7,6 +7,7 @@ const {
   addLink,
   topAndBottomGreyBorder,
   addText,
+  setColourForRange,
 } = require('../../../utils/excelUtils');
 const models = require('../../../models');
 const dayjs = require('dayjs');
@@ -48,21 +49,8 @@ const setCellSizeAndFormats = (tab) => {
     tab.getRow(index + 1).height = height;
   });
 
-  forEachCellInRange(tab, 'A2:Z3', (cell) => {
-    cell.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: newBackgroundColours.lightGrey,
-    };
-  });
-
-  forEachCellInRange(tab, 'A10:H18', (cell) => {
-    cell.fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: newBackgroundColours.lightGrey,
-    };
-  });
+  setColourForRange(tab, 'A2:Z3', { backgroundColour: newBackgroundColours.lightGrey });
+  setColourForRange(tab, 'A10:H18', { backgroundColour: newBackgroundColours.lightGrey });
 };
 
 const addBannerImage = (workbook, introTab) => {
@@ -97,8 +85,8 @@ const addLinksToOtherTabs = (introTab) => {
   links.forEach((link, index) => {
     const rowNumber = 11 + index;
     addLink(introTab, `B${rowNumber}:G${rowNumber}`, link, { size: 16 });
-    const cell = introTab.getCell(`B${rowNumber}`);
-    cell.border = topAndBottomGreyBorder;
+
+    introTab.getCell(`B${rowNumber}`).border = topAndBottomGreyBorder;
   });
 };
 
