@@ -1,3 +1,5 @@
+const colcache = require('exceljs/lib/utils/col-cache');
+
 //  ===== constants definitions =====
 
 exports.blueBackground = {
@@ -199,7 +201,7 @@ exports.addLine = (worksheet, startCell, endCell) => {
   };
 };
 
-exports.addText = (tab, range, content, fontOptions = {}) => {
+const addText = (tab, range, content, fontOptions = {}) => {
   const [startCell, endCell] = range.split(':');
   if (endCell) {
     tab.mergeCells(`${startCell}:${endCell}`);
@@ -210,17 +212,13 @@ exports.addText = (tab, range, content, fontOptions = {}) => {
   cell.value = content;
   cell.font = font;
 };
+exports.addText = addText;
 
 exports.addLink = (tab, range, { text, hyperlink }, fontOptions = {}) => {
-  const [startCell, endCell] = range.split(':');
-  if (endCell) {
-    tab.mergeCells(`${startCell}:${endCell}`);
-  }
+  const fontWithLinkStyle = { color: newTextColours.linkBlue, underline: true, ...fontOptions };
+  const content = { text, hyperlink };
 
-  const font = { family: 4, color: newTextColours.linkBlue, underline: true, ...fontOptions };
-  const cell = tab.getCell(startCell);
-  cell.value = { text, hyperlink };
-  cell.font = font;
+  return addText(tab, range, content, fontWithLinkStyle);
 };
 
 exports.setColourForRange = (tab, range, { backgroundColour = null, textColour = null }) => {
@@ -300,26 +298,8 @@ const listRows = (startRow, endRow) => {
     .map((_, index) => startRow + index);
 };
 
-const columnLabelToNumber = (columnLabel) => {
-  return columnLabel
-    .split('')
-    .reverse()
-    .reduce((sum, char, index) => {
-      return sum + 26 ** index * (char.charCodeAt(0) - 64);
-    }, 0);
-};
-
-const numberToColumnLabel = (columnNumber) => {
-  let chars = [];
-  let n = columnNumber;
-  while (n > 26) {
-    const modulus = n % 26;
-    n = Math.floor(n / 26);
-    chars.push(String.fromCharCode(modulus + 64));
-  }
-  chars.push(String.fromCharCode(n + 64));
-  return chars.reverse().join('');
-};
+const columnLabelToNumber = (columnLabel) => colcache.l2n(columnLabel);
+const numberToColumnLabel = (number) => colcache.n2l(number);
 
 const forEachCellInRange = (tab, range, callback) => {
   const { columns, rows } = parseRange(range);
@@ -348,12 +328,12 @@ const parseRange = (range) => {
     return {};
   }
 
-  const [_, startColStr, startRowStr, endColStr, endRowStr] = match;
+  const { top, left, bottom, right } = colcache.decode(range);
 
-  const startColumn = columnLabelToNumber(startColStr);
-  const endColumn = columnLabelToNumber(endColStr);
-  const startRow = Number(startRowStr);
-  const endRow = Number(endRowStr);
+  const startColumn = left;
+  const endColumn = right;
+  const startRow = top;
+  const endRow = bottom;
 
   const rows = listRows(startRow, endRow);
   const columns = listRows(startColumn, endColumn).map(numberToColumnLabel);
