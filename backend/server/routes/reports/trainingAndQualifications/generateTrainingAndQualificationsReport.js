@@ -2,7 +2,6 @@ const excelJS = require('exceljs');
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const moment = require('moment');
-const { generateHowToTab } = require('./howToTab');
 const { generateSummaryTab } = require('./summaryTab');
 const { generateTrainingTab } = require('./trainingTab');
 const { generateQualificationsTab } = require('./qualificationsTab');
@@ -19,7 +18,7 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
     workbook.creator = 'Skills-For-Care';
     workbook.properties.date1904 = true;
 
-    await generateIntroTab(workbook, establishment.id);
+    await generateIntroTab(workbook, establishment);
 
     // TODO: remove this when we add the new tabs
     const newTabs = [

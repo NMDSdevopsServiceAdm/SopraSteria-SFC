@@ -8,7 +8,6 @@ const {
   addText,
   setColourForRange,
 } = require('../../../utils/excelUtils');
-const models = require('../../../models');
 const dayjs = require('dayjs');
 const path = require('node:path');
 
@@ -18,8 +17,7 @@ const introductionText =
   'and plan training, procure and book staff onto courses, and identify any training gaps.\r\n\r\n' +
   "Note, your report will only provide a full view of mandatory training once you've set up your mandatory training accurately in ASC-WDS.";
 
-const generateIntroTab = async (workbook, establishmentId) => {
-  const establishment = await models.establishment.findByPk(establishmentId, { raw: true });
+const generateIntroTab = async (workbook, establishment) => {
   const introTab = workbook.addWorksheet('Introduction', { views: [{ showGridLines: false }] });
 
   setCellSizeAndFormats(introTab);

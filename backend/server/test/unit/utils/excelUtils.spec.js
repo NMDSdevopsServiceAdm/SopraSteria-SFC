@@ -13,7 +13,7 @@ const {
   forEachCellInRange,
 } = require('../../../utils/excelUtils');
 
-describe.only('excelUtils', () => {
+describe('excelUtils', () => {
   const setup = () => new excelJS.Workbook().addWorksheet('mock worksheet');
 
   describe('addText', () => {
