@@ -2,6 +2,10 @@ const excelJS = require('exceljs');
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const moment = require('moment');
+
+const Authorization = require('../../../../utils/security/isAuthenticated');
+const { hasPermission } = require('../../../../utils/security/hasPermission');
+
 const { generateHowToTab } = require('../howToTab');
 const { generateSummaryTab } = require('./parentSummaryTab');
 const { generateTrainingTab } = require('../trainingTab');
@@ -38,7 +42,13 @@ const generateParentTrainingAndQualificationsReport = async (req, res) => {
   }
 };
 
-router.route('/:id/report').get(generateParentTrainingAndQualificationsReport);
+router
+  .route('/:id/report')
+  .get(
+    Authorization.hasAuthorisedEstablishment,
+    hasPermission('canViewEstablishment'),
+    generateParentTrainingAndQualificationsReport,
+  );
 
 module.exports = router;
 module.exports.generateParentTrainingAndQualificationsReport = generateParentTrainingAndQualificationsReport;
