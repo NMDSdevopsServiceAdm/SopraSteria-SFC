@@ -12,6 +12,13 @@ const fullBorder = {
 };
 exports.fullBorder = fullBorder;
 
+const borderColourLightGrey = { argb: 'CCCCCC' };
+const topAndBottomGreyBorder = {
+  top: { style: 'thin', color: borderColourLightGrey },
+  bottom: { style: 'thin', color: borderColourLightGrey },
+};
+exports.topAndBottomGreyBorder = topAndBottomGreyBorder;
+
 function eachColumnInRange(ws, col1, col2, cb) {
   for (let c = col1; c <= col2; c++) {
     let col = ws.getColumn(c);
@@ -145,6 +152,32 @@ exports.addLine = (worksheet, startCell, endCell) => {
   };
 };
 
+exports.addText = (tab, range, content, fontOptions = {}) => {
+  const [startCell, endCell] = range.split(':');
+  if (endCell) {
+    tab.mergeCells(`${startCell}:${endCell}`);
+  }
+
+  const font = { family: 4, ...fontOptions };
+  const cell = tab.getCell(startCell);
+  cell.value = content;
+  cell.font = font;
+};
+
+exports.addLink = (tab, range, { text, hyperlink }, fontOptions = {}) => {
+  const [startCell, endCell] = range.split(':');
+  if (endCell) {
+    tab.mergeCells(`${startCell}:${endCell}`);
+  }
+
+  const font = { family: 4, color: newTextColours.linkBlue, underline: true, ...fontOptions };
+  const cell = tab.getCell(startCell);
+  cell.value = { text, hyperlink };
+  cell.font = font;
+};
+
+exports.setRangeColour = (tab, range, { fill = null, text = null }) => {};
+
 const standardFont = { name: 'Serif', family: 4, size: 12 };
 exports.standardFont = standardFont;
 
@@ -173,7 +206,7 @@ exports.setCellTextAndBackgroundColour = (tab, cellCoordinate, backgroundColour,
     fgColor: backgroundColour,
   };
 
-  cell.font = { color: textColour };
+  cell.font = { ...cell.font, color: textColour };
 };
 
 exports.alignColumnToLeft = (tab, colNumber) => {
@@ -207,6 +240,25 @@ exports.textColours = {
   blue: { argb: '0050ab' },
 };
 
+const newBackgroundColours = {
+  lightGrey: { argb: 'EFEFEF' },
+  green: { argb: '34A853' },
+  orange: { argb: 'FF7C1C' },
+  red: { argb: 'EA4335' },
+  darkBlue: { argb: '1A65A6' },
+  lightBlue: { argb: 'DBE8FF' },
+};
+
+const newTextColours = {
+  darkBlue: { argb: '1A65A6' },
+  white: { argb: 'FFFFFF' },
+  black: { argb: '000000' },
+  linkBlue: { argb: '0000FF' },
+};
+
+exports.newBackgroundColours = newBackgroundColours;
+exports.newTextColours = newTextColours;
+
 exports.makeRowBold = (tab, rowNumber) => {
   tab.getRow(rowNumber).font = { bold: true };
 };
@@ -218,3 +270,76 @@ exports.setColumnWidths = (tab) => {
   longColumn.width = 33;
   longColumnsecond.width = 29;
 };
+
+const listRows = (startRow, endRow) => {
+  if (endRow < startRow) {
+    return listRows(endRow, startRow);
+  }
+
+  return Array(endRow - startRow + 1)
+    .fill(null)
+    .map((_, index) => startRow + index);
+};
+
+const columnLabelToNumber = (columnLabel) => {
+  return columnLabel
+    .split('')
+    .reverse()
+    .reduce((sum, char, index) => {
+      return sum + 26 ** index * (char.charCodeAt(0) - 64);
+    }, 0);
+};
+
+const numberToColumnLabel = (columnNumber) => {
+  let chars = [];
+  let n = columnNumber;
+  while (n > 26) {
+    const modulus = n % 26;
+    n = Math.floor(n / 26);
+    chars.push(String.fromCharCode(modulus + 64));
+  }
+  chars.push(String.fromCharCode(n + 64));
+  return chars.reverse().join('');
+};
+
+const forEachCellInRange = (tab, range, callback) => {
+  const { columns, rows } = parseRange(range);
+  rows.forEach((row) => {
+    columns.forEach((column) => {
+      const cell = tab.getRow(row).getCell(column);
+      callback(cell);
+    });
+  });
+};
+exports.forEachCellInRange = forEachCellInRange;
+
+exports.forEachColumnInRange = (tab, range, callback) => {
+  const { columns } = parseRange(range);
+  columns.forEach((columnLabel) => {
+    const column = tab.getColumn(columnLabel);
+    callback(column);
+  });
+};
+
+const parseRange = (range) => {
+  const regex = /^([A-Z]+)(\d+):([A-Z]+)(\d+)$/i;
+  const match = range.match(regex);
+
+  if (!match) {
+    return {};
+  }
+
+  const [_, startColStr, startRowStr, endColStr, endRowStr] = match;
+
+  const startColumn = columnLabelToNumber(startColStr);
+  const endColumn = columnLabelToNumber(endColStr);
+  const startRow = Number(startRowStr);
+  const endRow = Number(endRowStr);
+
+  const rows = listRows(startRow, endRow);
+  const columns = listRows(startColumn, endColumn).map(numberToColumnLabel);
+
+  return { columns, rows };
+};
+
+exports.parseRange = parseRange;
