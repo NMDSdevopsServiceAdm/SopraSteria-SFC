@@ -57,7 +57,7 @@ const addBannerImage = (workbook, introTab) => {
     filename: path.join(__dirname, '../../../assets/images/excelReportBanner.jpg'),
     extension: 'jpeg',
   });
-  introTab.addImage(bannerImageId, 'B1:F1');
+  introTab.addImage(bannerImageId, { tl: { col: 1, row: 0 }, ext: { width: 431, height: 62.4 } });
 };
 
 const addHeadingsToIntroTab = (introTab, establishment) => {
