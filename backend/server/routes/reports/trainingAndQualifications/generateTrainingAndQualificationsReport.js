@@ -8,6 +8,7 @@ const { generateTrainingTab } = require('./trainingTab');
 const { generateQualificationsTab } = require('./qualificationsTab');
 const { generateCareCertificateTab } = require('./careCertificateTab');
 const models = require('../../../models');
+const { generateIntroTab } = require('./introTab');
 
 const generateTrainingAndQualificationsReport = async (req, res) => {
   try {
@@ -18,6 +19,7 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
     workbook.creator = 'Skills-For-Care';
     workbook.properties.date1904 = true;
 
+    await generateIntroTab(workbook, establishment.id);
     generateHowToTab(workbook);
     await generateSummaryTab(workbook, establishment.id);
     await generateTrainingTab(workbook, establishment.id);

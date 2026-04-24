@@ -31,6 +31,10 @@ describe('generateTrainingAndQualificationsReport', () => {
         get: () => {},
       },
     ]);
+
+    sinon.stub(models.establishment, 'findByPk').returns({
+      NameValue: 'Care home',
+    });
   });
 
   afterEach(() => {
