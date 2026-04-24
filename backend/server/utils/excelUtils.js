@@ -1,3 +1,5 @@
+//  ===== constants definitions =====
+
 exports.blueBackground = {
   type: 'pattern',
   pattern: 'solid',
@@ -12,12 +14,57 @@ const fullBorder = {
 };
 exports.fullBorder = fullBorder;
 
+const standardFont = { name: 'Serif', family: 4, size: 12 };
+exports.standardFont = standardFont;
+
+const textBoxAlignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+exports.textBoxAlignment = textBoxAlignment;
+
+exports.backgroundColours = {
+  yellow: { argb: 'FFEA99' },
+  blue: { argb: '0050AB' },
+  red: { argb: 'FFC0C8' },
+  green: { argb: 'BBEDC9' },
+  lightBlue: { argb: 'A3CBFA' },
+  darkBlue: { argb: '5981B8' },
+};
+
+exports.textColours = {
+  yellow: { argb: '945B19' },
+  white: { argb: 'FFFFFF' },
+  red: { argb: '960512' },
+  green: { argb: '005713' },
+  black: { argb: '000000' },
+  blue: { argb: '0050AB' },
+};
+
+const newBackgroundColours = {
+  lightGrey: { argb: 'EFEFEF' },
+  green: { argb: '34A853' },
+  orange: { argb: 'FF7C1C' },
+  red: { argb: 'EA4335' },
+  darkBlue: { argb: '1A65A6' },
+  lightBlue: { argb: 'DBE8FF' },
+};
+
+const newTextColours = {
+  darkBlue: { argb: '1A65A6' },
+  white: { argb: 'FFFFFF' },
+  black: { argb: '000000' },
+  linkBlue: { argb: '0000FF' },
+};
+
+exports.newBackgroundColours = newBackgroundColours;
+exports.newTextColours = newTextColours;
+
 const borderColourLightGrey = { argb: 'CCCCCC' };
 const topAndBottomGreyBorder = {
   top: { style: 'thin', color: borderColourLightGrey },
   bottom: { style: 'thin', color: borderColourLightGrey },
 };
 exports.topAndBottomGreyBorder = topAndBottomGreyBorder;
+
+//  ===== helper methods =====
 
 function eachColumnInRange(ws, col1, col2, cb) {
   for (let c = col1; c <= col2; c++) {
@@ -193,12 +240,6 @@ exports.setColourForRange = (tab, range, { backgroundColour = null, textColour =
   forEachCellInRange(tab, range, setCellColour);
 };
 
-const standardFont = { name: 'Serif', family: 4, size: 12 };
-exports.standardFont = standardFont;
-
-const textBoxAlignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
-exports.textBoxAlignment = textBoxAlignment;
-
 exports.setTableHeadingsStyle = (tab, currentLineNumber, backgroundColour, textColour, cellColumns) => {
   tab.getRow(currentLineNumber).alignment = { horizontal: 'center' };
 
@@ -236,43 +277,6 @@ exports.addBlankRowIfTableEmpty = (tableObject, noOfColumns) => {
     tableObject.addRow(rowCells);
   }
 };
-
-exports.backgroundColours = {
-  yellow: { argb: 'FFEA99' },
-  blue: { argb: '0050AB' },
-  red: { argb: 'FFC0C8' },
-  green: { argb: 'BBEDC9' },
-  lightBlue: { argb: 'A3CBFA' },
-  darkBlue: { argb: '5981B8' },
-};
-
-exports.textColours = {
-  yellow: { argb: '945B19' },
-  white: { argb: 'FFFFFF' },
-  red: { argb: '960512' },
-  green: { argb: '005713' },
-  black: { argb: '000000' },
-  blue: { argb: '0050ab' },
-};
-
-const newBackgroundColours = {
-  lightGrey: { argb: 'EFEFEF' },
-  green: { argb: '34A853' },
-  orange: { argb: 'FF7C1C' },
-  red: { argb: 'EA4335' },
-  darkBlue: { argb: '1A65A6' },
-  lightBlue: { argb: 'DBE8FF' },
-};
-
-const newTextColours = {
-  darkBlue: { argb: '1A65A6' },
-  white: { argb: 'FFFFFF' },
-  black: { argb: '000000' },
-  linkBlue: { argb: '0000FF' },
-};
-
-exports.newBackgroundColours = newBackgroundColours;
-exports.newTextColours = newTextColours;
 
 exports.makeRowBold = (tab, rowNumber) => {
   tab.getRow(rowNumber).font = { bold: true };

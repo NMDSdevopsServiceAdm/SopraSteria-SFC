@@ -3,7 +3,6 @@ const {
   newBackgroundColours,
   newTextColours,
   forEachColumnInRange,
-  forEachCellInRange,
   addLink,
   topAndBottomGreyBorder,
   addText,
@@ -62,11 +61,10 @@ const addBannerImage = (workbook, introTab) => {
 };
 
 const addHeadingsToIntroTab = (introTab, establishment) => {
-  addHeading(introTab, 'B2', 'H2', establishment.NameValue, newTextColours.black, 26);
-  addHeading(introTab, 'B3', 'F3', 'Training and qualifications report', newTextColours.black, 24);
-  addHeading(introTab, 'G3', 'H3', dayjs().format('DD MMMM YYYY, HH:mm'), newTextColours.black, 13);
-
-  addHeading(introTab, 'B4', 'H4', 'Introduction: how you can use this report', newTextColours.black, 18);
+  addText(introTab, 'B2:H2', establishment.NameValue, { size: 26, bold: true });
+  addText(introTab, 'B3:F3', 'Training and qualifications report', { size: 24, bold: true });
+  addText(introTab, 'G3:H3', dayjs().format('DD MMMM YYYY, HH:mm'), { size: 13, bold: true });
+  addText(introTab, 'B4:H4', 'Introduction: how you can use this report', { size: 18, bold: true });
 };
 
 const addLinksToOtherTabs = (introTab) => {
