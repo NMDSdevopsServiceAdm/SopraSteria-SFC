@@ -24,18 +24,6 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
 
     await generateIntroTab(workbook, establishment);
 
-    // TODO: remove this when we add the new tabs
-    const newTabs = [
-      'Summary',
-      'Training by staff',
-      'Training by category',
-      'Expired training',
-      'Training record details',
-      'Care Certificates',
-      'Qualification record details',
-    ];
-    newTabs.forEach((tabName) => workbook.addWorksheet(tabName));
-
     await generateSummaryTab(workbook, establishment.id);
     await generateTrainingTab(workbook, establishment.id);
     await generateQualificationsTab(workbook, establishment.id);
