@@ -2,7 +2,6 @@ const {
   addHeading,
   newBackgroundColours,
   newTextColours,
-  forEachColumnInRange,
   addLink,
   topAndBottomGreyBorder,
   addText,
@@ -31,17 +30,14 @@ const generateIntroTab = async (workbook, establishment) => {
 };
 
 const setCellSizeAndFormats = (tab) => {
-  forEachColumnInRange(tab, 'B2:F2', (column) => {
-    column.width = 12;
+  const columnWidths = [8, Array(5).fill(12.5), 14.5, 6.3].flat();
+  const rowHeights = [Array(4).fill(48), Array(4).fill(24), 33, 37, Array(9).fill(31)].flat();
+
+  columnWidths.forEach((width, index) => {
+    const column = tab.getColumn(index + 1);
+    column.width = width;
     column.alignment = { vertical: 'middle' };
   });
-  tab.getColumn('G').width = 18.5;
-  tab.getColumn('G').alignment = { vertical: 'middle' };
-
-  tab.getColumn('H').width = 3.5;
-
-  const rowHeights = [Array(4).fill(48), Array(5).fill(24), 37, Array(9).fill(31)].flat();
-
   rowHeights.forEach((height, index) => {
     tab.getRow(index + 1).height = height;
   });
@@ -60,9 +56,24 @@ const addBannerImage = (workbook, introTab) => {
 
 const addHeadingsToIntroTab = (introTab, establishment) => {
   addText(introTab, 'B2:H2', establishment.NameValue, { size: 26, bold: true });
+  setWorkplaceNameTextWrap(introTab, establishment);
+
   addText(introTab, 'B3:F3', 'Training and qualifications report', { size: 24, bold: true });
   addText(introTab, 'G3:H3', dayjs().format('DD MMMM YYYY, HH:mm'), { size: 13, bold: true });
   addText(introTab, 'B4:H4', 'Introduction: how you can use this report', { size: 18, bold: true });
+};
+
+const setWorkplaceNameTextWrap = (introTab, establishment) => {
+  const numberOfLinesNeeded = Math.ceil(establishment.NameValue?.length / 36);
+  if (numberOfLinesNeeded <= 1) {
+    return;
+  }
+
+  const workplaceNameCell = introTab.getCell('B2');
+  workplaceNameCell.alignment = { ...workplaceNameCell.alignment, wrapText: true };
+
+  const workplaceNameRow = introTab.getRow(2);
+  workplaceNameRow.height = workplaceNameRow.height * numberOfLinesNeeded - 20;
 };
 
 const addLinksToOtherTabs = (introTab) => {
