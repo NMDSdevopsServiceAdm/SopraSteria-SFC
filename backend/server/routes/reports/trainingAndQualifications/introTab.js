@@ -1,3 +1,5 @@
+const path = require('node:path');
+
 const {
   addHeading,
   newBackgroundColours,
@@ -7,8 +9,7 @@ const {
   addText,
   setColourForRange,
 } = require('../../../utils/excelUtils');
-const dayjs = require('dayjs');
-const path = require('node:path');
+const { formatDateTime } = require('../../../utils/dateUtils');
 
 const introductionText =
   'You could use this report internally (with board members, management and team leaders) and externally (with the CQC and local authorities). ' +
@@ -59,7 +60,7 @@ const addHeadingsToIntroTab = (introTab, establishment) => {
   setWorkplaceNameTextWrap(introTab, establishment);
 
   addText(introTab, 'B3:F3', 'Training and qualifications report', { size: 24, bold: true });
-  addText(introTab, 'G3:H3', dayjs().format('DD MMMM YYYY, HH:mm'), { size: 13, bold: true });
+  addText(introTab, 'G3:H3', formatDateTime(new Date(), 'DD MMMM YYYY, HH:mm'), { size: 13, bold: true });
   addText(introTab, 'B4:H4', 'Introduction: how you can use this report', { size: 18, bold: true });
 };
 
