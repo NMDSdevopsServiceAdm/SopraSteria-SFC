@@ -4,11 +4,13 @@ import { fireEvent, render } from '@testing-library/angular';
 import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { WorkerService } from '@core/services/worker.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import userEvent from '@testing-library/user-event';
+import { Establishment } from '@core/model/establishment.model';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 
 describe('FastTrackPayUpdatesComponent', () => {
   const workersWithSingleJobRole = {
@@ -78,6 +80,7 @@ describe('FastTrackPayUpdatesComponent', () => {
   };
 
   async function setup(overrides: any = {}) {
+    const establishment = establishmentBuilder() as Establishment;
     const setupTools = await render(FastTrackPayUpdatesComponent, {
       imports: [ReactiveFormsModule],
       providers: [
@@ -88,6 +91,7 @@ describe('FastTrackPayUpdatesComponent', () => {
             snapshot: {
               data: {
                 workersByJobRole: overrides.workersWithMultipleJobRoles ?? workersWithSingleJobRole,
+                establishment: establishment,
               },
             },
           },
@@ -105,13 +109,16 @@ describe('FastTrackPayUpdatesComponent', () => {
 
     const workerService = injector.inject(WorkerService) as WorkerService;
     const setWorkersGroupedByJobRoleSpy = spyOn(workerService, 'setWorkersGroupedByJobRole');
-
+    //  const route = injector.inject(ActivatedRoute) as ActivatedRoute;
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.resolveTo(true);
     return {
       ...setupTools,
       component,
       showBackLinkSpy,
       setWorkersGroupedByJobRoleSpy,
       workerService,
+      routerSpy,
     };
   }
 
@@ -179,13 +186,13 @@ describe('FastTrackPayUpdatesComponent', () => {
   describe('Table', () => {
     it('should include the Job role column heading', async () => {
       const { getByTestId } = await setup();
-      const heading = getByTestId('job-role-heading');
+      const heading = getByTestId('job-role-header');
       expect(heading.textContent.trim()).toEqual('Job role');
     });
 
     it('should include the New hourly pay rate or salary column heading', async () => {
       const { getByTestId } = await setup();
-      const heading = getByTestId('pay-heading');
+      const heading = getByTestId('pay-header');
       expect(heading.textContent.trim()).toEqual('New hourly pay rate or salary');
     });
 
@@ -351,17 +358,25 @@ describe('FastTrackPayUpdatesComponent', () => {
   });
 
   describe('Cancel link', () => {
-    it('should be displayed correctly', async () => {
-      const { getByRole } = await setup();
-      const link = getByRole('link', { name: 'Cancel' });
-      expect(link).toBeTruthy();
+    it('should show  a cancel link', async () => {
+      const { getByText } = await setup();
+
+      const cancelLink = getByText('Cancel');
+      expect(cancelLink).toBeTruthy();
     });
 
-    // to be updated when previous page is developed
-    it('should have the correct href', async () => {
-      const { getByRole } = await setup();
-      const link = getByRole('link', { name: 'Cancel' });
-      expect(link.getAttribute('href')).toEqual('/');
+    it('should return to update-pay-for-multiple-staff page on cancel', async () => {
+      const { getByText, routerSpy, component } = await setup();
+
+      const cancelLink = getByText('Cancel');
+      userEvent.click(cancelLink);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'staff-record',
+        'update-pay-for-multiple-staff',
+      ]);
     });
   });
 });
