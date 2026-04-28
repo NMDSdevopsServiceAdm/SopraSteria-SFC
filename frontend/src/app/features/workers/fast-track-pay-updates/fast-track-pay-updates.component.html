@@ -14,18 +14,89 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <table class="govuk-table govuk-!-margin-bottom-3">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th data-testid="job-role-heading" scope="col" class="govuk-table__header" style="width: 445px">
-              Job role
-            </th>
-            <th data-testid="pay-heading" scope="col" class="govuk-table__header" style="margin-left: 0">
-              New hourly pay rate or salary
-            </th>
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body" [formGroup]="workersFormGroup">
+      <div
+        role="table"
+        class="govuk-table govuk-!-margin-bottom-3 asc__grid-table-with-form"
+        [formGroup]="workersFormGroup"
+      >
+        <div role="rowheader" class="asc__grid-table-with-form--row asc__grid-table-with-form--header-row">
+          <div data-testid="job-role-header">Job role</div>
+          <div data-testid="pay-header">New hourly pay rate or salary</div>
+        </div>
+        @for (workers of workersByJobRole.groups; track workers.jobId; let workerIndex = $index) { @let workerControl =
+        workersFormGroup.get('job-' + workers.jobId);
+
+        <div
+          [formGroupName]="'job-' + workers.jobId"
+          class="govuk-form-group"
+          [class.govuk-form-group--error]="showErrors && workerControl.invalid"
+        >
+          <div role="row" class="asc__grid-table-with-form--row" [attr.data-testid]="'worker-row-' + workerIndex">
+            @if (showErrors && workerControl.invalid) {
+            <p class="govuk-error-message" [id]="'job-' + workers.jobId + '-error'">
+              <span class="govuk-visually-hidden">Error:</span> {{ getRowError(workerControl) }}
+            </p>
+            }
+            <div style="line-height: 1.25; display: flex; justify-content: space-between; align-items: flex-start">
+              <span>{{ workers.title }} ({{ workers.count }} record{{ workers.count === 1 ? '' : 's' }})</span>
+              <img
+                src="/assets/images/right-arrow.svg"
+                alt="Right facing grey arrow"
+                style="width: 24px; height: 24px; margin-right: 2.5px"
+                class="right-arrow"
+              />
+            </div>
+            <div>
+              <div class="govuk-input__wrapper">
+                <div class="govuk-input__prefix asc__white-background" aria-hidden="true">£</div>
+                <span
+                  class="govuk-visually-hidden asc--align-dummy-anchor-y-axis-to-actual-error-message"
+                  [id]="'job-' + workers.jobId + '-rate-error'"
+                >
+                </span>
+                <input
+                  [attr.data-testid]="'amount-input-box-' + $index"
+                  class="govuk-input govuk-input--width-4"
+                  [id]="'rate-' + $index"
+                  type="number"
+                  formControlName="rate"
+                />
+                <label class="govuk-visually-hidden" [for]="'rate-' + $index">
+                  Hourly pay rate or salary for {{ workers.title }}
+                </label>
+                <div
+                  class="govuk-radios govuk-radios--inline govuk-radios--small govuk-!-margin-bottom-0 govuk-!-margin-left-5"
+                >
+                  @for (button of radioButtonLabels; track $index) {
+                  <div class="govuk-radios__item">
+                    @if ($index === 0) {
+                    <span
+                      class="govuk-visually-hidden asc--align-dummy-anchor-y-axis-to-actual-error-message"
+                      [id]="'job-' + workers.jobId + '-value-error'"
+                    >
+                    </span>
+                    }
+                    <input
+                      class="govuk-radios__input"
+                      [attr.data-testid]="button.slug + '-radio-' + workerIndex"
+                      [id]="button.slug + '-' + workerIndex"
+                      type="radio"
+                      [value]="button.value"
+                      formControlName="value"
+                      [attr.aria-describedby]="'worker-name-' + workerIndex"
+                    />
+                    <label class="govuk-label govuk-radios__label" [for]="button.slug + '-' + workerIndex">
+                      {{ button.label }}
+                    </label>
+                  </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- <tbody class="govuk-table__body" [formGroup]="workersFormGroup">
           @for (workers of workersByJobRole.groups; track workers.jobId; let workerIndex = $index) { @let workerControl
           = workersFormGroup.get('job-' + workers.jobId);
           <tr
@@ -97,8 +168,10 @@
           </tr>
 
           }
-        </tbody>
-      </table>
+        </tbody> -->
+        }
+      </div>
+      <span></span>
     </div>
 
     <div class="govuk-grid-column-full">
