@@ -106,7 +106,9 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
       const value = control.value;
       const rate = parent.get('rate')?.value;
 
-      if (!value) return { required: true };
+      if (!value && rate) {
+        return { required: true };
+      }
 
       return null;
     };
@@ -122,14 +124,28 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
 
       if (!rate) return { required: true };
 
+      const numericRate = Number(rate);
+
+      if (isNaN(numericRate)) return { invalidNumber: true };
+
       if (value === 'Hourly' && (rate < 2.5 || rate > 200)) {
         return { range: true };
       }
 
-      if (value === 'Annually' && rate && !Number.isInteger(Number(rate))) {
-        return { salary: true };
+      const decimalPart = rate.toString().split('.')[1];
+      if (decimalPart && decimalPart.length > 2) {
+        return { pence: true };
       }
 
+      if (value === 'Annually') {
+        if (!Number.isInteger(numericRate)) {
+          return { salary: true };
+        }
+
+        if (numericRate < 2500 || numericRate > 200000) {
+          return { salaryRange: true };
+        }
+      }
       return null;
     };
   }
@@ -139,9 +155,32 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
     const errors = group.get('value')?.errors ?? group.get('rate')?.errors;
     if (!errors) return '';
 
-    if (errors['required']) return 'Enter the salary or select a different option';
-    if (errors['range']) return 'Hourly pay rate must be between £2.50 and £200.00';
-    if (errors['salary']) return 'Salary must not include pence';
+    const valueErrors = group.get('value')?.errors;
+    const rateErrors = group.get('rate')?.errors;
+
+    if (valueErrors) {
+      if (valueErrors['required']) {
+        return 'Select hourly or salary for the amount entered';
+      }
+    }
+
+    if (rateErrors) {
+      if (rateErrors['required']) {
+        return 'Enter the salary or select a different option';
+      }
+      if (rateErrors['range']) {
+        return 'Hourly pay rate must be between £2.50 and £200.00';
+      }
+      if (rateErrors['pence']) {
+        return 'You can only have 1 or 2 digits for pence';
+      }
+      if (rateErrors['salary']) {
+        return 'Salary must not include pence';
+      }
+      if (rateErrors['salaryRange']) {
+        return 'Salary must be between £2,500 and £200,000';
+      }
+    }
 
     return '';
   }
@@ -167,11 +206,19 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
             },
             {
               name: 'range',
-              message: 'Hourly pay rate must be between £2.50 and £200.00',
+              message: `Hourly pay rate must be between £2.50 and £200.00 (${group.title.toLowerCase()})`,
             },
             {
               name: 'salary',
-              message: 'Salary must not include pence',
+              message: `Salary must not include pence (${group.title.toLowerCase()})`,
+            },
+            {
+              name: 'pence',
+              message: `You can only have 1 or 2 digits for pence after te decimal point (${group.title.toLowerCase()})`,
+            },
+            {
+              name: 'salaryRange',
+              message: `Salary must be between £2,500 and £200,000 (${group.title.toLowerCase()})`,
             },
           ],
         },
