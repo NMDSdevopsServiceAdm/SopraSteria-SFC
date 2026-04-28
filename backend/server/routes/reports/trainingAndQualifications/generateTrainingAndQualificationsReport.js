@@ -12,6 +12,7 @@ const { generateTrainingTab } = require('./trainingTab');
 const { generateQualificationsTab } = require('./qualificationsTab');
 const { generateCareCertificateTab } = require('./careCertificateTab');
 const { generateIntroTab } = require('./introTab');
+const { generateTrainingByStaffTab } = require('./trainingByStaffTab');
 
 const generateTrainingAndQualificationsReport = async (req, res) => {
   try {
@@ -23,6 +24,7 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
     workbook.properties.date1904 = true;
 
     await generateIntroTab(workbook, establishment);
+    await generateTrainingByStaffTab(workbook, establishment.id);
 
     await generateSummaryTab(workbook, establishment.id);
     await generateTrainingTab(workbook, establishment.id);
