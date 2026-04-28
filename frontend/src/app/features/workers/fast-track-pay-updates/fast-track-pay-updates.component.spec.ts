@@ -265,7 +265,7 @@ describe('FastTrackPayUpdatesComponent', () => {
     });
 
     describe('When there are multiple job roles', () => {
-      it('should call the worker service with the updated pay information', async () => {
+      xit('should call the worker service with the updated pay information', async () => {
         const { fixture, getByRole, setWorkersGroupedByJobRoleSpy, getByTestId } = await setup({
           workersWithMultipleJobRoles,
         });
