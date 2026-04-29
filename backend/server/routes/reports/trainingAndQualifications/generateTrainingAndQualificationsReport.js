@@ -13,18 +13,27 @@ const { generateQualificationsTab } = require('./qualificationsTab');
 const { generateCareCertificateTab } = require('./careCertificateTab');
 const { generateIntroTab } = require('./introTab');
 const { generateTrainingByStaffTab } = require('./trainingByStaffTab');
+const { convertEachWorkerTrainingBreakdown } = require('../../../utils/trainingAndQualificationsUtils');
 
 const generateTrainingAndQualificationsReport = async (req, res) => {
   try {
     const workbook = new excelJS.Workbook();
 
     const establishment = await models.establishment.findByUid(req.params.id);
+    const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(establishment.id, true);
+    const workerTrainingBreakdowns = rawEstablishmentTrainingBreakdowns.rows.flatMap((establishment) => {
+      const workerBreakdowns = establishment.workers.map(convertEachWorkerTrainingBreakdown);
+      return workerBreakdowns.map((workerBreakDown) => ({
+        ...workerBreakDown,
+        workplaceName: establishment.NameValue,
+      }));
+    });
 
     workbook.creator = 'Skills-For-Care';
     workbook.properties.date1904 = true;
 
     await generateIntroTab(workbook, establishment);
-    await generateTrainingByStaffTab(workbook, establishment.id);
+    await generateTrainingByStaffTab(workbook, workerTrainingBreakdowns);
 
     await generateSummaryTab(workbook, establishment.id);
     await generateTrainingTab(workbook, establishment.id);

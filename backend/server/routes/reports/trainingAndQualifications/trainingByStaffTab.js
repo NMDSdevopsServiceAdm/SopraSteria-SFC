@@ -12,23 +12,13 @@ const {
   applyStyleToRange,
   forEachCellInRange,
 } = require('../../../utils/excelUtils');
-const models = require('../../../models');
 const colCache = require('exceljs/lib/utils/col-cache');
 
 const GroupHeaderRowNumber = 3;
 const HeaderRowNumber = 4;
 
-const generateTrainingByStaffTab = async (workbook, establishmentId) => {
+const generateTrainingByStaffTab = async (workbook, workerTrainingBreakdowns) => {
   const trainingByStaffTab = workbook.addWorksheet('Training by staff', { views: [{ showGridLines: false }] });
-
-  const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(establishmentId, true);
-  const workerTrainingBreakdowns = rawEstablishmentTrainingBreakdowns.rows.flatMap((establishment) => {
-    const workerBreakdowns = establishment.workers.map(convertEachWorkerTrainingBreakdown);
-    return workerBreakdowns.map((workerBreakDown) => ({
-      ...workerBreakDown,
-      establishmentName: establishment.NameValue,
-    }));
-  });
 
   addText(trainingByStaffTab, 'B1:Z1', 'Training records by staff', { size: 24, bold: true });
   setColourForRange(trainingByStaffTab, 'A1:Z1', { backgroundColour: newBackgroundColours.lightGrey });
@@ -39,13 +29,13 @@ const generateTrainingByStaffTab = async (workbook, establishmentId) => {
 
   applyStyleToRange(trainingByStaffTab, 'B3:L3', tableHeaderCellStyle);
 
-  const tableRange = addWorkerTable(trainingByStaffTab, workerTrainingBreakdowns);
+  const tableRange = addTrainingByStaffWorkerTable(trainingByStaffTab, workerTrainingBreakdowns);
 
   addFootNote(trainingByStaffTab);
   setHeightsAndWidths(trainingByStaffTab, tableRange);
 };
 
-const addWorkerTable = (tab, workerTrainingBreakdowns) => {
+const addTrainingByStaffWorkerTable = (tab, workerTrainingBreakdowns) => {
   const tableColumnNames = [
     'Name or ID number',
     'Total',
@@ -183,7 +173,7 @@ const addThickBorders = (tab, lastRowNumber) => {
   });
 };
 
-function setStyleForWorkerNamesColumn(tab, lastRowNumber) {
+const setStyleForWorkerNamesColumn = (tab, lastRowNumber) => {
   const headerRow = tab.getRow(HeaderRowNumber);
 
   const workerColumnNum = headerRow.values.indexOf('Name or ID number');
@@ -193,9 +183,9 @@ function setStyleForWorkerNamesColumn(tab, lastRowNumber) {
 
   tab.getCell(HeaderRowNumber, workerColumnNum).font.bold = true;
   tab.getCell(lastRowNumber, workerColumnNum).font.bold = true;
-}
+};
 
-function addFormulaToTotalRow(tab, tableRange) {
+const addFormulaToTotalRow = (tab, tableRange) => {
   const { left, bottom, right } = colCache.decode(tableRange);
   const rangeToAddTotalNumbers = colCache.encode(bottom, left + 1, bottom, right);
 
@@ -206,6 +196,6 @@ function addFormulaToTotalRow(tab, tableRange) {
 
     cell.value = { formula: `SUM(${firstWorkerCell}:${lastWorkerCell})` };
   });
-}
+};
 
 module.exports = { generateTrainingByStaffTab };
