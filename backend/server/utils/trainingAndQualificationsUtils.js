@@ -226,3 +226,24 @@ exports.getTotalsForAllWorkplaces = (establishments) => {
 
 exports.numberCheck = numberCheck;
 exports.getTrainingRecordStatus = getTrainingRecordStatus;
+
+exports.buildWorkerTrainingBreakdownWithWorkplaceInfo = async (rawEstablishmentTrainingBreakdowns) => {
+  const establishmentMandatoryTrainingCounts = await Promise.all(
+    rawEstablishmentTrainingBreakdowns.rows.map((establishment) => establishment.countMandatoryTraining()),
+  );
+  const eachEstablishmentHasMandatoryTraining = establishmentMandatoryTrainingCounts.map((count) => count > 0);
+
+  const workerTrainingBreakdownsWithWorkplaceInfo = rawEstablishmentTrainingBreakdowns.rows.flatMap(
+    (establishment, index) => {
+      const workerBreakdowns = establishment.workers.map(convertEachWorkerTrainingBreakdown);
+      return workerBreakdowns.map((workerBreakDown) => ({
+        ...workerBreakDown,
+        workplaceId: establishment.id,
+        workplaceName: establishment.NameValue,
+        workplaceHasMandatoryTraining: eachEstablishmentHasMandatoryTraining[index],
+      }));
+    },
+  );
+
+  return workerTrainingBreakdownsWithWorkplaceInfo;
+};

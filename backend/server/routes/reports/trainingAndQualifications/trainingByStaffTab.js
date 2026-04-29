@@ -60,20 +60,26 @@ const addTrainingByStaffWorkerTable = (tab, workerTrainingBreakdowns) => {
     showFirstColumn: true,
   });
 
-  workerTrainingBreakdowns.forEach((worker) => {
-    workerTable.addRow([
+  const workerTableData = workerTrainingBreakdowns.map((worker) => {
+    const hideMandatoryTrainingCount = worker.workplaceHasMandatoryTraining === false;
+
+    return [
       worker.name,
       worker.trainingCount,
-      worker.expiredMandatoryTrainingCount,
-      worker.expiringMandatoryTrainingCount,
-      worker.upToDateMandatoryTrainingCount,
-      worker.mandatoryTrainingCount,
-      worker.missingMandatoryTrainingCount,
+      hideMandatoryTrainingCount ? '-' : worker.expiredMandatoryTrainingCount,
+      hideMandatoryTrainingCount ? '-' : worker.expiringMandatoryTrainingCount,
+      hideMandatoryTrainingCount ? '-' : worker.upToDateMandatoryTrainingCount,
+      hideMandatoryTrainingCount ? '-' : worker.mandatoryTrainingCount,
+      hideMandatoryTrainingCount ? '-' : worker.missingMandatoryTrainingCount,
       worker.expiredNonMandatoryTrainingCount,
       worker.expiringNonMandatoryTrainingCount,
       worker.upToDateNonMandatoryTrainingCount,
       worker.nonMandatoryTrainingCount,
-    ]);
+    ];
+  });
+
+  workerTableData.forEach((rowData) => {
+    workerTable.addRow(rowData);
   });
 
   workerTable.commit();

@@ -1,19 +1,16 @@
 const excelJS = require('exceljs');
 const expect = require('chai').expect;
-const sinon = require('sinon');
 const lodash = require('lodash');
-const models = require('../../../../../models');
 
 const {
-  addHeadingsToIntroTab,
-  addLinksToOtherTabs,
-} = require('../../../../../routes/reports/trainingAndQualifications/introTab');
-const { mockWorkerTrainingBreakdowns } = require('../../../mockdata/trainingAndQualifications');
+  mockWorkerTrainingBreakdowns,
+  mockWorkerTrainingBreakdownsWithNoMandatoryTraining,
+} = require('../../../mockdata/trainingAndQualifications');
 const {
   generateTrainingByStaffTab,
 } = require('../../../../../routes/reports/trainingAndQualifications/trainingByStaffTab');
 
-describe.only('TrainingByStaffTab', () => {
+describe('TrainingByStaffTab', () => {
   let workbook;
 
   beforeEach(() => {
@@ -70,6 +67,26 @@ describe.only('TrainingByStaffTab', () => {
         { formula: 'SUM(K5:K8)' },
         { formula: 'SUM(L5:L8)' },
       ]);
+    });
+
+    it('should show mandatory training counts as dash "-" if workplace does not have mandatory training', () => {
+      const workerBreakdown = mockWorkerTrainingBreakdownsWithNoMandatoryTraining;
+      generateTrainingByStaffTab(workbook, workerBreakdown);
+
+      const tab = workbook.getWorksheet('Training by staff');
+      const workerColumns = tab.getColumn('B');
+
+      const firstMandatoryTrainingColumn = tab.getRow(3).values.indexOf('Mandatory training');
+
+      workerBreakdown.forEach((worker) => {
+        const workerRowNumber = workerColumns.values.indexOf(worker.name);
+        const workerRow = tab.getRow(workerRowNumber);
+        const mandatoryTrainingValues = workerRow.values.slice(
+          firstMandatoryTrainingColumn,
+          firstMandatoryTrainingColumn + 5,
+        );
+        expect(mandatoryTrainingValues).to.deep.equal(['-', '-', '-', '-', '-']);
+      });
     });
   });
 });

@@ -89,6 +89,55 @@ exports.mockWorkerTrainingBreakdowns = [
   },
 ];
 
+exports.mockWorkerTrainingBreakdownsWithNoMandatoryTraining = [
+  {
+    name: 'Bob Test',
+    workplaceName: 'mock care home no mandatory training',
+    trainingCount: 6,
+    mandatoryTrainingCount: 0,
+    nonMandatoryTrainingCount: 6,
+    workplaceHasMandatoryTraining: false,
+
+    expiredTrainingCount: 2,
+    expiredMandatoryTrainingCount: 0,
+    expiredNonMandatoryTrainingCount: 2,
+
+    expiringTrainingCount: 4,
+    expiringMandatoryTrainingCount: 0,
+    expiringNonMandatoryTrainingCount: 4,
+
+    upToDateTrainingCount: 0,
+    upToDateMandatoryTrainingCount: 0,
+    upToDateNonMandatoryTrainingCount: 0,
+
+    missingMandatoryTrainingCount: 0,
+    qualificationCount: 2,
+  },
+  {
+    name: 'Mike test',
+    workplaceName: 'mock care home no mandatory training',
+    trainingCount: 10,
+    mandatoryTrainingCount: 0,
+    nonMandatoryTrainingCount: 10,
+    workplaceHasMandatoryTraining: false,
+
+    expiredTrainingCount: 6,
+    expiredMandatoryTrainingCount: 0,
+    expiredNonMandatoryTrainingCount: 6,
+
+    expiringTrainingCount: 0,
+    expiringMandatoryTrainingCount: 0,
+    expiringNonMandatoryTrainingCount: 0,
+
+    upToDateTrainingCount: 4,
+    upToDateMandatoryTrainingCount: 0,
+    upToDateNonMandatoryTrainingCount: 4,
+
+    missingMandatoryTrainingCount: 0,
+    qualificationCount: 0,
+  },
+];
+
 exports.secondMockWorkerTrainingBreakdowns = [
   {
     name: 'Jane Test',
