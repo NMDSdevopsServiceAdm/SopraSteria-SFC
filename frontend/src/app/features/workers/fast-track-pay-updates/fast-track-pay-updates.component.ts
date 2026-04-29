@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, OnInit, signal, ViewChild } from 
 import { BackLinkService } from '@core/services/backLink.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Establishment } from '@core/model/establishment.model';
-import { WorkersGroupedByJobRoleResponse } from '@core/model/worker.model';
+import { WorkersGroupedByJobRole, WorkersGroupedByJobRoleResponse } from '@core/model/worker.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, UntypedFormBuilder, UntypedFormGroup, ValidatorFn } from '@angular/forms';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -12,6 +12,15 @@ const radioButtonLabels = [
   { label: 'Hourly', value: 'Hourly', slug: 'hourly' },
   { label: 'Salary', value: 'Annually', slug: 'salary' },
 ];
+
+const ERROR_MESSAGES = {
+  valueRequired: 'Select hourly or salary for the amount entered',
+  rateRequired: 'Enter the salary or select a different option',
+  range: 'Hourly pay rate must be between £2.50 and £200.00',
+  pence: 'You can only have 1 or 2 digits for pence after the decimal point',
+  salary: 'Salary must not include pence',
+  salaryRange: 'Salary must be between £2,500 and £200,000',
+};
 @Component({
   selector: 'app-fast-track-pay-updates',
   templateUrl: './fast-track-pay-updates.component.html',
@@ -160,31 +169,38 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
 
     if (valueErrors) {
       if (valueErrors['required']) {
-        return 'Select hourly or salary for the amount entered';
+        return ERROR_MESSAGES.valueRequired;
       }
     }
 
     if (rateErrors) {
       if (rateErrors['required']) {
-        return 'Enter the salary or select a different option';
+        return ERROR_MESSAGES.rateRequired;
       }
       if (rateErrors['range']) {
-        return 'Hourly pay rate must be between £2.50 and £200.00';
+        return ERROR_MESSAGES.range;
       }
       if (rateErrors['pence']) {
-        return 'You can only have 1 or 2 digits for pence';
+        return ERROR_MESSAGES.pence;
       }
       if (rateErrors['salary']) {
-        return 'Salary must not include pence';
+        return ERROR_MESSAGES.salary;
       }
       if (rateErrors['salaryRange']) {
-        return 'Salary must be between £2,500 and £200,000';
+        return ERROR_MESSAGES.salaryRange;
       }
     }
 
     return '';
   }
 
+  private jobGroupTitle(group: WorkersGroupedByJobRole) {
+    const jobTitle = group.title.toLowerCase();
+    if (group.title.includes('IT')) {
+      return group.title;
+    }
+    return jobTitle;
+  }
   private setupFormErrorsMap(): void {
     this.formErrorsMap = this.workersByJobRole.groups.flatMap((group) => {
       return [
@@ -193,7 +209,7 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
           type: [
             {
               name: 'required',
-              message: `Select hourly or salary for the amount entered (${group.title.toLowerCase()})`,
+              message: `${ERROR_MESSAGES.valueRequired} (${this.jobGroupTitle(group)})`,
             },
           ],
         },
@@ -202,23 +218,23 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
           type: [
             {
               name: 'required',
-              message: `Enter the salary or select a different option for (${group.title.toLowerCase()})`,
+              message: `${ERROR_MESSAGES.rateRequired}  (${this.jobGroupTitle(group)})`,
             },
             {
               name: 'range',
-              message: `Hourly pay rate must be between £2.50 and £200.00 (${group.title.toLowerCase()})`,
+              message: `${ERROR_MESSAGES.range}  (${this.jobGroupTitle(group)})`,
             },
             {
               name: 'salary',
-              message: `Salary must not include pence (${group.title.toLowerCase()})`,
+              message: `${ERROR_MESSAGES.salary}  (${this.jobGroupTitle(group)})`,
             },
             {
               name: 'pence',
-              message: `You can only have 1 or 2 digits for pence after te decimal point (${group.title.toLowerCase()})`,
+              message: `${ERROR_MESSAGES.pence}  (${this.jobGroupTitle(group)})`,
             },
             {
               name: 'salaryRange',
-              message: `Salary must be between £2,500 and £200,000 (${group.title.toLowerCase()})`,
+              message: `${ERROR_MESSAGES.salaryRange}  (${this.jobGroupTitle(group)})`,
             },
           ],
         },
