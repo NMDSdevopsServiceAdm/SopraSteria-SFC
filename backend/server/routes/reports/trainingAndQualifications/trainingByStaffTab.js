@@ -6,10 +6,12 @@ const {
   newTextColours,
   conditionalColoursForTrainingExpiry,
   forEachCellInRange,
-  borderStyles,
   setColourForCell,
   setBasicTableStyle,
   tableHeaderCellStyle,
+  borderStyles,
+  applyStyleToCell,
+  applyStyleToRange,
 } = require('../../../utils/excelUtils');
 const models = require('../../../models');
 const lodash = require('lodash');
@@ -33,14 +35,15 @@ const generateTrainingByStaffTab = async (workbook, establishmentId) => {
   addText(trainingByStaffTab, 'B3:C3', 'Records added', { bold: true });
   addText(trainingByStaffTab, 'D3:H3', 'Mandatory training', { bold: true });
   addText(trainingByStaffTab, 'I3:L3', 'Non-mandatory training', { bold: true });
+
   forEachCellInRange(trainingByStaffTab, 'B3:L3', (cell) => {
-    cell.style = tableHeaderCellStyle;
+    applyStyleToCell(cell, tableHeaderCellStyle);
   });
 
   const tableRange = addWorkerTable(trainingByStaffTab, workerTrainingBreakdowns);
+  console.log(trainingByStaffTab.getCell('D3').border, '<--- D3 border');
 
   addFootNote(trainingByStaffTab);
-
   setHeightsAndWidths(trainingByStaffTab, tableRange);
 };
 
@@ -59,7 +62,7 @@ const addWorkerTable = (tab, workerTrainingBreakdowns) => {
     'Total',
   ];
 
-  const table = tab.addTable({
+  const workerTable = tab.addTable({
     name: 'trainingByStaffTable',
     ref: 'B4',
     columns: tableColumnNames.map((name) => ({ name, filterButton: true, totalsRowFunction: 'sum' })),
@@ -69,7 +72,7 @@ const addWorkerTable = (tab, workerTrainingBreakdowns) => {
   });
 
   workerTrainingBreakdowns.forEach((worker) => {
-    table.addRow([
+    workerTable.addRow([
       worker.name,
       worker.trainingCount,
       worker.expiredMandatoryTrainingCount,
@@ -84,9 +87,9 @@ const addWorkerTable = (tab, workerTrainingBreakdowns) => {
     ]);
   });
 
-  table.commit();
+  workerTable.commit();
 
-  const tableRange = table.model.tableRef;
+  const tableRange = workerTable.model.tableRef;
 
   // delete the table object and fill in column names manually, as Excel table does not allow duplicated header column names
   tab.removeTable('trainingByStaffTable');
@@ -96,15 +99,7 @@ const addWorkerTable = (tab, workerTrainingBreakdowns) => {
   setStyleForWorkerTable(tab, tableRange);
 
   const totalRow = tab.lastRow;
-  totalRow.eachCell((cell, cellNumber) => {
-    if (cellNumber < 3) {
-      return;
-    }
-    const columnLabel = colCache.n2l(cellNumber);
-    const firstWorkerCell = `${columnLabel}5`;
-    const lastWorkerCell = `${columnLabel}${totalRow.number - 1}`;
-    cell.value = { formula: `SUM(${firstWorkerCell}:${lastWorkerCell})` };
-  });
+  addFormulaToTotalRow(totalRow);
 
   return tableRange;
 };
@@ -139,16 +134,11 @@ const setStyleForWorkerTable = (tab, tableRange) => {
     ],
   });
 
-  const workerColumnNum = headerRow.values.indexOf('Name or ID number');
-  const { top, bottom } = colCache.decode(tableRange);
-  const workerColumnRange = colCache.encode(top, workerColumnNum, bottom, workerColumnNum);
+  const lastRowNumber = colCache.decode(tableRange).bottom;
 
-  forEachCellInRange(tab, workerColumnRange, (cell) => {
-    cell.style = lodash.merge({}, cell.style, { alignment: { horizontal: 'left' }, font: { bold: false } });
-  });
+  setStyleForWorkerNamesColumn(tab, lastRowNumber);
 
-  tab.getCell(top, workerColumnNum).font.bold = true;
-  tab.getCell(bottom, workerColumnNum).font.bold = true;
+  addThickBorders(tab, lastRowNumber);
 };
 
 const addFootNote = (tab) => {
@@ -158,6 +148,7 @@ const addFootNote = (tab) => {
 
 const setHeightsAndWidths = (tab) => {
   const columnWidths = [6.8, 26.8, Array(10).fill(12)].flat();
+
   columnWidths.forEach((width, index) => {
     const column = tab.getColumn(index + 1);
     column.width = width;
@@ -169,6 +160,44 @@ const setHeightsAndWidths = (tab) => {
     const row = tab.getRow(index + 1);
     row.height = height;
   });
+
+  for (let i = 5; i <= tab.lastRow.number; i++) {
+    const row = tab.getRow(i);
+    row.height = 22;
+  }
 };
+
+const addThickBorders = (tab, lastRowNumber) => {
+  ['Mandatory training', 'Non-mandatory training'].forEach((headerLabel) => {
+    const columnNumber = tab.getRow(3).values.indexOf(headerLabel);
+    const tableRangeForColumn = colCache.encode(3, columnNumber, lastRowNumber, columnNumber);
+
+    applyStyleToRange(tab, tableRangeForColumn, { border: borderStyles.thickBlackBorderLeft });
+  });
+};
+
+function setStyleForWorkerNamesColumn(tab, lastRowNumber) {
+  const headerRow = tab.getRow(4);
+
+  const workerColumnNum = headerRow.values.indexOf('Name or ID number');
+  const workerColumnRange = colCache.encode(4, workerColumnNum, lastRowNumber, workerColumnNum);
+
+  applyStyleToRange(tab, workerColumnRange, { alignment: { horizontal: 'left' }, font: { bold: false } });
+
+  tab.getCell(4, workerColumnNum).font.bold = true;
+  tab.getCell(lastRowNumber, workerColumnNum).font.bold = true;
+}
+
+function addFormulaToTotalRow(totalRow) {
+  totalRow.eachCell((cell, cellNumber) => {
+    if (cellNumber < 3) {
+      return;
+    }
+    const columnLabel = colCache.n2l(cellNumber);
+    const firstWorkerCell = `${columnLabel}5`;
+    const lastWorkerCell = `${columnLabel}${totalRow.number - 1}`;
+    cell.value = { formula: `SUM(${firstWorkerCell}:${lastWorkerCell})` };
+  });
+}
 
 module.exports = { generateTrainingByStaffTab };

@@ -130,32 +130,25 @@ exports.setBasicTableStyle = (
   const headerRange = colCache.encode(top, left, top, right);
   const dataCellsRange = colCache.encode(top + 1, left, bottom - 1, right);
 
-  const cellStyle = lodash.cloneDeep(tableDataCellStyle);
+  const dataCellStyle = lodash.cloneDeep(tableDataCellStyle);
   const headerCellStyle = lodash.cloneDeep(tableHeaderCellStyle);
 
   if (bold) {
-    cellStyle.font.bold = true;
+    dataCellStyle.font.bold = true;
     headerCellStyle.font.bold = true;
   }
 
   if (alignHorizontalCenter) {
-    Object.assign(cellStyle.alignment, { horizontal: 'center' });
-    Object.assign(headerCellStyle.alignment, { horizontal: 'center' });
+    dataCellStyle.alignment = { horizontal: 'center' };
+    headerCellStyle.alignment = { horizontal: 'center' };
   }
 
-  forEachCellInRange(tab, headerRange, (cell) => {
-    cell.style = headerCellStyle;
-  });
-
-  forEachCellInRange(tab, dataCellsRange, (cell) => {
-    cell.style = cellStyle;
-  });
+  applyStyleToRange(tab, headerRange, headerCellStyle);
+  applyStyleToRange(tab, dataCellsRange, dataCellStyle);
 
   if (hasTotalRow) {
     const totalRowRange = colCache.encode(bottom, left, bottom, right);
-    forEachCellInRange(tab, totalRowRange, (cell) => {
-      cell.style = headerCellStyle;
-    });
+    applyStyleToRange(tab, totalRowRange, headerCellStyle);
   }
 };
 
@@ -330,15 +323,27 @@ exports.addLink = (tab, range, { text, hyperlink }, fontOptions = {}) => {
   return addText(tab, range, content, fontWithLinkStyle);
 };
 
+const applyStyleToCell = (cell, styleChanges) => {
+  cell.style = lodash.merge({}, cell.style, styleChanges);
+};
+exports.applyStyleToCell = applyStyleToCell;
+
+const applyStyleToRange = (tab, range, styleChanges) => {
+  forEachCellInRange(tab, range, (cell) => {
+    applyStyleToCell(cell, styleChanges);
+  });
+};
+exports.applyStyleToRange = applyStyleToRange;
+
 const setColourForCell = (cell, { backgroundColour = null, textColour = null }) => {
-  const newCellStyle = lodash.merge({}, cell.style);
+  const newCellStyle = {};
   if (backgroundColour) {
-    newCellStyle.fill = { ...newCellStyle.fill, type: 'pattern', pattern: 'solid', fgColor: backgroundColour };
+    newCellStyle.fill = { type: 'pattern', pattern: 'solid', fgColor: backgroundColour };
   }
   if (textColour) {
-    newCellStyle.font = { ...newCellStyle.font, color: textColour };
+    newCellStyle.font = { color: textColour };
   }
-  cell.style = newCellStyle;
+  applyStyleToCell(cell, newCellStyle);
 };
 exports.setColourForCell = setColourForCell;
 
