@@ -1,4 +1,3 @@
-const { convertEachWorkerTrainingBreakdown } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   addText,
   setColourForRange,
@@ -11,6 +10,7 @@ const {
   borderStyles,
   applyStyleToRange,
   forEachCellInRange,
+  autoFitColumnWidthByTextLength,
 } = require('../../../utils/excelUtils');
 const colCache = require('exceljs/lib/utils/col-cache');
 
@@ -32,6 +32,7 @@ const generateTrainingByStaffTab = async (workbook, workerTrainingBreakdowns) =>
   const tableRange = addTrainingByStaffWorkerTable(trainingByStaffTab, workerTrainingBreakdowns);
 
   addFootNote(trainingByStaffTab);
+
   setHeightsAndWidths(trainingByStaffTab, tableRange);
 };
 
@@ -139,12 +140,22 @@ const setStyleForWorkerTable = (tab, tableRange) => {
 };
 
 const addFootNote = (tab) => {
-  tab.addRow(['', 'The figures shown could include records of staff who have been flagged as long-term absent.']);
-  tab.addRow(['', 'Note, the number in the Missing column may include training not yet taken by new starters.']);
+  const lastRow = tab.lastRow.number;
+  addText(
+    tab,
+    `B${lastRow + 1}:L${lastRow + 1}`,
+    'The figures shown could include records of staff who have been flagged as long-term absent.',
+  );
+
+  addText(
+    tab,
+    `B${lastRow + 2}:L${lastRow + 2}`,
+    'Note, the number in the Missing column may include training not yet taken by new starters.',
+  );
 };
 
 const setHeightsAndWidths = (tab) => {
-  const columnWidths = [6.8, 26.8, Array(10).fill(12)].flat();
+  const columnWidths = [6.8, 26.8, Array(10).fill(14)].flat();
 
   columnWidths.forEach((width, index) => {
     const column = tab.getColumn(index + 1);
@@ -162,6 +173,7 @@ const setHeightsAndWidths = (tab) => {
     const row = tab.getRow(i);
     row.height = 22;
   }
+  autoFitColumnWidthByTextLength(tab, 'B', 12);
 };
 
 const addThickBorders = (tab, lastRowNumber) => {

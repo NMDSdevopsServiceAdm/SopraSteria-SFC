@@ -1,5 +1,5 @@
 const colCache = require('exceljs/lib/utils/col-cache');
-const colcache = require('exceljs/lib/utils/col-cache');
+const excelJS = require('exceljs');
 const lodash = require('lodash');
 
 //  ===== constants definitions =====
@@ -259,6 +259,25 @@ exports.fitColumnsToSize = function (ws, startingColumn = 1, customWidth = 2.21)
   });
 };
 
+exports.autoFitColumnWidthByTextLength = function (worksheet, columnLetter, fontsize = 12) {
+  const cells = [];
+  const column = worksheet.getColumn(columnLetter);
+  column.eachCell((cell) => cells.push(cell));
+
+  const cellsToConsider = cells.filter(
+    (cell) => !cell.isMerged && cell.value?.length > 0 && cell.type === excelJS.ValueType.String,
+  );
+  if (!cellsToConsider.length) {
+    return;
+  }
+
+  const maxTextLength = Math.max(...cellsToConsider.map((cell) => cell.value.length));
+  const currentWidth = column.width ?? 0;
+  const newColumnWidth = (maxTextLength * fontsize) / 12.8;
+
+  column.width = Math.max(currentWidth, newColumnWidth);
+};
+
 const addBorder = (worksheet, cell) => {
   worksheet.getCell(cell).border = {
     ...fullBorder,
@@ -420,8 +439,8 @@ const listRows = (startRow, endRow) => {
     .map((_, index) => startRow + index);
 };
 
-const columnLabelToNumber = (columnLabel) => colcache.l2n(columnLabel);
-const numberToColumnLabel = (number) => colcache.n2l(number);
+const columnLabelToNumber = (columnLabel) => colCache.l2n(columnLabel);
+const numberToColumnLabel = (number) => colCache.n2l(number);
 
 const forEachCellInRange = (tab, range, callback) => {
   const { columns, rows } = parseRange(range);
@@ -450,7 +469,7 @@ const parseRange = (range) => {
     return {};
   }
 
-  const { top, left, bottom, right } = colcache.decode(range);
+  const { top, left, bottom, right } = colCache.decode(range);
 
   const startColumn = left;
   const endColumn = right;

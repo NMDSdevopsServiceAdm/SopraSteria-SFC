@@ -21,19 +21,29 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
 
     const establishment = await models.establishment.findByUid(req.params.id);
     const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(establishment.id, true);
-    const workerTrainingBreakdowns = rawEstablishmentTrainingBreakdowns.rows.flatMap((establishment) => {
-      const workerBreakdowns = establishment.workers.map(convertEachWorkerTrainingBreakdown);
-      return workerBreakdowns.map((workerBreakDown) => ({
-        ...workerBreakDown,
-        workplaceName: establishment.NameValue,
-      }));
-    });
+
+    const establishmentMandatoryTrainingCounts = await Promise.all(
+      rawEstablishmentTrainingBreakdowns.rows.map((establishment) => establishment.countMandatoryTraining()),
+    );
+    const eachEstablishmentHasMandatoryTraining = establishmentMandatoryTrainingCounts.map((count) => count > 0);
+
+    const workerTrainingBreakdownsWithWorkplaceInfo = rawEstablishmentTrainingBreakdowns.rows.flatMap(
+      (establishment, index) => {
+        const workerBreakdowns = establishment.workers.map(convertEachWorkerTrainingBreakdown);
+        return workerBreakdowns.map((workerBreakDown) => ({
+          ...workerBreakDown,
+          workplaceId: establishment.id,
+          workplaceName: establishment.NameValue,
+          hasMandatoryTraining: eachEstablishmentHasMandatoryTraining[index],
+        }));
+      },
+    );
 
     workbook.creator = 'Skills-For-Care';
     workbook.properties.date1904 = true;
 
     await generateIntroTab(workbook, establishment);
-    await generateTrainingByStaffTab(workbook, workerTrainingBreakdowns);
+    await generateTrainingByStaffTab(workbook, workerTrainingBreakdownsWithWorkplaceInfo);
 
     await generateSummaryTab(workbook, establishment.id);
     await generateTrainingTab(workbook, establishment.id);
