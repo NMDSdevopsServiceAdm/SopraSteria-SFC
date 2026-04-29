@@ -1,84 +1,140 @@
 exports.mockWorkerTrainingBreakdowns = [
   {
     name: 'Bob Test',
+    workplaceName: 'mock care home 1',
     trainingCount: 6,
-    qualificationCount: 2,
+    mandatoryTrainingCount: 2,
+    nonMandatoryTrainingCount: 4,
+
     expiredTrainingCount: 2,
     expiredMandatoryTrainingCount: 0,
     expiredNonMandatoryTrainingCount: 2,
+
     expiringTrainingCount: 4,
     expiringMandatoryTrainingCount: 2,
     expiringNonMandatoryTrainingCount: 2,
+
+    upToDateTrainingCount: 0,
+    upToDateMandatoryTrainingCount: 0,
+    upToDateNonMandatoryTrainingCount: 0,
+
     missingMandatoryTrainingCount: 0,
-    mandatoryTrainingCount: 0,
+    qualificationCount: 2,
   },
   {
     name: 'Mike test',
+    workplaceName: 'mock care home 1',
     trainingCount: 10,
-    qualificationCount: 0,
+    mandatoryTrainingCount: 5,
+    nonMandatoryTrainingCount: 5,
+
     expiredTrainingCount: 6,
     expiredMandatoryTrainingCount: 3,
     expiredNonMandatoryTrainingCount: 3,
+
     expiringTrainingCount: 0,
     expiringMandatoryTrainingCount: 0,
     expiringNonMandatoryTrainingCount: 0,
+
+    upToDateTrainingCount: 4,
+    upToDateMandatoryTrainingCount: 2,
+    upToDateNonMandatoryTrainingCount: 2,
+
     missingMandatoryTrainingCount: 0,
-    mandatoryTrainingCount: 5,
+    qualificationCount: 0,
   },
   {
     name: 'Andrew Test',
+    workplaceName: 'mock care home 1',
     trainingCount: 13,
-    qualificationCount: 0,
+    mandatoryTrainingCount: 3,
+    nonMandatoryTrainingCount: 10,
+
     expiredTrainingCount: 0,
     expiredMandatoryTrainingCount: 0,
     expiredNonMandatoryTrainingCount: 0,
+
     expiringTrainingCount: 2,
     expiringMandatoryTrainingCount: 0,
     expiringNonMandatoryTrainingCount: 2,
+
+    upToDateTrainingCount: 11,
+    upToDateMandatoryTrainingCount: 3,
+    upToDateNonMandatoryTrainingCount: 8,
+
     missingMandatoryTrainingCount: 2,
-    mandatoryTrainingCount: 3,
+    qualificationCount: 0,
   },
   {
     name: 'Daniel Craig',
+    workplaceName: 'mock care home 1',
     trainingCount: 6,
-    qualificationCount: 0,
+    mandatoryTrainingCount: 1,
+    nonMandatoryTrainingCount: 5,
+
     expiredTrainingCount: 4,
     expiredMandatoryTrainingCount: 1,
     expiredNonMandatoryTrainingCount: 3,
+
     expiringTrainingCount: 2,
     expiringMandatoryTrainingCount: 0,
     expiringNonMandatoryTrainingCount: 2,
+
+    upToDateTrainingCount: 0,
+    upToDateMandatoryTrainingCount: 0,
+    upToDateNonMandatoryTrainingCount: 0,
+
     missingMandatoryTrainingCount: 3,
-    mandatoryTrainingCount: 3,
+    qualificationCount: 0,
   },
 ];
 
 exports.secondMockWorkerTrainingBreakdowns = [
   {
     name: 'Jane Test',
+    workplaceName: 'mock care home 2',
     trainingCount: 13,
-    qualificationCount: 0,
+    mandatoryTrainingCount: 5,
+    nonMandatoryTrainingCount: 8,
+
     expiredTrainingCount: 0,
     expiredMandatoryTrainingCount: 0,
     expiredNonMandatoryTrainingCount: 0,
+
     expiringTrainingCount: 2,
     expiringMandatoryTrainingCount: 0,
     expiringNonMandatoryTrainingCount: 2,
+
+    upToDateTrainingCount: 11,
+    upToDateMandatoryTrainingCount: 5,
+    upToDateNonMandatoryTrainingCount: 6,
+
     missingMandatoryTrainingCount: 2,
-    mandatoryTrainingCount: 3,
+    qualificationCount: 0,
   },
   {
     name: 'John Test',
+    workplaceName: 'mock care home 2',
+
     trainingCount: 10,
-    qualificationCount: 2,
+    mandatoryTrainingCount: 2,
+    nonMandatoryTrainingCount: 8,
+
     expiredTrainingCount: 4,
     expiredMandatoryTrainingCount: 0,
-    expiredNonMandatoryTrainingCount: 2,
+    expiredNonMandatoryTrainingCount: 4,
+
     expiringTrainingCount: 4,
     expiringMandatoryTrainingCount: 2,
     expiringNonMandatoryTrainingCount: 2,
+
+    upToDateTrainingCount: 2,
+    upToDateMandatoryTrainingCount: 0,
+    upToDateNonMandatoryTrainingCount: 2,
+
     missingMandatoryTrainingCount: 0,
-    mandatoryTrainingCount: 4,
+
+    qualificationCount: 2,
   },
 ];
 
