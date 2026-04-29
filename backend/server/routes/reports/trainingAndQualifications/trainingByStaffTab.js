@@ -5,17 +5,17 @@ const {
   newBackgroundColours,
   newTextColours,
   conditionalColoursForTrainingExpiry,
-  forEachCellInRange,
   setColourForCell,
   setBasicTableStyle,
   tableHeaderCellStyle,
   borderStyles,
-  applyStyleToCell,
   applyStyleToRange,
 } = require('../../../utils/excelUtils');
 const models = require('../../../models');
-const lodash = require('lodash');
 const colCache = require('exceljs/lib/utils/col-cache');
+
+const GroupHeaderRowNumber = 3;
+const HeaderRowNumber = 4;
 
 const generateTrainingByStaffTab = async (workbook, establishmentId) => {
   const trainingByStaffTab = workbook.addWorksheet('Training by staff', { views: [{ showGridLines: false }] });
@@ -36,12 +36,9 @@ const generateTrainingByStaffTab = async (workbook, establishmentId) => {
   addText(trainingByStaffTab, 'D3:H3', 'Mandatory training', { bold: true });
   addText(trainingByStaffTab, 'I3:L3', 'Non-mandatory training', { bold: true });
 
-  forEachCellInRange(trainingByStaffTab, 'B3:L3', (cell) => {
-    applyStyleToCell(cell, tableHeaderCellStyle);
-  });
+  applyStyleToRange(trainingByStaffTab, 'B3:L3', tableHeaderCellStyle);
 
   const tableRange = addWorkerTable(trainingByStaffTab, workerTrainingBreakdowns);
-  console.log(trainingByStaffTab.getCell('D3').border, '<--- D3 border');
 
   addFootNote(trainingByStaffTab);
   setHeightsAndWidths(trainingByStaffTab, tableRange);
@@ -93,7 +90,7 @@ const addWorkerTable = (tab, workerTrainingBreakdowns) => {
 
   // delete the table object and fill in column names manually, as Excel table does not allow duplicated header column names
   tab.removeTable('trainingByStaffTable');
-  const headerRow = tab.getRow(4);
+  const headerRow = tab.getRow(HeaderRowNumber);
   headerRow.values = ['', ...tableColumnNames];
 
   setStyleForWorkerTable(tab, tableRange);
@@ -107,19 +104,28 @@ const addWorkerTable = (tab, workerTrainingBreakdowns) => {
 const setStyleForWorkerTable = (tab, tableRange) => {
   setBasicTableStyle(tab, tableRange, { bold: true });
 
-  const headerRow = tab.getRow(4);
+  const headerRow = tab.getRow(HeaderRowNumber);
 
-  const headerCellWorkerName = tab.getCell(4, headerRow.values.indexOf('Name or ID number'));
+  const headerCellWorkerName = tab.getCell(HeaderRowNumber, headerRow.values.indexOf('Name or ID number'));
   setColourForCell(headerCellWorkerName, { backgroundColour: newBackgroundColours.lightGrey });
 
-  const headerCellWhiteTextOnBlack = tab.getCell(4, headerRow.values.indexOf('Total'));
+  const headerCellWhiteTextOnBlack = tab.getCell(HeaderRowNumber, headerRow.values.indexOf('Total'));
   setColourForCell(headerCellWhiteTextOnBlack, {
     backgroundColour: newBackgroundColours.black,
     textColour: newTextColours.white,
   });
 
+  const lastColumnInTable = colCache.decode(tableRange).right;
+  const expiredColumnNumber = headerRow.values.indexOf('Expired');
+  const headerCellsWithColourCode = colCache.encode(
+    HeaderRowNumber,
+    expiredColumnNumber,
+    HeaderRowNumber,
+    lastColumnInTable,
+  );
+
   tab.addConditionalFormatting({
-    ref: 'D4:L4',
+    ref: headerCellsWithColourCode,
     rules: [
       ...conditionalColoursForTrainingExpiry,
       {
@@ -168,23 +174,23 @@ const setHeightsAndWidths = (tab) => {
 };
 
 const addThickBorders = (tab, lastRowNumber) => {
-  ['Mandatory training', 'Non-mandatory training'].forEach((headerLabel) => {
-    const columnNumber = tab.getRow(3).values.indexOf(headerLabel);
-    const tableRangeForColumn = colCache.encode(3, columnNumber, lastRowNumber, columnNumber);
+  ['Mandatory training', 'Non-mandatory training'].forEach((groupName) => {
+    const columnNumber = tab.getRow(GroupHeaderRowNumber).values.indexOf(groupName);
+    const tableRangeForColumn = colCache.encode(GroupHeaderRowNumber, columnNumber, lastRowNumber, columnNumber);
 
     applyStyleToRange(tab, tableRangeForColumn, { border: borderStyles.thickBlackBorderLeft });
   });
 };
 
 function setStyleForWorkerNamesColumn(tab, lastRowNumber) {
-  const headerRow = tab.getRow(4);
+  const headerRow = tab.getRow(HeaderRowNumber);
 
   const workerColumnNum = headerRow.values.indexOf('Name or ID number');
-  const workerColumnRange = colCache.encode(4, workerColumnNum, lastRowNumber, workerColumnNum);
+  const workerColumnRange = colCache.encode(HeaderRowNumber, workerColumnNum, lastRowNumber, workerColumnNum);
 
   applyStyleToRange(tab, workerColumnRange, { alignment: { horizontal: 'left' }, font: { bold: false } });
 
-  tab.getCell(4, workerColumnNum).font.bold = true;
+  tab.getCell(HeaderRowNumber, workerColumnNum).font.bold = true;
   tab.getCell(lastRowNumber, workerColumnNum).font.bold = true;
 }
 
