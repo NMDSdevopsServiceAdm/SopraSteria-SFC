@@ -72,8 +72,12 @@ describe('excelUtils', () => {
 
       ['B3', 'C5', 'E7'].forEach((coord) => {
         const cell = mockWorksheet.getCell(coord);
-        expect(cell.fill).to.include({ type: 'pattern', pattern: 'solid', fgColor: newBackgroundColours.lightBlue });
-        expect(cell.font).to.include({ color: newTextColours.white });
+        expect(cell.fill).to.deep.include({
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: newBackgroundColours.lightBlue,
+        });
+        expect(cell.font).to.deep.include({ color: newTextColours.white });
       });
     });
   });
