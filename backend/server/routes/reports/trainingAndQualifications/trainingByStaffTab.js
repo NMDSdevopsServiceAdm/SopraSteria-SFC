@@ -10,6 +10,7 @@ const {
   tableHeaderCellStyle,
   borderStyles,
   applyStyleToRange,
+  forEachCellInRange,
 } = require('../../../utils/excelUtils');
 const models = require('../../../models');
 const colCache = require('exceljs/lib/utils/col-cache');
@@ -62,7 +63,7 @@ const addWorkerTable = (tab, workerTrainingBreakdowns) => {
   const workerTable = tab.addTable({
     name: 'trainingByStaffTable',
     ref: 'B4',
-    columns: tableColumnNames.map((name) => ({ name, filterButton: true, totalsRowFunction: 'sum' })),
+    columns: tableColumnNames.map((name) => ({ name, filterButton: true })),
     rows: [],
     totalsRow: true,
     showFirstColumn: true,
@@ -88,21 +89,21 @@ const addWorkerTable = (tab, workerTrainingBreakdowns) => {
 
   const tableRange = workerTable.model.tableRef;
 
-  // delete the table object and fill in column names manually, as Excel table does not allow duplicated header column names
+  // delete the table object and fill in column names manually,
+  // as Excel table does not allow duplicated header column names
   tab.removeTable('trainingByStaffTable');
   const headerRow = tab.getRow(HeaderRowNumber);
   headerRow.values = ['', ...tableColumnNames];
 
-  setStyleForWorkerTable(tab, tableRange);
+  addFormulaToTotalRow(tab, tableRange);
 
-  const totalRow = tab.lastRow;
-  addFormulaToTotalRow(totalRow);
+  setStyleForWorkerTable(tab, tableRange);
 
   return tableRange;
 };
 
 const setStyleForWorkerTable = (tab, tableRange) => {
-  setBasicTableStyle(tab, tableRange, { bold: true });
+  setBasicTableStyle(tab, tableRange, { bold: true, hasTotalRow: true, alignHorizontalCenter: true });
 
   const headerRow = tab.getRow(HeaderRowNumber);
 
@@ -194,14 +195,15 @@ function setStyleForWorkerNamesColumn(tab, lastRowNumber) {
   tab.getCell(lastRowNumber, workerColumnNum).font.bold = true;
 }
 
-function addFormulaToTotalRow(totalRow) {
-  totalRow.eachCell((cell, cellNumber) => {
-    if (cellNumber < 3) {
-      return;
-    }
-    const columnLabel = colCache.n2l(cellNumber);
-    const firstWorkerCell = `${columnLabel}5`;
-    const lastWorkerCell = `${columnLabel}${totalRow.number - 1}`;
+function addFormulaToTotalRow(tab, tableRange) {
+  const { left, bottom, right } = colCache.decode(tableRange);
+  const rangeToAddTotalNumbers = colCache.encode(bottom, left + 1, bottom, right);
+
+  forEachCellInRange(tab, rangeToAddTotalNumbers, (cell) => {
+    const columnLetter = colCache.n2l(cell.col);
+    const firstWorkerCell = `${columnLetter}${HeaderRowNumber + 1}`;
+    const lastWorkerCell = `${columnLetter}${bottom - 1}`;
+
     cell.value = { formula: `SUM(${firstWorkerCell}:${lastWorkerCell})` };
   });
 }

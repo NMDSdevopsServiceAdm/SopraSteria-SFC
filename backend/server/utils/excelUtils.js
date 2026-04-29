@@ -128,7 +128,8 @@ exports.setBasicTableStyle = (
   const { top, left, bottom, right } = colCache.decode(tableRange);
 
   const headerRange = colCache.encode(top, left, top, right);
-  const dataCellsRange = colCache.encode(top + 1, left, bottom - 1, right);
+  const lastDataCellRow = hasTotalRow ? bottom - 1 : bottom;
+  const dataCellsRange = colCache.encode(top + 1, left, lastDataCellRow, right);
 
   const dataCellStyle = lodash.cloneDeep(tableDataCellStyle);
   const headerCellStyle = lodash.cloneDeep(tableHeaderCellStyle);
@@ -139,8 +140,8 @@ exports.setBasicTableStyle = (
   }
 
   if (alignHorizontalCenter) {
-    dataCellStyle.alignment = { horizontal: 'center' };
-    headerCellStyle.alignment = { horizontal: 'center' };
+    dataCellStyle.alignment.horizontal = 'center';
+    headerCellStyle.alignment.horizontal = 'center';
   }
 
   applyStyleToRange(tab, headerRange, headerCellStyle);
