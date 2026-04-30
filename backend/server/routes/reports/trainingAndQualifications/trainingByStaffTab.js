@@ -17,23 +17,20 @@ const colCache = require('exceljs/lib/utils/col-cache');
 const GroupHeaderRowNumber = 3;
 const HeaderRowNumber = 4;
 
-const generateTrainingByStaffTab = async (workbook, workerTrainingBreakdowns) => {
+const generateTrainingByStaffTab = async (workbook, workerTrainingBreakdowns, isParent = false) => {
   const trainingByStaffTab = workbook.addWorksheet('Training by staff', { views: [{ showGridLines: false }] });
 
   addTitle(trainingByStaffTab);
 
-  addText(trainingByStaffTab, 'B3:C3', 'Records added', { bold: true });
-  addText(trainingByStaffTab, 'D3:H3', 'Mandatory training', { bold: true });
-  addText(trainingByStaffTab, 'I3:L3', 'Non-mandatory training', { bold: true });
-  applyStyleToRange(trainingByStaffTab, 'B3:L3', tableHeaderCellStyle);
+  addGroupHeaderRow(trainingByStaffTab, isParent);
 
-  const tableRange = addTrainingByStaffWorkerTable(trainingByStaffTab, workerTrainingBreakdowns);
+  addWorkerTable(trainingByStaffTab, workerTrainingBreakdowns, isParent);
 
   addFootNote(trainingByStaffTab);
 
-  setHeightsAndWidths(trainingByStaffTab, tableRange);
+  setHeightsAndWidths(trainingByStaffTab);
 
-  setFreezePane(trainingByStaffTab, tableRange);
+  setFreezePane(trainingByStaffTab);
 };
 
 const addTitle = (trainingByStaffTab) => {
@@ -42,8 +39,20 @@ const addTitle = (trainingByStaffTab) => {
   setColourForRange(trainingByStaffTab, 'A1:Z1', { backgroundColour: newBackgroundColours.lightGrey });
 };
 
-const addTrainingByStaffWorkerTable = (tab, workerTrainingBreakdowns) => {
+const addGroupHeaderRow = (tab, isParent) => {
+  const rangeForEachGroup = isParent ? ['B3:D3', 'E3:I3', 'J3:M3'] : ['B3:C3', 'D3:H3', 'I3:L3'];
+
+  addText(tab, rangeForEachGroup[0], 'Records added', { bold: true });
+  addText(tab, rangeForEachGroup[1], 'Mandatory training', { bold: true });
+  addText(tab, rangeForEachGroup[2], 'Non-mandatory training', { bold: true });
+
+  const lastColumnLetter = isParent ? 'M' : 'L';
+  applyStyleToRange(tab, `B3:${lastColumnLetter}3`, tableHeaderCellStyle);
+};
+
+const addWorkerTable = (tab, workerTrainingBreakdowns, isParent) => {
   const tableColumnNames = [
+    ...(isParent ? ['Workplace'] : []),
     'Name or ID number',
     'Total',
     'Expired',
@@ -67,16 +76,17 @@ const addTrainingByStaffWorkerTable = (tab, workerTrainingBreakdowns) => {
   });
 
   const workerTableData = workerTrainingBreakdowns.map((worker) => {
-    const hideMandatoryTrainingCount = worker.workplaceHasMandatoryTraining === false;
+    const maskMandatoryTrainingCount = worker.workplaceHasMandatoryTraining === false;
 
     return [
+      ...(isParent ? [worker.workplaceName] : []),
       worker.name,
       worker.trainingCount,
-      hideMandatoryTrainingCount ? '-' : worker.expiredMandatoryTrainingCount,
-      hideMandatoryTrainingCount ? '-' : worker.expiringMandatoryTrainingCount,
-      hideMandatoryTrainingCount ? '-' : worker.upToDateMandatoryTrainingCount,
-      hideMandatoryTrainingCount ? '-' : worker.mandatoryTrainingCount,
-      hideMandatoryTrainingCount ? '-' : worker.missingMandatoryTrainingCount,
+      maskMandatoryTrainingCount ? '-' : worker.expiredMandatoryTrainingCount,
+      maskMandatoryTrainingCount ? '-' : worker.expiringMandatoryTrainingCount,
+      maskMandatoryTrainingCount ? '-' : worker.upToDateMandatoryTrainingCount,
+      maskMandatoryTrainingCount ? '-' : worker.mandatoryTrainingCount,
+      maskMandatoryTrainingCount ? '-' : worker.missingMandatoryTrainingCount,
       worker.expiredNonMandatoryTrainingCount,
       worker.expiringNonMandatoryTrainingCount,
       worker.upToDateNonMandatoryTrainingCount,
@@ -101,8 +111,19 @@ const addTrainingByStaffWorkerTable = (tab, workerTrainingBreakdowns) => {
   addFormulaToTotalRow(tab, tableRange);
 
   setStyleForWorkerTable(tab, tableRange);
+};
 
-  return tableRange;
+const addFormulaToTotalRow = (tab, tableRange) => {
+  const { left, bottom, right } = colCache.decode(tableRange);
+  const rangeToAddTotalNumbers = colCache.encode(bottom, left + 1, bottom, right);
+
+  forEachCellInRange(tab, rangeToAddTotalNumbers, (cell) => {
+    const columnLetter = colCache.n2l(cell.col);
+    const firstWorkerCell = `${columnLetter}${HeaderRowNumber + 1}`;
+    const lastWorkerCell = `${columnLetter}${bottom - 1}`;
+
+    cell.value = { formula: `SUM(${firstWorkerCell}:${lastWorkerCell})` };
+  });
 };
 
 const setStyleForWorkerTable = (tab, tableRange) => {
@@ -170,19 +191,6 @@ const setStyleForWorkerNamesColumn = (tab, lastRowNumber) => {
 
   tab.getCell(HeaderRowNumber, workerColumnNum).font.bold = true;
   tab.getCell(lastRowNumber, workerColumnNum).font.bold = true;
-};
-
-const addFormulaToTotalRow = (tab, tableRange) => {
-  const { left, bottom, right } = colCache.decode(tableRange);
-  const rangeToAddTotalNumbers = colCache.encode(bottom, left + 1, bottom, right);
-
-  forEachCellInRange(tab, rangeToAddTotalNumbers, (cell) => {
-    const columnLetter = colCache.n2l(cell.col);
-    const firstWorkerCell = `${columnLetter}${HeaderRowNumber + 1}`;
-    const lastWorkerCell = `${columnLetter}${bottom - 1}`;
-
-    cell.value = { formula: `SUM(${firstWorkerCell}:${lastWorkerCell})` };
-  });
 };
 
 const addFootNote = (tab) => {
