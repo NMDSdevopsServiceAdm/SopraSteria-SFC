@@ -4,7 +4,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { Establishment } from '@core/model/establishment.model';
 import { WorkersGroupedByJobRole, WorkersGroupedByJobRoleResponse } from '@core/model/worker.model';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormGroup, UntypedFormBuilder, UntypedFormGroup, ValidatorFn } from '@angular/forms';
+import { FormGroup, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 
@@ -89,6 +89,7 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
 
     return fg;
   }
+
   private setupForm(): void {
     this.form = this.formBuilder.group({
       workers: this.formBuilder.group({}),
@@ -171,51 +172,29 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
       return null;
     };
   }
+
   getRowError(group: FormGroup): string {
     if (!group) return '';
-    const errors = group.get('value')?.errors ?? group.get('rate')?.errors;
-    if (!errors) return '';
 
     const valueErrors = group.get('value')?.errors;
     const rateErrors = group.get('rate')?.errors;
 
-    if (valueErrors) {
-      if (valueErrors['required']) {
-        return ERROR_MESSAGES.valueRequired;
-      }
+    if (valueErrors?.['required']) {
+      return ERROR_MESSAGES.valueRequired;
     }
 
-    if (rateErrors) {
-      if (rateErrors['required']) {
-        return ERROR_MESSAGES.rateRequired;
-      }
-      if (rateErrors['hourlyRateRequired']) {
-        return ERROR_MESSAGES.hourlyRateRequired;
-      }
-      if (rateErrors['range']) {
-        return ERROR_MESSAGES.range;
-      }
-      if (rateErrors['pence']) {
-        return ERROR_MESSAGES.pence;
-      }
-      if (rateErrors['salary']) {
-        return ERROR_MESSAGES.salary;
-      }
-      if (rateErrors['salaryRange']) {
-        return ERROR_MESSAGES.salaryRange;
-      }
-    }
+    const rateErrorMap: Record<string, string> = {
+      required: ERROR_MESSAGES.rateRequired,
+      hourlyRateRequired: ERROR_MESSAGES.hourlyRateRequired,
+      range: ERROR_MESSAGES.range,
+      pence: ERROR_MESSAGES.pence,
+      salary: ERROR_MESSAGES.salary,
+      salaryRange: ERROR_MESSAGES.salaryRange,
+    };
 
-    return '';
+    return this.getFirstError(rateErrors, rateErrorMap);
   }
 
-  private jobGroupTitle(group: WorkersGroupedByJobRole) {
-    const jobTitle = group.title.toLowerCase();
-    if (group.title.includes('IT')) {
-      return group.title;
-    }
-    return jobTitle;
-  }
   private setupFormErrorsMap(): void {
     this.formErrorsMap = this.workersByJobRole.groups.flatMap((group) => {
       return [
@@ -292,6 +271,27 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
       this.returnToUpdatePayForMultipleStaffPage();
     }
   }
+
+  private getFirstError(errors: ValidationErrors | null, errorMap: Record<string, string>): string {
+    if (!errors) return '';
+
+    for (const key of Object.keys(errorMap)) {
+      if (errors[key]) {
+        return errorMap[key];
+      }
+    }
+
+    return '';
+  }
+
+  private jobGroupTitle(group: WorkersGroupedByJobRole) {
+    const jobTitle = group.title.toLowerCase();
+    if (group.title.includes('IT')) {
+      return group.title;
+    }
+    return jobTitle;
+  }
+
   public onCancel(event: Event): void {
     event.preventDefault();
     this.returnToUpdatePayForMultipleStaffPage();
