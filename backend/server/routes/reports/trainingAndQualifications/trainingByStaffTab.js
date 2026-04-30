@@ -20,14 +20,11 @@ const HeaderRowNumber = 4;
 const generateTrainingByStaffTab = async (workbook, workerTrainingBreakdowns) => {
   const trainingByStaffTab = workbook.addWorksheet('Training by staff', { views: [{ showGridLines: false }] });
 
-  addText(trainingByStaffTab, 'B1:Z1', 'Training records by staff', { size: 24, bold: true });
-  trainingByStaffTab.getCell('B1').alignment = { vertical: 'middle' };
-  setColourForRange(trainingByStaffTab, 'A1:Z1', { backgroundColour: newBackgroundColours.lightGrey });
+  addTitle(trainingByStaffTab);
 
   addText(trainingByStaffTab, 'B3:C3', 'Records added', { bold: true });
   addText(trainingByStaffTab, 'D3:H3', 'Mandatory training', { bold: true });
   addText(trainingByStaffTab, 'I3:L3', 'Non-mandatory training', { bold: true });
-
   applyStyleToRange(trainingByStaffTab, 'B3:L3', tableHeaderCellStyle);
 
   const tableRange = addTrainingByStaffWorkerTable(trainingByStaffTab, workerTrainingBreakdowns);
@@ -37,6 +34,12 @@ const generateTrainingByStaffTab = async (workbook, workerTrainingBreakdowns) =>
   setHeightsAndWidths(trainingByStaffTab, tableRange);
 
   setFreezePane(trainingByStaffTab, tableRange);
+};
+
+const addTitle = (trainingByStaffTab) => {
+  addText(trainingByStaffTab, 'B1:Z1', 'Training records by staff', { size: 24, bold: true });
+  trainingByStaffTab.getCell('B1').alignment = { vertical: 'middle' };
+  setColourForRange(trainingByStaffTab, 'A1:Z1', { backgroundColour: newBackgroundColours.lightGrey });
 };
 
 const addTrainingByStaffWorkerTable = (tab, workerTrainingBreakdowns) => {
@@ -148,6 +151,40 @@ const setStyleForWorkerTable = (tab, tableRange) => {
   addThickBorders(tab, lastRowNumber);
 };
 
+const addThickBorders = (tab, lastRowNumber) => {
+  ['Mandatory training', 'Non-mandatory training'].forEach((groupName) => {
+    const columnNumber = tab.getRow(GroupHeaderRowNumber).values.indexOf(groupName);
+    const tableRangeForColumn = colCache.encode(GroupHeaderRowNumber, columnNumber, lastRowNumber, columnNumber);
+
+    applyStyleToRange(tab, tableRangeForColumn, { border: borderStyles.thickBlackBorderLeft });
+  });
+};
+
+const setStyleForWorkerNamesColumn = (tab, lastRowNumber) => {
+  const headerRow = tab.getRow(HeaderRowNumber);
+
+  const workerColumnNum = headerRow.values.indexOf('Name or ID number');
+  const workerColumnRange = colCache.encode(HeaderRowNumber, workerColumnNum, lastRowNumber, workerColumnNum);
+
+  applyStyleToRange(tab, workerColumnRange, { alignment: { horizontal: 'left' }, font: { bold: false } });
+
+  tab.getCell(HeaderRowNumber, workerColumnNum).font.bold = true;
+  tab.getCell(lastRowNumber, workerColumnNum).font.bold = true;
+};
+
+const addFormulaToTotalRow = (tab, tableRange) => {
+  const { left, bottom, right } = colCache.decode(tableRange);
+  const rangeToAddTotalNumbers = colCache.encode(bottom, left + 1, bottom, right);
+
+  forEachCellInRange(tab, rangeToAddTotalNumbers, (cell) => {
+    const columnLetter = colCache.n2l(cell.col);
+    const firstWorkerCell = `${columnLetter}${HeaderRowNumber + 1}`;
+    const lastWorkerCell = `${columnLetter}${bottom - 1}`;
+
+    cell.value = { formula: `SUM(${firstWorkerCell}:${lastWorkerCell})` };
+  });
+};
+
 const addFootNote = (tab) => {
   const lastRow = tab.lastRow.number;
   addText(
@@ -190,40 +227,6 @@ const setHeightsAndWidths = (tab) => {
 
 const setFreezePane = (tab) => {
   tab.views = [{ state: 'frozen', ySplit: 4, activeCell: 'B1' }, { showGridLines: false }];
-};
-
-const addThickBorders = (tab, lastRowNumber) => {
-  ['Mandatory training', 'Non-mandatory training'].forEach((groupName) => {
-    const columnNumber = tab.getRow(GroupHeaderRowNumber).values.indexOf(groupName);
-    const tableRangeForColumn = colCache.encode(GroupHeaderRowNumber, columnNumber, lastRowNumber, columnNumber);
-
-    applyStyleToRange(tab, tableRangeForColumn, { border: borderStyles.thickBlackBorderLeft });
-  });
-};
-
-const setStyleForWorkerNamesColumn = (tab, lastRowNumber) => {
-  const headerRow = tab.getRow(HeaderRowNumber);
-
-  const workerColumnNum = headerRow.values.indexOf('Name or ID number');
-  const workerColumnRange = colCache.encode(HeaderRowNumber, workerColumnNum, lastRowNumber, workerColumnNum);
-
-  applyStyleToRange(tab, workerColumnRange, { alignment: { horizontal: 'left' }, font: { bold: false } });
-
-  tab.getCell(HeaderRowNumber, workerColumnNum).font.bold = true;
-  tab.getCell(lastRowNumber, workerColumnNum).font.bold = true;
-};
-
-const addFormulaToTotalRow = (tab, tableRange) => {
-  const { left, bottom, right } = colCache.decode(tableRange);
-  const rangeToAddTotalNumbers = colCache.encode(bottom, left + 1, bottom, right);
-
-  forEachCellInRange(tab, rangeToAddTotalNumbers, (cell) => {
-    const columnLetter = colCache.n2l(cell.col);
-    const firstWorkerCell = `${columnLetter}${HeaderRowNumber + 1}`;
-    const lastWorkerCell = `${columnLetter}${bottom - 1}`;
-
-    cell.value = { formula: `SUM(${firstWorkerCell}:${lastWorkerCell})` };
-  });
 };
 
 module.exports = { generateTrainingByStaffTab };
