@@ -16,7 +16,7 @@ const radioButtonLabels = [
 const ERROR_MESSAGES = {
   valueRequired: 'Select hourly or salary for the amount entered',
   rateRequired: 'Enter the salary or select a different option',
-  hoyrlyRateRequired: 'Enter the hourly pay rate or select a different option',
+  hourlyRateRequired: 'Enter the hourly pay rate or select a different option',
   range: 'Hourly pay rate must be between £2.50 and £200.00',
   pence: 'You can only have 1 or 2 digits for pence after the decimal point',
   salary: 'Salary must not include pence',
@@ -71,7 +71,7 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
     return this.form.get('workers') as FormGroup;
   }
 
-  private buildFormControls(group: any): FormGroup {
+  private buildFormControls(group: WorkersGroupedByJobRole): FormGroup {
     const value = this.formBuilder.control(group.annualHourlyPay?.value);
     const rate = this.formBuilder.control(group.annualHourlyPay?.rate);
 
@@ -103,7 +103,7 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
   private callValidator(): void {
     this.validationIsActive.set(true);
 
-    Object.values(this.workersFormGroup.controls).forEach((group: any) => {
+    Object.values(this.workersFormGroup.controls).forEach((group) => {
       group.get('rate')?.updateValueAndValidity();
       group.get('value')?.updateValueAndValidity();
     });
@@ -141,7 +141,7 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
         }
 
         if (value === 'Hourly') {
-          return { hoyrlyRateRequired: true };
+          return { hourlyRateRequired: true };
         }
       }
 
@@ -171,7 +171,7 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
       return null;
     };
   }
-  getRowError(group: any): string {
+  getRowError(group: FormGroup): string {
     if (!group) return '';
     const errors = group.get('value')?.errors ?? group.get('rate')?.errors;
     if (!errors) return '';
@@ -189,8 +189,8 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
       if (rateErrors['required']) {
         return ERROR_MESSAGES.rateRequired;
       }
-      if (rateErrors['hoyrlyRateRequired']) {
-        return ERROR_MESSAGES.hoyrlyRateRequired;
+      if (rateErrors['hourlyRateRequired']) {
+        return ERROR_MESSAGES.hourlyRateRequired;
       }
       if (rateErrors['range']) {
         return ERROR_MESSAGES.range;
@@ -236,8 +236,8 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
               message: `${ERROR_MESSAGES.rateRequired}  (${this.jobGroupTitle(group)})`,
             },
             {
-              name: 'hoyrlyRateRequired',
-              message: `${ERROR_MESSAGES.hoyrlyRateRequired}  (${this.jobGroupTitle(group)})`,
+              name: 'hourlyRateRequired',
+              message: `${ERROR_MESSAGES.hourlyRateRequired}  (${this.jobGroupTitle(group)})`,
             },
             {
               name: 'range',
