@@ -16,6 +16,7 @@ const radioButtonLabels = [
 const ERROR_MESSAGES = {
   valueRequired: 'Select hourly or salary for the amount entered',
   rateRequired: 'Enter the salary or select a different option',
+  hoyrlyRateRequired: 'Enter the hourly pay rate or select a different option',
   range: 'Hourly pay rate must be between £2.50 and £200.00',
   pence: 'You can only have 1 or 2 digits for pence after the decimal point',
   salary: 'Salary must not include pence',
@@ -134,7 +135,15 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
 
       if (!rate && !value) return null;
 
-      if (!rate && value) return { required: true };
+      if (!rate && value) {
+        if (value === 'Annually') {
+          return { required: true };
+        }
+
+        if (value === 'Hourly') {
+          return { hoyrlyRateRequired: true };
+        }
+      }
 
       const numericRate = Number(rate);
 
@@ -180,6 +189,9 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
       if (rateErrors['required']) {
         return ERROR_MESSAGES.rateRequired;
       }
+      if (rateErrors['hoyrlyRateRequired']) {
+        return ERROR_MESSAGES.hoyrlyRateRequired;
+      }
       if (rateErrors['range']) {
         return ERROR_MESSAGES.range;
       }
@@ -222,6 +234,10 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
             {
               name: 'required',
               message: `${ERROR_MESSAGES.rateRequired}  (${this.jobGroupTitle(group)})`,
+            },
+            {
+              name: 'hoyrlyRateRequired',
+              message: `${ERROR_MESSAGES.hoyrlyRateRequired}  (${this.jobGroupTitle(group)})`,
             },
             {
               name: 'range',
