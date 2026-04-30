@@ -131,13 +131,15 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
       const rate = control.value;
       const value = parent.get('value')?.value;
 
-      if (!rate) return { required: true };
+      if (!rate && !value) return null;
+
+      if (!rate && value) return { required: true };
 
       const numericRate = Number(rate);
 
       if (isNaN(numericRate)) return { invalidNumber: true };
 
-      if (value === 'Hourly' && (rate < 2.5 || rate > 200)) {
+      if (value === 'Hourly' && (numericRate < 2.5 || numericRate > 200)) {
         return { range: true };
       }
 
@@ -155,10 +157,10 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
           return { salaryRange: true };
         }
       }
+
       return null;
     };
   }
-
   getRowError(group: any): string {
     if (!group) return '';
     const errors = group.get('value')?.errors ?? group.get('rate')?.errors;
