@@ -24,6 +24,7 @@ const ERROR_MESSAGES = {
 @Component({
   selector: 'app-fast-track-pay-updates',
   templateUrl: './fast-track-pay-updates.component.html',
+  styleUrl: './fast-track-pay-updates.component.scss',
   standalone: false,
 })
 export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
