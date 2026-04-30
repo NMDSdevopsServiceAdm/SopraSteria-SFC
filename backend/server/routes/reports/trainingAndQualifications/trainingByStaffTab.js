@@ -21,6 +21,7 @@ const generateTrainingByStaffTab = async (workbook, workerTrainingBreakdowns) =>
   const trainingByStaffTab = workbook.addWorksheet('Training by staff', { views: [{ showGridLines: false }] });
 
   addText(trainingByStaffTab, 'B1:Z1', 'Training records by staff', { size: 24, bold: true });
+  trainingByStaffTab.getCell('B1').alignment = { vertical: 'middle' };
   setColourForRange(trainingByStaffTab, 'A1:Z1', { backgroundColour: newBackgroundColours.lightGrey });
 
   addText(trainingByStaffTab, 'B3:C3', 'Records added', { bold: true });
@@ -34,6 +35,8 @@ const generateTrainingByStaffTab = async (workbook, workerTrainingBreakdowns) =>
   addFootNote(trainingByStaffTab);
 
   setHeightsAndWidths(trainingByStaffTab, tableRange);
+
+  setFreezePane(trainingByStaffTab, tableRange);
 };
 
 const addTrainingByStaffWorkerTable = (tab, workerTrainingBreakdowns) => {
@@ -168,6 +171,10 @@ const setHeightsAndWidths = (tab) => {
     column.width = width;
   });
 
+  const workerNameColumn = 'B';
+  const fontsize = 12;
+  autoFitColumnWidthByTextLength(tab, workerNameColumn, fontsize);
+
   const rowHeights = [47, 19, 22, 38];
 
   rowHeights.forEach((height, index) => {
@@ -179,7 +186,10 @@ const setHeightsAndWidths = (tab) => {
     const row = tab.getRow(i);
     row.height = 22;
   }
-  autoFitColumnWidthByTextLength(tab, 'B', 12);
+};
+
+const setFreezePane = (tab) => {
+  tab.views = [{ state: 'frozen', ySplit: 4, activeCell: 'B1' }, { showGridLines: false }];
 };
 
 const addThickBorders = (tab, lastRowNumber) => {
