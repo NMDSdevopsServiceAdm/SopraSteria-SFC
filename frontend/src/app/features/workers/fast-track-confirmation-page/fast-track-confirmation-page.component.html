@@ -23,33 +23,39 @@
 
           <tbody class="govuk-table__body">
             @for (workers of filteredGroups; track $index) {
-              <tr class="govuk-table__row">
-                <td class="govuk-table__cell">
-                  <div>
-                    <span>{{ workers.title }} ({{ workers.count }} record{{ workers.count === 1 ? '' : 's' }})</span>
-                    <div class="govuk-util__float-right govuk-!-margin-top-0 govuk-!-margin-bottom-0">
-                      <img src="/assets/images/right-arrow.svg" alt="Right facing grey arrow" />
-                    </div>
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">
+                <div>
+                  <span>{{ workers.title }} ({{ workers.count }} record{{ workers.count === 1 ? '' : 's' }})</span>
+                  <div class="govuk-util__float-right govuk-!-margin-top-0 govuk-!-margin-bottom-0">
+                    <img src="/assets/images/right-arrow.svg" alt="Right facing grey arrow" />
                   </div>
-                </td>
-                <td class="govuk-table__cell">
-                  <div>
-                    @if (workers.annualHourlyPay?.rate) {
-                      <span>£{{ workers.annualHourlyPay?.rate }}</span>
-                    }
-                  </div>
-                </td>
-
-                <td class="govuk-table__cell">
-                  <a
-                    class="govuk-link govuk-link--no-visited-state"
-                    [routerLink]="['/workplace', workplace.uid, 'staff-record', 'fast-track-pay-updates']"
-                    [queryParams]="{ index: workers.originalIndex }"
+                </div>
+              </td>
+              <td class="govuk-table__cell">
+                <div>
+                  @if (workers.annualHourlyPay?.rate) {
+                  <span>
+                    {{
+                      workers.annualHourlyPay?.value === 'Hourly'
+                        ? '£' + workers.annualHourlyPay.rate + ' hourly pay'
+                        : '£' + (workers.annualHourlyPay.rate | number) + ' annual salary'
+                    }}</span
                   >
-                    Change
-                  </a>
-                </td>
-              </tr>
+                  }
+                </div>
+              </td>
+
+              <td class="govuk-table__cell">
+                <a
+                  class="govuk-link govuk-link--no-visited-state"
+                  [routerLink]="['/workplace', workplace.uid, 'staff-record', 'fast-track-pay-updates']"
+                  [queryParams]="{ index: workers.originalIndex }"
+                >
+                  Change
+                </a>
+              </td>
+            </tr>
             }
           </tbody>
         </table>
