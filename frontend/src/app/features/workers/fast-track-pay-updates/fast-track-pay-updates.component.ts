@@ -101,6 +101,39 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
 
   private validationIsActive = signal(false);
 
+  public onSubmit(): void {
+    this.callValidator();
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+    this.showErrors = true;
+
+    if (this.form.invalid) {
+      this.errorSummaryService.scrollToErrorSummary();
+      return;
+    }
+
+    const updatedWorkers = this.workersByJobRole.groups.map((group) => {
+      const formGroup = this.workersFormGroup.get(`job-${group.jobId}`) as FormGroup;
+
+      return {
+        ...group,
+        annualHourlyPay: {
+          value: formGroup.get('value')?.value,
+          rate: formGroup.get('rate')?.value,
+        },
+      };
+    });
+
+    this.workerService.setWorkersGroupedByJobRole({ groups: updatedWorkers });
+
+    const hasRate = updatedWorkers.some((w) => w.annualHourlyPay?.rate != null);
+
+    if (hasRate) {
+      this.router.navigate(['../fast-track-confirmation-page'], { relativeTo: this.route });
+    } else {
+      this.returnToUpdatePayForMultipleStaffPage();
+    }
+  }
+
   private callValidator(): void {
     this.validationIsActive.set(true);
 
@@ -137,26 +170,23 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
       if (!rate && !value) return null;
 
       if (!rate && value) {
-        if (value === 'Annually') {
-          return { required: true };
-        }
-
-        if (value === 'Hourly') {
-          return { hourlyRateRequired: true };
-        }
+        return value === 'Annually' ? { required: true } : { hourlyRateRequired: true };
       }
 
       const numericRate = Number(rate);
-
-      if (isNaN(numericRate)) return { invalidNumber: true };
-
-      if (value === 'Hourly' && (numericRate < 2.5 || numericRate > 200)) {
-        return { range: true };
+      if (isNaN(numericRate)) {
+        return { invalidNumber: true };
       }
 
-      const decimalPart = rate.toString().split('.')[1];
-      if (decimalPart && decimalPart.length > 2) {
-        return { pence: true };
+      if (value === 'Hourly') {
+        if (numericRate < 2.5 || numericRate > 200) {
+          return { range: true };
+        }
+
+        const decimalPart = rate.toString().split('.')[1];
+        if (decimalPart && decimalPart.length > 2) {
+          return { pence: true };
+        }
       }
 
       if (value === 'Annually') {
@@ -238,38 +268,6 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
         },
       ];
     });
-  }
-  public onSubmit(): void {
-    this.callValidator();
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
-    this.showErrors = true;
-
-    if (this.form.invalid) {
-      this.errorSummaryService.scrollToErrorSummary();
-      return;
-    }
-
-    const updatedWorkers = this.workersByJobRole.groups.map((group) => {
-      const formGroup = this.workersFormGroup.get(`job-${group.jobId}`) as FormGroup;
-
-      return {
-        ...group,
-        annualHourlyPay: {
-          value: formGroup.get('value')?.value,
-          rate: formGroup.get('rate')?.value,
-        },
-      };
-    });
-
-    this.workerService.setWorkersGroupedByJobRole({ groups: updatedWorkers });
-
-    const hasRate = updatedWorkers.some((w) => w.annualHourlyPay?.rate != null);
-
-    if (hasRate) {
-      this.router.navigate(['../fast-track-confirmation-page'], { relativeTo: this.route });
-    } else {
-      this.returnToUpdatePayForMultipleStaffPage();
-    }
   }
 
   private getFirstError(errors: ValidationErrors | null, errorMap: Record<string, string>): string {
