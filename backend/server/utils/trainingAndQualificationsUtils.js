@@ -1,3 +1,5 @@
+const dayjs = require('dayjs');
+
 const convertEachWorkerTrainingBreakdown = (worker) => {
   const expiredTrainingCount = parseInt(worker.get('expiredTrainingCount'));
   const expiredMandatoryTrainingCount = parseInt(worker.get('expiredMandatoryTrainingCount'));
@@ -63,10 +65,10 @@ exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
 const convertWorkerTrainingRecords = (workers, expiresSoonAlertDate) => {
   return workers.map((worker) => {
     return {
-      workerId: numberCheck(worker.get('NameOrIdValue')),
+      workerId: numberCheck(worker.NameOrIdValue),
       jobRole: worker.mainJob.title,
-      longTermAbsence: worker.get('LongTermAbsence') ? worker.get('LongTermAbsence') : '',
-      mandatoryTraining: worker.get('mandatoryTrainingCategories') ? worker.get('mandatoryTrainingCategories') : [],
+      longTermAbsence: worker.LongTermAbsence ? worker.LongTermAbsence : '',
+      mandatoryTraining: worker.mandatoryTrainingCategories ? worker.mandatoryTrainingCategories : [],
       trainingRecords: convertIndividualWorkerTrainingRecords(worker.workerTraining, expiresSoonAlertDate),
     };
   });
@@ -74,17 +76,17 @@ const convertWorkerTrainingRecords = (workers, expiresSoonAlertDate) => {
 
 const convertIndividualWorkerTrainingRecords = (workerTraining, expiresSoonAlertDate) => {
   return workerTraining.map((trainingRecord) => {
-    const expiryDate = trainingRecord.get('Expires') ? new Date(trainingRecord.get('Expires')) : '';
-    const dateCompleted = trainingRecord.get('Completed') ? new Date(trainingRecord.get('Completed')) : '';
+    const expiryDate = trainingRecord.expires ? new Date(trainingRecord.expires) : '';
+    const dateCompleted = trainingRecord.completed ? new Date(trainingRecord.completed) : '';
 
     return {
-      category: trainingRecord.get('category').category,
-      categoryFK: trainingRecord.get('CategoryFK'),
-      trainingName: trainingRecord.get('Title') ? trainingRecord.get('Title') : '',
+      category: trainingRecord.category.category,
+      categoryFK: trainingRecord.categoryFk,
+      trainingName: trainingRecord.title ? trainingRecord.title : '',
       expiryDate,
       status: getTrainingRecordStatus(expiryDate, expiresSoonAlertDate),
       dateCompleted,
-      accredited: trainingRecord.get('Accredited') ? trainingRecord.get('Accredited') : '',
+      accredited: trainingRecord.accredited ? trainingRecord.accredited : '',
     };
   });
 };
@@ -94,14 +96,13 @@ const getTrainingRecordStatus = (expiryDate, expiresSoonAlertDate) => {
     return 'Up-to-date';
   }
 
-  const currentDate = new Date(new Date().setHours(0, 0, 0, 0));
-  const expiringSoonDate = new Date(new Date().setHours(0, 0, 0, 0));
-  expiringSoonDate.setDate(currentDate.getDate() + parseInt(expiresSoonAlertDate));
+  const currentDate = dayjs();
+  const expiringSoonDate = dayjs().add(parseInt(expiresSoonAlertDate), 'days');
 
-  if (expiryDate < currentDate) {
+  if (dayjs(expiryDate).isBefore(currentDate, 'day')) {
     return 'Expired';
   }
-  if (expiryDate < expiringSoonDate) {
+  if (dayjs(expiryDate).isBefore(expiringSoonDate, 'day')) {
     return 'Expiring soon';
   }
   return 'Up-to-date';
@@ -111,7 +112,7 @@ exports.convertTrainingForEstablishments = (rawEstablishments) => {
   return rawEstablishments.map((establishment) => {
     return {
       name: numberCheck(establishment.NameValue),
-      workerRecords: convertWorkerTrainingRecords(establishment.workers, establishment.get('ExpiresSoonAlertDate')),
+      workerRecords: convertWorkerTrainingRecords(establishment.workers, establishment.ExpiresSoonAlertDate),
     };
   });
 };

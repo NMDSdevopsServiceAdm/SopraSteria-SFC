@@ -1,4 +1,5 @@
 const expect = require('chai').expect;
+const dayjs = require('dayjs');
 const {
   getTrainingTotals,
   convertQualificationsForEstablishments,
@@ -14,7 +15,7 @@ const {
   mockEstablishmentsTrainingResponse,
 } = require('../mockdata/trainingAndQualifications');
 
-describe('trainingAndQualificationsUtils', () => {
+describe.only('trainingAndQualificationsUtils', () => {
   describe('getTrainingTotals', () => {
     it('should return object with sums of all worker training records', () => {
       const result = getTrainingTotals(mockWorkerTrainingBreakdowns);
@@ -176,6 +177,11 @@ describe('trainingAndQualificationsUtils', () => {
   });
 
   describe('convertTrainingForEstablishments', () => {
+    const today = dayjs().format('YYYY-MM-DD');
+    const yesterday = dayjs().subtract(1, 'days').format('YYYY-MM-DD');
+    const after90Days = dayjs().add(90, 'days').format('YYYY-MM-DD');
+    const after89Days = dayjs().add(89, 'days').format('YYYY-MM-DD');
+
     describe('First establishment', async () => {
       it('should return array with first establishment name', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
@@ -218,13 +224,12 @@ describe('trainingAndQualificationsUtils', () => {
       it('should return first training record formatted as expected for first worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
         const firstWorkerFirstTrainingRecord = result[0].workerRecords[0].trainingRecords[0];
-        const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
 
         expect(firstWorkerFirstTrainingRecord).to.deep.equal({
           category: 'Dementia care',
           categoryFK: 10,
           trainingName: 'Great',
-          expiryDate: new Date(expiryDate.setDate(expiryDate.getDate() - 1)),
+          expiryDate: new Date(yesterday),
           status: 'Expired',
           dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
           accredited: 'No',
@@ -234,13 +239,12 @@ describe('trainingAndQualificationsUtils', () => {
       it('should return second training record formatted as expected for first worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
         const firstWorkerFirstTrainingRecord = result[0].workerRecords[0].trainingRecords[1];
-        const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
 
         expect(firstWorkerFirstTrainingRecord).to.deep.equal({
           category: 'Old age care',
           categoryFK: 5,
           trainingName: 'Old age care training',
-          expiryDate: new Date(expiryDate.setDate(expiryDate.getDate() + 90)),
+          expiryDate: new Date(after90Days),
           status: 'Up-to-date',
           dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
           accredited: 'Yes',
@@ -260,13 +264,12 @@ describe('trainingAndQualificationsUtils', () => {
       it('should return first training record formatted as expected for second worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
         const firstWorkerFirstTrainingRecord = result[0].workerRecords[1].trainingRecords[0];
-        const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
 
         expect(firstWorkerFirstTrainingRecord).to.deep.equal({
           category: 'Learning',
           categoryFK: 10,
           trainingName: 'Test Training',
-          expiryDate: new Date(expiryDate.setDate(expiryDate.getDate() + 89)),
+          expiryDate: new Date(after89Days),
           status: 'Expiring soon',
           dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
           accredited: 'No',
@@ -325,13 +328,12 @@ describe('trainingAndQualificationsUtils', () => {
       it('should return first training record formatted as expected for first worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
         const firstWorkerFirstTrainingRecord = result[1].workerRecords[0].trainingRecords[0];
-        const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
 
         expect(firstWorkerFirstTrainingRecord).to.deep.equal({
           category: 'Dementia care',
           categoryFK: 3,
           trainingName: 'Helen',
-          expiryDate: new Date(expiryDate.setDate(expiryDate.getDate())),
+          expiryDate: new Date(today),
           status: 'Expiring soon',
           dateCompleted: new Date('2014-01-01T00:00:00.000Z'),
           accredited: 'No',

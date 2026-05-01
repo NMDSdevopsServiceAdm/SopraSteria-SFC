@@ -1,3 +1,5 @@
+const dayjs = require('dayjs');
+
 exports.mockWorkerTrainingBreakdowns = [
   {
     name: 'Bob Test',
@@ -586,72 +588,59 @@ exports.mockEstablishmentsCareCertificateResponse = [
   },
 ];
 
+const today = dayjs().format('YYYY-MM-DD');
+const yesterday = dayjs().subtract(1, 'days').format('YYYY-MM-DD');
+const after90Days = dayjs().add(90, 'days').format('YYYY-MM-DD');
+const after89Days = dayjs().add(89, 'days').format('YYYY-MM-DD');
+
 exports.mockEstablishmentsTrainingResponse = [
   {
     id: 2320,
     NameValue: 'Nursing Home',
-    get() {
-      return '90';
-    },
+    ExpiresSoonAlertDate: '90',
+
     workers: [
       {
         id: 11169,
         mainJob: { id: 1, title: 'Activities worker or co-ordinator' },
-        get(property) {
-          if (property === 'NameOrIdValue') return 'New staff record';
-          if (property === 'mandatoryTrainingCategories') return ['Communication skills'];
-          if (property === 'LongTermAbsence') return null;
-        },
+        NameOrIdValue: 'New staff record',
+        mandatoryTrainingCategories: ['Communication skills'],
+        LongTermAbsence: null,
+
         workerTraining: [
           {
-            get(property) {
-              if (property === 'category') return { category: 'Dementia care' };
-              if (property === 'Expires') {
-                const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
-                return expiryDate.setDate(expiryDate.getDate() - 1);
-              }
-              if (property === 'Completed') return '2020-01-01';
-              if (property === 'CategoryFK') return 10;
-              if (property === 'Title') return 'Great';
-              if (property === 'Accredited') return 'No';
-            },
+            category: { category: 'Dementia care' },
+            expires: yesterday,
+            completed: '2020-01-01',
+            categoryFk: 10,
+            title: 'Great',
+            accredited: 'No',
           },
           {
-            get(property) {
-              if (property === 'category') return { category: 'Old age care' };
-              if (property === 'Expires') {
-                const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
-                return expiryDate.setDate(expiryDate.getDate() + 90);
-              }
-              if (property === 'Completed') return '2020-01-01';
-              if (property === 'CategoryFK') return 5;
-              if (property === 'Title') return 'Old age care training';
-              if (property === 'Accredited') return 'Yes';
-            },
+            category: { category: 'Old age care' },
+            expires: after90Days,
+            completed: '2020-01-01',
+            categoryFk: 5,
+            title: 'Old age care training',
+            accredited: 'Yes',
           },
         ],
       },
       {
         id: 1131,
         mainJob: { id: 3, title: 'Care giver' },
-        get(property) {
-          if (property === 'NameOrIdValue') return 'Another staff record';
-          if (property === 'mandatoryTrainingCategories') return ['Learning'];
-          if (property === 'LongTermAbsence') return 'Yes';
-        },
+        NameOrIdValue: 'Another staff record',
+        mandatoryTrainingCategories: ['Learning'],
+        LongTermAbsence: 'Yes',
+
         workerTraining: [
           {
-            get(property) {
-              if (property === 'category') return { category: 'Learning' };
-              if (property === 'Expires') {
-                const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
-                return expiryDate.setDate(expiryDate.getDate() + 89);
-              }
-              if (property === 'Completed') return '2020-01-01';
-              if (property === 'CategoryFK') return 10;
-              if (property === 'Title') return 'Test Training';
-              if (property === 'Accredited') return 'No';
-            },
+            category: { category: 'Learning' },
+            expires: after89Days,
+            completed: '2020-01-01',
+            categoryFk: 10,
+            title: 'Test Training',
+            accredited: 'No',
           },
         ],
       },
@@ -660,31 +649,23 @@ exports.mockEstablishmentsTrainingResponse = [
   {
     id: 2320,
     NameValue: 'Care Home',
-    get() {
-      return '90';
-    },
+    ExpiresSoonAlertDate: '90',
     workers: [
       {
         id: 11169,
         mainJob: { id: 1, title: 'Activities worker and care' },
-        get(property) {
-          if (property === 'NameOrIdValue') return 'Test staff record';
-          if (property === 'mandatoryTrainingCategories') return ['Autism'];
-          if (property === 'LongTermAbsence') return null;
-        },
+        NameOrIdValue: 'Test staff record',
+        mandatoryTrainingCategories: ['Autism'],
+        LongTermAbsence: null,
+
         workerTraining: [
           {
-            get(property) {
-              if (property === 'category') return { category: 'Dementia care' };
-              if (property === 'Expires') {
-                const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
-                return expiryDate.setDate(expiryDate.getDate());
-              }
-              if (property === 'Completed') return '2014-01-01';
-              if (property === 'CategoryFK') return 3;
-              if (property === 'Title') return 'Helen';
-              if (property === 'Accredited') return 'No';
-            },
+            category: { category: 'Dementia care' },
+            expires: today,
+            completed: '2014-01-01',
+            categoryFk: 3,
+            title: 'Helen',
+            accredited: 'No',
           },
         ],
       },

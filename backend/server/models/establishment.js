@@ -2244,7 +2244,7 @@ module.exports = function (sequelize, DataTypes) {
             {
               model: sequelize.models.workerTraining,
               as: 'workerTraining',
-              attributes: ['CategoryFK', 'Title', 'Expires', 'Completed', 'Accredited'],
+              attributes: ['categoryFk', 'title', 'expires', 'completed', 'accredited'],
               required: false,
               include: [
                 {
