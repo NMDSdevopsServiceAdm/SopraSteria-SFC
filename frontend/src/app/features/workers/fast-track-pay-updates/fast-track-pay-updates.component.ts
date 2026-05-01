@@ -99,8 +99,6 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private validationIsActive = signal(false);
-
   public onSubmit(): void {
     this.callValidator();
     this.errorSummaryService.syncFormErrorsEvent.next(true);
@@ -135,8 +133,6 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
   }
 
   private callValidator(): void {
-    this.validationIsActive.set(true);
-
     Object.values(this.workersFormGroup.controls).forEach((group) => {
       group.get('rate')?.updateValueAndValidity();
       group.get('value')?.updateValueAndValidity();
