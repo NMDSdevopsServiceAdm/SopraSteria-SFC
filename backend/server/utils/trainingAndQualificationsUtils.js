@@ -109,9 +109,8 @@ const getTrainingRecordStatus = (expiryDate, expiresSoonAlertDate) => {
 
 exports.convertTrainingForEstablishments = (rawEstablishments) => {
   return rawEstablishments.map((establishment) => {
-    const workplaceNameAsNumber = /^\d+$/.test(establishment.NameValue);
     return {
-      name: workplaceNameAsNumber ? parseInt(workplaceNameAsNumber) : establishment.NameValue,
+      name: numberCheck(establishment.NameValue),
       workerRecords: convertWorkerTrainingRecords(establishment.workers, establishment.get('ExpiresSoonAlertDate')),
     };
   });

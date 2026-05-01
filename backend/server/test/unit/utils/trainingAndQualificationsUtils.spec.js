@@ -202,6 +202,7 @@ describe('trainingAndQualificationsUtils', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
 
         expect(typeof result[0].name).to.deep.equal('number');
+        expect(result[0].name).to.deep.equal(80);
       });
 
       it('should return worker details formatted as expected for first worker', () => {
