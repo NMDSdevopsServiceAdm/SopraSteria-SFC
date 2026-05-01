@@ -36,7 +36,10 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
   protected init(): void {
     this.showNewPill = !this.workplace?.updatePayForMultiStaffViewed;
     this.workplaceUid = this.workplace.uid;
-    this.showUpdatePayForMultipleStaffLink = this.workerCount > 1;
+    const userHasEditPermissions =
+      this.permissionsService.can(this.workplaceUid, 'canEditWorker') &&
+      this.permissionsService.can(this.workplaceUid, 'canEditEstablishment');
+    this.showUpdatePayForMultipleStaffLink = userHasEditPermissions && this.workerCount > 1;
   }
 
   public getWorkerRecordPath(event: Event, worker: Worker) {
