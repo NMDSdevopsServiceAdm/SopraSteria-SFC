@@ -9,13 +9,39 @@ const {
   tableHeaderCellStyle,
   borderStyles,
   applyStyleToRange,
-  forEachCellInRange,
   autoFitColumnWidthByTextLength,
 } = require('../../../utils/excelUtils');
+
 const colCache = require('exceljs/lib/utils/col-cache');
+const lodash = require('lodash');
 
 const GroupHeaderRowNumber = 3;
 const HeaderRowNumber = 4;
+
+const orderOfColumnNameAndDataFields = [
+  { columnName: 'Workplace', field: 'workplaceName' },
+  { columnName: 'Name or ID number', field: 'name' },
+  { columnName: 'Total', field: 'trainingCount' },
+  { columnName: 'Expired', field: 'expiredMandatoryTrainingCount', isMandatoryTrainingField: true },
+  {
+    columnName: 'Expiring soon',
+    field: 'expiringMandatoryTrainingCount',
+    isMandatoryTrainingField: true,
+  },
+  { columnName: 'Up-to-date', field: 'upToDateMandatoryTrainingCount', isMandatoryTrainingField: true },
+  { columnName: 'Total', field: 'mandatoryTrainingCount', isMandatoryTrainingField: true },
+  { columnName: 'Missing', field: 'missingMandatoryTrainingCount', isMandatoryTrainingField: true },
+  { columnName: 'Expired', field: 'expiredNonMandatoryTrainingCount' },
+  {
+    columnName: 'Expiring soon',
+    field: 'expiringNonMandatoryTrainingCount',
+  },
+  {
+    columnName: 'Up-to-date',
+    field: 'upToDateNonMandatoryTrainingCount',
+  },
+  { columnName: 'Total', field: 'nonMandatoryTrainingCount' },
+];
 
 const generateTrainingByStaffTab = async (workbook, workerTrainingBreakdowns, isParent = false) => {
   const trainingByStaffTab = workbook.addWorksheet('Training by staff', { views: [{ showGridLines: false }] });
@@ -26,9 +52,9 @@ const generateTrainingByStaffTab = async (workbook, workerTrainingBreakdowns, is
 
   addWorkerTable(trainingByStaffTab, workerTrainingBreakdowns, isParent);
 
-  addFootNote(trainingByStaffTab);
-
   setHeightsAndWidths(trainingByStaffTab);
+
+  addFootNote(trainingByStaffTab);
 
   setFreezePane(trainingByStaffTab);
 };
@@ -51,79 +77,68 @@ const addGroupHeaderRow = (tab, isParent) => {
 };
 
 const addWorkerTable = (tab, workerTrainingBreakdowns, isParent) => {
-  const tableColumnNames = [
-    ...(isParent ? ['Workplace'] : []),
-    'Name or ID number',
-    'Total',
-    'Expired',
-    'Expiring soon',
-    'Up-to-date',
-    'Total',
-    'Missing',
-    'Expired',
-    'Expiring soon',
-    'Up-to-date',
-    'Total',
-  ];
-
-  const workerTable = tab.addTable({
-    name: 'trainingByStaffTable',
-    ref: 'B4',
-    columns: tableColumnNames.map((name) => ({ name, filterButton: true })),
-    rows: [],
-    totalsRow: true,
-    showFirstColumn: true,
-  });
+  const columnsToDisplay = isParent ? orderOfColumnNameAndDataFields : orderOfColumnNameAndDataFields.slice(1);
 
   const workerTableData = workerTrainingBreakdowns.map((worker) => {
     const maskMandatoryTrainingCount = worker.workplaceHasMandatoryTraining === false;
 
-    return [
-      ...(isParent ? [worker.workplaceName] : []),
-      worker.name,
-      worker.trainingCount,
-      maskMandatoryTrainingCount ? '-' : worker.expiredMandatoryTrainingCount,
-      maskMandatoryTrainingCount ? '-' : worker.expiringMandatoryTrainingCount,
-      maskMandatoryTrainingCount ? '-' : worker.upToDateMandatoryTrainingCount,
-      maskMandatoryTrainingCount ? '-' : worker.mandatoryTrainingCount,
-      maskMandatoryTrainingCount ? '-' : worker.missingMandatoryTrainingCount,
-      worker.expiredNonMandatoryTrainingCount,
-      worker.expiringNonMandatoryTrainingCount,
-      worker.upToDateNonMandatoryTrainingCount,
-      worker.nonMandatoryTrainingCount,
-    ];
+    const rowData = columnsToDisplay.map(({ field, isMandatoryTrainingField }) => {
+      if (maskMandatoryTrainingCount && isMandatoryTrainingField) {
+        return '-';
+      }
+      return worker[field];
+    });
+    return rowData;
   });
 
-  workerTableData.forEach((rowData) => {
-    workerTable.addRow(rowData);
-  });
-
-  workerTable.commit();
-
-  const tableRange = workerTable.model.tableRef;
-
-  // delete the table object and fill in column names manually,
-  // as Excel table does not allow duplicated header column names
-  tab.removeTable('trainingByStaffTable');
+  const tableColumnNames = columnsToDisplay.map(({ columnName }) => columnName);
   const headerRow = tab.getRow(HeaderRowNumber);
   headerRow.values = ['', ...tableColumnNames];
 
-  addFormulaToTotalRow(tab, tableRange);
+  workerTableData.forEach((rowData) => {
+    tab.addRow(['', ...rowData]);
+  });
+
+  const totalNumbers = calculateTotals(workerTrainingBreakdowns);
+
+  addTotalRow(tab, totalNumbers, columnsToDisplay);
+
+  const [top, left, bottom, right] = [HeaderRowNumber, 2, tab.lastRow.number, columnsToDisplay.length + 1];
+  const tableRange = colCache.encode(top, left, bottom, right);
 
   setStyleForWorkerTable(tab, tableRange);
 };
 
-const addFormulaToTotalRow = (tab, tableRange) => {
-  const { left, bottom, right } = colCache.decode(tableRange);
-  const rangeToAddTotalNumbers = colCache.encode(bottom, left + 1, bottom, right);
+const calculateTotals = (workerTrainingBreakdowns) => {
+  if (!workerTrainingBreakdowns?.length) {
+    return {};
+  }
 
-  forEachCellInRange(tab, rangeToAddTotalNumbers, (cell) => {
-    const columnLetter = colCache.n2l(cell.col);
-    const firstWorkerCell = `${columnLetter}${HeaderRowNumber + 1}`;
-    const lastWorkerCell = `${columnLetter}${bottom - 1}`;
+  const fieldNames = Object.keys(workerTrainingBreakdowns[0]);
+  const numericFields = fieldNames.filter((field) => field.endsWith('Count'));
+  const result = {};
 
-    cell.value = { formula: `SUM(${firstWorkerCell}:${lastWorkerCell})` };
+  numericFields.forEach((field) => {
+    const countsForAllWorkersOfThisField = lodash.map(workerTrainingBreakdowns, field);
+    const total = lodash.sum(countsForAllWorkersOfThisField);
+    result[field] = total;
   });
+
+  return result;
+};
+
+const addTotalRow = (tab, totals, columnsToDisplay) => {
+  const totalRowData = columnsToDisplay.map(({ columnName, field }) => {
+    if (columnName === 'Name or ID number') {
+      return 'Total';
+    }
+    if (field.endsWith('Count')) {
+      return totals[field];
+    }
+    return '';
+  });
+
+  tab.addRow(['', ...totalRowData]);
 };
 
 const setStyleForWorkerTable = (tab, tableRange) => {
@@ -194,18 +209,17 @@ const setStyleForWorkerNamesColumn = (tab, lastRowNumber) => {
 };
 
 const addFootNote = (tab) => {
-  const lastRow = tab.lastRow.number;
-  addText(
-    tab,
-    `B${lastRow + 1}:L${lastRow + 1}`,
+  const footNoteText = [
     'The figures shown could include records of staff who have been flagged as long-term absent.',
-  );
-
-  addText(
-    tab,
-    `B${lastRow + 2}:L${lastRow + 2}`,
     'Note, the number in the Missing column may include training not yet taken by new starters.',
-  );
+  ];
+
+  tab.addRow([]);
+
+  footNoteText.forEach((text) => {
+    const newRow = tab.lastRow.number + 1;
+    addText(tab, `B${newRow}`, text);
+  });
 };
 
 const setHeightsAndWidths = (tab) => {

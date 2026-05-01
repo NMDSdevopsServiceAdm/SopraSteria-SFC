@@ -159,6 +159,7 @@ const colourSchemeForTrainingExpiry = [
   { text: 'Up-to-date', colour: newBackgroundColours.green },
   { text: 'Missing', colour: newBackgroundColours.red },
 ];
+exports.colourSchemeForTrainingExpiry = colourSchemeForTrainingExpiry;
 
 exports.conditionalColoursForTrainingExpiry = colourSchemeForTrainingExpiry.map(({ text, colour }) => {
   return {

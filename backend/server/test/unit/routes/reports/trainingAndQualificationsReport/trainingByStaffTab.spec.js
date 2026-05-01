@@ -5,6 +5,7 @@ const lodash = require('lodash');
 const {
   mockWorkerTrainingBreakdowns,
   mockWorkerTrainingBreakdownsWithNoMandatoryTraining,
+  totalCountsForMockWorkplaceA,
 } = require('../../../mockdata/trainingAndQualifications');
 const {
   generateTrainingByStaffTab,
@@ -18,10 +19,39 @@ describe('TrainingByStaffTab', () => {
   });
 
   describe('generateTrainingByStaffTab', () => {
+    const expectedColumnLabels = [
+      'Total',
+      'Expired',
+      'Expiring soon',
+      'Up-to-date',
+      'Total',
+      'Missing',
+      'Expired',
+      'Expiring soon',
+      'Up-to-date',
+      'Total',
+    ];
+    const expectedFieldNameOrders = [
+      'trainingCount',
+      'expiredMandatoryTrainingCount',
+      'expiringMandatoryTrainingCount',
+      'upToDateMandatoryTrainingCount',
+      'mandatoryTrainingCount',
+      'missingMandatoryTrainingCount',
+      'expiredNonMandatoryTrainingCount',
+      'expiringNonMandatoryTrainingCount',
+      'upToDateNonMandatoryTrainingCount',
+      'nonMandatoryTrainingCount',
+    ];
+
     it('should add a worksheet with training record counts listed by worker', () => {
       generateTrainingByStaffTab(workbook, mockWorkerTrainingBreakdowns);
 
       const tab = workbook.getWorksheet('Training by staff');
+
+      const headerRow = tab.getRow('4');
+      expect(headerRow.values.slice(3)).to.deep.equal(expectedColumnLabels);
+
       const workerColumns = tab.getColumn('B');
       expect(workerColumns.values).to.contain('Name or ID number');
 
@@ -30,43 +60,22 @@ describe('TrainingByStaffTab', () => {
         const workerRowNumber = workerColumns.values.indexOf(worker.name);
         const workerRow = tab.getRow(workerRowNumber);
 
-        const expectedRowValues = lodash.at(worker, [
-          'name',
-          'trainingCount',
-          'expiredMandatoryTrainingCount',
-          'expiringMandatoryTrainingCount',
-          'upToDateMandatoryTrainingCount',
-          'mandatoryTrainingCount',
-          'missingMandatoryTrainingCount',
-          'expiredNonMandatoryTrainingCount',
-          'expiringNonMandatoryTrainingCount',
-          'upToDateNonMandatoryTrainingCount',
-          'nonMandatoryTrainingCount',
-        ]);
+        const expectedRowValues = lodash.at(worker, expectedFieldNameOrders);
 
-        expect(workerRow.values.slice(2)).to.deep.equal(expectedRowValues);
+        expect(workerRow.values.slice(3)).to.deep.equal(expectedRowValues);
       });
     });
 
-    it('should add a total row at the end of table', () => {
+    it('should show a total row at the end of table', () => {
       generateTrainingByStaffTab(workbook, mockWorkerTrainingBreakdowns);
 
       const tab = workbook.getWorksheet('Training by staff');
       const totalRow = tab.getRow(4 + mockWorkerTrainingBreakdowns.length + 1);
 
-      expect(totalRow.values.slice(2)).to.deep.equals([
-        'Total',
-        { formula: 'SUM(C5:C8)' },
-        { formula: 'SUM(D5:D8)' },
-        { formula: 'SUM(E5:E8)' },
-        { formula: 'SUM(F5:F8)' },
-        { formula: 'SUM(G5:G8)' },
-        { formula: 'SUM(H5:H8)' },
-        { formula: 'SUM(I5:I8)' },
-        { formula: 'SUM(J5:J8)' },
-        { formula: 'SUM(K5:K8)' },
-        { formula: 'SUM(L5:L8)' },
-      ]);
+      const expectedTotalValues = expectedFieldNameOrders.map((fieldName) => {
+        return totalCountsForMockWorkplaceA[fieldName];
+      });
+      expect(totalRow.values.slice(2)).to.deep.equals(['Total', ...expectedTotalValues]);
     });
 
     it('should show mandatory training counts as dash "-" if workplace does not have mandatory training', () => {

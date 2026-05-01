@@ -89,6 +89,27 @@ exports.mockWorkerTrainingBreakdowns = [
   },
 ];
 
+exports.totalCountsForMockWorkplaceA = {
+  trainingCount: 35,
+  mandatoryTrainingCount: 11,
+  nonMandatoryTrainingCount: 24,
+
+  expiredTrainingCount: 12,
+  expiredMandatoryTrainingCount: 4,
+  expiredNonMandatoryTrainingCount: 8,
+
+  expiringTrainingCount: 8,
+  expiringMandatoryTrainingCount: 2,
+  expiringNonMandatoryTrainingCount: 6,
+
+  upToDateTrainingCount: 15,
+  upToDateMandatoryTrainingCount: 5,
+  upToDateNonMandatoryTrainingCount: 10,
+
+  missingMandatoryTrainingCount: 5,
+  qualificationCount: 2,
+};
+
 exports.mockWorkerTrainingBreakdownsWithNoMandatoryTraining = [
   {
     name: 'Bob Test',
