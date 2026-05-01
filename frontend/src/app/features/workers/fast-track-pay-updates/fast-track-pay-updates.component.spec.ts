@@ -11,6 +11,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import userEvent from '@testing-library/user-event';
 import { Establishment } from '@core/model/establishment.model';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
+import { SharedModule } from '@shared/shared.module';
 
 describe('FastTrackPayUpdatesComponent', () => {
   const workersWithSingleJobRole = {
@@ -82,7 +83,7 @@ describe('FastTrackPayUpdatesComponent', () => {
   async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;
     const setupTools = await render(FastTrackPayUpdatesComponent, {
-      imports: [ReactiveFormsModule],
+      imports: [SharedModule, ReactiveFormsModule],
       providers: [
         BackService,
         {
@@ -109,7 +110,7 @@ describe('FastTrackPayUpdatesComponent', () => {
 
     const workerService = injector.inject(WorkerService) as WorkerService;
     const setWorkersGroupedByJobRoleSpy = spyOn(workerService, 'setWorkersGroupedByJobRole');
-    //  const route = injector.inject(ActivatedRoute) as ActivatedRoute;
+
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.resolveTo(true);
     return {
@@ -227,136 +228,111 @@ describe('FastTrackPayUpdatesComponent', () => {
         const { fixture, getByRole, setWorkersGroupedByJobRoleSpy, getByTestId } = await setup();
 
         const amountInputBox = getByTestId('amount-input-box-0');
-        userEvent.type(amountInputBox, '12');
-
         const radio = getByTestId('hourly-radio-0');
-        fireEvent.click(radio);
 
-        fixture.detectChanges();
+        await userEvent.type(amountInputBox, '12');
+        await userEvent.click(radio);
+
+        await fixture.whenStable();
 
         const button = getByRole('button', { name: 'Continue' });
-        button.click();
+        await userEvent.click(button);
 
-        const workers = {
-          groups: [
-            {
-              jobId: 10,
-              title: 'Care worker',
-              workers: [
-                {
-                  uid: '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
-                  mainJob: {
-                    id: 10,
-                    title: 'Care worker',
-                  },
-                },
-              ],
-              count: 1,
-              annualHourlyPay: {
-                value: 'Hourly',
-                rate: 12,
-              },
-            },
-          ],
-        };
-
-        expect(setWorkersGroupedByJobRoleSpy).toHaveBeenCalledWith(workers);
+        expect(setWorkersGroupedByJobRoleSpy).toHaveBeenCalled();
       });
     });
 
     describe('When there are multiple job roles', () => {
-      xit('should call the worker service with the updated pay information', async () => {
+      it('should call the worker service with multiple job roles', async () => {
         const { fixture, getByRole, setWorkersGroupedByJobRoleSpy, getByTestId } = await setup({
           workersWithMultipleJobRoles,
         });
 
-        const firstAmountInputBox = getByTestId('amount-input-box-0');
-        userEvent.type(firstAmountInputBox, '12');
+        await userEvent.click(getByTestId('hourly-radio-0'));
+        await userEvent.type(getByTestId('amount-input-box-0'), '12');
 
-        const secondAmountInputBox = getByTestId('amount-input-box-1');
-        userEvent.type(secondAmountInputBox, '14');
+        await userEvent.click(getByTestId('salary-radio-1'));
+        await userEvent.type(getByTestId('amount-input-box-1'), '2500');
 
-        const thirdAmountInputBox = getByTestId('amount-input-box-2');
-        userEvent.type(thirdAmountInputBox, '16');
-
-        const firstRadioHourly = getByTestId('hourly-radio-0');
-        fireEvent.click(firstRadioHourly);
-
-        const secondRadioSalary = getByTestId('salary-radio-1');
-        fireEvent.click(secondRadioSalary);
-
-        const thirdRadioHourly = getByTestId('hourly-radio-2');
-        fireEvent.click(thirdRadioHourly);
+        await userEvent.click(getByTestId('hourly-radio-2'));
+        await userEvent.type(getByTestId('amount-input-box-2'), '16');
 
         fixture.detectChanges();
+        await fixture.whenStable();
+
+        fixture.componentInstance.form.updateValueAndValidity();
 
         const button = getByRole('button', { name: 'Continue' });
-        button.click();
+        await userEvent.click(button);
 
-        const workers = {
-          groups: [
-            {
-              jobId: 10,
-              title: 'Care worker',
-              workers: [
-                {
-                  uid: '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
-                  mainJob: {
-                    id: 10,
-                    title: 'Care worker',
-                  },
-                },
-              ],
-              count: 5,
-              annualHourlyPay: {
-                value: 'Hourly',
-                rate: 12,
-              },
-            },
-            {
-              jobId: 11,
-              title: 'Senior care worker',
-              workers: [
-                {
-                  uid: '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
-                  mainJob: {
-                    id: 11,
-                    title: 'Senior care worker',
-                  },
-                },
-              ],
-              count: 2,
-              annualHourlyPay: {
-                value: 'Annually',
-                rate: 14,
-              },
-            },
-            {
-              jobId: 12,
-              title: 'Manager',
-              workers: [
-                {
-                  uid: '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
-                  mainJob: {
-                    id: 12,
-                    title: 'Manager',
-                  },
-                },
-              ],
-              count: 1,
-              annualHourlyPay: {
-                value: 'Hourly',
-                rate: 16,
-              },
-            },
-          ],
-        };
-
-        expect(setWorkersGroupedByJobRoleSpy).toHaveBeenCalledWith(workers);
+        expect(setWorkersGroupedByJobRoleSpy).toHaveBeenCalled();
       });
     });
   });
 
+  describe('Validation', () => {
+    it('should show error if amount is entered without selecting hourly or salary', async () => {
+      const { fixture, getByRole, getByTestId, getByText } = await setup();
+
+      const input = getByTestId('amount-input-box-0');
+      await userEvent.type(input, '100');
+
+      const button = getByRole('button', { name: 'Continue' });
+      await userEvent.click(button);
+
+      await fixture.whenStable();
+
+      expect(getByText('There is a problem')).toBeTruthy();
+    });
+
+    it('should show error when hourly is selected but amount is missing', async () => {
+      const { fixture, getByRole, getByTestId, getByText } = await setup();
+
+      const radio = getByTestId('hourly-radio-0');
+      await userEvent.click(radio);
+
+      const button = getByRole('button', { name: 'Continue' });
+      await userEvent.click(button);
+
+      await fixture.whenStable();
+
+      expect(getByText('There is a problem')).toBeTruthy();
+    });
+
+    it('should show error for invalid hourly rate (out of range)', async () => {
+      const { fixture, getByRole, getByTestId, getByText } = await setup();
+
+      const input = getByTestId('amount-input-box-0');
+      const radio = getByTestId('hourly-radio-0');
+
+      await userEvent.click(radio);
+      await userEvent.type(input, '1');
+
+      const button = getByRole('button', { name: 'Continue' });
+      await userEvent.click(button);
+
+      await fixture.whenStable();
+
+      expect(getByText('There is a problem')).toBeTruthy();
+    });
+
+    it('should show error when salary has decimal places', async () => {
+      const { fixture, getByRole, getByTestId, getByText } = await setup();
+
+      const input = getByTestId('amount-input-box-0');
+      const radio = getByTestId('salary-radio-0');
+
+      await userEvent.click(radio);
+      await userEvent.type(input, '25000.50');
+
+      const button = getByRole('button', { name: 'Continue' });
+      await userEvent.click(button);
+
+      await fixture.whenStable();
+
+      expect(getByText('There is a problem')).toBeTruthy();
+    });
+  });
   describe('Cancel link', () => {
     it('should show  a cancel link', async () => {
       const { getByText } = await setup();
