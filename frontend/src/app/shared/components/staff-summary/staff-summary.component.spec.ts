@@ -297,11 +297,14 @@ describe('StaffSummaryComponent', () => {
 
   describe('Update pay for multiple staff', () => {
     const linkText = 'Update pay for multiple staff';
+    const defaultOverrides = {
+      updatePayForMultiStaffViewed: false,
+      workerCount: 6,
+      permissions: ['canViewWorker', 'canEditWorker', 'canViewEstablishment', 'canEditEstablishment'],
+    };
 
     it('should show update-pay-for-multiple-staff-link with the new pill when updatePayForMultiStaffViewed is false, workerCount is below itemsPerPage', async () => {
-      const overrides = { updatePayForMultiStaffViewed: false, workerCount: 6 };
-
-      const { getByTestId } = await setup(overrides);
+      const { getByTestId } = await setup(defaultOverrides);
 
       const newPillWithLink = getByTestId('update-pay-for-multiple-staff-link');
 
@@ -312,8 +315,8 @@ describe('StaffSummaryComponent', () => {
 
     it('should show the link without the new pill when updatePayForMultiStaffViewed is true', async () => {
       const overrides = {
+        ...defaultOverrides,
         updatePayForMultiStaffViewed: true,
-        workerCount: 6,
       };
 
       const { getByTestId } = await setup(overrides);
@@ -326,7 +329,7 @@ describe('StaffSummaryComponent', () => {
     });
 
     it('should navigate to the update-pay-for-multiple-staff page', async () => {
-      const { fixture, getByTestId, routerSpy } = await setup();
+      const { fixture, getByTestId, routerSpy } = await setup(defaultOverrides);
 
       const newPillWithLink = getByTestId('update-pay-for-multiple-staff-link');
       const link = within(newPillWithLink).getByText(linkText);
@@ -342,10 +345,20 @@ describe('StaffSummaryComponent', () => {
       ]);
     });
 
+    it('should not show the link when user does not have permission to edit worker', async () => {
+      const { queryByText } = await setup({
+        ...defaultOverrides,
+        permissions: ['canViewEstablishment', 'canViewWorker'],
+      });
+
+      const link = queryByText(linkText);
+      expect(link).toBeFalsy();
+    });
+
     it('should call updateSingleEstablishmentField if updatePayForMultiStaffViewed is false', async () => {
       const { fixture, getByText, updateSingleFieldSpy } = await setup({
+        ...defaultOverrides,
         updatePayForMultiStaffViewed: false,
-        workerCount: 15,
       });
 
       const link = getByText(linkText);
@@ -360,8 +373,8 @@ describe('StaffSummaryComponent', () => {
 
     it(`should not call updateSingleEstablishmentField if updatePayForMultiStaffViewed is true`, async () => {
       const overrides = {
+        ...defaultOverrides,
         updatePayForMultiStaffViewed: true,
-        workerCount: 15,
       };
       const { fixture, getByText, updateSingleFieldSpy } = await setup(overrides);
 
