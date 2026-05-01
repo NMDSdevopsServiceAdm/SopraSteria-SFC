@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="54px" height="27px" viewBox="0 0 54 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>Group</title>
-    <g id="Concept-5---signed-off" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Pay" transform="translate(-240, -756)">
-            <g id="Group" transform="translate(240, 756)">
-                <g transform="translate(0, -0)" id="Glyph/Red-new">
-                    <g transform="translate(27, 13.5) rotate(-180) translate(-27, -13.5)">
-                        <rect id="Rectangle-2" fill="#D4351C" fill-rule="evenodd" transform="translate(27, 13.5) rotate(180) translate(-27, -13.5)" x="0" y="2" width="54" height="23" rx="11.5"></rect>
-                        <text id="NEW" transform="translate(26.5, 14) rotate(180) translate(-26.5, -14)" font-family="HelveticaNeue-Bold, Helvetica Neue" font-size="13" font-weight="bold" fill="#FFFFFF">
-                            <tspan x="11" y="19">NEW</tspan>
-                        </text>
-                    </g>
+    <title>Big red pill</title>
+    <defs>
+        <path d="M0,0 L31,0 L31,16 L0,16 L0,0 Z" id="path-1"></path>
+    </defs>
+    <g id="Big-red-pill" stroke="none" fill="none" fill-rule="evenodd" stroke-width="1">
+        <g id="Group" transform="translate(27, 13.5) rotate(-180) translate(-27, -13.5)">
+            <rect id="Rectangle-2" fill="#D4351C" transform="translate(27, 13.5) rotate(180) translate(-27, -13.5)" x="0" y="2" width="54" height="23" rx="11.5"></rect>
+            <g id="Graphic" transform="translate(26.5, 14) rotate(180) translate(-26.5, -14)translate(11, 6)" xlink:href="#path-1" fill="#FFFFFF">
+                <g id="NEW">
+                    <polygon id="Path" fill-rule="nonzero" points="0.897 3.718 0.897 13 2.808 13 2.808 6.786 2.834 6.786 6.695 13 8.736 13 8.736 3.718 6.825 3.718 6.825 9.945 6.799 9.945 2.925 3.718"></polygon>
+                    <polygon id="Path" fill-rule="nonzero" points="10.53 3.718 10.53 13 17.576 13 17.576 11.284 12.571 11.284 12.571 9.009 17.069 9.009 17.069 7.423 12.571 7.423 12.571 5.434 17.472 5.434 17.472 3.718"></polygon>
+                    <polygon id="Path" fill-rule="nonzero" points="27.794 13 30.29 3.718 28.288 3.718 26.767 10.114 26.741 10.114 25.155 3.718 23.244 3.718 21.632 10.036 21.606 10.036 20.137 3.718 18.096 3.718 20.553 13 22.62 13 24.167 6.682 24.193 6.682 25.766 13"></polygon>
                 </g>
             </g>
         </g>

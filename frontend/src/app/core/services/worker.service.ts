@@ -397,6 +397,6 @@ export class WorkerService {
   }
 
   public clearWorkersGroupedByJobRole(): void {
-    this._workersGroupedByJobRole = { groups: [] };
+    this._workersGroupedByJobRole = null;
   }
 }

@@ -98,6 +98,7 @@ export class UpdatePayForMultipleStaffComponent {
 
     this.loadFirstPageWorkers();
     this.backLinkService.showBackLink();
+    this.workerService.clearWorkersGroupedByJobRole();
   }
 
   ngAfterViewInit() {

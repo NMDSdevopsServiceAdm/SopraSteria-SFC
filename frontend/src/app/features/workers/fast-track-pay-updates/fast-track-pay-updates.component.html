@@ -1,88 +1,119 @@
-<form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
+@if (showErrors && workersFormGroup.invalid){
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="workersFormGroup"></app-error-summary>
+}
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <span data-testid="caption" class="govuk-caption-l">Staff records</span>
-      <h1 data-testid="heading" class="govuk-heading-l govuk-!-margin-bottom-7">Fast-track pay updates by job roles</h1>
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <span data-testid="caption" class="govuk-caption-l">Staff records</span>
+        <h1 data-testid="heading" class="govuk-heading-l govuk-!-margin-bottom-7">
+          Fast-track pay updates by job roles
+        </h1>
+      </legend>
     </div>
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <table class="govuk-table govuk-!-margin-bottom-3">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th data-testid="job-role-heading" scope="col" class="govuk-table__header" style="width: 445px">
-              Job role
-            </th>
-            <th data-testid="pay-heading" scope="col" class="govuk-table__header" style="margin-left: 0">
-              New hourly pay rate or salary
-            </th>
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body" formArrayName="workers">
-          @for (workers of workersByJobRole.groups; track $index) {
-          <tr class="govuk-table__row" [formGroupName]="$index">
-            <td class="govuk-table__cell" style="vertical-align: top; padding-top: 18px; padding-bottom: 18px">
-              <div style="line-height: 1.25; display: flex; justify-content: space-between; align-items: flex-start">
-                <span>{{ workers.title }} ({{ workers.count }} record{{ workers.count === 1 ? '' : 's' }})</span>
-                <img
-                  src="/assets/images/right-arrow.svg"
-                  alt="Right facing grey arrow"
-                  style="width: 24px; height: 24px; margin-right: 2.5px"
-                  class="right-arrow"
+      <div
+        role="table"
+        class="govuk-table govuk-!-margin-bottom-3 asc__grid-table-with-form"
+        [formGroup]="workersFormGroup"
+      >
+        <div role="rowheader" class="asc__grid-table-with-form--row asc__grid-table-with-form--header-row">
+          <div data-testid="job-role-header">Job role</div>
+          <div data-testid="pay-header">New hourly pay rate or salary</div>
+        </div>
+        @for (workers of workersByJobRole.groups; track workers.jobId; let workerIndex = $index) { @let workerControl =
+        workersFormGroup.get('job-' + workers.jobId);
+
+        <div
+          [formGroupName]="'job-' + workers.jobId"
+          class="govuk-form-group"
+          [class.govuk-form-group--error]="showErrors && workerControl.invalid"
+        >
+          <div role="row" class="asc__grid-table-with-form--row" [attr.data-testid]="'worker-row-' + workerIndex">
+            @if (showErrors && workerControl.invalid) {
+            <p class="govuk-error-message" [id]="'job-' + workers.jobId + '-error'">
+              <span class="govuk-visually-hidden">Error:</span> {{ getRowError(workerControl) }}
+            </p>
+            }
+            <div style="line-height: 1.25; display: flex; justify-content: space-between; align-items: flex-start">
+              <span>{{ workers.title }} ({{ workers.count }} record{{ workers.count === 1 ? '' : 's' }})</span>
+              <img
+                src="/assets/images/right-arrow.svg"
+                alt="Right facing grey arrow"
+                style="width: 24px; height: 24px; margin-right: 2.5px"
+                class="right-arrow"
+              />
+            </div>
+            <div>
+              <div class="govuk-input__wrapper">
+                <div class="govuk-input__prefix asc__white-background" aria-hidden="true">£</div>
+                <span
+                  class="govuk-visually-hidden asc--align-dummy-anchor-y-axis-to-actual-error-message"
+                  [id]="'job-' + workers.jobId + '-rate-error'"
+                >
+                </span>
+                <input
+                  [attr.data-testid]="'amount-input-box-' + $index"
+                  class="govuk-input govuk-input--width-4"
+                  [id]="'rate-' + $index"
+                  type="number"
+                  formControlName="rate"
                 />
-              </div>
-            </td>
-            <td class="govuk-table__cell" style="vertical-align: top; padding-top: 8px">
-              <div style="display: flex; align-items: center; flex-wrap: nowrap; gap: 15px">
-                <div class="govuk-input__wrapper">
-                  <div class="govuk-input__prefix" aria-hidden="true" style="background-color: #ffffff">£</div>
-                  <input
-                    [attr.data-testid]="'amount-input-box-' + $index"
-                    class="govuk-input govuk-input--width-4"
-                    [formControlName]="'rate'"
-                    [id]="'rate-' + $index"
-                    type="number"
-                  />
-                </div>
-                <div class="govuk-radios govuk-radios--inline govuk-radios--small govuk-!-margin-bottom-0">
-                  <div class="govuk-radios__item" style="margin-right: 5px">
-                    <input
-                      class="govuk-radios__input"
-                      [attr.data-testid]="'hourly-radio-' + $index"
-                      [formControlName]="'value'"
-                      [id]="'hourly-' + $index"
-                      type="radio"
-                      value="Hourly"
-                    />
-                    <label class="govuk-label govuk-radios__label" for="'hourly-' + $index"> Hourly </label>
-                  </div>
+                <label class="govuk-visually-hidden" [for]="'rate-' + $index">
+                  Hourly pay rate or salary for {{ workers.title }}
+                </label>
+                <div
+                  class="govuk-radios govuk-radios--inline govuk-radios--small govuk-!-margin-bottom-0 govuk-!-margin-left-5"
+                >
+                  @for (button of radioButtonLabels; track $index) {
                   <div class="govuk-radios__item">
+                    @if ($index === 0) {
+                    <span
+                      class="govuk-visually-hidden asc--align-dummy-anchor-y-axis-to-actual-error-message"
+                      [id]="'job-' + workers.jobId + '-value-error'"
+                    >
+                    </span>
+                    }
                     <input
                       class="govuk-radios__input"
-                      [attr.data-testid]="'salary-radio-' + $index"
-                      [formControlName]="'value'"
-                      [id]="'salary-' + $index"
+                      [attr.data-testid]="button.slug + '-radio-' + workerIndex"
+                      [id]="button.slug + '-' + workerIndex"
                       type="radio"
-                      value="Annually"
+                      [value]="button.value"
+                      formControlName="value"
+                      [attr.aria-describedby]="'worker-name-' + workerIndex"
                     />
-                    <label class="govuk-label govuk-radios__label" for="'salary-' + $index"> Salary </label>
+                    <label class="govuk-label govuk-radios__label" [for]="button.slug + '-' + workerIndex">
+                      {{ button.label }}
+                    </label>
                   </div>
+                  }
                 </div>
               </div>
-            </td>
-          </tr>
-          }
-        </tbody>
-      </table>
+            </div>
+          </div>
+        </div>
+
+        }
+      </div>
+      <span></span>
     </div>
-  </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <div class="govuk-button-group">
-        <button type="submit" class="govuk-button continue-button govuk-!-margin-right-9" data-module="govuk-button">
-          Continue
-        </button>
-        <a class="govuk-button govuk-button--link govuk-!-margin-left-9" [routerLink]="'/'">Cancel</a>
+
+    <div class="govuk-grid-column-full">
+      <div class="govuk-button-group govuk-!-margin-top-12">
+        <button type="submit" class="govuk-button govuk-!-margin-right-9">Continue</button>
+
+        <a
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          role="button"
+          draggable="false"
+          href="#"
+          (click)="onCancel($event)"
+        >
+          Cancel
+        </a>
       </div>
     </div>
   </div>

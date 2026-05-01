@@ -1,7 +1,6 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { BackLinkService } from '@core/services/backLink.service';
 
-import { UntypedFormGroup } from '@angular/forms';
 import { Establishment } from '@core/model/establishment.model';
 import { WorkersGroupedByJobRoleResponse, WorkersGroupedByJobRoleWithIndex } from '@core/model/worker.model';
 import { ActivatedRoute, Router } from '@angular/router';

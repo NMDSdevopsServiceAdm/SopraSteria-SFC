@@ -146,6 +146,7 @@ describe('UpdatePayForMultipleStaffComponent', () => {
     const updateWorkersSpy = spyOn(establishmentService, 'updateWorkers').and.returnValue(of(null));
 
     const workerService = injector.inject(WorkerService);
+    const clearWorkersGroupedByJobRoleSpy = spyOn(workerService, 'clearWorkersGroupedByJobRole');
     const getWorkersWithPayDataSpy = spyOn(workerService, 'getWorkersWithPayData');
 
     const alertService = injector.inject(AlertService) as AlertService;
@@ -163,6 +164,7 @@ describe('UpdatePayForMultipleStaffComponent', () => {
       updateSingleEstablishmentFieldSpy,
       updateWorkersSpy,
       workerService,
+      clearWorkersGroupedByJobRoleSpy,
       getWorkersWithPayDataSpy,
       alertServiceSpy,
       route,
@@ -183,6 +185,12 @@ describe('UpdatePayForMultipleStaffComponent', () => {
 
     expect(getByRole('heading', { level: 1, name: h1HeadingText })).toBeTruthy();
     expect(getByText(caption)).toBeTruthy();
+  });
+
+  it('should call clearWorkersGroupedByJobRole and set the data to null before the fast track page', async () => {
+    const { clearWorkersGroupedByJobRoleSpy, component } = await setup();
+    component.ngOnInit();
+    expect(clearWorkersGroupedByJobRoleSpy).toHaveBeenCalled();
   });
 
   describe('link to fast-track-pay-updates page', async () => {
