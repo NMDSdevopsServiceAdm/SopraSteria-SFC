@@ -20,7 +20,7 @@ const ERROR_MESSAGES = {
   range: 'Hourly pay rate must be between £2.50 and £200.00',
   pence: 'You can only have 1 or 2 digits for pence after the decimal point',
   salary: 'Salary must not include pence',
-  salaryRange: 'Salary must be between £2,500 and £200,000',
+  salaryRange: 'Salary must be between £500 and £200,000',
 };
 @Component({
   selector: 'app-fast-track-pay-updates',
@@ -190,7 +190,7 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
           return { salary: true };
         }
 
-        if (numericRate < 2500 || numericRate > 200000) {
+        if (numericRate < 500 || numericRate > 200000) {
           return { salaryRange: true };
         }
       }

@@ -252,7 +252,7 @@ describe('FastTrackPayUpdatesComponent', () => {
         await userEvent.type(getByTestId('amount-input-box-0'), '12');
 
         await userEvent.click(getByTestId('salary-radio-1'));
-        await userEvent.type(getByTestId('amount-input-box-1'), '2500');
+        await userEvent.type(getByTestId('amount-input-box-1'), '500');
 
         await userEvent.click(getByTestId('hourly-radio-2'));
         await userEvent.type(getByTestId('amount-input-box-2'), '16');
