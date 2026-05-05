@@ -2242,9 +2242,19 @@ module.exports = function (sequelize, DataTypes) {
               required: false,
             },
             {
-              model: sequelize.models.workerTraining,
+              model: sequelize.models.workerTraining.scope(['withProviderData', 'withCertificateData']),
               as: 'workerTraining',
-              attributes: ['categoryFk', 'title', 'expires', 'completed', 'accredited'],
+              attributes: [
+                'categoryFk',
+                'title',
+                'expires',
+                'completed',
+                'accredited',
+                'validityPeriodInMonth',
+                'deliveredBy',
+                'howWasItDelivered',
+                'otherTrainingProviderName',
+              ],
               required: false,
               include: [
                 {

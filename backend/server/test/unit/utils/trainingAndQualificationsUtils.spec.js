@@ -7,6 +7,7 @@ const {
   convertTrainingForEstablishments,
   getTrainingRecordStatus,
   numberCheck,
+  listMissingMandatoryTrainings,
 } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   mockWorkerTrainingBreakdowns,
@@ -233,14 +234,21 @@ describe.only('trainingAndQualificationsUtils', () => {
           status: 'Expired',
           dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
           accredited: 'No',
+
+          isMandatory: 'No',
+          deliveredBy: 'External provider',
+          howWasItDelivered: 'Face to face',
+          trainingCertificatesCount: 1,
+          trainingProviderName: 'Care skill training',
+          validityPeriodInMonth: 24,
         });
       });
 
       it('should return second training record formatted as expected for first worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
-        const firstWorkerFirstTrainingRecord = result[0].workerRecords[0].trainingRecords[1];
+        const firstWorkerSecondTrainingRecord = result[0].workerRecords[0].trainingRecords[1];
 
-        expect(firstWorkerFirstTrainingRecord).to.deep.equal({
+        expect(firstWorkerSecondTrainingRecord).to.deep.equal({
           category: 'Old age care',
           categoryFK: 5,
           trainingName: 'Old age care training',
@@ -248,24 +256,31 @@ describe.only('trainingAndQualificationsUtils', () => {
           status: 'Up-to-date',
           dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
           accredited: 'Yes',
+
+          isMandatory: 'No',
+          deliveredBy: 'In-house staff',
+          howWasItDelivered: 'Face to face',
+          trainingCertificatesCount: 0,
+          trainingProviderName: null,
+          validityPeriodInMonth: 12,
         });
       });
 
       it('should return worker details formatted as expected for second worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
-        const firstWorker = result[0].workerRecords[1];
+        const secondWorker = result[0].workerRecords[1];
 
-        expect(firstWorker.workerId).to.equal('Another staff record');
-        expect(firstWorker.jobRole).to.equal('Care giver');
-        expect(firstWorker.longTermAbsence).to.equal('Yes');
-        expect(firstWorker.mandatoryTraining).to.deep.equal(['Learning']);
+        expect(secondWorker.workerId).to.equal('Another staff record');
+        expect(secondWorker.jobRole).to.equal('Care giver');
+        expect(secondWorker.longTermAbsence).to.equal('Yes');
+        expect(secondWorker.mandatoryTraining).to.deep.equal(['Learning']);
       });
 
       it('should return first training record formatted as expected for second worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
-        const firstWorkerFirstTrainingRecord = result[0].workerRecords[1].trainingRecords[0];
+        const secondWorkerFirstTrainingRecord = result[0].workerRecords[1].trainingRecords[0];
 
-        expect(firstWorkerFirstTrainingRecord).to.deep.equal({
+        expect(secondWorkerFirstTrainingRecord).to.deep.equal({
           category: 'Learning',
           categoryFK: 10,
           trainingName: 'Test Training',
@@ -273,7 +288,30 @@ describe.only('trainingAndQualificationsUtils', () => {
           status: 'Expiring soon',
           dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
           accredited: 'No',
+
+          isMandatory: 'Yes',
+          validityPeriodInMonth: null,
+          trainingCertificatesCount: 0,
+          deliveredBy: 'External provider',
+          trainingProviderName: null,
+          howWasItDelivered: 'E-learning',
         });
+      });
+
+      it('should add an "missingMandatoryTrainings" field to each worker', () => {
+        const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
+        const firstWorker = result[0].workerRecords[0];
+        const secondWorker = result[0].workerRecords[1];
+
+        expect(firstWorker.missingMandatoryTrainings).to.deep.equal([
+          {
+            category: 'Communication skills',
+            status: 'Missing',
+            isMandatory: 'Yes',
+          },
+        ]);
+
+        expect(secondWorker.missingMandatoryTrainings).to.deep.equal([]);
       });
     });
 
@@ -337,6 +375,13 @@ describe.only('trainingAndQualificationsUtils', () => {
           status: 'Expiring soon',
           dateCompleted: new Date('2014-01-01T00:00:00.000Z'),
           accredited: 'No',
+
+          isMandatory: 'No',
+          validityPeriodInMonth: 60,
+          trainingCertificatesCount: 2,
+          deliveredBy: 'External provider',
+          trainingProviderName: 'Care skill academy',
+          howWasItDelivered: 'Face to face',
         });
       });
     });
@@ -399,6 +444,28 @@ describe.only('trainingAndQualificationsUtils', () => {
     it('should return "Up-to-date" when expiry date has not been passed in', () => {
       const result = getTrainingRecordStatus('', '60');
       expect(result).to.deep.equal('Up-to-date');
+    });
+  });
+
+  describe('listMissingMandatoryTrainings', () => {
+    const mockData = mockEstablishmentsTrainingResponse[0].workers;
+
+    it('should return an empty array if worker does not have mandatory training records missing', () => {
+      const expected = [];
+      const actual = listMissingMandatoryTrainings(mockData[1]);
+      expect(actual).to.deep.equal(expected);
+    });
+
+    it('should return a list of mandatory training records that the worker is missing', () => {
+      const expected = [
+        {
+          category: 'Communication skills',
+          status: 'Missing',
+          isMandatory: 'Yes',
+        },
+      ];
+      const actual = listMissingMandatoryTrainings(mockData[0]);
+      expect(actual).to.deep.equal(expected);
     });
   });
 });

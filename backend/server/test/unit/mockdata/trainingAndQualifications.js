@@ -1,4 +1,5 @@
 const dayjs = require('dayjs');
+const { TrainingCourseDeliveryMode, TrainingCourseDeliveredBy } = require('../../../../reference/databaseEnumTypes');
 
 exports.mockWorkerTrainingBreakdowns = [
   {
@@ -604,7 +605,11 @@ exports.mockEstablishmentsTrainingResponse = [
         id: 11169,
         mainJob: { id: 1, title: 'Activities worker or co-ordinator' },
         NameOrIdValue: 'New staff record',
-        mandatoryTrainingCategories: ['Communication skills'],
+        get(property) {
+          if (property === 'mandatoryTrainingCategories') {
+            return ['Communication skills'];
+          }
+        },
         LongTermAbsence: null,
 
         workerTraining: [
@@ -615,6 +620,12 @@ exports.mockEstablishmentsTrainingResponse = [
             categoryFk: 10,
             title: 'Great',
             accredited: 'No',
+
+            validityPeriodInMonth: 24,
+            trainingCertificatesCount: 1,
+            deliveredBy: TrainingCourseDeliveredBy.ExternalProvider,
+            trainingProviderName: 'Care skill training',
+            howWasItDelivered: TrainingCourseDeliveryMode.FaceToFace,
           },
           {
             category: { category: 'Old age care' },
@@ -623,6 +634,12 @@ exports.mockEstablishmentsTrainingResponse = [
             categoryFk: 5,
             title: 'Old age care training',
             accredited: 'Yes',
+
+            validityPeriodInMonth: 12,
+            trainingCertificatesCount: 0,
+            deliveredBy: TrainingCourseDeliveredBy.InHouseStaff,
+            trainingProviderName: null,
+            howWasItDelivered: TrainingCourseDeliveryMode.FaceToFace,
           },
         ],
       },
@@ -630,7 +647,11 @@ exports.mockEstablishmentsTrainingResponse = [
         id: 1131,
         mainJob: { id: 3, title: 'Care giver' },
         NameOrIdValue: 'Another staff record',
-        mandatoryTrainingCategories: ['Learning'],
+        get(property) {
+          if (property === 'mandatoryTrainingCategories') {
+            return ['Learning'];
+          }
+        },
         LongTermAbsence: 'Yes',
 
         workerTraining: [
@@ -641,6 +662,12 @@ exports.mockEstablishmentsTrainingResponse = [
             categoryFk: 10,
             title: 'Test Training',
             accredited: 'No',
+
+            validityPeriodInMonth: null,
+            trainingCertificatesCount: 0,
+            deliveredBy: TrainingCourseDeliveredBy.ExternalProvider,
+            trainingProviderName: null,
+            howWasItDelivered: TrainingCourseDeliveryMode.ELearning,
           },
         ],
       },
@@ -655,7 +682,11 @@ exports.mockEstablishmentsTrainingResponse = [
         id: 11169,
         mainJob: { id: 1, title: 'Activities worker and care' },
         NameOrIdValue: 'Test staff record',
-        mandatoryTrainingCategories: ['Autism'],
+        get(property) {
+          if (property === 'mandatoryTrainingCategories') {
+            return ['Autism'];
+          }
+        },
         LongTermAbsence: null,
 
         workerTraining: [
@@ -666,6 +697,12 @@ exports.mockEstablishmentsTrainingResponse = [
             categoryFk: 3,
             title: 'Helen',
             accredited: 'No',
+
+            validityPeriodInMonth: 60,
+            trainingCertificatesCount: 2,
+            deliveredBy: TrainingCourseDeliveredBy.ExternalProvider,
+            trainingProviderName: 'Care skill academy',
+            howWasItDelivered: TrainingCourseDeliveryMode.FaceToFace,
           },
         ],
       },

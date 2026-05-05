@@ -64,20 +64,32 @@ exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
 
 const convertWorkerTrainingRecords = (workers, expiresSoonAlertDate) => {
   return workers.map((worker) => {
+    const mandatoryTrainingCategories = worker?.get('mandatoryTrainingCategories') ?? [];
+
     return {
       workerId: numberCheck(worker.NameOrIdValue),
       jobRole: worker.mainJob.title,
       longTermAbsence: worker.LongTermAbsence ? worker.LongTermAbsence : '',
-      mandatoryTraining: worker.mandatoryTrainingCategories ? worker.mandatoryTrainingCategories : [],
-      trainingRecords: convertIndividualWorkerTrainingRecords(worker.workerTraining, expiresSoonAlertDate),
+      mandatoryTraining: mandatoryTrainingCategories,
+      missingMandatoryTrainings: listMissingMandatoryTrainings(worker),
+      trainingRecords: convertIndividualWorkerTrainingRecords(
+        worker.workerTraining,
+        expiresSoonAlertDate,
+        mandatoryTrainingCategories,
+      ),
     };
   });
 };
 
-const convertIndividualWorkerTrainingRecords = (workerTraining, expiresSoonAlertDate) => {
+const convertIndividualWorkerTrainingRecords = (
+  workerTraining,
+  expiresSoonAlertDate,
+  mandatoryTrainingCategories = [],
+) => {
   return workerTraining.map((trainingRecord) => {
     const expiryDate = trainingRecord.expires ? new Date(trainingRecord.expires) : '';
     const dateCompleted = trainingRecord.completed ? new Date(trainingRecord.completed) : '';
+    const isMandatory = mandatoryTrainingCategories.includes(trainingRecord.category.category) ? 'Yes' : 'No';
 
     return {
       category: trainingRecord.category.category,
@@ -87,6 +99,13 @@ const convertIndividualWorkerTrainingRecords = (workerTraining, expiresSoonAlert
       status: getTrainingRecordStatus(expiryDate, expiresSoonAlertDate),
       dateCompleted,
       accredited: trainingRecord.accredited ? trainingRecord.accredited : '',
+
+      isMandatory,
+      validityPeriodInMonth: trainingRecord.validityPeriodInMonth,
+      trainingCertificatesCount: trainingRecord.trainingCertificatesCount,
+      deliveredBy: trainingRecord.deliveredBy,
+      trainingProviderName: trainingRecord.trainingProviderName,
+      howWasItDelivered: trainingRecord.howWasItDelivered,
     };
   });
 };
@@ -247,3 +266,16 @@ exports.buildWorkerTrainingBreakdownWithWorkplaceInfo = async (rawEstablishmentT
 
   return workerTrainingBreakdownsWithWorkplaceInfo;
 };
+
+const listMissingMandatoryTrainings = (workerWithTrainingRecords) => {
+  const categoryNames = workerWithTrainingRecords?.get('mandatoryTrainingCategories') ?? [];
+  const trainingRecords = workerWithTrainingRecords?.workerTraining ?? [];
+
+  const missingCategories = categoryNames.filter(
+    (categoryName) => !trainingRecords.some((record) => record?.category?.category === categoryName),
+  );
+
+  return missingCategories.map((categoryName) => ({ category: categoryName, status: 'Missing', isMandatory: 'Yes' }));
+};
+
+exports.listMissingMandatoryTrainings = listMissingMandatoryTrainings;
