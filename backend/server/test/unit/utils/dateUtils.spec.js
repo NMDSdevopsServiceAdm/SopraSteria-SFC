@@ -1,4 +1,4 @@
-const { calculateTrainingExpiryDate } = require('../../../utils/dateUtils');
+const { calculateTrainingExpiryDate, formatDateTime } = require('../../../utils/dateUtils');
 
 const expect = require('chai').expect;
 const moment = require('moment');
@@ -78,6 +78,51 @@ describe('dateUtils', () => {
       const actual = calculateTrainingExpiryDate(completionDate, validityPeriodInMonth);
 
       expect(actual).to.equal(expected);
+    });
+  });
+
+  describe('formatDateTime', () => {
+    it('should format the given date with the given format', async () => {
+      const mockDateTime = new Date('2025-01-02T12:34:56Z');
+      const formatString = 'DD/MMM/YYYY - HH:mm';
+
+      const expected = '02/Jan/2025 - 12:34';
+      const actual = formatDateTime(mockDateTime, formatString);
+
+      expect(actual).to.equal(expected);
+    });
+
+    describe('timezone issue related to DST', () => {
+      it('should use the UK timezone as default', () => {
+        const mockDateTime = new Date('2025-04-05T12:34:56Z');
+        const formatString = 'DD/MMM/YYYY - HH:mm';
+
+        const expected = '05/Apr/2025 - 13:34';
+        const actual = formatDateTime(mockDateTime, formatString);
+
+        expect(actual).to.equal(expected);
+      });
+
+      const testCases = [
+        { dateTime: '2025-04-05T11:34:56Z', expected: '05/Apr/2025 - 12:34' },
+        { dateTime: '2025-04-05T12:34:56+01:00', expected: '05/Apr/2025 - 12:34' },
+        { dateTime: '2025-04-05T20:34:56+09:00', expected: '05/Apr/2025 - 12:34' },
+
+        { dateTime: '2025-11-23T12:34:56Z', expected: '23/Nov/2025 - 12:34' },
+        { dateTime: '2025-11-23T12:34:56+01:00', expected: '23/Nov/2025 - 11:34' },
+        { dateTime: '2025-11-23T21:34:56+09:00', expected: '23/Nov/2025 - 12:34' },
+      ];
+
+      testCases.forEach(({ dateTime, expected }) => {
+        it(`should handle DST correctly: ${dateTime} --> ${expected}`, () => {
+          const mockDateTime = new Date(dateTime);
+          const formatString = 'DD/MMM/YYYY - HH:mm';
+
+          const actual = formatDateTime(mockDateTime, formatString);
+
+          expect(actual).to.equal(expected);
+        });
+      });
     });
   });
 });

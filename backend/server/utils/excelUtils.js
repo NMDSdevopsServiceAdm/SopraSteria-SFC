@@ -1,3 +1,7 @@
+const colcache = require('exceljs/lib/utils/col-cache');
+
+//  ===== constants definitions =====
+
 exports.blueBackground = {
   type: 'pattern',
   pattern: 'solid',
@@ -11,6 +15,58 @@ const fullBorder = {
   right: { style: 'thin' },
 };
 exports.fullBorder = fullBorder;
+
+const standardFont = { name: 'Serif', family: 4, size: 12 };
+exports.standardFont = standardFont;
+
+const textBoxAlignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+exports.textBoxAlignment = textBoxAlignment;
+
+exports.backgroundColours = {
+  yellow: { argb: 'FFEA99' },
+  blue: { argb: '0050AB' },
+  red: { argb: 'FFC0C8' },
+  green: { argb: 'BBEDC9' },
+  lightBlue: { argb: 'A3CBFA' },
+  darkBlue: { argb: '5981B8' },
+};
+
+exports.textColours = {
+  yellow: { argb: '945B19' },
+  white: { argb: 'FFFFFF' },
+  red: { argb: '960512' },
+  green: { argb: '005713' },
+  black: { argb: '000000' },
+  blue: { argb: '0050AB' },
+};
+
+const newBackgroundColours = {
+  lightGrey: { argb: 'EFEFEF' },
+  green: { argb: '34A853' },
+  orange: { argb: 'FF7C1C' },
+  red: { argb: 'EA4335' },
+  darkBlue: { argb: '1A65A6' },
+  lightBlue: { argb: 'DBE8FF' },
+};
+
+const newTextColours = {
+  darkBlue: { argb: '1A65A6' },
+  white: { argb: 'FFFFFF' },
+  black: { argb: '000000' },
+  linkBlue: { argb: '0000FF' },
+};
+
+exports.newBackgroundColours = newBackgroundColours;
+exports.newTextColours = newTextColours;
+
+const borderColourLightGrey = { argb: 'CCCCCC' };
+const topAndBottomGreyBorder = {
+  top: { style: 'thin', color: borderColourLightGrey },
+  bottom: { style: 'thin', color: borderColourLightGrey },
+};
+exports.topAndBottomGreyBorder = topAndBottomGreyBorder;
+
+//  ===== helper methods =====
 
 function eachColumnInRange(ws, col1, col2, cb) {
   for (let c = col1; c <= col2; c++) {
@@ -145,11 +201,42 @@ exports.addLine = (worksheet, startCell, endCell) => {
   };
 };
 
-const standardFont = { name: 'Serif', family: 4, size: 12 };
-exports.standardFont = standardFont;
+const addText = (tab, range, content, fontOptions = {}) => {
+  const [startCell, endCell] = range.split(':');
+  if (endCell) {
+    tab.mergeCells(`${startCell}:${endCell}`);
+  }
 
-const textBoxAlignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
-exports.textBoxAlignment = textBoxAlignment;
+  const font = { family: 4, ...fontOptions };
+  const cell = tab.getCell(startCell);
+  cell.value = content;
+  cell.font = font;
+};
+exports.addText = addText;
+
+exports.addLink = (tab, range, { text, hyperlink }, fontOptions = {}) => {
+  const fontWithLinkStyle = { color: newTextColours.linkBlue, underline: true, ...fontOptions };
+  const content = { text, hyperlink };
+
+  return addText(tab, range, content, fontWithLinkStyle);
+};
+
+exports.setColourForRange = (tab, range, { backgroundColour = null, textColour = null }) => {
+  if (!backgroundColour && !textColour) {
+    return;
+  }
+
+  const setCellColour = (cell) => {
+    if (backgroundColour) {
+      cell.fill = { ...cell.fill, type: 'pattern', pattern: 'solid', fgColor: backgroundColour };
+    }
+    if (textColour) {
+      cell.font = { ...cell.font, color: textColour };
+    }
+  };
+
+  forEachCellInRange(tab, range, setCellColour);
+};
 
 exports.setTableHeadingsStyle = (tab, currentLineNumber, backgroundColour, textColour, cellColumns) => {
   tab.getRow(currentLineNumber).alignment = { horizontal: 'center' };
@@ -173,7 +260,7 @@ exports.setCellTextAndBackgroundColour = (tab, cellCoordinate, backgroundColour,
     fgColor: backgroundColour,
   };
 
-  cell.font = { color: textColour };
+  cell.font = { ...cell.font, color: textColour };
 };
 
 exports.alignColumnToLeft = (tab, colNumber) => {
@@ -189,24 +276,6 @@ exports.addBlankRowIfTableEmpty = (tableObject, noOfColumns) => {
   }
 };
 
-exports.backgroundColours = {
-  yellow: { argb: 'FFEA99' },
-  blue: { argb: '0050AB' },
-  red: { argb: 'FFC0C8' },
-  green: { argb: 'BBEDC9' },
-  lightBlue: { argb: 'A3CBFA' },
-  darkBlue: { argb: '5981B8' },
-};
-
-exports.textColours = {
-  yellow: { argb: '945B19' },
-  white: { argb: 'FFFFFF' },
-  red: { argb: '960512' },
-  green: { argb: '005713' },
-  black: { argb: '000000' },
-  blue: { argb: '0050ab' },
-};
-
 exports.makeRowBold = (tab, rowNumber) => {
   tab.getRow(rowNumber).font = { bold: true };
 };
@@ -218,3 +287,58 @@ exports.setColumnWidths = (tab) => {
   longColumn.width = 33;
   longColumnsecond.width = 29;
 };
+
+const listRows = (startRow, endRow) => {
+  if (endRow < startRow) {
+    return listRows(endRow, startRow);
+  }
+
+  return Array(endRow - startRow + 1)
+    .fill(null)
+    .map((_, index) => startRow + index);
+};
+
+const columnLabelToNumber = (columnLabel) => colcache.l2n(columnLabel);
+const numberToColumnLabel = (number) => colcache.n2l(number);
+
+const forEachCellInRange = (tab, range, callback) => {
+  const { columns, rows } = parseRange(range);
+  rows.forEach((row) => {
+    columns.forEach((column) => {
+      const cell = tab.getRow(row).getCell(column);
+      callback(cell);
+    });
+  });
+};
+exports.forEachCellInRange = forEachCellInRange;
+
+exports.forEachColumnInRange = (tab, range, callback) => {
+  const { columns } = parseRange(range);
+  columns.forEach((columnLabel) => {
+    const column = tab.getColumn(columnLabel);
+    callback(column);
+  });
+};
+
+const parseRange = (range) => {
+  const regex = /^([A-Z]+)(\d+):([A-Z]+)(\d+)$/i;
+  const match = range.match(regex);
+
+  if (!match) {
+    return {};
+  }
+
+  const { top, left, bottom, right } = colcache.decode(range);
+
+  const startColumn = left;
+  const endColumn = right;
+  const startRow = top;
+  const endRow = bottom;
+
+  const rows = listRows(startRow, endRow);
+  const columns = listRows(startColumn, endColumn).map(numberToColumnLabel);
+
+  return { columns, rows };
+};
+
+exports.parseRange = parseRange;

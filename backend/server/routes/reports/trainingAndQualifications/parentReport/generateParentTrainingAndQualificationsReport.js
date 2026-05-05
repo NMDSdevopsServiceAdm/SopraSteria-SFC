@@ -2,12 +2,16 @@ const excelJS = require('exceljs');
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const moment = require('moment');
-const { generateHowToTab } = require('../howToTab');
+
+const Authorization = require('../../../../utils/security/isAuthenticated');
+const { hasPermission } = require('../../../../utils/security/hasPermission');
+
 const { generateSummaryTab } = require('./parentSummaryTab');
 const { generateTrainingTab } = require('../trainingTab');
 const { generateQualificationsTab } = require('../qualificationsTab');
 const { generateCareCertificateTab } = require('../careCertificateTab');
 const models = require('../../../../models');
+const { generateIntroTab } = require('../introTab');
 
 const generateParentTrainingAndQualificationsReport = async (req, res) => {
   try {
@@ -18,7 +22,8 @@ const generateParentTrainingAndQualificationsReport = async (req, res) => {
     workbook.creator = 'Skills-For-Care';
     workbook.properties.date1904 = true;
 
-    generateHowToTab(workbook, true);
+    generateIntroTab(workbook, establishment);
+
     await generateSummaryTab(workbook, establishment.id);
     await generateTrainingTab(workbook, establishment.id, true);
     await generateQualificationsTab(workbook, establishment.id, true);
@@ -38,7 +43,13 @@ const generateParentTrainingAndQualificationsReport = async (req, res) => {
   }
 };
 
-router.route('/:id/report').get(generateParentTrainingAndQualificationsReport);
+router
+  .route('/:id/report')
+  .get(
+    Authorization.hasAuthorisedEstablishment,
+    hasPermission('canViewEstablishment'),
+    generateParentTrainingAndQualificationsReport,
+  );
 
 module.exports = router;
 module.exports.generateParentTrainingAndQualificationsReport = generateParentTrainingAndQualificationsReport;

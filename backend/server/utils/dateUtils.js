@@ -1,4 +1,8 @@
 const dayjs = require('dayjs');
+const timezone = require('dayjs/plugin/timezone');
+const config = require('../config/config');
+
+dayjs.extend(timezone);
 
 const calculateTrainingExpiryDate = (completionDate, validityPeriodInMonth) => {
   const parsedCompletionDate = dayjs(completionDate);
@@ -19,4 +23,9 @@ const calculateTrainingExpiryDate = (completionDate, validityPeriodInMonth) => {
   return parsedCompletionDate.subtract(1, 'day').add(validityPeriodInMonth, 'month').format('YYYY-MM-DD');
 };
 
-module.exports = { calculateTrainingExpiryDate };
+const formatDateTime = (date, formatString) => {
+  const timezone = config.get('timezone');
+  return dayjs(date).tz(timezone).format(formatString);
+};
+
+module.exports = { calculateTrainingExpiryDate, formatDateTime };
