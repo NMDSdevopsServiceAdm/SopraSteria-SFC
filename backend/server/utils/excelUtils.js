@@ -1,4 +1,6 @@
-const colcache = require('exceljs/lib/utils/col-cache');
+const colCache = require('exceljs/lib/utils/col-cache');
+const excelJS = require('exceljs');
+const lodash = require('lodash');
 
 //  ===== constants definitions =====
 
@@ -47,6 +49,7 @@ const newBackgroundColours = {
   red: { argb: 'EA4335' },
   darkBlue: { argb: '1A65A6' },
   lightBlue: { argb: 'DBE8FF' },
+  black: { argb: '000000' },
 };
 
 const newTextColours = {
@@ -59,12 +62,113 @@ const newTextColours = {
 exports.newBackgroundColours = newBackgroundColours;
 exports.newTextColours = newTextColours;
 
-const borderColourLightGrey = { argb: 'CCCCCC' };
-const topAndBottomGreyBorder = {
-  top: { style: 'thin', color: borderColourLightGrey },
-  bottom: { style: 'thin', color: borderColourLightGrey },
+const borderColours = {
+  lightGrey: { argb: 'CCCCCC' },
+  black: { argb: '000000' },
 };
-exports.topAndBottomGreyBorder = topAndBottomGreyBorder;
+exports.borderColours = borderColours;
+
+const lightGreyBorderTopAndBottom = {
+  top: { style: 'thin', color: borderColours.lightGrey },
+  bottom: { style: 'thin', color: borderColours.lightGrey },
+};
+
+const blackBorderLeftAndRight = {
+  left: { style: 'thin', color: borderColours.black },
+  right: { style: 'thin', color: borderColours.black },
+};
+
+const blackBorderTopAndBottom = {
+  top: { style: 'thin', color: borderColours.black },
+  bottom: { style: 'thin', color: borderColours.black },
+};
+
+const blackBorderAllSides = { ...blackBorderLeftAndRight, ...blackBorderTopAndBottom };
+
+const thickBlackBorderLeft = {
+  left: { style: 'thick', color: borderColours.black },
+};
+
+const thickBlackBorderRight = {
+  right: { style: 'thick', color: borderColours.black },
+};
+
+const borderStyles = {
+  tableCell: { ...blackBorderLeftAndRight, ...lightGreyBorderTopAndBottom },
+  lightGreyBorderTopAndBottom,
+  blackBorderLeftAndRight,
+  blackBorderTopAndBottom,
+  blackBorderAllSides,
+  thickBlackBorderLeft,
+  thickBlackBorderRight,
+};
+exports.borderStyles = borderStyles;
+
+const tableDataCellStyle = {
+  font: { size: 12, family: 4 },
+  border: borderStyles.tableCell,
+  alignment: { vertical: 'middle' },
+};
+
+const tableHeaderCellStyle = {
+  font: { size: 12, family: 4, bold: true },
+  fill: { type: 'pattern', pattern: 'solid', fgColor: newBackgroundColours.lightGrey },
+  border: borderStyles.blackBorderAllSides,
+  alignment: { vertical: 'middle' },
+};
+
+exports.tableDataCellStyle = tableDataCellStyle;
+exports.tableHeaderCellStyle = tableHeaderCellStyle;
+
+exports.setBasicTableStyle = (
+  tab,
+  tableRange,
+  { hasTotalRow = true, alignHorizontalCenter = true, bold = false } = {},
+) => {
+  const { top, left, bottom, right } = colCache.decode(tableRange);
+
+  const headerRange = colCache.encode(top, left, top, right);
+  const lastDataCellRow = hasTotalRow ? bottom - 1 : bottom;
+  const dataCellsRange = colCache.encode(top + 1, left, lastDataCellRow, right);
+
+  const dataCellStyle = lodash.cloneDeep(tableDataCellStyle);
+  const headerCellStyle = lodash.cloneDeep(tableHeaderCellStyle);
+
+  if (bold) {
+    dataCellStyle.font.bold = true;
+    headerCellStyle.font.bold = true;
+  }
+
+  if (alignHorizontalCenter) {
+    dataCellStyle.alignment.horizontal = 'center';
+    headerCellStyle.alignment.horizontal = 'center';
+  }
+
+  applyStyleToRange(tab, headerRange, headerCellStyle);
+  applyStyleToRange(tab, dataCellsRange, dataCellStyle);
+
+  if (hasTotalRow) {
+    const totalRowRange = colCache.encode(bottom, left, bottom, right);
+    applyStyleToRange(tab, totalRowRange, headerCellStyle);
+  }
+};
+
+const colourSchemeForTrainingExpiry = [
+  { text: 'Expired', colour: newBackgroundColours.red },
+  { text: 'Expiring soon', colour: newBackgroundColours.orange },
+  { text: 'Up-to-date', colour: newBackgroundColours.green },
+  { text: 'Missing', colour: newBackgroundColours.red },
+];
+exports.colourSchemeForTrainingExpiry = colourSchemeForTrainingExpiry;
+
+exports.conditionalColoursForTrainingExpiry = colourSchemeForTrainingExpiry.map(({ text, colour }) => {
+  return {
+    type: 'cellIs',
+    operator: 'equal',
+    formulae: [`"${text}"`],
+    style: { fill: { type: 'pattern', pattern: 'solid', bgColor: colour }, font: { bold: true, size: 12, family: 4 } },
+  };
+});
 
 //  ===== helper methods =====
 
@@ -156,6 +260,25 @@ exports.fitColumnsToSize = function (ws, startingColumn = 1, customWidth = 2.21)
   });
 };
 
+exports.autoFitColumnWidthByTextLength = function (worksheet, columnLetter, fontsize = 12) {
+  const cells = [];
+  const column = worksheet.getColumn(columnLetter);
+  column.eachCell((cell) => cells.push(cell));
+
+  const cellsToConsider = cells.filter(
+    (cell) => !cell.isMerged && cell.value?.length > 0 && cell.type === excelJS.ValueType.String,
+  );
+  if (!cellsToConsider.length) {
+    return;
+  }
+
+  const maxTextLength = Math.max(...cellsToConsider.map((cell) => cell.value.length));
+  const currentWidth = column.width ?? 0;
+  const newColumnWidth = (maxTextLength * fontsize) / 12.8;
+
+  column.width = Math.max(currentWidth, newColumnWidth);
+};
+
 const addBorder = (worksheet, cell) => {
   worksheet.getCell(cell).border = {
     ...fullBorder,
@@ -207,7 +330,7 @@ const addText = (tab, range, content, fontOptions = {}) => {
     tab.mergeCells(`${startCell}:${endCell}`);
   }
 
-  const font = { family: 4, ...fontOptions };
+  const font = { family: 4, size: 12, ...fontOptions };
   const cell = tab.getCell(startCell);
   cell.value = content;
   cell.font = font;
@@ -221,21 +344,40 @@ exports.addLink = (tab, range, { text, hyperlink }, fontOptions = {}) => {
   return addText(tab, range, content, fontWithLinkStyle);
 };
 
+const applyStyleToCell = (cell, styleChanges) => {
+  cell.style = lodash.merge({}, cell.style, styleChanges);
+};
+exports.applyStyleToCell = applyStyleToCell;
+
+const applyStyleToRange = (tab, range, styleChanges) => {
+  forEachCellInRange(tab, range, (cell) => {
+    applyStyleToCell(cell, styleChanges);
+  });
+};
+exports.applyStyleToRange = applyStyleToRange;
+
+const setColourForCell = (cell, { backgroundColour = null, textColour = null }) => {
+  const newCellStyle = {};
+  if (backgroundColour) {
+    newCellStyle.fill = { type: 'pattern', pattern: 'solid', fgColor: backgroundColour };
+  }
+  if (textColour) {
+    newCellStyle.font = { color: textColour };
+  }
+  applyStyleToCell(cell, newCellStyle);
+};
+exports.setColourForCell = setColourForCell;
+
 exports.setColourForRange = (tab, range, { backgroundColour = null, textColour = null }) => {
   if (!backgroundColour && !textColour) {
     return;
   }
 
-  const setCellColour = (cell) => {
-    if (backgroundColour) {
-      cell.fill = { ...cell.fill, type: 'pattern', pattern: 'solid', fgColor: backgroundColour };
-    }
-    if (textColour) {
-      cell.font = { ...cell.font, color: textColour };
-    }
+  const callback = (cell) => {
+    setColourForCell(cell, { backgroundColour, textColour });
   };
 
-  forEachCellInRange(tab, range, setCellColour);
+  forEachCellInRange(tab, range, callback);
 };
 
 exports.setTableHeadingsStyle = (tab, currentLineNumber, backgroundColour, textColour, cellColumns) => {
@@ -298,8 +440,8 @@ const listRows = (startRow, endRow) => {
     .map((_, index) => startRow + index);
 };
 
-const columnLabelToNumber = (columnLabel) => colcache.l2n(columnLabel);
-const numberToColumnLabel = (number) => colcache.n2l(number);
+const columnLabelToNumber = (columnLabel) => colCache.l2n(columnLabel);
+const numberToColumnLabel = (number) => colCache.n2l(number);
 
 const forEachCellInRange = (tab, range, callback) => {
   const { columns, rows } = parseRange(range);
@@ -328,7 +470,7 @@ const parseRange = (range) => {
     return {};
   }
 
-  const { top, left, bottom, right } = colcache.decode(range);
+  const { top, left, bottom, right } = colCache.decode(range);
 
   const startColumn = left;
   const endColumn = right;
@@ -342,3 +484,17 @@ const parseRange = (range) => {
 };
 
 exports.parseRange = parseRange;
+
+const rangeOfNumber = (startNumber, endNumber) => {
+  if (startNumber > endNumber) {
+    return rangeOfNumber(endNumber, startNumber);
+  }
+  const count = endNumber - startNumber;
+  return Array(count)
+    .fill(null)
+    .map((_, index) => {
+      return startNumber + index;
+    });
+};
+
+exports.rangeOfNumber = rangeOfNumber;

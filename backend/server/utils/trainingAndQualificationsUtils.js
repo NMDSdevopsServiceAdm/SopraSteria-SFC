@@ -1,12 +1,24 @@
-const convertWorkerTrainingBreakdown = (worker) => {
+const convertEachWorkerTrainingBreakdown = (worker) => {
   const expiredTrainingCount = parseInt(worker.get('expiredTrainingCount'));
   const expiredMandatoryTrainingCount = parseInt(worker.get('expiredMandatoryTrainingCount'));
+
   const expiringTrainingCount = parseInt(worker.get('expiringTrainingCount'));
   const expiringMandatoryTrainingCount = parseInt(worker.get('expiringMandatoryTrainingCount'));
+
+  const trainingCount = parseInt(worker.get('trainingCount'));
+  const mandatoryTrainingCount = parseInt(worker.get('mandatoryTrainingCount'));
+  const nonMandatoryTrainingCount = trainingCount - mandatoryTrainingCount;
+
+  const upToDateMandatoryTrainingCount =
+    mandatoryTrainingCount - expiredMandatoryTrainingCount - expiringMandatoryTrainingCount;
+  const upToDateTrainingCount = trainingCount - expiringTrainingCount - expiredTrainingCount;
+  const upToDateNonMandatoryTrainingCount = upToDateTrainingCount - upToDateMandatoryTrainingCount;
 
   return {
     name: numberCheck(worker.get('NameOrIdValue')),
     trainingCount: parseInt(worker.get('trainingCount')),
+    mandatoryTrainingCount,
+    nonMandatoryTrainingCount,
     qualificationCount: parseInt(worker.get('qualificationCount')),
     expiredTrainingCount,
     expiredMandatoryTrainingCount,
@@ -15,9 +27,13 @@ const convertWorkerTrainingBreakdown = (worker) => {
     expiringMandatoryTrainingCount,
     expiringNonMandatoryTrainingCount: expiringTrainingCount - expiringMandatoryTrainingCount,
     missingMandatoryTrainingCount: parseInt(worker.get('missingMandatoryTrainingCount')),
-    mandatoryTrainingCount: parseInt(worker.get('mandatoryTrainingCount')),
+    upToDateTrainingCount,
+    upToDateMandatoryTrainingCount,
+    upToDateNonMandatoryTrainingCount,
   };
 };
+
+exports.convertEachWorkerTrainingBreakdown = convertEachWorkerTrainingBreakdown;
 
 const convertWorkerWithCareCertificateStatus = (worker) => {
   return {
@@ -40,7 +56,7 @@ exports.convertWorkersWithCareCertificateStatus = (establishments) => {
 
 exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
   return rawWorkerTrainingBreakdowns.map((trainingBreakdown) => {
-    return convertWorkerTrainingBreakdown(trainingBreakdown);
+    return convertEachWorkerTrainingBreakdown(trainingBreakdown);
   });
 };
 
@@ -210,3 +226,24 @@ exports.getTotalsForAllWorkplaces = (establishments) => {
 
 exports.numberCheck = numberCheck;
 exports.getTrainingRecordStatus = getTrainingRecordStatus;
+
+exports.buildWorkerTrainingBreakdownWithWorkplaceInfo = async (rawEstablishmentTrainingBreakdowns) => {
+  const establishmentMandatoryTrainingCounts = await Promise.all(
+    rawEstablishmentTrainingBreakdowns.rows.map((establishment) => establishment.countMandatoryTraining()),
+  );
+  const eachEstablishmentHasMandatoryTraining = establishmentMandatoryTrainingCounts.map((count) => count > 0);
+
+  const workerTrainingBreakdownsWithWorkplaceInfo = rawEstablishmentTrainingBreakdowns.rows.flatMap(
+    (establishment, index) => {
+      const workerBreakdowns = establishment.workers.map(convertEachWorkerTrainingBreakdown);
+      return workerBreakdowns.map((workerBreakDown) => ({
+        ...workerBreakDown,
+        workplaceId: establishment.id,
+        workplaceName: establishment.NameValue,
+        workplaceHasMandatoryTraining: eachEstablishmentHasMandatoryTraining[index],
+      }));
+    },
+  );
+
+  return workerTrainingBreakdownsWithWorkplaceInfo;
+};

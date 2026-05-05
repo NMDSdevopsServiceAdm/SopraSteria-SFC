@@ -5,7 +5,7 @@ const {
   newBackgroundColours,
   newTextColours,
   addLink,
-  topAndBottomGreyBorder,
+  borderStyles,
   addText,
   setColourForRange,
 } = require('../../../utils/excelUtils');
@@ -94,7 +94,7 @@ const addLinksToOtherTabs = (introTab) => {
     const rowNumber = 11 + index;
     addLink(introTab, `B${rowNumber}:G${rowNumber}`, link, { size: 16 });
 
-    introTab.getCell(`B${rowNumber}`).border = topAndBottomGreyBorder;
+    introTab.getCell(`B${rowNumber}`).border = borderStyles.lightGreyBorderTopAndBottom;
   });
 };
 

@@ -12,6 +12,8 @@ const { generateTrainingTab } = require('./trainingTab');
 const { generateQualificationsTab } = require('./qualificationsTab');
 const { generateCareCertificateTab } = require('./careCertificateTab');
 const { generateIntroTab } = require('./introTab');
+const { generateTrainingByStaffTab } = require('./trainingByStaffTab');
+const { buildWorkerTrainingBreakdownWithWorkplaceInfo } = require('../../../utils/trainingAndQualificationsUtils');
 
 const generateTrainingAndQualificationsReport = async (req, res) => {
   try {
@@ -23,6 +25,12 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
     workbook.properties.date1904 = true;
 
     await generateIntroTab(workbook, establishment);
+
+    const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(establishment.id, true);
+    const workerTrainingBreakdowns = await buildWorkerTrainingBreakdownWithWorkplaceInfo(
+      rawEstablishmentTrainingBreakdowns,
+    );
+    await generateTrainingByStaffTab(workbook, workerTrainingBreakdowns);
 
     await generateSummaryTab(workbook, establishment.id);
     await generateTrainingTab(workbook, establishment.id);
