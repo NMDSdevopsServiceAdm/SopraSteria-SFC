@@ -1,21 +1,37 @@
+/* eslint-disable no-undef */
+/// <reference types="cypress" />
+
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
-describe('Fast Track Pay Updates flow', () => {
-  const workplaceUid = '123';
+
+describe('Fast-track pay updates by job roles', { tags: '@staffRecords' }, () => {
+  const establishmentID = StandAloneEstablishment.id;
+
+  before(() => {
+    cy.archiveAllWorkersInWorkplace(establishmentID);
+
+    cy.insertTestWorker({
+      establishmentID,
+      workerName: 'Care worker 1',
+      mainJobFKValue: 10,
+    });
+
+    cy.insertTestWorker({
+      establishmentID,
+      workerName: 'Care worker 2',
+      mainJobFKValue: 10,
+    });
+  });
 
   beforeEach(() => {
     cy.loginAsUser(StandAloneEstablishment.editUserLoginName, Cypress.env('userPassword'));
-    cy.insertTestWorker({
-      establishmentID: StandAloneEstablishment.id,
-      workerName: 'Care worker',
-    });
 
-    cy.intercept('GET', '**/api/establishment/*/worker/groupedByJobRole', {
+    cy.intercept('GET', '**/worker/groupedByJobRole', {
       statusCode: 200,
       body: {
         groups: [
           {
-            jobId: 1,
+            jobId: 10,
             title: 'Care worker',
             count: 2,
             workers: [{ uid: '1' }, { uid: '2' }],
@@ -25,43 +41,43 @@ describe('Fast Track Pay Updates flow', () => {
       },
     }).as('getWorkers');
 
-    cy.intercept('PUT', '**/api/establishment/*/workers', {
+    cy.intercept('PUT', '**/workers', {
       statusCode: 200,
       body: {},
     }).as('updateWorkers');
 
     onHomePage.clickTab('Staff records');
-
-    cy.contains('Update pay for multiple staff').click();
-
-    //  cy.visit(`/workplace/${workplaceUid}/staff-record/fast-track-pay-updates`);
-
-    // cy.wait('@getWorkers');
-
-    // cy.get('[data-testid="amount-input-box-0"]').should('exist');
   });
+  it('should update pay for a job role', () => {
+    cy.contains('Update pay for multiple staff').click();
+    cy.contains('Fast-track pay updates by job roles').click();
 
-  // it('should complete full pay update journey', () => {
-  //   cy.get('[data-testid="amount-input-box-0"]').type('10');
-  //   cy.get('[data-testid="hourly-radio-0"]').check();
+    cy.wait('@getWorkers');
 
-  //   cy.contains('button', 'Continue').click();
+    cy.get('[data-testid="worker-row-0"]').within(() => {
+      cy.get('[data-testid="amount-input-box-0"]').type('12');
+      cy.get('[data-testid="hourly-radio-0"]').check();
+    });
 
-  //   cy.url().should('include', 'fast-track-confirmation-page');
+    cy.contains('button', 'Continue').click();
 
-  //   cy.contains('Care worker').should('exist');
+    cy.get('[data-testid="heading"]').should('contain', "You're about to update pay");
 
-  //   cy.contains('button', 'Save and return').click();
+    cy.contains('Care worker (2 records)').should('exist');
 
-  //   cy.wait('@updateWorkers').then((interception) => {
-  //     const body = interception.request.body;
+    cy.contains('£12 hourly pay').should('exist');
 
-  //     expect(body).to.be.an('array');
-  //     expect(body[0].annualHourlyPay.rate).to.equal(10);
-  //   });
+    cy.contains('Change').should('exist');
 
-  //   cy.url().should('include', 'update-pay-for-multiple-staff');
+    cy.contains('button', 'Save and return').click();
 
-  //   cy.contains('Pay updated in').should('exist');
-  // });
+    cy.wait('@updateWorkers').then((interception) => {
+      const body = interception.request.body;
+
+      expect(body).to.be.an('array');
+      expect(body[0].annualHourlyPay.rate).to.equal(12);
+    });
+
+    cy.contains('Pay updated in').should('exist');
+  });
 });
