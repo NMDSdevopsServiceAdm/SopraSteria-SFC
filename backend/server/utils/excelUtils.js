@@ -83,6 +83,10 @@ const blackBorderTopAndBottom = {
   bottom: { style: 'thin', color: borderColours.black },
 };
 
+const blackBorderBottom = {
+  bottom: { style: 'thin', color: borderColours.black },
+};
+
 const blackBorderAllSides = { ...blackBorderLeftAndRight, ...blackBorderTopAndBottom };
 
 const thickBlackBorderLeft = {
@@ -147,9 +151,12 @@ exports.setBasicTableStyle = (
   applyStyleToRange(tab, headerRange, headerCellStyle);
   applyStyleToRange(tab, dataCellsRange, dataCellStyle);
 
+  const lastRowRange = colCache.encode(bottom, left, bottom, right);
+
   if (hasTotalRow) {
-    const totalRowRange = colCache.encode(bottom, left, bottom, right);
-    applyStyleToRange(tab, totalRowRange, headerCellStyle);
+    applyStyleToRange(tab, lastRowRange, headerCellStyle);
+  } else {
+    applyStyleToRange(tab, lastRowRange, { border: blackBorderBottom });
   }
 };
 
