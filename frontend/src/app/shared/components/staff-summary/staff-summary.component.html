@@ -3,13 +3,26 @@
   [count]="workerCount"
   [searchTerm]="searchTerm"
   [sortByParamMap]="sortByParamMap"
-  [sortByValue]="sortByValue"
   [sortOptions]="sortStaffOptions"
   accessibleLabel="for staff records"
   (fetchData)="getPageOfWorkers($event)"
   [label]="searchLabel"
   [maintainedPageIndex]="maintainedPageIndex"
+  [sortByValue]="sortByValue"
 >
+  @if (showUpdatePayForMultipleStaffLink) {
+    <ng-container placeAboveSearchBox>
+      <div class="govuk-grid-column-three-quarters">
+        <app-new-pill-with-link
+          placeAboveSearchBox
+          [linkText]="updatePayForMultipleStaffLinkText"
+          [showNewPill]="showNewPill"
+          data-testid="update-pay-for-multiple-staff-link"
+          (clicked)="handleOnClick()"
+        ></app-new-pill-with-link>
+      </div>
+    </ng-container>
+  }
   <table *ngIf="workerCount; else noWorkersFound" class="govuk-table">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">

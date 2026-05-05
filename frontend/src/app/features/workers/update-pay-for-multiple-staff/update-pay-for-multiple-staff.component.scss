@@ -1,0 +1,36 @@
+@import 'govuk-frontend/govuk/base';
+
+.asc__grid-table-with-form--row {
+  grid-template-columns: 220px 220px 480px;
+}
+
+.govuk-form-group--error > .asc__grid-table-with-form--row {
+  grid-template-columns: 200px 220px 480px;
+}
+
+.govuk-input__wrapper {
+  margin-bottom: -4px;
+}
+
+.govuk-input__prefix {
+  min-width: 32px;
+}
+
+.govuk-radios {
+  margin-left: 16px;
+}
+
+.govuk-radios__item {
+  margin-right: 0;
+}
+
+.govuk-radios__item:last-child {
+  label {
+    padding-right: 0;
+    margin-right: 0;
+  }
+}
+
+.asc--align-dummy-anchor-y-axis-to-actual-error-message {
+  transform: translateY(-50px);
+}

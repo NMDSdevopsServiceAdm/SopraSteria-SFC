@@ -1,4 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { isNil } from 'lodash';
+
+type State = {
+  searchTerm: string;
+  searched: boolean;
+};
 
 @Component({
   selector: 'app-search-input',
@@ -10,6 +16,7 @@ export class SearchInputComponent {
   @Input() ref = 'search';
   @Input() searchButtonName = 'search';
   @Input() label = 'Search';
+  @Input() showSearchIcon: boolean = false;
   @Input() accessibleLabel: string;
   @Input() set prevSearch(value: string) {
     if (value.trim() !== this.searchTerm.trim()) {
@@ -52,5 +59,17 @@ export class SearchInputComponent {
     this.setSearched(false);
     this.setSearchTerm('');
     this.emitInput.emit(this.searchTerm);
+  }
+
+  public setState(state: Partial<State>): void {
+    const { searchTerm, searched } = state;
+
+    if (!isNil(searchTerm)) {
+      this.searchTerm = searchTerm;
+    }
+
+    if (!isNil(searched)) {
+      this.searched = searched;
+    }
   }
 }

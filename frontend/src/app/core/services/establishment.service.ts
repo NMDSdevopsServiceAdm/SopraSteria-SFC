@@ -27,6 +27,7 @@ import { environment } from 'src/environments/environment';
 import { PostServicesModel } from '../model/postServices.model';
 import { UpdateStaffKindDelegatedHealthcareActivitiesPayload } from '@core/model/delegated-healthcare-activities.model';
 import { ADD_WORKPLACE_DETAILS_ROUTE, WORKPLACE_SUMMARY_ROUTE } from '@core/constants/constants';
+import { Job } from '@core/model/job.model';
 
 interface EstablishmentApiResponse {
   id: number;
@@ -70,6 +71,10 @@ interface UpdateCareWorkforcePathwayWorkplaceAwarenessResponse {
 }
 
 interface UpdateStaffKindDelegatedHealthcareActivitiesResponse {}
+
+export type WorkersMainJobRolesResponse = {
+  mainJobRoles: Array<Job & { title: string }>;
+};
 
 @Injectable({
   providedIn: 'root',
@@ -331,7 +336,7 @@ export class EstablishmentService {
       );
   }
 
-  updateWorkers(establishmentId, data) {
+  updateWorkers(establishmentId: string, data) {
     return this.http.put<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/workers`, data);
   }
 
@@ -503,6 +508,12 @@ export class EstablishmentService {
     return this.http.post<UpdateStaffKindDelegatedHealthcareActivitiesResponse>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/updateStaffKindDelegatedHealthcareActivities`,
       payload,
+    );
+  }
+
+  public getMainJobRoleForAllWorkers(establishmentUid: string) {
+    return this.http.get<WorkersMainJobRolesResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/worker/mainJobRoles`,
     );
   }
 

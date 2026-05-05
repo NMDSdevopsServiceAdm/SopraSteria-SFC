@@ -109,6 +109,8 @@ class Establishment extends EntityValidator {
     this._howToPayForSleepIn = null;
     this._travelTimePay = null;
     this._payAndPensionsMiniFlowViewed = null;
+    this._updatePayForMultiStaffViewed = null;
+    this._fastTrackPayByJobRolesViewed = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -451,6 +453,14 @@ class Establishment extends EntityValidator {
 
   get payAndPensionsMiniFlowViewed() {
     return this._payAndPensionsMiniFlowViewed;
+  }
+
+  get updatePayForMultiStaffViewed() {
+    return this._updatePayForMultiStaffViewed;
+  }
+
+  get fastTrackPayByJobRolesViewed() {
+    return this._fastTrackPayByJobRolesViewed;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -932,6 +942,8 @@ class Establishment extends EntityValidator {
           travelTimePayOptionFK: this._travelTimePay?.id,
           travelTimePayRate: this._travelTimePay?.rate,
           ...(this._payAndPensionsMiniFlowViewed ? { payAndPensionsMiniFlowViewed: true } : {}),
+          updatePayForMultiStaffViewed: this._updatePayForMultiStaffViewed,
+          fastTrackPayByJobRolesViewed: this._fastTrackPayByJobRolesViewed,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1172,6 +1184,8 @@ class Establishment extends EntityValidator {
             travelTimePayOptionFK: this._travelTimePay?.id,
             travelTimePayRate: this._travelTimePay?.rate,
             ...(this._payAndPensionsMiniFlowViewed ? { payAndPensionsMiniFlowViewed: true } : {}),
+            updatePayForMultiStaffViewed: this._updatePayForMultiStaffViewed,
+            fastTrackPayByJobRolesViewed: this._fastTrackPayByJobRolesViewed,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1497,6 +1511,8 @@ class Establishment extends EntityValidator {
         this._howToPayForSleepIn = fetchResults.howToPayForSleepIn;
         this._travelTimePay = fetchResults.travelTimePay;
         this._payAndPensionsMiniFlowViewed = fetchResults.payAndPensionsMiniFlowViewed;
+        this._updatePayForMultiStaffViewed = fetchResults.updatePayForMultiStaffViewed;
+        this._fastTrackPayByJobRolesViewed = fetchResults.fastTrackPayByJobRolesViewed;
 
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
@@ -1974,6 +1990,8 @@ class Establishment extends EntityValidator {
         myDefaultJSON.howToPayForSleepIn = this.howToPayForSleepIn;
         myDefaultJSON.travelTimePay = this.travelTimePay;
         myDefaultJSON.payAndPensionsMiniFlowViewed = this.payAndPensionsMiniFlowViewed;
+        myDefaultJSON.updatePayForMultiStaffViewed = this.updatePayForMultiStaffViewed;
+        myDefaultJSON.fastTrackPayByJobRolesViewed = this.fastTrackPayByJobRolesViewed;
       }
 
       if (this.showSharingPermissionsBanner !== null) {

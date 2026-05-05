@@ -1,0 +1,20 @@
+.asc__pagination-wrapper__vertical-align-center {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  grid-row-gap: 30px;
+  align-items: center;
+
+  .govuk-grid-column-three-quarters {
+    width: auto;
+    grid-column: 1;
+  }
+
+  .govuk-grid-column-one-quarter {
+    width: auto;
+    grid-column: 2;
+  }
+
+  &.govuk-grid-row:after {
+    display: none;
+  }
+}

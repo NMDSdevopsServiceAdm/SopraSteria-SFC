@@ -1,0 +1,153 @@
+@if (showErrors && (workersFormGroup.invalid || serverError)) {
+  <app-error-summary [formErrorsMap]="formErrorsMap" [form]="workersFormGroup" [serverError]="serverError">
+  </app-error-summary>
+}
+
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <span class="govuk-caption-l" data-testid="section-heading">Staff records</span>
+        <h1 class="govuk-fieldset__heading">Update pay for multiple staff</h1>
+      </legend>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <app-table-pagination-wrapper
+        #paginationWrapper
+        [totalCount]="totalWorkerCount"
+        [count]="currentWorkerCount"
+        [sortByValue]="'staffNameAsc'"
+        [sortByParamMap]="sortByParamMap"
+        [sortOptions]="sortOptions"
+        (fetchData)="handleSearchEvent($event)"
+      >
+        <ng-container placeAboveSearchBox>
+          <div class="govuk-grid-column-three-quarters">
+            <app-new-pill-with-link
+              placeAboveSearchBox
+              [linkText]="'Fast-track pay updates by job roles'"
+              [showNewPill]="showNewPillForFastTrackLink"
+              data-testid="fast-track-pay-update-link"
+              (clicked)="handleClickForFastTrackPageLink()"
+            ></app-new-pill-with-link>
+          </div>
+        </ng-container>
+
+        <ng-container overrideSearchBox>
+          <app-search-input-auto-suggest
+            #searchBox
+            inputBoxId="job-role-search"
+            [label]="'Search by job role'"
+            [dataProvider]="jobRoleDataProvider()"
+            [showClearResults]="true"
+            [showSearchButton]="false"
+            [accessibleLabel]="'by job role'"
+          >
+          </app-search-input-auto-suggest>
+        </ng-container>
+
+        @if (workersToShow.length > 0) {
+          <div
+            role="table"
+            class="govuk-table govuk-!-margin-bottom-3 asc__grid-table-with-form"
+            [formGroup]="workersFormGroup"
+          >
+            <div role="rowheader" class="asc__grid-table-with-form--row asc__grid-table-with-form--header-row">
+              <div data-testid="name-or-id-header">Name or ID number</div>
+              <div data-testid="job-role-header">Job role</div>
+              <div data-testid="pay-header">Hourly pay rate or salary</div>
+            </div>
+            @for (worker of workersToShow; track worker.uid; let workerIndex = $index) {
+              @let workerFormControl = workersFormGroup.get(`uid-${worker.uid}`);
+              <div
+                [formGroupName]="'uid-' + worker.uid"
+                class="govuk-form-group"
+                [class.govuk-form-group--error]="showErrors && workerFormControl.invalid"
+              >
+                <div role="row" class="asc__grid-table-with-form--row" [attr.data-testid]="'worker-row-' + workerIndex">
+                  @if (showErrors && workerFormControl.invalid) {
+                    <p class="govuk-error-message" [id]="'uid-' + worker.uid + '-error'">
+                      <span class="govuk-visually-hidden">Error:</span> {{ getInlineErrorMessage(worker) }}
+                    </p>
+                  }
+                  <div [id]="'worker-name-' + workerIndex">
+                    {{ worker.nameOrId }}
+                  </div>
+                  <div>{{ worker?.mainJob?.title }}</div>
+                  <div>
+                    <div class="govuk-input__wrapper">
+                      <div class="govuk-input__prefix asc__white-background" aria-hidden="true">£</div>
+                      <span
+                        class="govuk-visually-hidden asc--align-dummy-anchor-y-axis-to-actual-error-message"
+                        [id]="'uid-' + worker.uid + '-payRate-error'"
+                      >
+                      </span>
+                      <input
+                        [attr.data-testid]="'amount-input-box-' + $index"
+                        class="govuk-input govuk-input--width-4"
+                        [id]="'rate-' + $index"
+                        type="number"
+                        formControlName="payRate"
+                      />
+                      <label class="govuk-visually-hidden" [for]="'rate-' + $index">
+                        Hourly pay rate or salary for {{ worker.nameOrId }}
+                      </label>
+                      <div class="govuk-radios govuk-radios--inline govuk-radios--small govuk-!-margin-bottom-0">
+                        @for (button of radioButtonLabels; track $index) {
+                          <div class="govuk-radios__item">
+                            @if ($index === 0) {
+                              <span
+                                class="govuk-visually-hidden asc--align-dummy-anchor-y-axis-to-actual-error-message"
+                                [id]="'uid-' + worker.uid + '-payValue-error'"
+                              >
+                              </span>
+                            }
+                            <input
+                              class="govuk-radios__input"
+                              [attr.data-testid]="button.slug + '-radio-' + workerIndex"
+                              [id]="button.slug + '-' + workerIndex"
+                              type="radio"
+                              [value]="button.value"
+                              formControlName="payValue"
+                              [attr.aria-describedby]="'worker-name-' + workerIndex"
+                            />
+                            <label class="govuk-label govuk-radios__label" [for]="button.slug + '-' + workerIndex">
+                              {{ button.label }}
+                            </label>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="govuk-!-margin-top-6">
+            <p class="govuk-util__bold">There are no matching results</p>
+          </div>
+        }
+      </app-table-pagination-wrapper>
+    </div>
+
+    <div class="govuk-grid-column-full">
+      <div class="govuk-button-group govuk-!-margin-top-12">
+        <button type="submit" class="govuk-button govuk-!-margin-right-9">Save and return</button>
+
+        <a
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          role="button"
+          draggable="false"
+          href="#"
+          (click)="onCancel($event)"
+        >
+          Cancel
+        </a>
+      </div>
+    </div>
+  </div>
+</form>

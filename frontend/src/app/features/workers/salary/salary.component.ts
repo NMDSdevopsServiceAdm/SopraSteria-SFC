@@ -2,7 +2,14 @@ import { DecimalPipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { INT_PATTERN, SALARY_PATTERN } from '@core/constants/constants';
+import {
+  AnnualSalaryLimits,
+  AnnualSalaryLimitsForSeniorManagement,
+  HourlyPayRateLimits,
+  INT_PATTERN,
+  SALARY_PATTERN,
+  SeniorManagementJobId,
+} from '@core/constants/constants';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -11,13 +18,13 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-    selector: 'app-salary',
-    templateUrl: './salary.component.html',
-    providers: [DecimalPipe],
-    standalone: false
+  selector: 'app-salary',
+  templateUrl: './salary.component.html',
+  providers: [DecimalPipe],
+  standalone: false,
 })
 export class SalaryComponent extends QuestionComponent {
-  public hourly = { min: 2.5, max: 200 };
+  public hourly = HourlyPayRateLimits;
   public annually: any;
   public intPattern = INT_PATTERN.toString();
   public salaryPattern = SALARY_PATTERN.toString();
@@ -46,7 +53,8 @@ export class SalaryComponent extends QuestionComponent {
   }
 
   init() {
-    this.annually = { min: 500, max: this.worker.mainJob.jobId === 26 ? 250000 : 200000 };
+    this.annually =
+      this.worker.mainJob.jobId === SeniorManagementJobId ? AnnualSalaryLimitsForSeniorManagement : AnnualSalaryLimits;
     this.setValidators();
     this.setAnnualHourlyPay();
     this.next = this.getRoutePath('care-certificate');

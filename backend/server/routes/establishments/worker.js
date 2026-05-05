@@ -8,6 +8,7 @@ const Establishment = require('../../models/classes/establishment');
 
 const moment = require('moment');
 const get = require('lodash/get');
+const lodash = require('lodash');
 
 // all worker functionality is encapsulated
 const Workers = require('../../models/classes/worker');
@@ -297,6 +298,92 @@ const viewAllWorkers = async (req, res) => {
   }
 };
 
+const getAllWorkersGroupedByJobRole = async (req, res) => {
+  try {
+    const establishmentId = req.establishmentId;
+
+    const allWorkers = await models.worker.findAll({
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+      include: [
+        {
+          model: models.job,
+          as: 'mainJob',
+          attributes: ['id', 'title'],
+        },
+      ],
+      attributes: ['uid'],
+      orderBy: ['mainJob.title'],
+      raw: true,
+      nest: true,
+    });
+
+    const groupedByJobRole = lodash
+      .chain(allWorkers)
+      .groupBy('mainJob.title')
+      .entries()
+      .map(([mainJobTitle, workers]) => {
+        return { jobId: workers[0].mainJob.id, title: mainJobTitle, workers, count: workers.length };
+      })
+      .orderBy('title')
+      .value();
+
+    return res.status(200).json({ groups: groupedByJobRole });
+  } catch (err) {
+    console.error('/api/establishment/:uid/worker/groupedByJobRole', err);
+    return res.status(500).send({ message: 'failed to get workers' });
+  }
+};
+
+const parseIntWithDefault = (numberString, defaultValue) => {
+  const parsed = Number(numberString);
+  if (isNaN(parsed)) {
+    return defaultValue;
+  }
+  return parsed;
+};
+
+const getWorkersWithPayData = async (req, res) => {
+  try {
+    const allowedSortByOptions = ['staffNameAsc', 'staffNameDesc', 'jobRoleAsc', 'jobRoleDesc'];
+    const establishmentId = req.establishmentId;
+
+    const itemsPerPage = parseIntWithDefault(req.query.itemsPerPage, 15);
+    const pageIndex = parseIntWithDefault(req.query.pageIndex, 0);
+    const sortBy = allowedSortByOptions.includes(req.query.sortBy) ? req.query.sortBy : 'staffNameAsc';
+    const jobId = parseIntWithDefault(req.query.jobId, undefined);
+
+    const queryParams = {
+      establishmentId,
+      itemsPerPage,
+      pageIndex,
+      sortBy,
+      ...(jobId ? { jobId } : {}),
+    };
+
+    const results = await models.establishment.fetchWorkersWithPayData(queryParams);
+    return res.status(200).json(results);
+  } catch (err) {
+    console.error('GET /worker/withPayData: unexpected exception: ', err);
+    return res.status(500).send({ message: 'failed to get workers with pay data' });
+  }
+};
+
+const getMainJobRoleForAllWorkers = async (req, res) => {
+  const establishmentId = req.establishmentId;
+
+  try {
+    const mainJobRoles = await models.establishment.fetchAllWorkersMainJobRole(establishmentId);
+
+    return res.status(200).json({ mainJobRoles });
+  } catch (err) {
+    console.error('GET /worker/mainJobRoles: unexpected exception: ', err);
+    return res.status(500).send({ message: 'failed to get workers main job roles' });
+  }
+};
+
 const updateLocalIdentifiers = async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
@@ -347,6 +434,9 @@ router.route('/').post(hasPermission('canAddWorker'), createWorker);
 
 router.route('/localIdentifier').put(hasPermission('canBulkUpload'), updateLocalIdentifiers);
 router.route('/total').get(hasPermission('canViewEstablishment'), getTotalWorkers);
+router.get('/groupedByJobRole', hasPermission('canViewWorker'), getAllWorkersGroupedByJobRole);
+router.get('/withPayData', hasPermission('canViewWorker'), getWorkersWithPayData);
+router.get('/mainJobRoles', hasPermission('canViewWorker'), getMainJobRoleForAllWorkers);
 
 router.use('/multiple-training', MutipleTrainingRecordsRoute);
 
@@ -363,3 +453,6 @@ module.exports = router;
 module.exports.editWorker = editWorker;
 module.exports.viewAllWorkers = viewAllWorkers;
 module.exports.getTotalWorkers = getTotalWorkers;
+module.exports.getAllWorkersGroupedByJobRole = getAllWorkersGroupedByJobRole;
+module.exports.getWorkersWithPayData = getWorkersWithPayData;
+module.exports.getMainJobRoleForAllWorkers = getMainJobRoleForAllWorkers;

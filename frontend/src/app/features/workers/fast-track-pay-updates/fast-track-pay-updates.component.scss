@@ -1,0 +1,7 @@
+.asc__grid-table-with-form--row {
+  grid-template-columns: 460px 460px;
+}
+
+.govuk-form-group--error > .asc__grid-table-with-form--row {
+  grid-template-columns: 440px 460px;
+}

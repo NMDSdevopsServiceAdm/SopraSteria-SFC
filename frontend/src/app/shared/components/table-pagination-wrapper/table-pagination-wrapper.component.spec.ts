@@ -189,7 +189,11 @@ describe('TablePaginationWrapperCompnent', () => {
 
   describe('page index', () => {
     it('should use the value from maintainedPageIndex', async () => {
-      const { component } = await setup({ maintainedPageIndex: 1, currentPageIndex: 0 });
+      const { component } = await setup({
+        maintainedPageIndex: 1,
+        currentPageIndex: 0,
+        totalCount: 25,
+      });
 
       expect(component.currentPageIndex).toEqual(1);
     });
@@ -198,6 +202,43 @@ describe('TablePaginationWrapperCompnent', () => {
       const { component } = await setup({ currentPageIndex: 0 });
 
       expect(component.currentPageIndex).toEqual(0);
+    });
+  });
+
+  describe('setStateWithoutEmitSearchEvent()', () => {
+    it('should allow parent component to change the pagination params in view without triggering a search', async () => {
+      const { component, fixture, getByLabelText, queryByTestId, emitSpy } = await setup({ totalCount: 35 });
+      const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
+      const searchBox = getByLabelText('Search') as HTMLInputElement;
+
+      // verify current states
+      expect(sortBySelectBox.value).toEqual('0_asc');
+      expect(queryByTestId('pageNoLink-0')).toBeFalsy();
+      expect(queryByTestId('pageNoLink-1')).toBeTruthy();
+      expect(queryByTestId('pageNoLink-2')).toBeTruthy();
+
+      expect(queryByTestId('pageNoText-0')).toBeTruthy();
+      expect(searchBox.value).toEqual('');
+
+      component.setStateWithoutEmitSearchEvent({
+        index: 2,
+        itemsPerPage: 15,
+        searchTerm: 'test search term',
+        sortByValue: 'jobRoleDesc',
+      });
+
+      fixture.detectChanges();
+
+      expect(sortBySelectBox.value).toEqual('1_dsc');
+
+      expect(queryByTestId('pageNoLink-0')).toBeTruthy();
+      expect(queryByTestId('pageNoLink-1')).toBeTruthy();
+      expect(queryByTestId('pageNoLink-2')).toBeFalsy();
+      expect(queryByTestId('pageNoText-2')).toBeTruthy();
+
+      expect(searchBox.value).toEqual('test search term');
+
+      expect(emitSpy).not.toHaveBeenCalled();
     });
   });
 });

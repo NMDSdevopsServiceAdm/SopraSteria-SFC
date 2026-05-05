@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
+const lodash = require('lodash');
 const {
   clearDHAWorkerAnswersOnWorkplaceChange,
   clearDoDHAWorkplaceOnMainServiceChange,
@@ -900,7 +901,6 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
       },
-
       staffOptOutOfWorkplacePension: {
         type: DataTypes.ENUM,
         allowNull: true,
@@ -1023,6 +1023,16 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.BOOLEAN,
         allowNull: true,
         field: 'PayAndPensionsMiniFlowViewed',
+      },
+      updatePayForMultiStaffViewed: {
+        type: DataTypes.BOOLEAN,
+        field: '"UpdatePayForMultiStaffViewed"',
+        allowNull: true,
+      },
+      fastTrackPayByJobRolesViewed: {
+        type: DataTypes.BOOLEAN,
+        field: '"FastTrackPayByJobRolesViewed"',
+        allowNull: true,
       },
     },
     {
@@ -2177,6 +2187,89 @@ module.exports = function (sequelize, DataTypes) {
       ],
       order,
       ...(limit ? workerPagination : {}),
+    });
+  };
+
+  Establishment.fetchWorkersWithPayData = async function ({
+    establishmentId,
+    itemsPerPage = 15,
+    pageIndex = 0,
+    sortBy = 'staffNameAsc',
+    jobId = null,
+  }) {
+    const models = sequelize.models;
+
+    const pagination = {
+      offset: itemsPerPage * pageIndex,
+      limit: itemsPerPage,
+    };
+
+    const sortByOptions = {
+      staffNameAsc: [['nameOrId', 'ASC']],
+      staffNameDesc: [['nameOrId', 'DESC']],
+      jobRoleAsc: [[sequelize.literal('"mainJob.title"'), 'ASC']],
+      jobRoleDesc: [[sequelize.literal('"mainJob.title"'), 'DESC']],
+    };
+
+    const order = sortByOptions[sortBy] ?? sortByOptions.staffNameAsc;
+    const jobIdFilter = jobId ? { where: { id: jobId } } : {};
+
+    const { count, rows } = await models.worker.findAndCountAll({
+      attributes: ['uid', ['NameOrIdValue', 'nameOrId'], 'AnnualHourlyPayValue', 'AnnualHourlyPayRate'],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['title', 'id'],
+          ...jobIdFilter,
+        },
+      ],
+      raw: true,
+      nest: true,
+      order,
+      ...pagination,
+    });
+
+    const formatWorkerPay = (worker) => {
+      const payAnswer = worker.AnnualHourlyPayValue;
+      const workerFields = lodash.omit(worker, ['AnnualHourlyPayValue', 'AnnualHourlyPayRate']);
+
+      if (['Annually', 'Hourly'].includes(payAnswer)) {
+        const rate = worker.AnnualHourlyPayRate ? parseFloat(worker.AnnualHourlyPayRate) : null;
+        const annualHourlyPay = { value: payAnswer, rate };
+        return { ...workerFields, annualHourlyPay };
+      }
+
+      return { ...workerFields, annualHourlyPay: { value: payAnswer } };
+    };
+
+    const workers = rows.map(formatWorkerPay);
+
+    return { count, workers };
+  };
+
+  Establishment.fetchAllWorkersMainJobRole = async function (establishmentId) {
+    const models = sequelize.models;
+
+    const mainJobsOfAllWorkers = await models.worker.findAll({
+      attributes: [[sequelize.fn('DISTINCT', sequelize.col('MainJobFKValue')), 'mainJobId']],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+      raw: true,
+    });
+
+    const allMainJobRoleIds = mainJobsOfAllWorkers.map((result) => result.mainJobId);
+
+    return await models.job.findAll({
+      attributes: ['title', 'id', 'jobRoleGroup'],
+      where: { id: allMainJobRoleIds },
+      raw: true,
     });
   };
 
