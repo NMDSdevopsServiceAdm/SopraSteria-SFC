@@ -380,8 +380,6 @@ export class UpdatePayForMultipleStaffComponent implements OnInit, AfterViewInit
   }
 
   public onSubmit(): void {
-    console.log(this.form.value);
-
     this.callValidator();
     this.errorSummaryService.syncFormErrorsEvent.next(true);
     this.showErrors = true;
@@ -398,7 +396,6 @@ export class UpdatePayForMultipleStaffComponent implements OnInit, AfterViewInit
       this.returnToStaffRecordsPage();
       return;
     }
-    console.log(this.form.value);
     const alertMessage = `Pay updated in ${updatedPayData.length} staff record${updatedPayData.length > 1 ? 's' : ''}`;
 
     const submitCall = this.establishmentService.updateWorkers(this.workplaceUid, updatedPayData).subscribe(

@@ -80,8 +80,6 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
     const value = this.formBuilder.control(group.annualHourlyPay?.value);
     const rate = this.formBuilder.control(payRateToPrefill);
 
-    console.log(this.workerService.setWorkersGroupedByJobRole);
-
     const fg = this.formBuilder.group(
       {
         value,

@@ -899,7 +899,7 @@ describe('UpdatePayForMultipleStaffComponent', () => {
       annualSalaryInvalidSeniorManagement: 'Salary must be between £500 and £250,000',
       hourlyRateMissing: 'Enter the hourly pay rate or select a different option',
       annualSalaryMissing: 'Enter the salary or select a different option',
-      hourlyRateDecimalPlace: 'You can only have 1 or 2 digits for pence after the decimal point',
+      hourlyRateDecimalPlace: 'You can only have 2 digits for pence after the decimal point',
       annualSalaryDecimalPlace: 'Salary must not include pence',
     };
 
