@@ -9,6 +9,8 @@ const {
   tableHeaderCellStyle,
   setBasicTableStyle,
   conditionalColoursForTrainingExpiry,
+  forEachCellInRange,
+  autoFitColumnWidthByTextLength,
 } = require('../../../utils/excelUtils');
 
 const orderOfColumnNameAndDataFields = [
@@ -57,6 +59,8 @@ const generateExpiredTrainingTab = async (workbook, establishmentsTrainingRecord
   addExpiredTrainingsTable(expiredTrainingTab, sortedData, columnsToDisplay);
 
   setHeightsAndWidths(expiredTrainingTab);
+
+  setFreezePane(expiredTrainingTab);
 };
 
 const addTitle = (tab) => {
@@ -94,20 +98,45 @@ const addExpiredTrainingsTable = (tab, sortedData, columnsToDisplay) => {
     bold: false,
   });
 
-  setConditionalColourForStatusColumn(tab, tableRange);
-  // setDateFormatForExpiryDateColumn()
+  setStyleForMandatoryColumn(tab);
+  setStyleForStatusColumn(tab);
+  setDateFormatForExpiryDateColumn(tab);
 };
 
-const setConditionalColourForStatusColumn = (tab) => {
+const setStyleForMandatoryColumn = (tab) => {
+  const mandatoryColumnNumber = tab.getRow(4).values.indexOf('Mandatory');
+  tab.getColumn(mandatoryColumnNumber).alignment = { horizontal: 'center', vertical: 'middle' };
+};
+
+const setStyleForStatusColumn = (tab) => {
   const statusColumnNumber = tab.getRow(4).values.indexOf('Status');
   const firstWorkerRow = 5;
   const lastWorkerRow = tab.lastRow.number;
 
-  const colourRange = colCache.encode(firstWorkerRow, statusColumnNumber, lastWorkerRow, statusColumnNumber);
+  const statusColourRange = colCache.encode(firstWorkerRow, statusColumnNumber, lastWorkerRow, statusColumnNumber);
   tab.addConditionalFormatting({
-    ref: colourRange,
+    ref: statusColourRange,
     rules: conditionalColoursForTrainingExpiry,
   });
+  tab.getColumn(statusColumnNumber).alignment = { horizontal: 'center', vertical: 'middle' };
+};
+
+const setDateFormatForExpiryDateColumn = (tab) => {
+  const expiryDateColumnNumber = tab.getRow(4).values.indexOf('Expiry date');
+  const firstWorkerRow = 5;
+  const lastWorkerRow = tab.lastRow.number;
+
+  const expiryDatesRange = colCache.encode(
+    firstWorkerRow,
+    expiryDateColumnNumber,
+    lastWorkerRow,
+    expiryDateColumnNumber,
+  );
+
+  forEachCellInRange(tab, expiryDatesRange, (cell) => {
+    cell.numFmt = 'dd mmm yyyy';
+  });
+  tab.getColumn(expiryDateColumnNumber).alignment = { horizontal: 'left', vertical: 'middle' };
 };
 
 const setHeightsAndWidths = (tab) => {
@@ -118,12 +147,25 @@ const setHeightsAndWidths = (tab) => {
     column.width = width;
   });
 
-  const rowHeights = [48, 12, 18, 36];
+  [2, 3, 4, 5].forEach((column) => {
+    autoFitColumnWidthByTextLength(tab, column, 12);
+  });
+
+  const rowHeights = [48, 18, 22, 36];
 
   rowHeights.forEach((height, index) => {
     const row = tab.getRow(index + 1);
     row.height = height;
   });
+
+  for (let i = 5; i <= tab.lastRow.number; i++) {
+    const row = tab.getRow(i);
+    row.height = 22;
+  }
+};
+
+const setFreezePane = (tab) => {
+  tab.views = [{ state: 'frozen', ySplit: 4, activeCell: 'B5' }, { showGridLines: false }];
 };
 
 module.exports = { generateExpiredTrainingTab };
