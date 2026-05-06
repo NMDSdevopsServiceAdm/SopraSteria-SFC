@@ -55,7 +55,7 @@ describe('Fast-track pay updates by job roles', { tags: '@staffRecords' }, () =>
     cy.wait('@getWorkers');
 
     cy.get('[data-testid="worker-row-0"]').within(() => {
-      cy.get('[data-testid="amount-input-box-0"]').type('12');
+      cy.get('[data-testid="amount-input-box-0"]').type('12.5');
       cy.get('[data-testid="hourly-radio-0"]').check();
     });
 
