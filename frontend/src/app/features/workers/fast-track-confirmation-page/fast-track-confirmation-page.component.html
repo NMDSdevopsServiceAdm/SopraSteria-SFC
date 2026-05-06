@@ -38,7 +38,7 @@
                   <span>
                     {{
                       workers.annualHourlyPay?.value === 'Hourly'
-                        ? '£' + workers.annualHourlyPay.rate + ' hourly pay'
+                        ? '£' + (workers.annualHourlyPay.rate | number: '1.2-2') + ' hourly pay'
                         : '£' + (workers.annualHourlyPay.rate | number) + ' annual salary'
                     }}</span
                   >

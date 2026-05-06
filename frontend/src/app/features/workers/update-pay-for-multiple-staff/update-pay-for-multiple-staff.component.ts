@@ -2,7 +2,7 @@ import lodash from 'lodash';
 import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
-import { Component, ElementRef, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, signal, ViewChild, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, UntypedFormGroup, ValidatorFn } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -47,7 +47,7 @@ const DontKnow = "Don't know";
   styleUrl: './update-pay-for-multiple-staff.component.scss',
   standalone: false,
 })
-export class UpdatePayForMultipleStaffComponent {
+export class UpdatePayForMultipleStaffComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
   @ViewChild('paginationWrapper') paginationWrapper: TablePaginationWrapperComponent;
   @ViewChild('searchBox') searchBox: SearchInputAutoSuggestComponent;
@@ -145,8 +145,14 @@ export class UpdatePayForMultipleStaffComponent {
   }
 
   private buildFormControlsForWorker(worker: WorkerWithPayData): FormGroup {
+    const payRateToPrefill =
+      worker.annualHourlyPay?.value === 'Hourly' && worker.annualHourlyPay?.rate
+        ? worker.annualHourlyPay?.rate.toFixed(2)
+        : worker.annualHourlyPay?.rate;
+
     const payValue = this.formBuilder.control<string>(worker.annualHourlyPay?.value);
-    const payRate = this.formBuilder.control<number>(worker.annualHourlyPay?.rate);
+    const payRate = this.formBuilder.control<number | string>(payRateToPrefill);
+
     const workerFormControls = this.formBuilder.group({ payValue, payRate, jobId: worker.mainJob.id, uid: worker.uid });
 
     const clearPayRateWhenSelectNotKnown = payValue.valueChanges
@@ -374,6 +380,8 @@ export class UpdatePayForMultipleStaffComponent {
   }
 
   public onSubmit(): void {
+    console.log(this.form.value);
+
     this.callValidator();
     this.errorSummaryService.syncFormErrorsEvent.next(true);
     this.showErrors = true;
@@ -390,7 +398,7 @@ export class UpdatePayForMultipleStaffComponent {
       this.returnToStaffRecordsPage();
       return;
     }
-
+    console.log(this.form.value);
     const alertMessage = `Pay updated in ${updatedPayData.length} staff record${updatedPayData.length > 1 ? 's' : ''}`;
 
     const submitCall = this.establishmentService.updateWorkers(this.workplaceUid, updatedPayData).subscribe(

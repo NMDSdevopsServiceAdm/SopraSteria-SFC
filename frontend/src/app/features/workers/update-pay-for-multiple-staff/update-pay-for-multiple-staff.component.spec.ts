@@ -89,7 +89,13 @@ describe('UpdatePayForMultipleStaffComponent', () => {
     const payRateInputBox = within(row).getByLabelText(
       `Hourly pay rate or salary for ${workerNameOrId}`,
     ) as HTMLInputElement;
-    const expectedInputBoxValue = payRate ? payRate.toString() : '';
+
+    let expectedInputBoxValue = '';
+    if (payOption === 'Hourly') {
+      expectedInputBoxValue = payRate.toFixed(2);
+    } else if (payOption === 'Annually') {
+      expectedInputBoxValue = payRate.toString();
+    }
     expect(payRateInputBox.value).toEqual(expectedInputBoxValue);
   };
 
