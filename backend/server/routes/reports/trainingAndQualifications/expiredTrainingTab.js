@@ -23,6 +23,8 @@ const orderOfColumnNameAndDataFields = [
   { columnName: 'Expiry date', field: 'expiryDate' },
 ];
 
+const HeaderRowNumber = 4;
+
 const generateExpiredTrainingTab = async (workbook, establishmentsTrainingRecords, isParent = false) => {
   const expiredTrainingTab = workbook.addWorksheet('Expired training', { views: [{ showGridLines: false }] });
 
@@ -30,9 +32,35 @@ const generateExpiredTrainingTab = async (workbook, establishmentsTrainingRecord
 
   addTitle(expiredTrainingTab);
 
-  addTableHeaders(expiredTrainingTab, columnsToDisplay);
+  addTopTableHeader(expiredTrainingTab, columnsToDisplay);
 
-  const trainingDataToShow = establishmentsTrainingRecords.flatMap((establishment) => {
+  const trainingDataToShow = extractExpiredOrMissingTrainings(establishmentsTrainingRecords);
+
+  const sortedData = lodash.sortBy(trainingDataToShow, ['workplaceName', 'category', 'workerNameOrId']);
+
+  addExpiredTrainingsTable(expiredTrainingTab, sortedData, columnsToDisplay);
+
+  setHeightsAndWidths(expiredTrainingTab);
+
+  setFreezePane(expiredTrainingTab);
+};
+
+const addTitle = (tab) => {
+  addText(tab, 'B1:Z1', 'Expired and missing training', { size: 24, bold: true });
+  tab.getCell('B1').alignment = { vertical: 'middle', horizontal: 'left' };
+  setColourForRange(tab, 'A1:Z1', { backgroundColour: newBackgroundColours.lightGrey });
+};
+
+const addTopTableHeader = (tab, columnsToDisplay) => {
+  const lastColumnLetter = colCache.n2l(1 + columnsToDisplay.length);
+
+  const topHeaderRange = `B3:${lastColumnLetter}3`;
+  addText(tab, topHeaderRange, 'Training', { size: 12, bold: true });
+  applyStyleToRange(tab, topHeaderRange, tableHeaderCellStyle);
+};
+
+const extractExpiredOrMissingTrainings = (establishmentsTrainingRecords) => {
+  const expiredOrMissingTrainings = establishmentsTrainingRecords.flatMap((establishment) => {
     return establishment.workerRecords.flatMap((worker) => {
       const expiredOrExpiringTrainings = worker.trainingRecords.filter((training) =>
         ['Expiring soon', 'Expired'].includes(training.status),
@@ -54,29 +82,8 @@ const generateExpiredTrainingTab = async (workbook, establishmentsTrainingRecord
     });
   });
 
-  const sortedData = lodash.sortBy(trainingDataToShow, ['workplaceName', 'category', 'workerNameOrId']);
-
-  addExpiredTrainingsTable(expiredTrainingTab, sortedData, columnsToDisplay);
-
-  setHeightsAndWidths(expiredTrainingTab);
-
-  setFreezePane(expiredTrainingTab);
+  return expiredOrMissingTrainings;
 };
-
-const addTitle = (tab) => {
-  addText(tab, 'B1:Z1', 'Expired and missing training', { size: 24, bold: true });
-  tab.getCell('B1').alignment = { vertical: 'middle', horizontal: 'left' };
-  setColourForRange(tab, 'A1:Z1', { backgroundColour: newBackgroundColours.lightGrey });
-};
-
-const addTableHeaders = (tab, columnsToShow) => {
-  const lastColumnLetter = colCache.n2l(1 + columnsToShow.length);
-
-  const topHeaderRange = `B3:${lastColumnLetter}3`;
-  addText(tab, topHeaderRange, 'Training', { size: 12, bold: true });
-  applyStyleToRange(tab, topHeaderRange, tableHeaderCellStyle);
-};
-
 const addExpiredTrainingsTable = (tab, sortedData, columnsToDisplay) => {
   const tableRows = sortedData.map((trainingData) => {
     return columnsToDisplay.map(({ field }) => trainingData[field] ?? '-');
@@ -84,7 +91,7 @@ const addExpiredTrainingsTable = (tab, sortedData, columnsToDisplay) => {
 
   const trainingTable = tab.addTable({
     name: 'expiredTrainingTable',
-    ref: 'B4',
+    ref: `B${HeaderRowNumber}`,
     columns: columnsToDisplay.map(({ columnName }) => ({ name: columnName, filterButton: true })),
     rows: tableRows,
   });
@@ -104,13 +111,13 @@ const addExpiredTrainingsTable = (tab, sortedData, columnsToDisplay) => {
 };
 
 const setStyleForMandatoryColumn = (tab) => {
-  const mandatoryColumnNumber = tab.getRow(4).values.indexOf('Mandatory');
+  const mandatoryColumnNumber = tab.getRow(HeaderRowNumber).values.indexOf('Mandatory');
   tab.getColumn(mandatoryColumnNumber).alignment = { horizontal: 'center', vertical: 'middle' };
 };
 
 const setStyleForStatusColumn = (tab) => {
-  const statusColumnNumber = tab.getRow(4).values.indexOf('Status');
-  const firstWorkerRow = 5;
+  const statusColumnNumber = tab.getRow(HeaderRowNumber).values.indexOf('Status');
+  const firstWorkerRow = HeaderRowNumber + 1;
   const lastWorkerRow = tab.lastRow.number;
 
   const statusColourRange = colCache.encode(firstWorkerRow, statusColumnNumber, lastWorkerRow, statusColumnNumber);
@@ -122,8 +129,8 @@ const setStyleForStatusColumn = (tab) => {
 };
 
 const setDateFormatForExpiryDateColumn = (tab) => {
-  const expiryDateColumnNumber = tab.getRow(4).values.indexOf('Expiry date');
-  const firstWorkerRow = 5;
+  const expiryDateColumnNumber = tab.getRow(HeaderRowNumber).values.indexOf('Expiry date');
+  const firstWorkerRow = HeaderRowNumber + 1;
   const lastWorkerRow = tab.lastRow.number;
 
   const expiryDatesRange = colCache.encode(
