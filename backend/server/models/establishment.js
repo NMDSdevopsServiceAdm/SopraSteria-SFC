@@ -2216,7 +2216,7 @@ module.exports = function (sequelize, DataTypes) {
       ];
     }
     return this.findAll({
-      attributes: ['id', 'NameValue', 'ExpiresSoonAlertDate'],
+      attributes: ['id', 'NameValue', 'expiresSoonAlertDate'],
       where: {
         [Op.or]: [
           {

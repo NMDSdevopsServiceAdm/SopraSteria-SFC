@@ -131,7 +131,7 @@ exports.convertTrainingForEstablishments = (rawEstablishments) => {
   return rawEstablishments.map((establishment) => {
     return {
       name: numberCheck(establishment.NameValue),
-      workerRecords: convertWorkerTrainingRecords(establishment.workers, establishment.ExpiresSoonAlertDate),
+      workerRecords: convertWorkerTrainingRecords(establishment.workers, establishment.expiresSoonAlertDate),
     };
   });
 };
