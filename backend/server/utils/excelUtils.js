@@ -173,7 +173,11 @@ exports.conditionalColoursForTrainingExpiry = colourSchemeForTrainingExpiry.map(
     type: 'cellIs',
     operator: 'equal',
     formulae: [`"${text}"`],
-    style: { fill: { type: 'pattern', pattern: 'solid', bgColor: colour }, font: { bold: true, size: 12, family: 4 } },
+    style: {
+      fill: { type: 'pattern', pattern: 'solid', bgColor: colour },
+      font: { bold: true, size: 12, family: 4 },
+      border: borderStyles.blackBorderAllSides,
+    },
   };
 });
 
