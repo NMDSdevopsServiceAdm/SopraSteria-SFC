@@ -16,7 +16,7 @@ const {
   mockEstablishmentsTrainingResponse,
 } = require('../mockdata/trainingAndQualifications');
 
-describe.only('trainingAndQualificationsUtils', () => {
+describe('trainingAndQualificationsUtils', () => {
   describe('getTrainingTotals', () => {
     it('should return object with sums of all worker training records', () => {
       const result = getTrainingTotals(mockWorkerTrainingBreakdowns);
