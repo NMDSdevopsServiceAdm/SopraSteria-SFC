@@ -220,6 +220,7 @@ exports.mockWorkerTrainingRecords = [
         jobRole: 'Activities worker or co-ordinator',
         longTermAbsence: '',
         mandatoryTraining: ['Activity provision/Well-being'],
+        missingMandatoryTrainings: [],
         trainingRecords: [
           {
             category: 'Activity provision/Well-being',
@@ -229,6 +230,12 @@ exports.mockWorkerTrainingRecords = [
             status: 'Up-to-date',
             dateCompleted: '01/01/2020',
             accredited: 'Yes',
+            isMandatory: 'Yes',
+            validityPeriodInMonth: null,
+            trainingCertificatesCount: 1,
+            deliveredBy: null,
+            trainingProviderName: null,
+            howWasItDelivered: null,
           },
           {
             category: 'Dementia care',
@@ -238,6 +245,12 @@ exports.mockWorkerTrainingRecords = [
             status: 'Expiring soon',
             dateCompleted: '01/06/2020',
             accredited: 'Yes',
+            isMandatory: 'No',
+            validityPeriodInMonth: null,
+            trainingCertificatesCount: 0,
+            deliveredBy: null,
+            trainingProviderName: null,
+            howWasItDelivered: null,
           },
         ],
       },
@@ -246,6 +259,13 @@ exports.mockWorkerTrainingRecords = [
         jobRole: 'Advice, Guidance and Advocacy',
         longTermAbsence: '',
         mandatoryTraining: ['Activity provision/Well-being', 'Diabetes'],
+        missingMandatoryTrainings: [
+          {
+            category: 'Activity provision/Well-being',
+            status: 'Missing',
+            isMandatory: 'Yes',
+          },
+        ],
         trainingRecords: [
           {
             category: 'Emergency Aid awareness',
@@ -255,6 +275,13 @@ exports.mockWorkerTrainingRecords = [
             status: 'Up-to-date',
             dateCompleted: '31/03/2004',
             accredited: 'Yes',
+
+            isMandatory: 'No',
+            validityPeriodInMonth: null,
+            trainingCertificatesCount: 0,
+            deliveredBy: null,
+            trainingProviderName: null,
+            howWasItDelivered: null,
           },
           {
             category: 'Diabetes',
@@ -264,6 +291,13 @@ exports.mockWorkerTrainingRecords = [
             status: 'Expired',
             dateCompleted: '31/03/2012',
             accredited: 'No',
+
+            isMandatory: 'Yes',
+            validityPeriodInMonth: null,
+            trainingCertificatesCount: 0,
+            deliveredBy: null,
+            trainingProviderName: null,
+            howWasItDelivered: null,
           },
         ],
       },
@@ -272,6 +306,18 @@ exports.mockWorkerTrainingRecords = [
         jobRole: 'Activities worker or co-ordinator',
         longTermAbsence: '',
         mandatoryTraining: ['Activity provision/Well-being', 'Diabetes'],
+        missingMandatoryTrainings: [
+          {
+            category: 'Activity provision/Well-being',
+            status: 'Missing',
+            isMandatory: 'Yes',
+          },
+          {
+            category: 'Diabetes',
+            status: 'Missing',
+            isMandatory: 'Yes',
+          },
+        ],
         trainingRecords: [],
       },
     ],
@@ -598,7 +644,7 @@ exports.mockEstablishmentsTrainingResponse = [
   {
     id: 2320,
     NameValue: 'Nursing Home',
-    ExpiresSoonAlertDate: '90',
+    expiresSoonAlertDate: '90',
 
     workers: [
       {
@@ -676,7 +722,7 @@ exports.mockEstablishmentsTrainingResponse = [
   {
     id: 2320,
     NameValue: 'Care Home',
-    ExpiresSoonAlertDate: '90',
+    expiresSoonAlertDate: '90',
     workers: [
       {
         id: 11169,
