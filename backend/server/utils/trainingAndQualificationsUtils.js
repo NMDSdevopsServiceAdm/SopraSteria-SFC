@@ -280,3 +280,21 @@ const listMissingMandatoryTrainings = (workerWithTrainingRecords) => {
 };
 
 exports.listMissingMandatoryTrainings = listMissingMandatoryTrainings;
+
+const addWorkplaceAndWorkerDataToTrainings = (establishmentsWithTrainingRecords) => {
+  return establishmentsWithTrainingRecords.flatMap((establishment) => {
+    return establishment.workerRecords.flatMap((worker) => {
+      const existingRecords = worker.trainingRecords;
+      const missingMandatoryTrainings = worker.missingMandatoryTrainings;
+      return [...existingRecords, ...missingMandatoryTrainings].map((training) => {
+        return {
+          ...training,
+          workplaceName: establishment.name,
+          workerNameOrId: worker.workerId,
+        };
+      });
+    });
+  });
+};
+
+exports.addWorkplaceAndWorkerDataToTrainings = addWorkplaceAndWorkerDataToTrainings;

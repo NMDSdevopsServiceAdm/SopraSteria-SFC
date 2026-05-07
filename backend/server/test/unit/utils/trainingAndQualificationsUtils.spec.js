@@ -8,12 +8,14 @@ const {
   getTrainingRecordStatus,
   numberCheck,
   listMissingMandatoryTrainings,
+  addWorkplaceAndWorkerDataToTrainings,
 } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   mockWorkerTrainingBreakdowns,
   mockEstablishmentsQualificationsResponse,
   mockEstablishmentsCareCertificateResponse,
   mockEstablishmentsTrainingResponse,
+  mockWorkerTrainingRecords,
 } = require('../mockdata/trainingAndQualifications');
 
 describe('trainingAndQualificationsUtils', () => {
@@ -466,6 +468,40 @@ describe('trainingAndQualificationsUtils', () => {
       ];
       const actual = listMissingMandatoryTrainings(mockData[0]);
       expect(actual).to.deep.equal(expected);
+    });
+  });
+
+  describe('addWorkplaceAndWorkerDataToTrainings', () => {
+    it('should extract all training records and missing mandatory trainings from the workplaces, and return as one single array', () => {
+      const trainingRecords = addWorkplaceAndWorkerDataToTrainings(mockWorkerTrainingRecords);
+
+      expect(trainingRecords.length).to.equal(7);
+
+      expect(trainingRecords[0]).to.deep.include(mockWorkerTrainingRecords[0].workerRecords[0].trainingRecords[0]);
+      expect(trainingRecords[1]).to.deep.include(mockWorkerTrainingRecords[0].workerRecords[0].trainingRecords[1]);
+
+      expect(trainingRecords[2]).to.deep.include(mockWorkerTrainingRecords[0].workerRecords[1].trainingRecords[0]);
+      expect(trainingRecords[3]).to.deep.include(mockWorkerTrainingRecords[0].workerRecords[1].trainingRecords[1]);
+      expect(trainingRecords[4]).to.deep.include(
+        mockWorkerTrainingRecords[0].workerRecords[1].missingMandatoryTrainings[0],
+      );
+
+      expect(trainingRecords[5]).to.deep.include(
+        mockWorkerTrainingRecords[0].workerRecords[2].missingMandatoryTrainings[0],
+      );
+      expect(trainingRecords[6]).to.deep.include(
+        mockWorkerTrainingRecords[0].workerRecords[2].missingMandatoryTrainings[1],
+      );
+    });
+
+    it('should add workplace and worker data to the training', () => {
+      const trainingRecords = addWorkplaceAndWorkerDataToTrainings(mockWorkerTrainingRecords);
+      const allworkerNames = mockWorkerTrainingRecords[0].workerRecords.map((worker) => worker.workerId);
+
+      trainingRecords.forEach((record) => {
+        expect(record.workplaceName).to.equal(mockWorkerTrainingRecords[0].name);
+        expect(allworkerNames).to.include(record.workerNameOrId);
+      });
     });
   });
 });
