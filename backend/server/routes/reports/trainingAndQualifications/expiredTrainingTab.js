@@ -34,8 +34,10 @@ const generateExpiredTrainingTab = async (workbook, establishmentsTrainingRecord
 
   addTopTableHeader(expiredTrainingTab, columnsToDisplay);
 
-  const trainingDataToShow = extractExpiredOrMissingTrainings(establishmentsTrainingRecords);
-
+  const flattenTrainingRecords = addWorkplaceAndWorkerDataToTrainings(establishmentsTrainingRecords);
+  const trainingDataToShow = flattenTrainingRecords.filter((training) =>
+    ['Expiring soon', 'Expired', 'Missing'].includes(training.status),
+  );
   const sortedData = lodash.sortBy(trainingDataToShow, ['workplaceName', 'category', 'workerNameOrId']);
 
   addExpiredTrainingsTable(expiredTrainingTab, sortedData, columnsToDisplay);
@@ -59,31 +61,23 @@ const addTopTableHeader = (tab, columnsToDisplay) => {
   applyStyleToRange(tab, topHeaderRange, tableHeaderCellStyle);
 };
 
-const extractExpiredOrMissingTrainings = (establishmentsTrainingRecords) => {
-  const expiredOrMissingTrainings = establishmentsTrainingRecords.flatMap((establishment) => {
+const addWorkplaceAndWorkerDataToTrainings = (establishmentsWithTrainingRecords) => {
+  return establishmentsWithTrainingRecords.flatMap((establishment) => {
     return establishment.workerRecords.flatMap((worker) => {
-      const expiredOrExpiringTrainings = worker.trainingRecords.filter((training) =>
-        ['Expiring soon', 'Expired'].includes(training.status),
-      );
+      const existingRecords = worker.trainingRecords;
       const missingMandatoryTrainings = worker.missingMandatoryTrainings;
-      const expireOrMissing = [...expiredOrExpiringTrainings, ...missingMandatoryTrainings];
 
-      return expireOrMissing.map((training) => {
+      return [...existingRecords, ...missingMandatoryTrainings].map((training) => {
         return {
+          ...training,
           workplaceName: establishment.name,
-          category: training.category,
-          trainingName: training.trainingName,
           workerNameOrId: worker.workerId,
-          isMandatory: training.isMandatory,
-          status: training.status,
-          expiryDate: training.expiryDate,
         };
       });
     });
   });
-
-  return expiredOrMissingTrainings;
 };
+
 const addExpiredTrainingsTable = (tab, sortedData, columnsToDisplay) => {
   const tableRows = sortedData.map((trainingData) => {
     return columnsToDisplay.map(({ field }) => trainingData[field] ?? '-');

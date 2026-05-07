@@ -90,6 +90,7 @@ const convertIndividualWorkerTrainingRecords = (
     const expiryDate = trainingRecord.expires ? new Date(trainingRecord.expires) : '';
     const dateCompleted = trainingRecord.completed ? new Date(trainingRecord.completed) : '';
     const isMandatory = mandatoryTrainingCategories.includes(trainingRecord.category.category) ? 'Yes' : 'No';
+    const trainingCertificateUploaded = trainingRecord.trainingCertificatesCount > 0 ? 'Yes' : 'No';
 
     return {
       category: trainingRecord.category.category,
@@ -102,7 +103,7 @@ const convertIndividualWorkerTrainingRecords = (
 
       isMandatory,
       validityPeriodInMonth: trainingRecord.validityPeriodInMonth,
-      trainingCertificateUploaded: trainingRecord.trainingCertificatesCount > 0 ? 'Yes' : 'No',
+      trainingCertificateUploaded,
       deliveredBy: trainingRecord.deliveredBy,
       trainingProviderName: trainingRecord.trainingProviderName,
       howWasItDelivered: trainingRecord.howWasItDelivered,
