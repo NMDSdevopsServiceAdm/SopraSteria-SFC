@@ -1,5 +1,6 @@
 const excelJS = require('exceljs');
 const expect = require('chai').expect;
+const lodash = require('lodash');
 
 const { mockWorkerTrainingRecords } = require('../../../mockdata/trainingAndQualifications');
 const {
@@ -100,6 +101,24 @@ describe('ExpiredTrainingTab', () => {
       const statusColumn = tab.getColumn(statusColumnNumber);
 
       expect(statusColumn.values).not.to.include('Up-to-date');
+    });
+
+    it('should show one empty row if all trainings in the workplace is up to date', () => {
+      const mockData = lodash.cloneDeep(mockWorkerTrainingRecords);
+      mockData.forEach((establishment) => {
+        establishment.workerRecords.forEach((worker) => {
+          worker.missingMandatoryTrainings = [];
+          worker.trainingRecords.forEach((training) => {
+            training.status = 'Up-to-date';
+            training.expiryDate = null;
+          });
+        });
+      });
+
+      generateExpiredTrainingTab(workbook, mockData);
+
+      const tab = workbook.getWorksheet('Expired training');
+      expect(tab.getRow(5).values.slice(2)).to.deep.equal(['', '', '', '', '', '']);
     });
   });
 });

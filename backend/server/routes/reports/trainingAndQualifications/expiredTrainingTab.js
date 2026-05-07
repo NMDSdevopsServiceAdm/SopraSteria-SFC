@@ -83,6 +83,10 @@ const addExpiredTrainingsTable = (tab, sortedData, columnsToDisplay) => {
     return columnsToDisplay.map(({ field }) => trainingData[field] ?? '-');
   });
 
+  if (tableRows.length === 0) {
+    tableRows.push(Array(columnsToDisplay.length).fill(''));
+  }
+
   const trainingTable = tab.addTable({
     name: 'expiredTrainingTable',
     ref: `B${HeaderRowNumber}`,
