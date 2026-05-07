@@ -238,7 +238,7 @@ describe('trainingAndQualificationsUtils', () => {
           isMandatory: 'No',
           deliveredBy: 'External provider',
           howWasItDelivered: 'Face to face',
-          trainingCertificatesCount: 1,
+          trainingCertificateUploaded: 'Yes',
           trainingProviderName: 'Care skill training',
           validityPeriodInMonth: 24,
         });
@@ -260,7 +260,7 @@ describe('trainingAndQualificationsUtils', () => {
           isMandatory: 'No',
           deliveredBy: 'In-house staff',
           howWasItDelivered: 'Face to face',
-          trainingCertificatesCount: 0,
+          trainingCertificateUploaded: 'No',
           trainingProviderName: null,
           validityPeriodInMonth: 12,
         });
@@ -291,7 +291,7 @@ describe('trainingAndQualificationsUtils', () => {
 
           isMandatory: 'Yes',
           validityPeriodInMonth: null,
-          trainingCertificatesCount: 0,
+          trainingCertificateUploaded: 'No',
           deliveredBy: 'External provider',
           trainingProviderName: null,
           howWasItDelivered: 'E-learning',
@@ -378,7 +378,7 @@ describe('trainingAndQualificationsUtils', () => {
 
           isMandatory: 'No',
           validityPeriodInMonth: 60,
-          trainingCertificatesCount: 2,
+          trainingCertificateUploaded: 'Yes',
           deliveredBy: 'External provider',
           trainingProviderName: 'Care skill academy',
           howWasItDelivered: 'Face to face',

@@ -13,7 +13,7 @@ const {
   autoFitColumnWidthByTextLength,
 } = require('../../../utils/excelUtils');
 
-const orderOfColumnNameAndDataFields = [
+const columnNameAndDataFields = [
   { columnName: 'Workplace', field: 'workplaceName' },
   { columnName: 'Training category', field: 'category' },
   { columnName: 'Training or course name', field: 'trainingName' },
@@ -28,7 +28,7 @@ const HeaderRowNumber = 4;
 const generateExpiredTrainingTab = async (workbook, establishmentsTrainingRecords, isParent = false) => {
   const expiredTrainingTab = workbook.addWorksheet('Expired training', { views: [{ showGridLines: false }] });
 
-  const columnsToDisplay = isParent ? orderOfColumnNameAndDataFields : orderOfColumnNameAndDataFields.slice(1);
+  const columnsToDisplay = isParent ? columnNameAndDataFields : columnNameAndDataFields.slice(1);
 
   addTitle(expiredTrainingTab);
 

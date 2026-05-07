@@ -102,7 +102,7 @@ const convertIndividualWorkerTrainingRecords = (
 
       isMandatory,
       validityPeriodInMonth: trainingRecord.validityPeriodInMonth,
-      trainingCertificatesCount: trainingRecord.trainingCertificatesCount,
+      trainingCertificateUploaded: trainingRecord.trainingCertificatesCount > 0 ? 'Yes' : 'No',
       deliveredBy: trainingRecord.deliveredBy,
       trainingProviderName: trainingRecord.trainingProviderName,
       howWasItDelivered: trainingRecord.howWasItDelivered,
