@@ -55,7 +55,7 @@ describe('Fast-track pay updates by job roles', { tags: '@staffRecords' }, () =>
     cy.wait('@getWorkers');
 
     cy.get('[data-testid="worker-row-0"]').within(() => {
-      cy.get('[data-testid="amount-input-box-0"]').type('12');
+      cy.get('[data-testid="amount-input-box-0"]').type('12.5');
       cy.get('[data-testid="hourly-radio-0"]').check();
     });
 
@@ -65,7 +65,7 @@ describe('Fast-track pay updates by job roles', { tags: '@staffRecords' }, () =>
 
     cy.contains('Care worker (2 records)').should('exist');
 
-    cy.contains('£12 hourly pay').should('exist');
+    cy.contains('£12.50 hourly pay').should('exist');
 
     cy.contains('Change').should('exist');
 
@@ -75,7 +75,7 @@ describe('Fast-track pay updates by job roles', { tags: '@staffRecords' }, () =>
       const body = interception.request.body;
 
       expect(body).to.be.an('array');
-      expect(body[0].annualHourlyPay.rate).to.equal(12);
+      expect(body[0].annualHourlyPay.rate).to.equal(12.5);
     });
 
     cy.contains('Pay updated in').should('exist');

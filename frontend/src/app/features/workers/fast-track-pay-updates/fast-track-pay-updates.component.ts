@@ -18,7 +18,7 @@ const ERROR_MESSAGES = {
   rateRequired: 'Enter the salary or select a different option',
   hourlyRateRequired: 'Enter the hourly pay rate or select a different option',
   range: 'Hourly pay rate must be between £2.50 and £200.00',
-  pence: 'You can only have 1 or 2 digits for pence after the decimal point',
+  pence: 'You can only have 2 digits for pence after the decimal point',
   salary: 'Salary must not include pence',
   salaryRange: 'Salary must be between £500 and £200,000',
 };
@@ -72,8 +72,13 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
   }
 
   private buildFormControls(group: WorkersGroupedByJobRole): FormGroup {
+    const payRateToPrefill =
+      group.annualHourlyPay?.value === 'Hourly' && group.annualHourlyPay?.rate
+        ? group.annualHourlyPay?.rate.toFixed(2)
+        : group.annualHourlyPay?.rate;
+
     const value = this.formBuilder.control(group.annualHourlyPay?.value);
-    const rate = this.formBuilder.control(group.annualHourlyPay?.rate);
+    const rate = this.formBuilder.control(payRateToPrefill);
 
     const fg = this.formBuilder.group(
       {

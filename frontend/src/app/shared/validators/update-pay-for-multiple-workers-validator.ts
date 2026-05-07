@@ -30,7 +30,7 @@ export const UpdatePayForMultipleWorkerErrorMessages: Record<UpdatePayForMultipl
   [ErrorTypes.annualSalaryInvalidSeniorManagement]: `Salary must be between ${AnnualSalaryLimitsForSeniorManagement.asString.min} and ${AnnualSalaryLimitsForSeniorManagement.asString.max}`,
   [ErrorTypes.hourlyRateMissing]: 'Enter the hourly pay rate or select a different option',
   [ErrorTypes.annualSalaryMissing]: 'Enter the salary or select a different option',
-  [ErrorTypes.hourlyRateDecimalPlace]: 'You can only have 1 or 2 digits for pence after the decimal point',
+  [ErrorTypes.hourlyRateDecimalPlace]: 'You can only have 2 digits for pence after the decimal point',
   [ErrorTypes.annualSalaryDecimalPlace]: 'Salary must not include pence',
 };
 
