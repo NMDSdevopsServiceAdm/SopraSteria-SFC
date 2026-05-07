@@ -281,7 +281,7 @@ const listMissingMandatoryTrainings = (workerWithTrainingRecords) => {
 
 exports.listMissingMandatoryTrainings = listMissingMandatoryTrainings;
 
-const addWorkplaceAndWorkerDataToTrainings = (establishmentsWithTrainingRecords) => {
+const listAllExistingAndMissingTrainings = (establishmentsWithTrainingRecords) => {
   return establishmentsWithTrainingRecords.flatMap((establishment) => {
     return establishment.workerRecords.flatMap((worker) => {
       const existingRecords = worker.trainingRecords;
@@ -297,4 +297,4 @@ const addWorkplaceAndWorkerDataToTrainings = (establishmentsWithTrainingRecords)
   });
 };
 
-exports.addWorkplaceAndWorkerDataToTrainings = addWorkplaceAndWorkerDataToTrainings;
+exports.listAllExistingAndMissingTrainings = listAllExistingAndMissingTrainings;

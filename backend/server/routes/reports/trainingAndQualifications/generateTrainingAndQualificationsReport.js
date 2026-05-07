@@ -16,6 +16,7 @@ const { generateTrainingByStaffTab } = require('./trainingByStaffTab');
 const {
   buildWorkerTrainingBreakdownWithWorkplaceInfo,
   convertTrainingForEstablishments,
+  listAllExistingAndMissingTrainings,
 } = require('../../../utils/trainingAndQualificationsUtils');
 const { generateExpiredTrainingTab } = require('./expiredTrainingTab');
 
@@ -43,8 +44,9 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
       false,
     );
     const establishmentWithTrainingRecords = convertTrainingForEstablishments(rawEstablishmentWithTrainingRecords);
+    const allTrainingRecordsAndMissingTrainings = listAllExistingAndMissingTrainings(establishmentWithTrainingRecords);
 
-    await generateExpiredTrainingTab(workbook, establishmentWithTrainingRecords);
+    await generateExpiredTrainingTab(workbook, allTrainingRecordsAndMissingTrainings);
 
     await generateTrainingTab(workbook, establishment.id);
 

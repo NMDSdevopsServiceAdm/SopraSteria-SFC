@@ -25,7 +25,7 @@ const columnNameAndDataFields = [
 
 const HeaderRowNumber = 4;
 
-const generateExpiredTrainingTab = async (workbook, establishmentsTrainingRecords, isParent = false) => {
+const generateExpiredTrainingTab = async (workbook, trainingRecords, isParent = false) => {
   const expiredTrainingTab = workbook.addWorksheet('Expired training', { views: [{ showGridLines: false }] });
 
   const columnsToDisplay = isParent ? columnNameAndDataFields : columnNameAndDataFields.slice(1);
@@ -34,8 +34,7 @@ const generateExpiredTrainingTab = async (workbook, establishmentsTrainingRecord
 
   addTopTableHeader(expiredTrainingTab, columnsToDisplay);
 
-  const flattenTrainingRecords = addWorkplaceAndWorkerDataToTrainings(establishmentsTrainingRecords);
-  const trainingDataToShow = flattenTrainingRecords.filter((training) =>
+  const trainingDataToShow = trainingRecords.filter((training) =>
     ['Expiring soon', 'Expired', 'Missing'].includes(training.status),
   );
   const sortedData = lodash.sortBy(trainingDataToShow, ['workplaceName', 'category', 'workerNameOrId']);
@@ -60,24 +59,6 @@ const addTopTableHeader = (tab, columnsToDisplay) => {
   addText(tab, topHeaderRange, 'Training', { size: 12, bold: true });
   applyStyleToRange(tab, topHeaderRange, tableHeaderCellStyle);
 };
-
-const addWorkplaceAndWorkerDataToTrainings = (establishmentsWithTrainingRecords) => {
-  return establishmentsWithTrainingRecords.flatMap((establishment) => {
-    return establishment.workerRecords.flatMap((worker) => {
-      const existingRecords = worker.trainingRecords;
-      const missingMandatoryTrainings = worker.missingMandatoryTrainings;
-
-      return [...existingRecords, ...missingMandatoryTrainings].map((training) => {
-        return {
-          ...training,
-          workplaceName: establishment.name,
-          workerNameOrId: worker.workerId,
-        };
-      });
-    });
-  });
-};
-
 const addExpiredTrainingsTable = (tab, sortedData, columnsToDisplay) => {
   const tableRows = sortedData.map((trainingData) => {
     return columnsToDisplay.map(({ field }) => trainingData[field] ?? '-');

@@ -8,7 +8,7 @@ const {
   getTrainingRecordStatus,
   numberCheck,
   listMissingMandatoryTrainings,
-  addWorkplaceAndWorkerDataToTrainings,
+  listAllExistingAndMissingTrainings,
 } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   mockWorkerTrainingBreakdowns,
@@ -471,9 +471,9 @@ describe('trainingAndQualificationsUtils', () => {
     });
   });
 
-  describe('addWorkplaceAndWorkerDataToTrainings', () => {
+  describe('listAllExistingAndMissingTrainings', () => {
     it('should extract all training records and missing mandatory trainings from the workplaces, and return as one single array', () => {
-      const trainingRecords = addWorkplaceAndWorkerDataToTrainings(mockWorkerTrainingRecords);
+      const trainingRecords = listAllExistingAndMissingTrainings(mockWorkerTrainingRecords);
 
       expect(trainingRecords.length).to.equal(7);
 
@@ -495,7 +495,7 @@ describe('trainingAndQualificationsUtils', () => {
     });
 
     it('should add workplace and worker data to the training', () => {
-      const trainingRecords = addWorkplaceAndWorkerDataToTrainings(mockWorkerTrainingRecords);
+      const trainingRecords = listAllExistingAndMissingTrainings(mockWorkerTrainingRecords);
       const allworkerNames = mockWorkerTrainingRecords[0].workerRecords.map((worker) => worker.workerId);
 
       trainingRecords.forEach((record) => {

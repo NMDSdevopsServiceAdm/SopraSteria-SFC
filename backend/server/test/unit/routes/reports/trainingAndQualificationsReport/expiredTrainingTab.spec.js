@@ -6,6 +6,7 @@ const { mockWorkerTrainingRecords } = require('../../../mockdata/trainingAndQual
 const {
   generateExpiredTrainingTab,
 } = require('../../../../../routes/reports/trainingAndQualifications/expiredTrainingTab');
+const { listAllExistingAndMissingTrainings } = require('../../../../../utils/trainingAndQualificationsUtils');
 
 describe('ExpiredTrainingTab', () => {
   let workbook;
@@ -23,11 +24,12 @@ describe('ExpiredTrainingTab', () => {
   });
 
   describe('generateExpiredTrainingTab', () => {
+    const allTrainingRecordsAndMissingTrainings = listAllExistingAndMissingTrainings(mockWorkerTrainingRecords);
     const mockWorkers = mockWorkerTrainingRecords[0].workerRecords;
     const allMissingMandatoryTrainings = mockWorkers.flatMap((worker) => worker.missingMandatoryTrainings);
 
     it('should add a worksheet to the excel workbook', () => {
-      generateExpiredTrainingTab(workbook, mockWorkerTrainingRecords);
+      generateExpiredTrainingTab(workbook, allTrainingRecordsAndMissingTrainings);
 
       const tab = workbook.getWorksheet('Expired training');
       expect(tab.getCell('B1').value).to.deep.equal('Expired and missing training');
@@ -37,34 +39,31 @@ describe('ExpiredTrainingTab', () => {
     });
 
     it('should list the expired or expiring trainings for each worker', () => {
-      generateExpiredTrainingTab(workbook, mockWorkerTrainingRecords);
+      generateExpiredTrainingTab(workbook, allTrainingRecordsAndMissingTrainings);
 
       const tab = workbook.getWorksheet('Expired training');
 
       const trainingNameColumnNumber = tab.getRow(4).values.indexOf('Training or course name');
       const trainingNameColumn = tab.getColumn(trainingNameColumnNumber);
 
-      mockWorkers.forEach((worker) => {
-        const trainingRecords = worker.trainingRecords;
-        trainingRecords.forEach((training) => {
-          if (training.status === 'Expired' || training.status === 'Expiring soon') {
-            const trainingRowNumber = trainingNameColumn.values.indexOf(training.trainingName);
-            const trainingRow = tab.getRow(trainingRowNumber);
-            expect(trainingRow.values.slice(2)).to.deep.equals([
-              training.category,
-              training.trainingName,
-              worker.workerId,
-              training.isMandatory,
-              training.status,
-              training.expiryDate,
-            ]);
-          }
-        });
+      allTrainingRecordsAndMissingTrainings.forEach((training) => {
+        if (training.status === 'Expired' || training.status === 'Expiring soon') {
+          const trainingRowNumber = trainingNameColumn.values.indexOf(training.trainingName);
+          const trainingRow = tab.getRow(trainingRowNumber);
+          expect(trainingRow.values.slice(2)).to.deep.equals([
+            training.category,
+            training.trainingName,
+            training.workerNameOrId,
+            training.isMandatory,
+            training.status,
+            training.expiryDate,
+          ]);
+        }
       });
     });
 
     it('should list the missing mandatory trainings for each worker', () => {
-      generateExpiredTrainingTab(workbook, mockWorkerTrainingRecords);
+      generateExpiredTrainingTab(workbook, allTrainingRecordsAndMissingTrainings);
 
       const tab = workbook.getWorksheet('Expired training');
 
@@ -93,7 +92,7 @@ describe('ExpiredTrainingTab', () => {
     });
 
     it('should not include up-to-date trainings in the table', () => {
-      generateExpiredTrainingTab(workbook, mockWorkerTrainingRecords);
+      generateExpiredTrainingTab(workbook, allTrainingRecordsAndMissingTrainings);
 
       const tab = workbook.getWorksheet('Expired training');
 
@@ -103,9 +102,9 @@ describe('ExpiredTrainingTab', () => {
       expect(statusColumn.values).not.to.include('Up-to-date');
     });
 
-    it('should show one empty row if all trainings in the workplace is up to date', () => {
-      const mockData = lodash.cloneDeep(mockWorkerTrainingRecords);
-      mockData.forEach((establishment) => {
+    it('should show one empty row if all trainings in the workplace are up to date', () => {
+      const mockRawData = lodash.cloneDeep(mockWorkerTrainingRecords);
+      mockRawData.forEach((establishment) => {
         establishment.workerRecords.forEach((worker) => {
           worker.missingMandatoryTrainings = [];
           worker.trainingRecords.forEach((training) => {
@@ -114,8 +113,9 @@ describe('ExpiredTrainingTab', () => {
           });
         });
       });
+      const inputData = listAllExistingAndMissingTrainings(mockRawData);
 
-      generateExpiredTrainingTab(workbook, mockData);
+      generateExpiredTrainingTab(workbook, inputData);
 
       const tab = workbook.getWorksheet('Expired training');
       expect(tab.getRow(5).values.slice(2)).to.deep.equal(['', '', '', '', '', '']);
