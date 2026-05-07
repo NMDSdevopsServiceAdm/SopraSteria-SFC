@@ -143,7 +143,7 @@ const convertWorkerTrainingRecords = (workers, expiresSoonAlertDate) => {
     return {
       workerId: numberCheck(worker.NameOrIdValue),
       jobRole: worker.mainJob.title,
-      longTermAbsence: worker.LongTermAbsence ? worker.LongTermAbsence : '',
+      longTermAbsence: worker.get('LongTermAbsence') ?? '',
       mandatoryTraining: mandatoryTrainingCategories,
       missingMandatoryTrainings: listMissingMandatoryTrainings(worker),
       trainingRecords: convertIndividualWorkerTrainingRecords(
@@ -358,6 +358,7 @@ exports.listMissingMandatoryTrainings = listMissingMandatoryTrainings;
 const listAllExistingAndMissingTrainings = (establishmentsWithTrainingRecords) => {
   return establishmentsWithTrainingRecords.flatMap((establishment) => {
     return establishment.workerRecords.flatMap((worker) => {
+      console.log(worker.jobRole, '<-- worker.jobRole');
       const existingRecords = worker.trainingRecords;
       const missingMandatoryTrainings = worker.missingMandatoryTrainings;
       return [...existingRecords, ...missingMandatoryTrainings].map((training) => {
@@ -365,6 +366,8 @@ const listAllExistingAndMissingTrainings = (establishmentsWithTrainingRecords) =
           ...training,
           workplaceName: establishment.name,
           workerNameOrId: worker.workerId,
+          mainJobRole: worker.jobRole,
+          longTermAbsence: worker.longTermAbsence,
         };
       });
     });
