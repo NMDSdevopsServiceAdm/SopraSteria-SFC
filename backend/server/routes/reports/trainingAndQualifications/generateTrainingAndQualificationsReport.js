@@ -8,7 +8,6 @@ const Authorization = require('../../../utils/security/isAuthenticated');
 const { hasPermission } = require('../../../utils/security/hasPermission');
 
 const { generateSummaryTab } = require('./summaryTab');
-const { generateTrainingTab } = require('./trainingTab');
 const { generateQualificationsTab } = require('./qualificationsTab');
 const { generateCareCertificateTab } = require('./careCertificateTab');
 const { generateIntroTab } = require('./introTab');
@@ -23,6 +22,7 @@ const {
 } = require('../../../utils/trainingAndQualificationsUtils');
 
 const { generateExpiredTrainingTab } = require('./expiredTrainingTab');
+const { generateTrainingRecordDetailsTab } = require('./trainingRecordDetailsTab');
 
 const generateTrainingAndQualificationsReport = async (req, res) => {
   try {
@@ -63,7 +63,9 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
 
     await generateExpiredTrainingTab(workbook, allTrainingRecordsAndMissingTrainings);
 
-    await generateTrainingTab(workbook, establishment.id);
+    await generateTrainingRecordDetailsTab(workbook, allTrainingRecordsAndMissingTrainings);
+
+    // await generateTrainingTab(workbook, establishment.id);
 
     await generateQualificationsTab(workbook, establishment.id);
     await generateCareCertificateTab(workbook, careCertificateStatus);
