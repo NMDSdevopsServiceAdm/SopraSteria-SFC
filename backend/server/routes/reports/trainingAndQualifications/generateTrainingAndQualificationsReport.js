@@ -13,7 +13,12 @@ const { generateQualificationsTab } = require('./qualificationsTab');
 const { generateCareCertificateTab } = require('./careCertificateTab');
 const { generateIntroTab } = require('./introTab');
 const { generateTrainingByStaffTab } = require('./trainingByStaffTab');
-const { buildWorkerTrainingBreakdownWithWorkplaceInfo } = require('../../../utils/trainingAndQualificationsUtils');
+const {
+  buildWorkerTrainingBreakdownWithWorkplaceInfo,
+  convertTrainingForEstablishments,
+  listAllExistingAndMissingTrainings,
+} = require('../../../utils/trainingAndQualificationsUtils');
+const { generateExpiredTrainingTab } = require('./expiredTrainingTab');
 
 const generateTrainingAndQualificationsReport = async (req, res) => {
   try {
@@ -26,14 +31,25 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
 
     await generateIntroTab(workbook, establishment);
 
+    await generateSummaryTab(workbook, establishment.id);
+
     const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(establishment.id, true);
     const workerTrainingBreakdowns = await buildWorkerTrainingBreakdownWithWorkplaceInfo(
       rawEstablishmentTrainingBreakdowns,
     );
     await generateTrainingByStaffTab(workbook, workerTrainingBreakdowns);
 
-    await generateSummaryTab(workbook, establishment.id);
+    const rawEstablishmentWithTrainingRecords = await models.establishment.getEstablishmentTrainingRecords(
+      establishment.id,
+      false,
+    );
+    const establishmentWithTrainingRecords = convertTrainingForEstablishments(rawEstablishmentWithTrainingRecords);
+    const allTrainingRecordsAndMissingTrainings = listAllExistingAndMissingTrainings(establishmentWithTrainingRecords);
+
+    await generateExpiredTrainingTab(workbook, allTrainingRecordsAndMissingTrainings);
+
     await generateTrainingTab(workbook, establishment.id);
+
     await generateQualificationsTab(workbook, establishment.id);
     await generateCareCertificateTab(workbook, establishment.id);
 

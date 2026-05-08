@@ -2216,7 +2216,7 @@ module.exports = function (sequelize, DataTypes) {
       ];
     }
     return this.findAll({
-      attributes: ['id', 'NameValue', 'ExpiresSoonAlertDate'],
+      attributes: ['id', 'NameValue', 'expiresSoonAlertDate'],
       where: {
         [Op.or]: [
           {
@@ -2242,9 +2242,19 @@ module.exports = function (sequelize, DataTypes) {
               required: false,
             },
             {
-              model: sequelize.models.workerTraining,
+              model: sequelize.models.workerTraining.scope(['withProviderData', 'withCertificateData']),
               as: 'workerTraining',
-              attributes: ['CategoryFK', 'Title', 'Expires', 'Completed', 'Accredited'],
+              attributes: [
+                'categoryFk',
+                'title',
+                'expires',
+                'completed',
+                'accredited',
+                'validityPeriodInMonth',
+                'deliveredBy',
+                'howWasItDelivered',
+                'otherTrainingProviderName',
+              ],
               required: false,
               include: [
                 {

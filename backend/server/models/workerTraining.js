@@ -101,6 +101,16 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'OtherTrainingProviderName',
       },
+      trainingProviderName: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          const trainingProvider = this.get('trainingProvider');
+          if (!trainingProvider) {
+            return trainingProvider;
+          }
+          return trainingProvider.isOther ? this.otherTrainingProviderName : trainingProvider.name;
+        },
+      },
 
       howWasItDelivered: {
         type: DataTypes.ENUM,
@@ -118,12 +128,31 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"ValidityPeriodInMonth"',
       },
+      trainingCertificatesCount: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          const trainingCertificates = this.get('trainingCertificates');
+          if (!Array.isArray(trainingCertificates)) {
+            return undefined;
+          }
+          return trainingCertificates.length;
+        },
+      },
     },
     {
       tableName: 'WorkerTraining',
       schema: 'cqc',
       createdAt: false,
       updatedAt: false,
+
+      scopes: {
+        withProviderData: {
+          include: [{ model: sequelize.models.trainingProvider, as: 'trainingProvider' }],
+        },
+        withCertificateData: {
+          include: [{ model: sequelize.models.trainingCertificates, as: 'trainingCertificates', attributes: ['id'] }],
+        },
+      },
     },
   );
 

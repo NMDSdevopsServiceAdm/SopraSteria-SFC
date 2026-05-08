@@ -1,3 +1,6 @@
+const dayjs = require('dayjs');
+const { TrainingCourseDeliveryMode, TrainingCourseDeliveredBy } = require('../../../../reference/databaseEnumTypes');
+
 exports.mockWorkerTrainingBreakdowns = [
   {
     name: 'Bob Test',
@@ -217,6 +220,7 @@ exports.mockWorkerTrainingRecords = [
         jobRole: 'Activities worker or co-ordinator',
         longTermAbsence: '',
         mandatoryTraining: ['Activity provision/Well-being'],
+        missingMandatoryTrainings: [],
         trainingRecords: [
           {
             category: 'Activity provision/Well-being',
@@ -226,6 +230,12 @@ exports.mockWorkerTrainingRecords = [
             status: 'Up-to-date',
             dateCompleted: '01/01/2020',
             accredited: 'Yes',
+            isMandatory: 'Yes',
+            validityPeriodInMonth: null,
+            trainingCertificateUploaded: 'Yes',
+            deliveredBy: null,
+            trainingProviderName: null,
+            howWasItDelivered: null,
           },
           {
             category: 'Dementia care',
@@ -235,6 +245,12 @@ exports.mockWorkerTrainingRecords = [
             status: 'Expiring soon',
             dateCompleted: '01/06/2020',
             accredited: 'Yes',
+            isMandatory: 'No',
+            validityPeriodInMonth: null,
+            trainingCertificateUploaded: 'No',
+            deliveredBy: null,
+            trainingProviderName: null,
+            howWasItDelivered: null,
           },
         ],
       },
@@ -243,6 +259,13 @@ exports.mockWorkerTrainingRecords = [
         jobRole: 'Advice, Guidance and Advocacy',
         longTermAbsence: '',
         mandatoryTraining: ['Activity provision/Well-being', 'Diabetes'],
+        missingMandatoryTrainings: [
+          {
+            category: 'Activity provision/Well-being',
+            status: 'Missing',
+            isMandatory: 'Yes',
+          },
+        ],
         trainingRecords: [
           {
             category: 'Emergency Aid awareness',
@@ -252,6 +275,13 @@ exports.mockWorkerTrainingRecords = [
             status: 'Up-to-date',
             dateCompleted: '31/03/2004',
             accredited: 'Yes',
+
+            isMandatory: 'No',
+            validityPeriodInMonth: null,
+            trainingCertificateUploaded: 'No',
+            deliveredBy: null,
+            trainingProviderName: null,
+            howWasItDelivered: null,
           },
           {
             category: 'Diabetes',
@@ -261,6 +291,13 @@ exports.mockWorkerTrainingRecords = [
             status: 'Expired',
             dateCompleted: '31/03/2012',
             accredited: 'No',
+
+            isMandatory: 'Yes',
+            validityPeriodInMonth: null,
+            trainingCertificateUploaded: 'No',
+            deliveredBy: null,
+            trainingProviderName: null,
+            howWasItDelivered: null,
           },
         ],
       },
@@ -269,6 +306,18 @@ exports.mockWorkerTrainingRecords = [
         jobRole: 'Activities worker or co-ordinator',
         longTermAbsence: '',
         mandatoryTraining: ['Activity provision/Well-being', 'Diabetes'],
+        missingMandatoryTrainings: [
+          {
+            category: 'Activity provision/Well-being',
+            status: 'Missing',
+            isMandatory: 'Yes',
+          },
+          {
+            category: 'Diabetes',
+            status: 'Missing',
+            isMandatory: 'Yes',
+          },
+        ],
         trainingRecords: [],
       },
     ],
@@ -586,72 +635,85 @@ exports.mockEstablishmentsCareCertificateResponse = [
   },
 ];
 
+const today = dayjs().format('YYYY-MM-DD');
+const yesterday = dayjs().subtract(1, 'days').format('YYYY-MM-DD');
+const after90Days = dayjs().add(90, 'days').format('YYYY-MM-DD');
+const after89Days = dayjs().add(89, 'days').format('YYYY-MM-DD');
+
 exports.mockEstablishmentsTrainingResponse = [
   {
     id: 2320,
     NameValue: 'Nursing Home',
-    get() {
-      return '90';
-    },
+    expiresSoonAlertDate: '90',
+
     workers: [
       {
         id: 11169,
         mainJob: { id: 1, title: 'Activities worker or co-ordinator' },
+        NameOrIdValue: 'New staff record',
         get(property) {
-          if (property === 'NameOrIdValue') return 'New staff record';
-          if (property === 'mandatoryTrainingCategories') return ['Communication skills'];
-          if (property === 'LongTermAbsence') return null;
+          if (property === 'mandatoryTrainingCategories') {
+            return ['Communication skills'];
+          }
         },
+        LongTermAbsence: null,
+
         workerTraining: [
           {
-            get(property) {
-              if (property === 'category') return { category: 'Dementia care' };
-              if (property === 'Expires') {
-                const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
-                return expiryDate.setDate(expiryDate.getDate() - 1);
-              }
-              if (property === 'Completed') return '2020-01-01';
-              if (property === 'CategoryFK') return 10;
-              if (property === 'Title') return 'Great';
-              if (property === 'Accredited') return 'No';
-            },
+            category: { category: 'Dementia care' },
+            expires: yesterday,
+            completed: '2020-01-01',
+            categoryFk: 10,
+            title: 'Great',
+            accredited: 'No',
+
+            validityPeriodInMonth: 24,
+            trainingCertificatesCount: 1,
+            deliveredBy: TrainingCourseDeliveredBy.ExternalProvider,
+            trainingProviderName: 'Care skill training',
+            howWasItDelivered: TrainingCourseDeliveryMode.FaceToFace,
           },
           {
-            get(property) {
-              if (property === 'category') return { category: 'Old age care' };
-              if (property === 'Expires') {
-                const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
-                return expiryDate.setDate(expiryDate.getDate() + 90);
-              }
-              if (property === 'Completed') return '2020-01-01';
-              if (property === 'CategoryFK') return 5;
-              if (property === 'Title') return 'Old age care training';
-              if (property === 'Accredited') return 'Yes';
-            },
+            category: { category: 'Old age care' },
+            expires: after90Days,
+            completed: '2020-01-01',
+            categoryFk: 5,
+            title: 'Old age care training',
+            accredited: 'Yes',
+
+            validityPeriodInMonth: 12,
+            trainingCertificatesCount: 0,
+            deliveredBy: TrainingCourseDeliveredBy.InHouseStaff,
+            trainingProviderName: null,
+            howWasItDelivered: TrainingCourseDeliveryMode.FaceToFace,
           },
         ],
       },
       {
         id: 1131,
         mainJob: { id: 3, title: 'Care giver' },
+        NameOrIdValue: 'Another staff record',
         get(property) {
-          if (property === 'NameOrIdValue') return 'Another staff record';
-          if (property === 'mandatoryTrainingCategories') return ['Learning'];
-          if (property === 'LongTermAbsence') return 'Yes';
+          if (property === 'mandatoryTrainingCategories') {
+            return ['Learning'];
+          }
         },
+        LongTermAbsence: 'Yes',
+
         workerTraining: [
           {
-            get(property) {
-              if (property === 'category') return { category: 'Learning' };
-              if (property === 'Expires') {
-                const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
-                return expiryDate.setDate(expiryDate.getDate() + 89);
-              }
-              if (property === 'Completed') return '2020-01-01';
-              if (property === 'CategoryFK') return 10;
-              if (property === 'Title') return 'Test Training';
-              if (property === 'Accredited') return 'No';
-            },
+            category: { category: 'Learning' },
+            expires: after89Days,
+            completed: '2020-01-01',
+            categoryFk: 10,
+            title: 'Test Training',
+            accredited: 'No',
+
+            validityPeriodInMonth: null,
+            trainingCertificatesCount: 0,
+            deliveredBy: TrainingCourseDeliveredBy.ExternalProvider,
+            trainingProviderName: null,
+            howWasItDelivered: TrainingCourseDeliveryMode.ELearning,
           },
         ],
       },
@@ -660,31 +722,33 @@ exports.mockEstablishmentsTrainingResponse = [
   {
     id: 2320,
     NameValue: 'Care Home',
-    get() {
-      return '90';
-    },
+    expiresSoonAlertDate: '90',
     workers: [
       {
         id: 11169,
         mainJob: { id: 1, title: 'Activities worker and care' },
+        NameOrIdValue: 'Test staff record',
         get(property) {
-          if (property === 'NameOrIdValue') return 'Test staff record';
-          if (property === 'mandatoryTrainingCategories') return ['Autism'];
-          if (property === 'LongTermAbsence') return null;
+          if (property === 'mandatoryTrainingCategories') {
+            return ['Autism'];
+          }
         },
+        LongTermAbsence: null,
+
         workerTraining: [
           {
-            get(property) {
-              if (property === 'category') return { category: 'Dementia care' };
-              if (property === 'Expires') {
-                const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
-                return expiryDate.setDate(expiryDate.getDate());
-              }
-              if (property === 'Completed') return '2014-01-01';
-              if (property === 'CategoryFK') return 3;
-              if (property === 'Title') return 'Helen';
-              if (property === 'Accredited') return 'No';
-            },
+            category: { category: 'Dementia care' },
+            expires: today,
+            completed: '2014-01-01',
+            categoryFk: 3,
+            title: 'Helen',
+            accredited: 'No',
+
+            validityPeriodInMonth: 60,
+            trainingCertificatesCount: 2,
+            deliveredBy: TrainingCourseDeliveredBy.ExternalProvider,
+            trainingProviderName: 'Care skill academy',
+            howWasItDelivered: TrainingCourseDeliveryMode.FaceToFace,
           },
         ],
       },
