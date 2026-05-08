@@ -11,7 +11,6 @@ const {
   conditionalColoursForTrainingExpiry,
   forEachCellInRange,
   autoFitColumnWidthByTextLength,
-  dateFormat,
   defaultDateFormat,
 } = require('../../../utils/excelUtils');
 
@@ -61,6 +60,7 @@ const addTopTableHeader = (tab, columnsToDisplay) => {
   addText(tab, topHeaderRange, 'Training', { size: 12, bold: true });
   applyStyleToRange(tab, topHeaderRange, tableHeaderCellStyle);
 };
+
 const addExpiredTrainingsTable = (tab, sortedData, columnsToDisplay) => {
   const tableRows = sortedData.map((trainingData) => {
     return columnsToDisplay.map(({ field }) => trainingData[field] ?? '-');
