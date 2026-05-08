@@ -1,4 +1,5 @@
 const expect = require('chai').expect;
+const dayjs = require('dayjs');
 const {
   getTrainingTotals,
   convertQualificationsForEstablishments,
@@ -6,12 +7,15 @@ const {
   convertTrainingForEstablishments,
   getTrainingRecordStatus,
   numberCheck,
+  listMissingMandatoryTrainings,
+  listAllExistingAndMissingTrainings,
 } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   mockWorkerTrainingBreakdowns,
   mockEstablishmentsQualificationsResponse,
   mockEstablishmentsCareCertificateResponse,
   mockEstablishmentsTrainingResponse,
+  mockWorkerTrainingRecords,
 } = require('../mockdata/trainingAndQualifications');
 
 describe('trainingAndQualificationsUtils', () => {
@@ -176,6 +180,11 @@ describe('trainingAndQualificationsUtils', () => {
   });
 
   describe('convertTrainingForEstablishments', () => {
+    const today = dayjs().format('YYYY-MM-DD');
+    const yesterday = dayjs().subtract(1, 'days').format('YYYY-MM-DD');
+    const after90Days = dayjs().add(90, 'days').format('YYYY-MM-DD');
+    const after89Days = dayjs().add(89, 'days').format('YYYY-MM-DD');
+
     describe('First establishment', async () => {
       it('should return array with first establishment name', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
@@ -202,6 +211,7 @@ describe('trainingAndQualificationsUtils', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
 
         expect(typeof result[0].name).to.deep.equal('number');
+        expect(result[0].name).to.deep.equal(80);
       });
 
       it('should return worker details formatted as expected for first worker', () => {
@@ -217,59 +227,93 @@ describe('trainingAndQualificationsUtils', () => {
       it('should return first training record formatted as expected for first worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
         const firstWorkerFirstTrainingRecord = result[0].workerRecords[0].trainingRecords[0];
-        const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
 
         expect(firstWorkerFirstTrainingRecord).to.deep.equal({
           category: 'Dementia care',
           categoryFK: 10,
           trainingName: 'Great',
-          expiryDate: new Date(expiryDate.setDate(expiryDate.getDate() - 1)),
+          expiryDate: new Date(yesterday),
           status: 'Expired',
           dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
           accredited: 'No',
+
+          isMandatory: 'No',
+          deliveredBy: 'External provider',
+          howWasItDelivered: 'Face to face',
+          trainingCertificateUploaded: 'Yes',
+          trainingProviderName: 'Care skill training',
+          validityPeriodInMonth: 24,
         });
       });
 
       it('should return second training record formatted as expected for first worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
-        const firstWorkerFirstTrainingRecord = result[0].workerRecords[0].trainingRecords[1];
-        const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
+        const firstWorkerSecondTrainingRecord = result[0].workerRecords[0].trainingRecords[1];
 
-        expect(firstWorkerFirstTrainingRecord).to.deep.equal({
+        expect(firstWorkerSecondTrainingRecord).to.deep.equal({
           category: 'Old age care',
           categoryFK: 5,
           trainingName: 'Old age care training',
-          expiryDate: new Date(expiryDate.setDate(expiryDate.getDate() + 90)),
+          expiryDate: new Date(after90Days),
           status: 'Up-to-date',
           dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
           accredited: 'Yes',
+
+          isMandatory: 'No',
+          deliveredBy: 'In-house staff',
+          howWasItDelivered: 'Face to face',
+          trainingCertificateUploaded: 'No',
+          trainingProviderName: null,
+          validityPeriodInMonth: 12,
         });
       });
 
       it('should return worker details formatted as expected for second worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
-        const firstWorker = result[0].workerRecords[1];
+        const secondWorker = result[0].workerRecords[1];
 
-        expect(firstWorker.workerId).to.equal('Another staff record');
-        expect(firstWorker.jobRole).to.equal('Care giver');
-        expect(firstWorker.longTermAbsence).to.equal('Yes');
-        expect(firstWorker.mandatoryTraining).to.deep.equal(['Learning']);
+        expect(secondWorker.workerId).to.equal('Another staff record');
+        expect(secondWorker.jobRole).to.equal('Care giver');
+        expect(secondWorker.longTermAbsence).to.equal('Yes');
+        expect(secondWorker.mandatoryTraining).to.deep.equal(['Learning']);
       });
 
       it('should return first training record formatted as expected for second worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
-        const firstWorkerFirstTrainingRecord = result[0].workerRecords[1].trainingRecords[0];
-        const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
+        const secondWorkerFirstTrainingRecord = result[0].workerRecords[1].trainingRecords[0];
 
-        expect(firstWorkerFirstTrainingRecord).to.deep.equal({
+        expect(secondWorkerFirstTrainingRecord).to.deep.equal({
           category: 'Learning',
           categoryFK: 10,
           trainingName: 'Test Training',
-          expiryDate: new Date(expiryDate.setDate(expiryDate.getDate() + 89)),
+          expiryDate: new Date(after89Days),
           status: 'Expiring soon',
           dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
           accredited: 'No',
+
+          isMandatory: 'Yes',
+          validityPeriodInMonth: null,
+          trainingCertificateUploaded: 'No',
+          deliveredBy: 'External provider',
+          trainingProviderName: null,
+          howWasItDelivered: 'E-learning',
         });
+      });
+
+      it('should add an "missingMandatoryTrainings" field to each worker', () => {
+        const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
+        const firstWorker = result[0].workerRecords[0];
+        const secondWorker = result[0].workerRecords[1];
+
+        expect(firstWorker.missingMandatoryTrainings).to.deep.equal([
+          {
+            category: 'Communication skills',
+            status: 'Missing',
+            isMandatory: 'Yes',
+          },
+        ]);
+
+        expect(secondWorker.missingMandatoryTrainings).to.deep.equal([]);
       });
     });
 
@@ -324,16 +368,22 @@ describe('trainingAndQualificationsUtils', () => {
       it('should return first training record formatted as expected for first worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
         const firstWorkerFirstTrainingRecord = result[1].workerRecords[0].trainingRecords[0];
-        const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
 
         expect(firstWorkerFirstTrainingRecord).to.deep.equal({
           category: 'Dementia care',
           categoryFK: 3,
           trainingName: 'Helen',
-          expiryDate: new Date(expiryDate.setDate(expiryDate.getDate())),
+          expiryDate: new Date(today),
           status: 'Expiring soon',
           dateCompleted: new Date('2014-01-01T00:00:00.000Z'),
           accredited: 'No',
+
+          isMandatory: 'No',
+          validityPeriodInMonth: 60,
+          trainingCertificateUploaded: 'Yes',
+          deliveredBy: 'External provider',
+          trainingProviderName: 'Care skill academy',
+          howWasItDelivered: 'Face to face',
         });
       });
     });
@@ -396,6 +446,62 @@ describe('trainingAndQualificationsUtils', () => {
     it('should return "Up-to-date" when expiry date has not been passed in', () => {
       const result = getTrainingRecordStatus('', '60');
       expect(result).to.deep.equal('Up-to-date');
+    });
+  });
+
+  describe('listMissingMandatoryTrainings', () => {
+    const mockData = mockEstablishmentsTrainingResponse[0].workers;
+
+    it('should return an empty array if worker does not have mandatory training records missing', () => {
+      const expected = [];
+      const actual = listMissingMandatoryTrainings(mockData[1]);
+      expect(actual).to.deep.equal(expected);
+    });
+
+    it('should return a list of mandatory training records that the worker is missing', () => {
+      const expected = [
+        {
+          category: 'Communication skills',
+          status: 'Missing',
+          isMandatory: 'Yes',
+        },
+      ];
+      const actual = listMissingMandatoryTrainings(mockData[0]);
+      expect(actual).to.deep.equal(expected);
+    });
+  });
+
+  describe('listAllExistingAndMissingTrainings', () => {
+    it('should extract all training records and missing mandatory trainings from the workplaces, and return as one single array', () => {
+      const trainingRecords = listAllExistingAndMissingTrainings(mockWorkerTrainingRecords);
+
+      expect(trainingRecords.length).to.equal(7);
+
+      expect(trainingRecords[0]).to.deep.include(mockWorkerTrainingRecords[0].workerRecords[0].trainingRecords[0]);
+      expect(trainingRecords[1]).to.deep.include(mockWorkerTrainingRecords[0].workerRecords[0].trainingRecords[1]);
+
+      expect(trainingRecords[2]).to.deep.include(mockWorkerTrainingRecords[0].workerRecords[1].trainingRecords[0]);
+      expect(trainingRecords[3]).to.deep.include(mockWorkerTrainingRecords[0].workerRecords[1].trainingRecords[1]);
+      expect(trainingRecords[4]).to.deep.include(
+        mockWorkerTrainingRecords[0].workerRecords[1].missingMandatoryTrainings[0],
+      );
+
+      expect(trainingRecords[5]).to.deep.include(
+        mockWorkerTrainingRecords[0].workerRecords[2].missingMandatoryTrainings[0],
+      );
+      expect(trainingRecords[6]).to.deep.include(
+        mockWorkerTrainingRecords[0].workerRecords[2].missingMandatoryTrainings[1],
+      );
+    });
+
+    it('should add workplace and worker data to the training', () => {
+      const trainingRecords = listAllExistingAndMissingTrainings(mockWorkerTrainingRecords);
+      const allworkerNames = mockWorkerTrainingRecords[0].workerRecords.map((worker) => worker.workerId);
+
+      trainingRecords.forEach((record) => {
+        expect(record.workplaceName).to.equal(mockWorkerTrainingRecords[0].name);
+        expect(allworkerNames).to.include(record.workerNameOrId);
+      });
     });
   });
 });

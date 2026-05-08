@@ -83,6 +83,10 @@ const blackBorderTopAndBottom = {
   bottom: { style: 'thin', color: borderColours.black },
 };
 
+const blackBorderBottom = {
+  bottom: { style: 'thin', color: borderColours.black },
+};
+
 const blackBorderAllSides = { ...blackBorderLeftAndRight, ...blackBorderTopAndBottom };
 
 const thickBlackBorderLeft = {
@@ -147,9 +151,12 @@ exports.setBasicTableStyle = (
   applyStyleToRange(tab, headerRange, headerCellStyle);
   applyStyleToRange(tab, dataCellsRange, dataCellStyle);
 
+  const lastRowRange = colCache.encode(bottom, left, bottom, right);
+
   if (hasTotalRow) {
-    const totalRowRange = colCache.encode(bottom, left, bottom, right);
-    applyStyleToRange(tab, totalRowRange, headerCellStyle);
+    applyStyleToRange(tab, lastRowRange, headerCellStyle);
+  } else {
+    applyStyleToRange(tab, lastRowRange, { border: blackBorderBottom });
   }
 };
 
@@ -166,9 +173,15 @@ exports.conditionalColoursForTrainingExpiry = colourSchemeForTrainingExpiry.map(
     type: 'cellIs',
     operator: 'equal',
     formulae: [`"${text}"`],
-    style: { fill: { type: 'pattern', pattern: 'solid', bgColor: colour }, font: { bold: true, size: 12, family: 4 } },
+    style: {
+      fill: { type: 'pattern', pattern: 'solid', bgColor: colour },
+      font: { bold: true, size: 12, family: 4 },
+      border: borderStyles.blackBorderAllSides,
+    },
   };
 });
+
+exports.defaultDateFormat = 'd mmm yyyy';
 
 //  ===== helper methods =====
 

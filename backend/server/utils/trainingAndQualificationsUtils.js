@@ -1,3 +1,5 @@
+const dayjs = require('dayjs');
+
 exports.buildTrainingByCategoryBreakdown = (rawEstablishments) => {
   return rawEstablishments.map((establishment) => {
     const categoryMap = {};
@@ -149,29 +151,49 @@ exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
 
 const convertWorkerTrainingRecords = (workers, expiresSoonAlertDate) => {
   return workers.map((worker) => {
+    const mandatoryTrainingCategories = worker?.get('mandatoryTrainingCategories') ?? [];
+
     return {
-      workerId: numberCheck(worker.get('NameOrIdValue')),
+      workerId: numberCheck(worker.NameOrIdValue),
       jobRole: worker.mainJob.title,
-      longTermAbsence: worker.get('LongTermAbsence') ? worker.get('LongTermAbsence') : '',
-      mandatoryTraining: worker.get('mandatoryTrainingCategories') ? worker.get('mandatoryTrainingCategories') : [],
-      trainingRecords: convertIndividualWorkerTrainingRecords(worker.workerTraining, expiresSoonAlertDate),
+      longTermAbsence: worker.LongTermAbsence ? worker.LongTermAbsence : '',
+      mandatoryTraining: mandatoryTrainingCategories,
+      missingMandatoryTrainings: listMissingMandatoryTrainings(worker),
+      trainingRecords: convertIndividualWorkerTrainingRecords(
+        worker.workerTraining,
+        expiresSoonAlertDate,
+        mandatoryTrainingCategories,
+      ),
     };
   });
 };
 
-const convertIndividualWorkerTrainingRecords = (workerTraining, expiresSoonAlertDate) => {
+const convertIndividualWorkerTrainingRecords = (
+  workerTraining,
+  expiresSoonAlertDate,
+  mandatoryTrainingCategories = [],
+) => {
   return workerTraining.map((trainingRecord) => {
-    const expiryDate = trainingRecord.get('Expires') ? new Date(trainingRecord.get('Expires')) : '';
-    const dateCompleted = trainingRecord.get('Completed') ? new Date(trainingRecord.get('Completed')) : '';
+    const expiryDate = trainingRecord.expires ? new Date(trainingRecord.expires) : '';
+    const dateCompleted = trainingRecord.completed ? new Date(trainingRecord.completed) : '';
+    const isMandatory = mandatoryTrainingCategories.includes(trainingRecord.category.category) ? 'Yes' : 'No';
+    const trainingCertificateUploaded = trainingRecord.trainingCertificatesCount > 0 ? 'Yes' : 'No';
 
     return {
-      category: trainingRecord.get('category').category,
-      categoryFK: trainingRecord.get('CategoryFK'),
-      trainingName: trainingRecord.get('Title') ? trainingRecord.get('Title') : '',
+      category: trainingRecord.category.category,
+      categoryFK: trainingRecord.categoryFk,
+      trainingName: trainingRecord.title ? trainingRecord.title : '',
       expiryDate,
       status: getTrainingRecordStatus(expiryDate, expiresSoonAlertDate),
       dateCompleted,
-      accredited: trainingRecord.get('Accredited') ? trainingRecord.get('Accredited') : '',
+      accredited: trainingRecord.accredited ? trainingRecord.accredited : '',
+
+      isMandatory,
+      validityPeriodInMonth: trainingRecord.validityPeriodInMonth,
+      trainingCertificateUploaded,
+      deliveredBy: trainingRecord.deliveredBy,
+      trainingProviderName: trainingRecord.trainingProviderName,
+      howWasItDelivered: trainingRecord.howWasItDelivered,
     };
   });
 };
@@ -181,14 +203,13 @@ const getTrainingRecordStatus = (expiryDate, expiresSoonAlertDate) => {
     return 'Up-to-date';
   }
 
-  const currentDate = new Date(new Date().setHours(0, 0, 0, 0));
-  const expiringSoonDate = new Date(new Date().setHours(0, 0, 0, 0));
-  expiringSoonDate.setDate(currentDate.getDate() + parseInt(expiresSoonAlertDate));
+  const currentDate = dayjs();
+  const expiringSoonDate = dayjs().add(parseInt(expiresSoonAlertDate), 'days');
 
-  if (expiryDate < currentDate) {
+  if (dayjs(expiryDate).isBefore(currentDate, 'day')) {
     return 'Expired';
   }
-  if (expiryDate < expiringSoonDate) {
+  if (dayjs(expiryDate).isBefore(expiringSoonDate, 'day')) {
     return 'Expiring soon';
   }
   return 'Up-to-date';
@@ -196,12 +217,9 @@ const getTrainingRecordStatus = (expiryDate, expiresSoonAlertDate) => {
 
 exports.convertTrainingForEstablishments = (rawEstablishments) => {
   return rawEstablishments.map((establishment) => {
-    // console.log(establishment.workers);
-
-    const workplaceNameAsNumber = /^\d+$/.test(establishment.NameValue);
     return {
-      name: workplaceNameAsNumber ? parseInt(workplaceNameAsNumber) : establishment.NameValue,
-      workerRecords: convertWorkerTrainingRecords(establishment.workers, establishment.get('ExpiresSoonAlertDate')),
+      name: numberCheck(establishment.NameValue),
+      workerRecords: convertWorkerTrainingRecords(establishment.workers, establishment.expiresSoonAlertDate),
     };
   });
 };
@@ -336,3 +354,34 @@ exports.buildWorkerTrainingBreakdownWithWorkplaceInfo = async (rawEstablishmentT
 
   return workerTrainingBreakdownsWithWorkplaceInfo;
 };
+
+const listMissingMandatoryTrainings = (workerWithTrainingRecords) => {
+  const categoryNames = workerWithTrainingRecords?.get('mandatoryTrainingCategories') ?? [];
+  const trainingRecords = workerWithTrainingRecords?.workerTraining ?? [];
+
+  const missingCategories = categoryNames.filter(
+    (categoryName) => !trainingRecords.some((record) => record?.category?.category === categoryName),
+  );
+
+  return missingCategories.map((categoryName) => ({ category: categoryName, status: 'Missing', isMandatory: 'Yes' }));
+};
+
+exports.listMissingMandatoryTrainings = listMissingMandatoryTrainings;
+
+const listAllExistingAndMissingTrainings = (establishmentsWithTrainingRecords) => {
+  return establishmentsWithTrainingRecords.flatMap((establishment) => {
+    return establishment.workerRecords.flatMap((worker) => {
+      const existingRecords = worker.trainingRecords;
+      const missingMandatoryTrainings = worker.missingMandatoryTrainings;
+      return [...existingRecords, ...missingMandatoryTrainings].map((training) => {
+        return {
+          ...training,
+          workplaceName: establishment.name,
+          workerNameOrId: worker.workerId,
+        };
+      });
+    });
+  });
+};
+
+exports.listAllExistingAndMissingTrainings = listAllExistingAndMissingTrainings;
