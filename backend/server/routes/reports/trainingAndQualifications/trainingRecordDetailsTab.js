@@ -1,19 +1,11 @@
-const { convertTrainingForEstablishments } = require('../../../utils/trainingAndQualificationsUtils');
+const colCache = require('exceljs/lib/utils/col-cache');
 const {
-  addHeading,
-  addLine,
-  backgroundColours,
-  textColours,
-  setTableHeadingsStyle,
-  addBordersToAllFilledCells,
-  setCellTextAndBackgroundColour,
-  fitColumnsToSize,
-  alignColumnToLeft,
-  addBlankRowIfTableEmpty,
   addText,
   setColourForRange,
   newBackgroundColours,
   setBasicTableStyle,
+  forEachCellInRange,
+  defaultDateFormat,
 } = require('../../../utils/excelUtils');
 
 const columnNamesAndDataFields = [
@@ -32,7 +24,7 @@ const columnNamesAndDataFields = [
   { columnName: 'Provider name', field: 'trainingProviderName' },
   { columnName: 'Delivery method', field: 'howWasItDelivered' },
   { columnName: 'Certificate upload', field: 'trainingCertificateUploaded' },
-  { columnName: 'Long term absence', field: 'longTermAbsence' },
+  { columnName: 'Long term absence', field: 'isInlongTermAbsence' },
 ];
 
 const generateTrainingRecordDetailsTab = async (workbook, trainingData, isParent = false) => {
@@ -40,8 +32,6 @@ const generateTrainingRecordDetailsTab = async (workbook, trainingData, isParent
   const columnsToDisplay = isParent ? columnNamesAndDataFields : columnNamesAndDataFields.slice(1);
 
   addTitle(trainingTab);
-
-  console.log(JSON.stringify(trainingData[0]), '<--- trainingData');
 
   addTrainingRecordsTable(trainingTab, trainingData, columnsToDisplay);
 };
@@ -73,9 +63,36 @@ const addTrainingRecordsTable = (tab, trainingData, columnsToDisplay) => {
     bold: false,
   });
 
-  // setStyleForMandatoryColumn(tab);
   // setStyleForStatusColumn(tab);
-  // setDateFormatForExpiryDateColumn(tab);
+  setDateAndNumberFormats(tab);
+};
+
+const setDateAndNumberFormats = (tab) => {
+  const headerRow = tab.getRow(4);
+  const lastRowNumber = tab.lastRow.number;
+
+  const getRangeByColumnName = (columnName) => {
+    const columnNumber = headerRow.values.indexOf(columnName);
+    const columnRange = colCache.encode(4 + 1, columnNumber, lastRowNumber, columnNumber);
+    return columnRange;
+  };
+
+  const validityRange = getRangeByColumnName('Validity period');
+  const completionDateRange = getRangeByColumnName('Completion date');
+  const expiryDateRange = getRangeByColumnName('Expiry date');
+
+  console.log(validityRange, '<--- this');
+  forEachCellInRange(tab, validityRange, (cell) => {
+    cell.numFmt = '[>1]# "months";[=1]# "month";General';
+  });
+
+  forEachCellInRange(tab, completionDateRange, (cell) => {
+    cell.numFmt = defaultDateFormat;
+  });
+
+  forEachCellInRange(tab, expiryDateRange, (cell) => {
+    cell.numFmt = defaultDateFormat;
+  });
 };
 
 module.exports = { generateTrainingRecordDetailsTab };

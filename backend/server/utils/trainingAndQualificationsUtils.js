@@ -143,7 +143,7 @@ const convertWorkerTrainingRecords = (workers, expiresSoonAlertDate) => {
     return {
       workerId: numberCheck(worker.NameOrIdValue),
       jobRole: worker.mainJob.title,
-      longTermAbsence: worker.get('LongTermAbsence') ?? '',
+      isInlongTermAbsence: worker.LongTermAbsence ? 'Yes' : 'No',
       mandatoryTraining: mandatoryTrainingCategories,
       missingMandatoryTrainings: listMissingMandatoryTrainings(worker),
       trainingRecords: convertIndividualWorkerTrainingRecords(
@@ -161,19 +161,19 @@ const convertIndividualWorkerTrainingRecords = (
   mandatoryTrainingCategories = [],
 ) => {
   return workerTraining.map((trainingRecord) => {
-    const expiryDate = trainingRecord.expires ? new Date(trainingRecord.expires) : '';
-    const dateCompleted = trainingRecord.completed ? new Date(trainingRecord.completed) : '';
+    const expiryDate = trainingRecord.expires ? new Date(trainingRecord.expires) : null;
+    const dateCompleted = trainingRecord.completed ? new Date(trainingRecord.completed) : null;
     const isMandatory = mandatoryTrainingCategories.includes(trainingRecord.category.category) ? 'Yes' : 'No';
     const trainingCertificateUploaded = trainingRecord.trainingCertificatesCount > 0 ? 'Yes' : 'No';
 
     return {
       category: trainingRecord.category.category,
       categoryFK: trainingRecord.categoryFk,
-      trainingName: trainingRecord.title ? trainingRecord.title : '',
+      trainingName: trainingRecord.title,
       expiryDate,
       status: getTrainingRecordStatus(expiryDate, expiresSoonAlertDate),
       dateCompleted,
-      accredited: trainingRecord.accredited ? trainingRecord.accredited : '',
+      accredited: trainingRecord.accredited,
 
       isMandatory,
       validityPeriodInMonth: trainingRecord.validityPeriodInMonth,
@@ -358,7 +358,6 @@ exports.listMissingMandatoryTrainings = listMissingMandatoryTrainings;
 const listAllExistingAndMissingTrainings = (establishmentsWithTrainingRecords) => {
   return establishmentsWithTrainingRecords.flatMap((establishment) => {
     return establishment.workerRecords.flatMap((worker) => {
-      console.log(worker.jobRole, '<-- worker.jobRole');
       const existingRecords = worker.trainingRecords;
       const missingMandatoryTrainings = worker.missingMandatoryTrainings;
       return [...existingRecords, ...missingMandatoryTrainings].map((training) => {
@@ -367,7 +366,7 @@ const listAllExistingAndMissingTrainings = (establishmentsWithTrainingRecords) =
           workplaceName: establishment.name,
           workerNameOrId: worker.workerId,
           mainJobRole: worker.jobRole,
-          longTermAbsence: worker.longTermAbsence,
+          isInlongTermAbsence: worker.isInlongTermAbsence,
         };
       });
     });
