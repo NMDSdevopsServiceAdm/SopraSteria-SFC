@@ -1,3 +1,90 @@
+exports.buildTrainingByCategoryBreakdown = (rawEstablishments) => {
+  return rawEstablishments.map((establishment) => {
+    const categoryMap = {};
+
+    establishment.workers.forEach((worker) => {
+      const trainings = worker.workerTraining || [];
+      const mandatoryCategories = worker.mandatoryTrainingCategories || [];
+
+      trainings.forEach((training) => {
+        console.log(training.expires);
+
+        const categoryName = training.category.category;
+        const expiryDate = training.get('Expires') ? new Date(trainingRecord.get('Expires')) : '';
+        const dateCompleted = training.get('Completed') ? new Date(trainingRecord.get('Completed')) : '';
+
+        const isMandatory = mandatoryCategories.includes(categoryName) ? 'Yes' : 'No';
+
+        if (!categoryMap[categoryName]) {
+          categoryMap[categoryName] = {
+            trainingCategory: categoryName,
+
+            mandatory: isMandatory,
+
+            trainingCount: 0,
+
+            expiredTrainingCount: 0,
+            expiringTrainingCount: 0,
+            upToDateTrainingCount: 0,
+
+            missingMandatoryTrainingCount: 0,
+          };
+        }
+
+        const category = categoryMap[categoryName];
+
+        category.trainingCount++;
+
+        if (status === 'expired') {
+          category.expiredTrainingCount++;
+        }
+
+        if (status === 'expiringSoon') {
+          category.expiringTrainingCount++;
+        }
+
+        if (status === 'upToDate') {
+          category.upToDateTrainingCount++;
+        }
+      });
+
+      // Missing mandatory training
+      mandatoryCategories.forEach((mandatoryCategory) => {
+        const hasTraining = trainings.some((training) => training.categoryName === mandatoryCategory);
+
+        if (!categoryMap[mandatoryCategory]) {
+          categoryMap[mandatoryCategory] = {
+            trainingCategory: mandatoryCategory,
+
+            mandatory: true,
+
+            trainingCount: 0,
+
+            expiredTrainingCount: 0,
+            expiringTrainingCount: 0,
+            upToDateTrainingCount: 0,
+
+            missingMandatoryTrainingCount: 0,
+          };
+        }
+
+        if (!hasTraining) {
+          categoryMap[mandatoryCategory].missingMandatoryTrainingCount++;
+        }
+      });
+    });
+
+    const categoryBreakdowns = Object.values(categoryMap);
+
+    return {
+      workplaceId: establishment.id,
+      workplaceName: establishment.NameValue,
+
+      trainingCategoryBreakdown: categoryBreakdowns,
+    };
+  });
+};
+
 const convertEachWorkerTrainingBreakdown = (worker) => {
   const expiredTrainingCount = parseInt(worker.get('expiredTrainingCount'));
   const expiredMandatoryTrainingCount = parseInt(worker.get('expiredMandatoryTrainingCount'));
@@ -109,6 +196,8 @@ const getTrainingRecordStatus = (expiryDate, expiresSoonAlertDate) => {
 
 exports.convertTrainingForEstablishments = (rawEstablishments) => {
   return rawEstablishments.map((establishment) => {
+    // console.log(establishment.workers);
+
     const workplaceNameAsNumber = /^\d+$/.test(establishment.NameValue);
     return {
       name: workplaceNameAsNumber ? parseInt(workplaceNameAsNumber) : establishment.NameValue,
