@@ -2184,6 +2184,7 @@ module.exports = function (sequelize, DataTypes) {
     let attributes = [
       'id',
       'NameOrIdValue',
+      'LongTermAbsence',
       [
         sequelize.literal(
           `
@@ -2199,7 +2200,6 @@ module.exports = function (sequelize, DataTypes) {
         ),
         'mandatoryTrainingCategories',
       ],
-      'LongTermAbsence',
     ];
     let subsidiaries = [];
     if (isParent) {
