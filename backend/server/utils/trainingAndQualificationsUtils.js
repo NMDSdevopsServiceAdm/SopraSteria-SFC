@@ -1,90 +1,74 @@
 const dayjs = require('dayjs');
 
-exports.buildTrainingByCategoryBreakdown = (rawEstablishments) => {
-  return rawEstablishments.map((establishment) => {
-    const categoryMap = {};
+const buildTrainingCategorySummary = (establishmentsWithTrainingRecords) => {
+  const allTrainingRecords = listAllExistingAndMissingTrainings(establishmentsWithTrainingRecords);
 
-    establishment.workers.forEach((worker) => {
-      const trainings = worker.workerTraining || [];
-      const mandatoryCategories = worker.mandatoryTrainingCategories || [];
+  const categoryMap = {};
 
-      trainings.forEach((training) => {
-        console.log(training.expires);
+  allTrainingRecords.forEach((training) => {
+    const categoryName = training.category;
 
-        const categoryName = training.category.category;
-        const expiryDate = training.get('Expires') ? new Date(trainingRecord.get('Expires')) : '';
-        const dateCompleted = training.get('Completed') ? new Date(trainingRecord.get('Completed')) : '';
+    if (!categoryMap[categoryName]) {
+      categoryMap[categoryName] = {
+        trainingCategory: categoryName,
 
-        const isMandatory = mandatoryCategories.includes(categoryName) ? 'Yes' : 'No';
+        mandatory: training.isMandatory,
 
-        if (!categoryMap[categoryName]) {
-          categoryMap[categoryName] = {
-            trainingCategory: categoryName,
+        total: 0,
+        expired: 0,
+        expiringSoon: 0,
+        upToDate: 0,
+        missing: 0,
+      };
+    }
 
-            mandatory: isMandatory,
+    const category = categoryMap[categoryName];
 
-            trainingCount: 0,
+    if (training.status === 'Missing') {
+      category.missing++;
+      return;
+    }
 
-            expiredTrainingCount: 0,
-            expiringTrainingCount: 0,
-            upToDateTrainingCount: 0,
+    category.total++;
 
-            missingMandatoryTrainingCount: 0,
-          };
-        }
+    if (training.status === 'Expired') {
+      category.expired++;
+    }
 
-        const category = categoryMap[categoryName];
+    if (training.status === 'Expiring soon') {
+      category.expiringSoon++;
+    }
 
-        category.trainingCount++;
-
-        if (status === 'expired') {
-          category.expiredTrainingCount++;
-        }
-
-        if (status === 'expiringSoon') {
-          category.expiringTrainingCount++;
-        }
-
-        if (status === 'upToDate') {
-          category.upToDateTrainingCount++;
-        }
-      });
-
-      // Missing mandatory training
-      mandatoryCategories.forEach((mandatoryCategory) => {
-        const hasTraining = trainings.some((training) => training.categoryName === mandatoryCategory);
-
-        if (!categoryMap[mandatoryCategory]) {
-          categoryMap[mandatoryCategory] = {
-            trainingCategory: mandatoryCategory,
-
-            mandatory: true,
-
-            trainingCount: 0,
-
-            expiredTrainingCount: 0,
-            expiringTrainingCount: 0,
-            upToDateTrainingCount: 0,
-
-            missingMandatoryTrainingCount: 0,
-          };
-        }
-
-        if (!hasTraining) {
-          categoryMap[mandatoryCategory].missingMandatoryTrainingCount++;
-        }
-      });
-    });
-
-    const categoryBreakdowns = Object.values(categoryMap);
-
-    return {
-      workplaceId: establishment.id,
-      workplaceName: establishment.NameValue,
-
-      trainingCategoryBreakdown: categoryBreakdowns,
-    };
+    if (training.status === 'Up-to-date') {
+      category.upToDate++;
+    }
   });
+
+  const rows = Object.values(categoryMap);
+
+  const totals = rows.reduce(
+    (acc, row) => {
+      acc.total += row.total;
+      acc.expired += row.expired;
+      acc.expiringSoon += row.expiringSoon;
+      acc.upToDate += row.upToDate;
+      acc.missing += row.missing;
+
+      return acc;
+    },
+    {
+      trainingCategory: 'Total',
+      mandatory: '-',
+
+      total: 0,
+      expired: 0,
+      expiringSoon: 0,
+      upToDate: 0,
+      missing: 0,
+    },
+  );
+
+  return [...rows, totals];
 };
 
 const convertEachWorkerTrainingBreakdown = (worker) => {
@@ -385,3 +369,4 @@ const listAllExistingAndMissingTrainings = (establishmentsWithTrainingRecords) =
 };
 
 exports.listAllExistingAndMissingTrainings = listAllExistingAndMissingTrainings;
+exports.buildTrainingCategorySummary = buildTrainingCategorySummary;
