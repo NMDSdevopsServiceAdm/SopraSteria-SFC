@@ -11,6 +11,8 @@ const {
   conditionalColoursForTrainingExpiry,
   forEachCellInRange,
   autoFitColumnWidthByTextLength,
+  dateFormat,
+  defaultDateFormat,
 } = require('../../../utils/excelUtils');
 
 const columnNameAndDataFields = [
@@ -120,7 +122,7 @@ const setDateFormatForExpiryDateColumn = (tab) => {
   );
 
   forEachCellInRange(tab, expiryDatesRange, (cell) => {
-    cell.numFmt = 'dd mmm yyyy';
+    cell.numFmt = defaultDateFormat;
   });
   tab.getColumn(expiryDateColumnNumber).alignment = { horizontal: 'left', vertical: 'middle' };
 };

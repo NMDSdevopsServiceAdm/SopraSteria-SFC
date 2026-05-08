@@ -181,6 +181,8 @@ exports.conditionalColoursForTrainingExpiry = colourSchemeForTrainingExpiry.map(
   };
 });
 
+exports.defaultDateFormat = 'd mmm yyyy';
+
 //  ===== helper methods =====
 
 function eachColumnInRange(ws, col1, col2, cb) {
