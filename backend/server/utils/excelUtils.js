@@ -511,3 +511,21 @@ const rangeOfNumber = (startNumber, endNumber) => {
 };
 
 exports.rangeOfNumber = rangeOfNumber;
+
+exports.autoAdjustWrapTextAndRowHeight = (tab, cell, singleLineLength = 34, defaultHeight = 22) => {
+  if (cell.type !== excelJS.ValueType.String || !cell.value?.length || cell.value?.length <= singleLineLength) {
+    return;
+  }
+
+  const textLength = cell.value.length;
+  const numberOfLinesNeeded = Math.ceil(textLength / singleLineLength);
+  if (numberOfLinesNeeded <= 1) {
+    return;
+  }
+
+  applyStyleToCell(cell, { alignment: { wrapText: true } });
+
+  const row = tab.getRow(cell.row);
+  const adjustedHeight = defaultHeight * numberOfLinesNeeded - 10;
+  row.height = Math.max(row.height ?? 0, adjustedHeight);
+};
