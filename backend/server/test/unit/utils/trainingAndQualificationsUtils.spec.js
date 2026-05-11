@@ -10,6 +10,7 @@ const {
   listMissingMandatoryTrainings,
   listAllExistingAndMissingTrainings,
   buildTrainingCategorySummary,
+  convertAndFlattenQualificationsForEstablishments,
 } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   mockWorkerTrainingBreakdowns,
@@ -60,8 +61,54 @@ describe('trainingAndQualificationsUtils', () => {
     });
   });
 
+  describe.only('convertAndFlattenQualificationsForEstablishments', () => {
+    it('should return a list of qualification records', () => {
+      const result = convertAndFlattenQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
+
+      expect(result[0]).to.deep.equal({
+        workplaceName: 'Workplace Name',
+        workerName: 'Bob Ross',
+        jobRole: 'Activities worker or co-ordinator',
+        qualificationType: 'NVQ',
+        qualificationName: 'Care NVQ',
+        qualificationLevel: '3',
+        yearAchieved: 2020,
+      });
+
+      expect(result[1]).to.deep.equal({
+        workplaceName: 'Workplace Name',
+        workerName: 'Martin Mill',
+        jobRole: 'Care Giver',
+        qualificationType: 'Award',
+        qualificationName: 'Good Name Award',
+        qualificationLevel: '2',
+        yearAchieved: 2018,
+      });
+
+      expect(result[1]).to.deep.equal({
+        workplaceName: 'Workplace Name',
+        workerName: 'Martin Mill',
+        jobRole: 'Care Giver',
+        qualificationType: 'Award',
+        qualificationName: 'Good Name Award',
+        qualificationLevel: '2',
+        yearAchieved: 2018,
+      });
+
+      expect(result[2]).to.deep.equal({
+        workplaceName: 'Subsidiary Workplace Name',
+        workerName: 'Roly Poly',
+        jobRole: 'Roll Connoisseur',
+        qualificationType: 'Degree',
+        qualificationName: 'Rolling',
+        qualificationLevel: '6',
+        yearAchieved: 2020,
+      });
+    });
+  });
+
   describe('convertQualificationsForEstablishments', () => {
-    describe('First establishment', async () => {
+    describe('First establishment', () => {
       it('should return the workplace name for the first establishment', () => {
         const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
 
@@ -122,6 +169,36 @@ describe('trainingAndQualificationsUtils', () => {
           qualificationLevel: '7',
           yearAchieved: 2021,
         });
+      });
+    });
+
+    describe('establishment name', () => {
+      it('should return array with first establishment name', () => {
+        const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
+
+        expect(result[0].name).to.equal('Workplace Name');
+      });
+
+      it('should return a string if number in string', () => {
+        mockEstablishmentsQualificationsResponse[0].NameValue = '80abc';
+        const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
+
+        expect(result[0].name).to.equal('80abc');
+      });
+
+      it('should return a string if number in string with letters', () => {
+        mockEstablishmentsQualificationsResponse[0].NameValue = '80abc';
+        const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
+
+        expect(typeof result[0].name).to.deep.equal('string');
+      });
+
+      it('should return a number if only number in string', () => {
+        mockEstablishmentsQualificationsResponse[0].NameValue = '80';
+        const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
+
+        expect(typeof result[0].name).to.deep.equal('number');
+        expect(result[0].name).to.deep.equal(80);
       });
     });
   });
@@ -324,37 +401,6 @@ describe('trainingAndQualificationsUtils', () => {
         ]);
 
         expect(secondWorker.missingMandatoryTrainings).to.deep.equal([]);
-      });
-    });
-
-    describe('convertQualificationsForEstablishments', () => {
-      describe('First establishment', async () => {
-        it('should return array with first establishment name', () => {
-          const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-
-          expect(result[0].name).to.equal('Workplace Name');
-        });
-
-        it('should return a string if number in string', () => {
-          mockEstablishmentsQualificationsResponse[0].NameValue = '80abc';
-          const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-
-          expect(result[0].name).to.equal('80abc');
-        });
-
-        it('should return a string if number in string with letters', () => {
-          mockEstablishmentsQualificationsResponse[0].NameValue = '80abc';
-          const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-
-          expect(typeof result[0].name).to.deep.equal('string');
-        });
-
-        it('should return a number if only number in string', () => {
-          mockEstablishmentsQualificationsResponse[0].NameValue = '80';
-          const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-
-          expect(typeof result[0].name).to.deep.equal('number');
-        });
       });
     });
 

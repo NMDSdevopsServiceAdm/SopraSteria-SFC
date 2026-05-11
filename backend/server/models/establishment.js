@@ -2314,9 +2314,9 @@ module.exports = function (sequelize, DataTypes) {
               required: false,
             },
             {
-              model: sequelize.models.workerQualifications,
+              model: sequelize.models.workerQualifications.scope('withCertificateData'),
               as: 'qualifications',
-              attributes: ['Year'],
+              attributes: ['year', 'id'],
               include: [
                 {
                   model: sequelize.models.workerAvailableQualifications,
