@@ -65,8 +65,6 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
 
     await generateTrainingRecordDetailsTab(workbook, allTrainingRecordsAndMissingTrainings);
 
-    // await generateTrainingTab(workbook, establishment.id);
-
     await generateQualificationsTab(workbook, establishment.id);
     await generateCareCertificateTab(workbook, careCertificateStatus);
 
