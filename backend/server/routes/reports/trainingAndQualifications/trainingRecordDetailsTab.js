@@ -1,4 +1,6 @@
 const colCache = require('exceljs/lib/utils/col-cache');
+const lodash = require('lodash');
+
 const {
   addText,
   setColourForRange,
@@ -8,8 +10,7 @@ const {
   defaultDateFormat,
   applyStyleToRange,
   conditionalColoursForTrainingExpiry,
-  autoFitColumnWidthByTextLength,
-  applyStyleToCell,
+  autoAdjustWrapTextAndRowHeight,
 } = require('../../../utils/excelUtils');
 
 const columnNamesAndDataFields = [
@@ -31,17 +32,21 @@ const columnNamesAndDataFields = [
   { columnName: 'Long term absence', field: 'isInlongTermAbsence' },
 ];
 
+const HeaderRowNumber = 3;
+
 const generateTrainingRecordDetailsTab = async (workbook, trainingData, isParent = false) => {
   const trainingTab = workbook.addWorksheet('Training record details', { views: [{ showGridLines: false }] });
   const columnsToDisplay = isParent ? columnNamesAndDataFields : columnNamesAndDataFields.slice(1);
 
+  const sortedTrainingData = lodash.sortBy(trainingData, ['workplaceName', 'workerNameOrId', 'category']);
+
   addTitle(trainingTab);
 
-  addTrainingRecordsTable(trainingTab, trainingData, columnsToDisplay);
+  addTrainingRecordsTable(trainingTab, sortedTrainingData, columnsToDisplay);
 
   setHeightsAndWidths(trainingTab);
 
-  // setFreezePane(trainingTab);
+  setFreezePane(trainingTab);
 };
 
 const addTitle = (tab) => {
@@ -57,7 +62,7 @@ const addTrainingRecordsTable = (tab, trainingData, columnsToDisplay) => {
 
   const trainingTable = tab.addTable({
     name: 'trainingRecordDetailsTable',
-    ref: 'B3',
+    ref: `B${HeaderRowNumber}`,
     columns: columnsToDisplay.map(({ columnName }) => ({
       name: columnName,
       filterButton: true,
@@ -79,12 +84,12 @@ const addTrainingRecordsTable = (tab, trainingData, columnsToDisplay) => {
 };
 
 const setStyleForStatusColumn = (tab) => {
-  const headerRow = tab.getRow(3);
+  const headerRow = tab.getRow(HeaderRowNumber);
   const lastRowNumber = tab.lastRow.number;
 
   const statusColumnNumber = headerRow.values.indexOf('Status');
 
-  const statusColourRange = colCache.encode(3 + 1, statusColumnNumber, lastRowNumber, statusColumnNumber);
+  const statusColourRange = colCache.encode(HeaderRowNumber + 1, statusColumnNumber, lastRowNumber, statusColumnNumber);
   tab.addConditionalFormatting({
     ref: statusColourRange,
     rules: conditionalColoursForTrainingExpiry,
@@ -93,12 +98,12 @@ const setStyleForStatusColumn = (tab) => {
 };
 
 const setDateAndNumberFormats = (tab) => {
-  const headerRow = tab.getRow(3);
+  const headerRow = tab.getRow(HeaderRowNumber);
   const lastRowNumber = tab.lastRow.number;
 
   const getRangeByColumnName = (columnName) => {
     const columnNumber = headerRow.values.indexOf(columnName);
-    const columnRange = colCache.encode(3 + 1, columnNumber, lastRowNumber, columnNumber);
+    const columnRange = colCache.encode(HeaderRowNumber + 1, columnNumber, lastRowNumber, columnNumber);
     return columnRange;
   };
 
@@ -138,28 +143,22 @@ const setHeightsAndWidths = (tab) => {
     row.height = height;
   });
 
-  for (let i = 4; i <= tab.lastRow.number; i++) {
+  for (let i = HeaderRowNumber + 1; i <= tab.lastRow.number; i++) {
     const row = tab.getRow(i);
     row.height = 22;
   }
 
-  const setTextWrap = (tab, cell, defaultWidth = 34, defaultHeight = 22) => {
-    const textInCell = cell.value?.length ?? 0;
-    const numberOfLinesNeeded = Math.ceil(textInCell / defaultWidth);
-    if (numberOfLinesNeeded <= 1) {
-      return;
-    }
+  const trainingNameColumnNumber = tab.getRow(HeaderRowNumber).values.indexOf('Training or course name');
+  const autoAdjustRange = colCache.encode(HeaderRowNumber + 1, 2, tab.lastRow.number, trainingNameColumnNumber);
 
-    applyStyleToCell(cell, { alignment: { wrapText: true } });
-
-    const row = tab.getRow(cell.row);
-    const adjustedHeight = defaultHeight * numberOfLinesNeeded - 10;
-    row.height = Math.max(row.height ?? 0, adjustedHeight);
-  };
-
-  forEachCellInRange(tab, 'C4:E61', (cell) => {
-    setTextWrap(tab, cell);
+  console.log(trainingNameColumnNumber, '<--- trainingNameColumnNumber');
+  forEachCellInRange(tab, autoAdjustRange, (cell) => {
+    autoAdjustWrapTextAndRowHeight(tab, cell);
   });
+};
+
+const setFreezePane = (tab) => {
+  tab.views = [{ state: 'frozen', ySplit: 3, activeCell: 'B4' }, { showGridLines: false }];
 };
 
 module.exports = { generateTrainingRecordDetailsTab };
