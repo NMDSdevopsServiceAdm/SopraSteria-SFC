@@ -29,7 +29,7 @@ const columnNamesAndDataFields = [
   { columnName: 'Provider name', field: 'trainingProviderName' },
   { columnName: 'Delivery method', field: 'howWasItDelivered' },
   { columnName: 'Certificate upload', field: 'trainingCertificateUploaded' },
-  { columnName: 'Long term absence', field: 'isInlongTermAbsence' },
+  { columnName: 'Long term absence', field: 'isInLongTermAbsence' },
 ];
 
 const HeaderRowNumber = 3;

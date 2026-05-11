@@ -738,7 +738,7 @@ exports.mockEstablishmentsTrainingResponse = [
             return ['Learning'];
           }
         },
-        LongTermAbsence: 'Yes',
+        LongTermAbsence: 'Illness',
 
         workerTraining: [
           {
