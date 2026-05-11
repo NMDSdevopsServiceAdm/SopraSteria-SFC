@@ -14,22 +14,22 @@ const {
 } = require('../../../utils/excelUtils');
 
 const columnNamesAndDataFields = [
-  { columnName: 'Workplace', field: 'workplaceName' },
-  { columnName: 'Name or ID number', field: 'workerNameOrId' },
-  { columnName: 'Main job role', field: 'mainJobRole' },
-  { columnName: 'Training category', field: 'category' },
-  { columnName: 'Training or course name', field: 'trainingName' },
-  { columnName: 'Mandatory', field: 'isMandatory' },
-  { columnName: 'Validity period', field: 'validityPeriodInMonth' },
-  { columnName: 'Completion date', field: 'dateCompleted' },
-  { columnName: 'Expiry date', field: 'expiryDate' },
-  { columnName: 'Status', field: 'status' },
-  { columnName: 'Accredited', field: 'accredited' },
-  { columnName: 'In-house or external', field: 'deliveredBy' },
-  { columnName: 'Provider name', field: 'trainingProviderName' },
-  { columnName: 'Delivery method', field: 'howWasItDelivered' },
-  { columnName: 'Certificate upload', field: 'trainingCertificateUploaded' },
-  { columnName: 'Long term absence', field: 'isInLongTermAbsence' },
+  { columnName: 'Workplace', field: 'workplaceName', width: 30 },
+  { columnName: 'Name or ID number', field: 'workerNameOrId', width: 30 },
+  { columnName: 'Main job role', field: 'mainJobRole', width: 30 },
+  { columnName: 'Training category', field: 'category', width: 30 },
+  { columnName: 'Training or course name', field: 'trainingName', width: 30 },
+  { columnName: 'Mandatory', field: 'isMandatory', width: 12 },
+  { columnName: 'Validity period', field: 'validityPeriodInMonth', width: 18 },
+  { columnName: 'Completion date', field: 'dateCompleted', width: 18 },
+  { columnName: 'Expiry date', field: 'expiryDate', width: 18 },
+  { columnName: 'Status', field: 'status', width: 18 },
+  { columnName: 'Accredited', field: 'accredited', width: 18 },
+  { columnName: 'In-house or external', field: 'deliveredBy', width: 22 },
+  { columnName: 'Provider name', field: 'trainingProviderName', width: 30 },
+  { columnName: 'Delivery method', field: 'howWasItDelivered', width: 19 },
+  { columnName: 'Certificate upload', field: 'trainingCertificateUploaded', width: 19 },
+  { columnName: 'Long term absence', field: 'isInLongTermAbsence', width: 19 },
 ];
 
 const HeaderRowNumber = 3;
@@ -44,7 +44,7 @@ const generateTrainingRecordDetailsTab = async (workbook, trainingData, isParent
 
   addTrainingRecordsTable(trainingTab, sortedTrainingData, columnsToDisplay);
 
-  setHeightsAndWidths(trainingTab);
+  setHeightsAndWidths(trainingTab, columnsToDisplay);
 
   setFreezePane(trainingTab);
 };
@@ -128,8 +128,8 @@ const setDateAndNumberFormats = (tab) => {
   );
 };
 
-const setHeightsAndWidths = (tab) => {
-  const columnWidths = [9, Array(4).fill(30), 12, Array(5).fill(18), 22, 30, Array(3).fill(19)].flat();
+const setHeightsAndWidths = (tab, columnsToDisplay) => {
+  const columnWidths = [9, ...columnsToDisplay.map((column) => column.width)];
 
   columnWidths.forEach((width, index) => {
     const column = tab.getColumn(index + 1);
@@ -151,7 +151,6 @@ const setHeightsAndWidths = (tab) => {
   const trainingNameColumnNumber = tab.getRow(HeaderRowNumber).values.indexOf('Training or course name');
   const autoAdjustRange = colCache.encode(HeaderRowNumber + 1, 2, tab.lastRow.number, trainingNameColumnNumber);
 
-  console.log(trainingNameColumnNumber, '<--- trainingNameColumnNumber');
   forEachCellInRange(tab, autoAdjustRange, (cell) => {
     autoAdjustWrapTextAndRowHeight(tab, cell);
   });
