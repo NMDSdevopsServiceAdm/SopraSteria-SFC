@@ -134,7 +134,7 @@ const convertWorkerTrainingRecords = (workers, expiresSoonAlertDate) => {
     return {
       workerId: numberCheck(worker.NameOrIdValue),
       jobRole: worker.mainJob.title,
-      isInlongTermAbsence: worker.LongTermAbsence ? 'Yes' : 'No',
+      isInLongTermAbsence: worker.LongTermAbsence ? 'Yes' : 'No',
       mandatoryTraining: mandatoryTrainingCategories,
       missingMandatoryTrainings: listMissingMandatoryTrainings(worker),
       trainingRecords: convertIndividualWorkerTrainingRecords(
@@ -357,7 +357,7 @@ const listAllExistingAndMissingTrainings = (establishmentsWithTrainingRecords) =
           workplaceName: establishment.name,
           workerNameOrId: worker.workerId,
           mainJobRole: worker.jobRole,
-          isInlongTermAbsence: worker.isInlongTermAbsence,
+          isInLongTermAbsence: worker.isInLongTermAbsence,
         };
       });
     });

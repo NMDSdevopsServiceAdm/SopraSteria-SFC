@@ -221,7 +221,7 @@ describe('trainingAndQualificationsUtils', () => {
 
         expect(firstWorker.workerId).to.equal('New staff record');
         expect(firstWorker.jobRole).to.equal('Activities worker or co-ordinator');
-        expect(firstWorker.longTermAbsence).to.equal('');
+        expect(firstWorker.isInLongTermAbsence).to.equal('No');
         expect(firstWorker.mandatoryTraining).to.deep.equal(['Communication skills']);
       });
 
@@ -275,7 +275,7 @@ describe('trainingAndQualificationsUtils', () => {
 
         expect(secondWorker.workerId).to.equal('Another staff record');
         expect(secondWorker.jobRole).to.equal('Care giver');
-        expect(secondWorker.longTermAbsence).to.equal('Yes');
+        expect(secondWorker.isInLongTermAbsence).to.equal('Yes');
         expect(secondWorker.mandatoryTraining).to.deep.equal(['Learning']);
       });
 
@@ -362,7 +362,7 @@ describe('trainingAndQualificationsUtils', () => {
 
         expect(firstWorker.workerId).to.equal('Test staff record');
         expect(firstWorker.jobRole).to.equal('Activities worker and care');
-        expect(firstWorker.longTermAbsence).to.equal('');
+        expect(firstWorker.isInLongTermAbsence).to.equal('No');
         expect(firstWorker.mandatoryTraining).to.deep.equal(['Autism']);
       });
 
