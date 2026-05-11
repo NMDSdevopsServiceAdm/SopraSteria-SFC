@@ -8,7 +8,6 @@ const Authorization = require('../../../utils/security/isAuthenticated');
 const { hasPermission } = require('../../../utils/security/hasPermission');
 
 const { generateSummaryTab } = require('./summaryTab');
-const { generateQualificationsTab } = require('./qualificationsTab');
 const { generateCareCertificateTab } = require('./careCertificateTab');
 const { generateIntroTab } = require('./introTab');
 const { generateTrainingByStaffTab } = require('./trainingByStaffTab');
@@ -23,6 +22,7 @@ const {
 
 const { generateExpiredTrainingTab } = require('./expiredTrainingTab');
 const { generateTrainingRecordDetailsTab } = require('./trainingRecordDetailsTab');
+const { generateQualificationRecordDetailsTab } = require('./qualificationRecordDetailsTab');
 
 const generateTrainingAndQualificationsReport = async (req, res) => {
   try {
@@ -65,8 +65,8 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
 
     await generateTrainingRecordDetailsTab(workbook, allTrainingRecordsAndMissingTrainings);
 
-    await generateQualificationsTab(workbook, establishment.id);
     await generateCareCertificateTab(workbook, careCertificateStatus);
+    await generateQualificationRecordDetailsTab(workbook, establishment.id);
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader(

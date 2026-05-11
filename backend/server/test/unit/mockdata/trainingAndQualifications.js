@@ -508,18 +508,15 @@ exports.mockEstablishmentsQualificationsResponse = [
     NameValue: 'Workplace Name',
     workers: [
       {
-        get() {
-          return 'Bob Ross';
-        },
+        NameOrIdValue: 'Bob Ross',
+
         mainJob: {
           id: 1,
           title: 'Activities worker or co-ordinator',
         },
         qualifications: [
           {
-            get() {
-              return 2020;
-            },
+            year: 2020,
             qualification: {
               group: 'NVQ',
               title: 'Care NVQ',
@@ -529,18 +526,14 @@ exports.mockEstablishmentsQualificationsResponse = [
         ],
       },
       {
-        get() {
-          return 'Martin Mill';
-        },
+        NameOrIdValue: 'Martin Mill',
         mainJob: {
           id: 2,
           title: 'Care Giver',
         },
         qualifications: [
           {
-            get() {
-              return 2018;
-            },
+            year: 2018,
             qualification: {
               group: 'Award',
               title: 'Good Name Award',
@@ -555,18 +548,14 @@ exports.mockEstablishmentsQualificationsResponse = [
     NameValue: 'Subsidiary Workplace Name',
     workers: [
       {
-        get() {
-          return 'Roly Poly';
-        },
+        NameOrIdValue: 'Roly Poly',
         mainJob: {
           id: 3,
           title: 'Roll Connoisseur',
         },
         qualifications: [
           {
-            get() {
-              return 2020;
-            },
+            year: 2020,
             qualification: {
               group: 'Degree',
               title: 'Rolling',
@@ -574,9 +563,7 @@ exports.mockEstablishmentsQualificationsResponse = [
             },
           },
           {
-            get() {
-              return 2021;
-            },
+            year: 2021,
             qualification: {
               group: 'Degree',
               title: 'Rolling Masters',
