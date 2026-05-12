@@ -111,14 +111,14 @@ exports.borderStyles = borderStyles;
 const tableDataCellStyle = {
   font: { size: 12, family: 4 },
   border: borderStyles.tableCell,
-  alignment: { vertical: 'middle' },
+  alignment: { vertical: 'middle', horizontal: 'left' },
 };
 
 const tableHeaderCellStyle = {
   font: { size: 12, family: 4, bold: true },
   fill: { type: 'pattern', pattern: 'solid', fgColor: newBackgroundColours.lightGrey },
   border: borderStyles.blackBorderAllSides,
-  alignment: { vertical: 'middle' },
+  alignment: { vertical: 'middle', horizontal: 'left' },
 };
 
 exports.tableDataCellStyle = tableDataCellStyle;
