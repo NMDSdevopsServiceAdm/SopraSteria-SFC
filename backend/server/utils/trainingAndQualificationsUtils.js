@@ -213,34 +213,20 @@ exports.convertTrainingForEstablishments = (rawEstablishments) => {
 
 const convertIndividualWorkerQualifications = (worker) => {
   return worker.qualifications.map((qualification) => {
+    const qualificationLevel = numberCheck(qualification.qualification.level);
+    const certificateUploaded = qualification.qualificationCertificatesCount > 0 ? 'Yes' : 'No';
+
     return {
       workerName: numberCheck(worker.NameOrIdValue),
       jobRole: worker.mainJob.title,
       qualificationType: qualification.qualification.group,
       qualificationName: qualification.qualification.title,
-      qualificationLevel: qualification.qualification.level,
+      qualificationLevel,
       yearAchieved: qualification.year,
-      certificateUploaded: qualification.qualificationCertificatesCount > 0 ? 'Yes' : 'No',
+      certificateUploaded,
     };
   });
 };
-
-const convertWorkerQualifications = (rawWorkerQualifications) => {
-  return rawWorkerQualifications.workers.reduce((convertedWorkerQualifications, worker) => {
-    return convertedWorkerQualifications.concat(convertIndividualWorkerQualifications(worker));
-  }, []);
-};
-
-const convertQualificationsForEstablishments = (rawEstablishments) => {
-  return rawEstablishments.map((establishment) => {
-    return {
-      name: numberCheck(establishment.NameValue),
-      qualifications: convertWorkerQualifications(establishment),
-    };
-  });
-};
-
-exports.convertQualificationsForEstablishments = convertQualificationsForEstablishments;
 
 exports.convertAndFlattenQualificationsForEstablishments = (rawEstablishments) => {
   const allQualificationRecords = rawEstablishments.flatMap((workplace) => {
@@ -248,7 +234,7 @@ exports.convertAndFlattenQualificationsForEstablishments = (rawEstablishments) =
 
     return convertedQualifications.map((qualificationRecord) => ({
       ...qualificationRecord,
-      workplaceName: workplace.NameValue,
+      workplaceName: numberCheck(workplace.NameValue),
     }));
   });
 

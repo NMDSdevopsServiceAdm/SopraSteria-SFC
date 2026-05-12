@@ -517,6 +517,7 @@ exports.mockEstablishmentsQualificationsResponse = [
         qualifications: [
           {
             year: 2020,
+            qualificationCertificatesCount: 1,
             qualification: {
               group: 'NVQ',
               title: 'Care NVQ',
@@ -534,6 +535,7 @@ exports.mockEstablishmentsQualificationsResponse = [
         qualifications: [
           {
             year: 2018,
+            qualificationCertificatesCount: 0,
             qualification: {
               group: 'Award',
               title: 'Good Name Award',
@@ -556,6 +558,7 @@ exports.mockEstablishmentsQualificationsResponse = [
         qualifications: [
           {
             year: 2020,
+            qualificationCertificatesCount: 2,
             qualification: {
               group: 'Degree',
               title: 'Rolling',
@@ -564,6 +567,7 @@ exports.mockEstablishmentsQualificationsResponse = [
           },
           {
             year: 2021,
+            qualificationCertificatesCount: 0,
             qualification: {
               group: 'Degree',
               title: 'Rolling Masters',
