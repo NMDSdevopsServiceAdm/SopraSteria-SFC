@@ -6,16 +6,13 @@ const {
   setColourForCell,
   setBasicTableStyle,
   tableHeaderCellStyle,
-  borderStyles,
   applyStyleToRange,
   autoFitColumnWidthByTextLength,
 } = require('../../../utils/excelUtils');
-const models = require('../../../models');
 
 const colCache = require('exceljs/lib/utils/col-cache');
 const lodash = require('lodash');
 
-const GroupHeaderRowNumber = 3;
 const HeaderRowNumber = 4;
 
 const generateTrainingByCategoryTab = async (workbook, trainingByCategoryBreakdowns, isParent = false) => {
@@ -40,7 +37,7 @@ const generateTrainingByCategoryTab = async (workbook, trainingByCategoryBreakdo
   const sortedData = lodash.sortBy(trainingByCategoryBreakdowns, ['workplaceName', 'trainingCategory']);
 
   addTrainingByCategoryTable(trainingByCategoryTab, sortedData, columnsToDisplay);
-
+  setBoldStyleForHeaderRow(trainingByCategoryTab);
   setHeightsAndWidths(trainingByCategoryTab);
 
   addFootNote(trainingByCategoryTab);
@@ -56,7 +53,7 @@ const addTopTableHeader = (tab, columnsToDisplay) => {
   const lastColumnLetter = colCache.n2l(1 + columnsToDisplay.length);
 
   const topHeaderRange = `B3:${lastColumnLetter}3`;
-  addText(tab, topHeaderRange, 'Training', { size: 14, bold: true });
+  addText(tab, topHeaderRange, 'Training', { size: 16, bold: true });
   applyStyleToRange(tab, topHeaderRange, tableHeaderCellStyle);
 };
 
@@ -87,10 +84,12 @@ const addTrainingByCategoryTable = (tab, sortedData, columnsToDisplay) => {
 
   setAlignmentForColumns(tab);
   setBoldStyleForCountColumns(tab);
+
+  setStyleForTrainingByCategoryTable(tab);
 };
 
 const setHeightsAndWidths = (tab) => {
-  const columnWidths = [7, 33, 16, 15, 15, 18, 18, 15];
+  const columnWidths = [7, 33, 18, 18, 18, 18, 18, 18];
 
   columnWidths.forEach((width, index) => {
     const column = tab.getColumn(index + 1);
@@ -101,7 +100,7 @@ const setHeightsAndWidths = (tab) => {
     autoFitColumnWidthByTextLength(tab, column, 12);
   });
 
-  const rowHeights = [48, 18, 22, 36];
+  const rowHeights = [48, 18, 22, 44];
 
   rowHeights.forEach((height, index) => {
     const row = tab.getRow(index + 1);
@@ -129,6 +128,17 @@ const setAlignmentForColumns = (tab) => {
   });
 };
 
+const setBoldStyleForHeaderRow = (tab) => {
+  const headerRow = tab.getRow(HeaderRowNumber);
+
+  headerRow.eachCell((cell) => {
+    cell.font = {
+      ...cell.font,
+      bold: true,
+    };
+  });
+};
+
 const setBoldStyleForCountColumns = (tab) => {
   const headerValues = tab.getRow(HeaderRowNumber).values;
 
@@ -148,6 +158,49 @@ const setBoldStyleForCountColumns = (tab) => {
         size: 12,
       };
     }
+  });
+};
+
+const setStyleForTrainingByCategoryTable = (tab) => {
+  const headerRow = tab.getRow(HeaderRowNumber);
+
+  const headerStyles = {
+    Total: {
+      backgroundColour: newBackgroundColours.black,
+      textColour: newTextColours.white,
+    },
+
+    Expired: {
+      backgroundColour: newBackgroundColours.red,
+      textColour: newTextColours.black,
+    },
+
+    'Expiring soon': {
+      backgroundColour: newBackgroundColours.orange,
+      textColour: newTextColours.black,
+    },
+
+    'Up-to-date': {
+      backgroundColour: newBackgroundColours.green,
+      textColour: newTextColours.black,
+    },
+
+    Missing: {
+      backgroundColour: newBackgroundColours.red,
+      textColour: newTextColours.black,
+    },
+  };
+
+  Object.entries(headerStyles).forEach(([headerName, colours]) => {
+    const columnNumber = headerRow.values.indexOf(headerName);
+
+    if (columnNumber === -1) {
+      return;
+    }
+
+    const cell = tab.getCell(HeaderRowNumber, columnNumber);
+
+    setColourForCell(cell, colours);
   });
 };
 
