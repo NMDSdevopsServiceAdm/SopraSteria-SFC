@@ -1,10 +1,8 @@
-const { convertTrainingForEstablishments } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   addText,
   setColourForRange,
   newBackgroundColours,
   newTextColours,
-  conditionalColoursForTrainingExpiry,
   setColourForCell,
   setBasicTableStyle,
   tableHeaderCellStyle,
@@ -20,34 +18,32 @@ const lodash = require('lodash');
 const GroupHeaderRowNumber = 3;
 const HeaderRowNumber = 4;
 
-const columnNameAndDataFields = [
-  { columnName: 'Training category', field: 'category' },
-  { columnName: 'Workplace', field: 'workplaceName' },
-  { columnName: 'Mandatory', field: 'isMandatory' },
-  { columnName: 'Total', field: 'trainingCount' },
-  { columnName: 'Expired', field: 'expiredNonMandatoryTrainingCount' },
-  { columnName: 'Expiring soon', field: '' },
-  { columnName: 'Up-to-date', field: '' },
-  { columnName: 'Missing', field: 'missingMandatoryTrainingCount' },
-];
-
 const generateTrainingByCategoryTab = async (workbook, trainingByCategoryBreakdowns, isParent = false) => {
   const trainingByCategoryTab = workbook.addWorksheet('Training by category', { views: [{ showGridLines: false }] });
-  const columnsToDisplay = isParent ? columnNameAndDataFields : columnNameAndDataFields.slice(1);
+
+  const columnsToDisplay = [
+    { columnName: 'Training category', field: 'trainingCategory' },
+
+    ...(isParent ? [{ columnName: 'Workplace', field: 'workplaceName' }] : []),
+
+    { columnName: 'Mandatory', field: 'mandatory' },
+    { columnName: 'Total', field: 'total' },
+    { columnName: 'Expired', field: 'expired' },
+    { columnName: 'Expiring soon', field: 'expiringSoon' },
+    { columnName: 'Up-to-date', field: 'upToDate' },
+    { columnName: 'Missing', field: 'missing' },
+  ];
+
   addTitle(trainingByCategoryTab);
   addTopTableHeader(trainingByCategoryTab, columnsToDisplay);
 
-  const sortedData = lodash.sortBy(trainingByCategoryBreakdowns, ['workplaceName', 'category']);
+  const sortedData = lodash.sortBy(trainingByCategoryBreakdowns, ['workplaceName', 'trainingCategory']);
 
   addTrainingByCategoryTable(trainingByCategoryTab, sortedData, columnsToDisplay);
 
-  // addWorkerTable(trainingByStaffTab, workerTrainingBreakdowns, isParent);
+  setHeightsAndWidths(trainingByCategoryTab);
 
-  // setHeightsAndWidths(trainingByStaffTab);
-
-  // addFootNote(trainingByStaffTab);
-
-  // setFreezePane(trainingByStaffTab);
+  addFootNote(trainingByCategoryTab);
 };
 
 const addTitle = (trainingByCategoryTab) => {
@@ -60,7 +56,7 @@ const addTopTableHeader = (tab, columnsToDisplay) => {
   const lastColumnLetter = colCache.n2l(1 + columnsToDisplay.length);
 
   const topHeaderRange = `B3:${lastColumnLetter}3`;
-  addText(tab, topHeaderRange, 'Training', { size: 12, bold: true });
+  addText(tab, topHeaderRange, 'Training', { size: 14, bold: true });
   applyStyleToRange(tab, topHeaderRange, tableHeaderCellStyle);
 };
 
@@ -74,7 +70,7 @@ const addTrainingByCategoryTable = (tab, sortedData, columnsToDisplay) => {
   }
 
   const trainingTable = tab.addTable({
-    name: 'expiredTrainingTable',
+    name: 'trainingByCategoryTable',
     ref: `B${HeaderRowNumber}`,
     columns: columnsToDisplay.map(({ columnName }) => ({ name: columnName, filterButton: true })),
     rows: tableRows,
@@ -84,14 +80,88 @@ const addTrainingByCategoryTable = (tab, sortedData, columnsToDisplay) => {
   trainingTable.commit();
 
   setBasicTableStyle(tab, tableRange, {
-    hasTotalRow: false,
+    hasTotalRow: true,
     alignHorizontalCenter: false,
     bold: false,
   });
 
-  // setStyleForMandatoryColumn(tab);
-  // setStyleForStatusColumn(tab);
-  // setDateFormatForExpiryDateColumn(tab);
+  setAlignmentForColumns(tab);
+  setBoldStyleForCountColumns(tab);
 };
 
+const setHeightsAndWidths = (tab) => {
+  const columnWidths = [7, 33, 16, 15, 15, 18, 18, 15];
+
+  columnWidths.forEach((width, index) => {
+    const column = tab.getColumn(index + 1);
+    column.width = width;
+  });
+
+  [2, 3, 4, 5].forEach((column) => {
+    autoFitColumnWidthByTextLength(tab, column, 12);
+  });
+
+  const rowHeights = [48, 18, 22, 36];
+
+  rowHeights.forEach((height, index) => {
+    const row = tab.getRow(index + 1);
+    row.height = height;
+  });
+
+  for (let i = 5; i <= tab.lastRow.number; i++) {
+    const row = tab.getRow(i);
+    row.height = 22;
+  }
+};
+
+const setAlignmentForColumns = (tab) => {
+  const headerValues = tab.getRow(HeaderRowNumber).values;
+
+  headerValues.forEach((header, index) => {
+    if (header === 'Training category' || !header) {
+      return;
+    }
+
+    tab.getColumn(index).alignment = {
+      horizontal: 'center',
+      vertical: 'middle',
+    };
+  });
+};
+
+const setBoldStyleForCountColumns = (tab) => {
+  const headerValues = tab.getRow(HeaderRowNumber).values;
+
+  const columnsToBold = ['Total', 'Expired', 'Expiring soon', 'Up-to-date', 'Missing'];
+
+  headerValues.forEach((header, index) => {
+    if (!columnsToBold.includes(header)) {
+      return;
+    }
+
+    for (let rowNumber = HeaderRowNumber + 1; rowNumber <= tab.lastRow.number; rowNumber++) {
+      const cell = tab.getRow(rowNumber).getCell(index);
+
+      cell.font = {
+        ...cell.font,
+        bold: true,
+        size: 12,
+      };
+    }
+  });
+};
+
+const addFootNote = (tab) => {
+  const footNoteText = [
+    'The figures shown could include records of staff who have been flagged as long-term absent.',
+    'Note, the number in the Missing column may include training not yet taken by new starters.',
+  ];
+
+  tab.addRow([]);
+
+  footNoteText.forEach((text) => {
+    const newRow = tab.lastRow.number + 1;
+    addText(tab, `B${newRow}`, text);
+  });
+};
 module.exports = { generateTrainingByCategoryTab };
