@@ -24,12 +24,12 @@ const buildTrainingCategorySummary = (establishmentsWithTrainingRecords) => {
 
     const category = categoryMap[categoryName];
 
+    category.total++;
+
     if (training.status === 'Missing') {
       category.missing++;
       return;
     }
-
-    category.total++;
 
     if (training.status === 'Expired') {
       category.expired++;
