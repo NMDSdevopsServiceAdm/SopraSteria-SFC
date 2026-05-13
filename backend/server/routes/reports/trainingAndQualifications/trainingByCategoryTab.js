@@ -86,6 +86,7 @@ const addTrainingByCategoryTable = (tab, sortedData, columnsToDisplay) => {
   setBoldStyleForCountColumns(tab);
 
   setStyleForTrainingByCategoryTable(tab);
+  setFreezePane(tab);
 };
 
 const setHeightsAndWidths = (tab) => {
@@ -216,5 +217,9 @@ const addFootNote = (tab) => {
     const newRow = tab.lastRow.number + 1;
     addText(tab, `B${newRow}`, text);
   });
+};
+
+const setFreezePane = (tab) => {
+  tab.views = [{ state: 'frozen', ySplit: 4, activeCell: 'B1' }, { showGridLines: false }];
 };
 module.exports = { generateTrainingByCategoryTab };
