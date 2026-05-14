@@ -1,9 +1,12 @@
 'use strict';
 const moment = require('moment');
 const config = require('../../../config/config');
-const s3 = new (require('aws-sdk').S3)({
+
+const AWS_SDK_V2 = require('aws-sdk');
+const s3 = new AWS_SDK_V2.S3({
   region: String(config.get('bulkupload.region')),
 });
+
 const Bucket = String(config.get('bulkupload.bucketname'));
 
 const params = (establishmentId) => {
@@ -164,6 +167,7 @@ const saveLastBulkUpload = async (establishmentId) => {
 };
 
 const purgeBulkUploadS3Objects = async (establishmentId) => {
+  console.log('===== start purging S3 objects =====');
   const listParams = params(establishmentId);
   let deleteKeys = [];
 
@@ -177,17 +181,22 @@ const purgeBulkUploadS3Objects = async (establishmentId) => {
 
   listParams.Prefix = `${establishmentId}/latest/`;
   deleteKeys = deleteKeys.concat(await getKeysFromFolder(listParams));
+  console.log('deleteKeys after 1st await', deleteKeys.length);
 
   listParams.Prefix = `${establishmentId}/validation/`;
   deleteKeys = deleteKeys.concat(await getKeysFromFolder(listParams));
+  console.log('deleteKeys after 2nd await', deleteKeys.length);
 
   listParams.Prefix = `${establishmentId}/intermediary/`;
   deleteKeys = deleteKeys.concat(await getKeysFromFolder(listParams));
+  console.log('deleteKeys after 3rd await', deleteKeys.length);
 
   if (deleteKeys.length > 0) {
     if (deleteKeys.length < 1000) {
       deleteParams.Delete.Objects = deleteKeys;
+      console.log('===== before s3.deleteObjects =====');
       await s3.deleteObjects(deleteParams).promise();
+      console.log('===== after s3.deleteObjects =====');
     } else {
       const noOfFiles = 1000;
       for (let i = 0; i < deleteKeys.length; i += noOfFiles) {
