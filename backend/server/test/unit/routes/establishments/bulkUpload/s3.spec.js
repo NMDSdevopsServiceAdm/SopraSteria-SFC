@@ -117,8 +117,8 @@ describe('s3', () => {
 
   describe('purgeBulkUploadS3Objects', () => {
     it('should delete all the files', async () => {
-      const s3SendCommand = sinon.stub(s3ClientV3, 'listObjects');
-      s3SendCommand.callsFake(async (listParams) => {
+      const s3listObject = sinon.stub(s3ClientV3, 'listObjects');
+      s3listObject.callsFake(async (listParams) => {
         switch (listParams?.Prefix) {
           case '1/latest/':
             return latestFiles;
