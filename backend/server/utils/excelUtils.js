@@ -170,9 +170,9 @@ exports.colourSchemeForTrainingExpiry = colourSchemeForTrainingExpiry;
 
 exports.conditionalColoursForTrainingExpiry = colourSchemeForTrainingExpiry.map(({ text, colour }) => {
   return {
-    type: 'cellIs',
-    operator: 'equal',
-    formulae: [`"${text}"`],
+    type: 'containsText',
+    operator: 'containsText',
+    text,
     style: {
       fill: { type: 'pattern', pattern: 'solid', bgColor: colour },
       font: { bold: true, size: 12, family: 4 },

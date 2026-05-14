@@ -50,7 +50,11 @@ describe('TrainingByStaffTab', () => {
       const tab = workbook.getWorksheet('Training by staff');
 
       const headerRow = tab.getRow('4');
-      expect(headerRow.values.slice(3)).to.deep.equal(expectedColumnLabels);
+
+      expectedColumnLabels.forEach((columnLabel, index) => {
+        const actualHeader = headerRow.getCell(index + 3);
+        expect(actualHeader.value.trim()).to.equal(columnLabel);
+      });
 
       const workerColumns = tab.getColumn('B');
       expect(workerColumns.values).to.contain('Name or ID number');
