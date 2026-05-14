@@ -1,9 +1,24 @@
 const dayjs = require('dayjs');
 
+const createEmptySummaryRow = () => ({
+  total: 0,
+  expired: 0,
+  expiringSoon: 0,
+  upToDate: 0,
+  missing: 0,
+});
+
 const buildTrainingCategorySummary = (establishmentsWithTrainingRecords) => {
   const allTrainingRecords = listAllExistingAndMissingTrainings(establishmentsWithTrainingRecords);
 
   const categoryMap = {};
+
+  const statusFieldMap = {
+    Expired: 'expired',
+    'Expiring soon': 'expiringSoon',
+    'Up-to-date': 'upToDate',
+    Missing: 'missing',
+  };
 
   allTrainingRecords.forEach((training) => {
     const categoryName = training.category;
@@ -11,14 +26,9 @@ const buildTrainingCategorySummary = (establishmentsWithTrainingRecords) => {
     if (!categoryMap[categoryName]) {
       categoryMap[categoryName] = {
         trainingCategory: categoryName,
-
         mandatory: training.isMandatory,
 
-        total: 0,
-        expired: 0,
-        expiringSoon: 0,
-        upToDate: 0,
-        missing: 0,
+        ...createEmptySummaryRow(),
       };
     }
 
@@ -26,21 +36,10 @@ const buildTrainingCategorySummary = (establishmentsWithTrainingRecords) => {
 
     category.total++;
 
-    if (training.status === 'Missing') {
-      category.missing++;
-      return;
-    }
+    const field = statusFieldMap[training.status];
 
-    if (training.status === 'Expired') {
-      category.expired++;
-    }
-
-    if (training.status === 'Expiring soon') {
-      category.expiringSoon++;
-    }
-
-    if (training.status === 'Up-to-date') {
-      category.upToDate++;
+    if (field) {
+      category[field]++;
     }
   });
 
@@ -60,11 +59,7 @@ const buildTrainingCategorySummary = (establishmentsWithTrainingRecords) => {
       trainingCategory: 'Total',
       mandatory: '-',
 
-      total: 0,
-      expired: 0,
-      expiringSoon: 0,
-      upToDate: 0,
-      missing: 0,
+      ...createEmptySummaryRow(),
     },
   );
 
