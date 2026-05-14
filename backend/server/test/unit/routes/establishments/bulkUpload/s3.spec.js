@@ -1,5 +1,6 @@
 const sinon = require('sinon');
 const S3 = require('../../../../../routes/establishments/bulkUpload/s3');
+const s3ClientV3 = require('../../../../../routes/establishments/bulkUpload/s3clientv3');
 const expect = require('chai').expect;
 
 const extraData = {
@@ -99,14 +100,10 @@ describe('s3', () => {
     sinon.restore();
   });
 
-  beforeEach(() => {});
   describe('deleteFilesS3', () => {
     it('should delete the files from s3', async () => {
-      sinon.stub(S3.s3, 'listObjects').returns({
-        promise: async () => {
-          return listObjects;
-        },
-      });
+      sinon.stub(s3ClientV3, 'listObjects').resolves(listObjects);
+
       const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
       deleteObjects.returns({
         promise: async () => {
@@ -120,9 +117,9 @@ describe('s3', () => {
 
   describe('purgeBulkUploadS3Objects', () => {
     it('should delete all the files', async () => {
-      const s3SendCommand = sinon.stub(S3.s3ClientV3, 'send');
-      s3SendCommand.callsFake(async (command) => {
-        switch (command?.input?.Prefix) {
+      const s3SendCommand = sinon.stub(s3ClientV3, 'listObjects');
+      s3SendCommand.callsFake(async (listParams) => {
+        switch (listParams?.Prefix) {
           case '1/latest/':
             return latestFiles;
           case '1/validation/':
@@ -157,13 +154,11 @@ describe('s3', () => {
       sinon.assert.calledWith(deleteObjects, expectedResult);
     });
   });
+
   describe('listMetaData', () => {
     it('should list the files from s3', async () => {
-      sinon.stub(S3.s3, 'listObjects').returns({
-        promise: async () => {
-          return latestFiles;
-        },
-      });
+      sinon.stub(s3ClientV3, 'listObjects').resolves(latestFiles);
+
       const getObject = sinon.stub(S3.s3, 'getObject');
 
       var workerFileBuffer = Buffer.from(
