@@ -9,6 +9,7 @@ const {
   numberCheck,
   listMissingMandatoryTrainings,
   listAllExistingAndMissingTrainings,
+  buildTrainingCategorySummary,
 } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   mockWorkerTrainingBreakdowns,
@@ -501,6 +502,67 @@ describe('trainingAndQualificationsUtils', () => {
       trainingRecords.forEach((record) => {
         expect(record.workplaceName).to.equal(mockWorkerTrainingRecords[0].name);
         expect(allworkerNames).to.include(record.workerNameOrId);
+      });
+    });
+  });
+
+  describe('buildTrainingCategorySummary', () => {
+    it('should build a summary grouped by training category with totals', () => {
+      const result = buildTrainingCategorySummary(mockWorkerTrainingRecords);
+
+      expect(result).to.deep.include({
+        trainingCategory: 'Activity provision/Well-being',
+        mandatory: 'Yes',
+
+        total: 3,
+        expired: 0,
+        expiringSoon: 0,
+        upToDate: 1,
+        missing: 2,
+      });
+
+      expect(result).to.deep.include({
+        trainingCategory: 'Diabetes',
+        mandatory: 'Yes',
+
+        total: 2,
+        expired: 1,
+        expiringSoon: 0,
+        upToDate: 0,
+        missing: 1,
+      });
+
+      expect(result).to.deep.include({
+        trainingCategory: 'Dementia care',
+        mandatory: 'No',
+
+        total: 1,
+        expired: 0,
+        expiringSoon: 1,
+        upToDate: 0,
+        missing: 0,
+      });
+
+      expect(result).to.deep.include({
+        trainingCategory: 'Emergency Aid awareness',
+        mandatory: 'No',
+
+        total: 1,
+        expired: 0,
+        expiringSoon: 0,
+        upToDate: 1,
+        missing: 0,
+      });
+
+      expect(result[result.length - 1]).to.deep.equal({
+        trainingCategory: 'Total',
+        mandatory: '-',
+
+        total: 7,
+        expired: 1,
+        expiringSoon: 1,
+        upToDate: 2,
+        missing: 3,
       });
     });
   });
