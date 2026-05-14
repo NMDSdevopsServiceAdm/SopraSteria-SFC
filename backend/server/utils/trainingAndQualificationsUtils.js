@@ -58,7 +58,6 @@ const buildTrainingCategorySummary = (establishmentsWithTrainingRecords) => {
     {
       trainingCategory: 'Total',
       mandatory: '-',
-
       ...createEmptySummaryRow(),
     },
   );

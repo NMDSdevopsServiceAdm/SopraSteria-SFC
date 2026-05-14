@@ -8,6 +8,7 @@ const {
   tableHeaderCellStyle,
   applyStyleToRange,
   autoFitColumnWidthByTextLength,
+  colourSchemeForTrainingExpiry,
 } = require('../../../utils/excelUtils');
 
 const colCache = require('exceljs/lib/utils/col-cache');
@@ -58,7 +59,9 @@ const addTopTableHeader = (tab, columnsToDisplay) => {
 };
 
 const addTrainingByCategoryTable = (tab, sortedData, columnsToDisplay) => {
-  const tableRows = sortedData.map((trainingData) => {
+  const dataRows = sortedData.filter((row) => row.trainingCategory !== 'Total');
+
+  const tableRows = dataRows.map((trainingData) => {
     return columnsToDisplay.map(({ field }) => trainingData[field] ?? '-');
   });
 
@@ -76,8 +79,10 @@ const addTrainingByCategoryTable = (tab, sortedData, columnsToDisplay) => {
 
   trainingTable.commit();
 
+  addTotalRow(tab, sortedData, columnsToDisplay);
+
   setBasicTableStyle(tab, tableRange, {
-    hasTotalRow: true,
+    hasTotalRow: false,
     alignHorizontalCenter: false,
     bold: false,
   });
@@ -87,6 +92,33 @@ const addTrainingByCategoryTable = (tab, sortedData, columnsToDisplay) => {
 
   setStyleForTrainingByCategoryTable(tab);
   setFreezePane(tab);
+};
+
+const addTotalRow = (tab, sortedData, columnsToDisplay) => {
+  const totalsRow = sortedData.find((row) => row.trainingCategory === 'Total');
+
+  if (!totalsRow) return;
+
+  const totalRowValues = [...columnsToDisplay.map(({ field }) => totalsRow[field] ?? '-')];
+
+  const rowIndex = tab.lastRow.number + 1;
+
+  totalRowValues.forEach((value, index) => {
+    const cell = tab.getRow(rowIndex).getCell(index + 2);
+
+    cell.value = value;
+
+    const style = lodash.cloneDeep(tableHeaderCellStyle);
+
+    if (index === 0) {
+      style.alignment = {
+        ...style.alignment,
+        horizontal: 'left',
+      };
+    }
+
+    cell.style = style;
+  });
 };
 
 const setHeightsAndWidths = (tab) => {
@@ -171,25 +203,15 @@ const setStyleForTrainingByCategoryTable = (tab) => {
       textColour: newTextColours.white,
     },
 
-    Expired: {
-      backgroundColour: newBackgroundColours.red,
-      textColour: newTextColours.black,
-    },
-
-    'Expiring soon': {
-      backgroundColour: newBackgroundColours.orange,
-      textColour: newTextColours.black,
-    },
-
-    'Up-to-date': {
-      backgroundColour: newBackgroundColours.green,
-      textColour: newTextColours.black,
-    },
-
-    Missing: {
-      backgroundColour: newBackgroundColours.red,
-      textColour: newTextColours.black,
-    },
+    ...Object.fromEntries(
+      colourSchemeForTrainingExpiry.map(({ text, colour }) => [
+        text,
+        {
+          backgroundColour: colour,
+          textColour: newTextColours.black,
+        },
+      ]),
+    ),
   };
 
   Object.entries(headerStyles).forEach(([headerName, colours]) => {
