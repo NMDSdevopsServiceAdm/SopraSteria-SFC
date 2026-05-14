@@ -7,6 +7,12 @@ const s3 = new AWS_SDK_V2.S3({
   region: String(config.get('bulkupload.region')),
 });
 
+const { ListObjectsV2Command, S3Client } = require('@aws-sdk/client-s3');
+const s3ClientV3 = new S3Client({
+  region: String(config.get('bulkupload.region')),
+  signatureVersion: 'v4',
+});
+
 const Bucket = String(config.get('bulkupload.bucketname'));
 
 const params = (establishmentId) => {
@@ -240,9 +246,15 @@ const moveFolders = async (folderToMove, destinationFolder) => {
   }
 };
 const getKeysFromFolder = async (listParams) => {
+  console.log('=== using s3client v3 ===');
   const results = [];
 
-  const filesInFolder = await s3.listObjects(listParams).promise();
+  const listObjectsCommand = new ListObjectsV2Command(listParams);
+  const filesInFolder = await s3ClientV3.send(listObjectsCommand);
+  if (!filesInFolder?.Contents) {
+    return [];
+  }
+
   filesInFolder.Contents.forEach((myFile) => {
     const ignoreRoot = /.*\/$/;
     if (!ignoreRoot.test(myFile.Key)) {
@@ -321,6 +333,7 @@ const listObjectsInBucket = async (establishmentId) => {
 
 module.exports = {
   s3,
+  s3ClientV3,
   Bucket,
   uploadJSONDataToS3,
   uploadMetadataToS3,
@@ -337,4 +350,5 @@ module.exports = {
   listMetaData,
   listObjectsInBucket,
   uploadDisbursementFileToS3,
+  getKeysFromFolder,
 };

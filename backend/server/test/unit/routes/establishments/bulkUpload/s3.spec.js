@@ -117,24 +117,19 @@ describe('s3', () => {
       sinon.assert.calledWith(deleteObjects, deleteFiles);
     });
   });
+
   describe('purgeBulkUploadS3Objects', () => {
     it('should delete all the files', async () => {
-      const listObjects = sinon.stub(S3.s3, 'listObjects');
-
-      listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '1/latest/' }).returns({
-        promise: async () => {
-          return latestFiles;
-        },
-      });
-      listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '1/validation/' }).returns({
-        promise: async () => {
-          return validationFiles;
-        },
-      });
-      listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '1/intermediary/' }).returns({
-        promise: async () => {
-          return intermediaryFiles;
-        },
+      const s3SendCommand = sinon.stub(S3.s3ClientV3, 'send');
+      s3SendCommand.callsFake(async (command) => {
+        switch (command?.input?.Prefix) {
+          case '1/latest/':
+            return latestFiles;
+          case '1/validation/':
+            return validationFiles;
+          case '1/intermediary/':
+            return intermediaryFiles;
+        }
       });
 
       const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
