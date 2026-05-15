@@ -1,5 +1,70 @@
 const dayjs = require('dayjs');
 
+const createEmptySummaryRow = () => ({
+  total: 0,
+  expired: 0,
+  expiringSoon: 0,
+  upToDate: 0,
+  missing: 0,
+});
+
+const buildTrainingCategorySummary = (establishmentsWithTrainingRecords) => {
+  const allTrainingRecords = listAllExistingAndMissingTrainings(establishmentsWithTrainingRecords);
+
+  const categoryMap = {};
+
+  const statusFieldMap = {
+    Expired: 'expired',
+    'Expiring soon': 'expiringSoon',
+    'Up-to-date': 'upToDate',
+    Missing: 'missing',
+  };
+
+  allTrainingRecords.forEach((training) => {
+    const categoryName = training.category;
+
+    if (!categoryMap[categoryName]) {
+      categoryMap[categoryName] = {
+        trainingCategory: categoryName,
+        mandatory: training.isMandatory,
+
+        ...createEmptySummaryRow(),
+      };
+    }
+
+    const category = categoryMap[categoryName];
+
+    category.total++;
+
+    const field = statusFieldMap[training.status];
+
+    if (field) {
+      category[field]++;
+    }
+  });
+
+  const rows = Object.values(categoryMap);
+
+  const totals = rows.reduce(
+    (acc, row) => {
+      acc.total += row.total;
+      acc.expired += row.expired;
+      acc.expiringSoon += row.expiringSoon;
+      acc.upToDate += row.upToDate;
+      acc.missing += row.missing;
+
+      return acc;
+    },
+    {
+      trainingCategory: 'Total',
+      mandatory: '-',
+      ...createEmptySummaryRow(),
+    },
+  );
+
+  return [...rows, totals];
+};
+
 const convertEachWorkerTrainingBreakdown = (worker) => {
   const expiredTrainingCount = parseInt(worker.get('expiredTrainingCount'));
   const expiredMandatoryTrainingCount = parseInt(worker.get('expiredMandatoryTrainingCount'));
@@ -298,3 +363,4 @@ const listAllExistingAndMissingTrainings = (establishmentsWithTrainingRecords) =
 };
 
 exports.listAllExistingAndMissingTrainings = listAllExistingAndMissingTrainings;
+exports.buildTrainingCategorySummary = buildTrainingCategorySummary;
