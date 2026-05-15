@@ -66,7 +66,7 @@ describe('QualificationRecordDetailsTab', () => {
             worker.mainJob.title,
             qualification.qualification.group,
             qualification.qualification.title,
-            Number(qualification.qualification.level),
+            qualification.qualification.level ? `Level ${qualification.qualification.level}` : '-',
             qualification.year,
             qualification.qualificationCertificatesCount > 0 ? 'Yes' : 'No',
           ];

@@ -604,15 +604,13 @@ const charPixelWidth = {
   ':': 3.21,
 };
 
-const getFontWidthInCalibri = (text) => {
+const getTextWidthInDefaultFont = (text) => {
   return lodash
     .chain(text.split(''))
     .map((char) => charPixelWidth[char] ?? 7)
     .sum()
     .value();
 };
-
-exports.getWidthInCalibri = getFontWidthInCalibri;
 
 const countNumberOfLinesInDefaultFont = (text, columnWidth = 35) => {
   const words = text?.split(/[ -]/);
@@ -623,17 +621,17 @@ const countNumberOfLinesInDefaultFont = (text, columnWidth = 35) => {
   const columnWidthInPixels = 5.8 * columnWidth;
   const whitespaceWidth = charPixelWidth[' '];
 
-  const allWordsWidths = words.map(getFontWidthInCalibri);
+  const allWordsWidths = words.map(getTextWidthInDefaultFont);
 
   let lineNumbers = 1;
   let currentLineWidth = allWordsWidths[0];
 
-  allWordsWidths.slice(1).forEach((wordWidth) => {
-    currentLineWidth += wordWidth + whitespaceWidth;
+  allWordsWidths.slice(1).forEach((nextWord) => {
+    currentLineWidth += nextWord + whitespaceWidth;
     const canFitSingleLine = currentLineWidth <= columnWidthInPixels;
     if (!canFitSingleLine) {
       lineNumbers += 1;
-      currentLineWidth = wordWidth;
+      currentLineWidth = nextWord;
     }
   });
 

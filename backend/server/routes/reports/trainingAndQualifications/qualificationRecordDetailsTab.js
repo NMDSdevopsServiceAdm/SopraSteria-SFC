@@ -83,7 +83,9 @@ const setFormatForLevelColumn = (tab) => {
   const range = colCache.encode(HeaderRowNumber + 1, levelColumnNumber, lastRowNumber, levelColumnNumber);
 
   forEachCellInRange(tab, range, (cell) => {
-    cell.numFmt = '[>=1]"Level" #;General';
+    if (typeof cell.value === 'number' || cell.value === 'E') {
+      cell.value = `Level ${cell.value}`;
+    }
   });
 };
 
