@@ -13,11 +13,14 @@ const { generateQualificationsTab } = require('./qualificationsTab');
 const { generateCareCertificateTab } = require('./careCertificateTab');
 const { generateIntroTab } = require('./introTab');
 const { generateTrainingByStaffTab } = require('./trainingByStaffTab');
+const { generateTrainingByCategoryTab } = require('./trainingByCategoryTab');
 const {
   buildWorkerTrainingBreakdownWithWorkplaceInfo,
+  buildTrainingCategorySummary,
   convertTrainingForEstablishments,
   listAllExistingAndMissingTrainings,
 } = require('../../../utils/trainingAndQualificationsUtils');
+
 const { generateExpiredTrainingTab } = require('./expiredTrainingTab');
 
 const generateTrainingAndQualificationsReport = async (req, res) => {
@@ -34,17 +37,21 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
     await generateSummaryTab(workbook, establishment.id);
 
     const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(establishment.id, true);
-    const workerTrainingBreakdowns = await buildWorkerTrainingBreakdownWithWorkplaceInfo(
-      rawEstablishmentTrainingBreakdowns,
-    );
-    await generateTrainingByStaffTab(workbook, workerTrainingBreakdowns);
-
     const rawEstablishmentWithTrainingRecords = await models.establishment.getEstablishmentTrainingRecords(
       establishment.id,
       false,
     );
+
+    const workerTrainingBreakdowns = await buildWorkerTrainingBreakdownWithWorkplaceInfo(
+      rawEstablishmentTrainingBreakdowns,
+    );
+
     const establishmentWithTrainingRecords = convertTrainingForEstablishments(rawEstablishmentWithTrainingRecords);
     const allTrainingRecordsAndMissingTrainings = listAllExistingAndMissingTrainings(establishmentWithTrainingRecords);
+    const trainingByCategoryBreakdowns = buildTrainingCategorySummary(establishmentWithTrainingRecords);
+
+    await generateTrainingByStaffTab(workbook, workerTrainingBreakdowns);
+    await generateTrainingByCategoryTab(workbook, trainingByCategoryBreakdowns);
 
     await generateExpiredTrainingTab(workbook, allTrainingRecordsAndMissingTrainings);
 
