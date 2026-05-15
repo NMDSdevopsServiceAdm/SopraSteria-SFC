@@ -12,6 +12,7 @@ const {
   newBackgroundColours,
   forEachCellInRange,
   autoAdjustWrapTextAndRowHeight,
+  countNumberOfLinesInCalibriFont,
 } = require('../../../utils/excelUtils');
 
 describe('excelUtils', () => {
@@ -155,6 +156,89 @@ describe('excelUtils', () => {
 
       expect(mockWorksheet.getCell('B2').alignment).to.deep.equal({ wrapText: true });
       expect(mockWorksheet.getRow('2').height).to.equal(expectedRowHeight);
+    });
+  });
+
+  describe('countNumberOfLinesInCalibriFont', () => {
+    it('should return 1 if given an empty input', () => {
+      const testCases = ['', ' ', '    ', undefined, null];
+      testCases.forEach((input) => {
+        expect(countNumberOfLinesInCalibriFont(input)).to.equal(1);
+      });
+    });
+
+    describe('should estimated the number of lines needed to show the given text within the given column width', () => {
+      const testCases = [
+        {
+          text: 'Awareness of end of life care (level 2)',
+          expected: 1,
+        },
+        {
+          text: 'Delivering chair-based exercise with',
+          expected: 1,
+        },
+        {
+          text: 'Delivering chair-based exercise with frailer',
+          expected: 2,
+        },
+        {
+          text: 'Advanced Award in Social Work (AASW, level 7)',
+          expected: 2,
+        },
+        {
+          text: 'Supporting individuals with autism (level 3)',
+          expected: 2,
+        },
+        {
+          text: 'V1 or other internal verifier NVQ (level 3)',
+          expected: 1,
+        },
+        {
+          text: 'Food safety in health and social care, and early years and childcare settings (level 2)',
+          expected: 3,
+        },
+        {
+          text: 'Delivering chair-based exercise with frailer older adults and adults with disabilities in care and community settings (level 2)',
+          expected: 4,
+        },
+        {
+          text: 'Understanding the safe handling of medication in health and social care (level 2)',
+          expected: 3,
+        },
+        {
+          text: 'Any Learning Disabled Awards Framework ',
+          expected: 2,
+        },
+      ];
+
+      testCases.forEach(({ text, expected }) => {
+        it(`text input: ${text}, expected number of lines: ${expected}`, () => {
+          const actual = countNumberOfLinesInCalibriFont(text);
+          expect(actual).to.equal(expected);
+        });
+      });
+    });
+
+    it('should handle word break with hyphen', () => {
+      const text = 'Any qualification in assessment of work-based learning, other than social work';
+      const expected = 2;
+
+      const actual = countNumberOfLinesInCalibriFont(text);
+      expect(actual).to.equal(expected);
+    });
+
+    it('should give different results according to column width', () => {
+      const textInput = 'Activity provision and wellbeing course A';
+
+      const testCases = [
+        { columnWidth: 30, expectedNumberOfLines: 2 },
+        { columnWidth: 35, expectedNumberOfLines: 1 },
+      ];
+
+      testCases.forEach(({ columnWidth, expectedNumberOfLines }) => {
+        const actual = countNumberOfLinesInCalibriFont(textInput, columnWidth);
+        expect(actual).to.equal(expectedNumberOfLines);
+      });
     });
   });
 });

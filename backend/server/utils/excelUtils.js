@@ -518,24 +518,22 @@ exports.autoAdjustWrapTextAndRowHeight = (tab, cell, columnWidth = 35, defaultHe
   }
 
   const textInCell = cell.value;
-  const actualPixelWidthNeeded = getWidthInCalibri(textInCell);
-  const cellPixelWidth = 5.82 * columnWidth;
 
-  const numberOfLinesNeeded = Math.ceil(actualPixelWidthNeeded / cellPixelWidth);
+  const numberOfLinesNeeded = countNumberOfLinesInDefaultFont(textInCell, columnWidth);
   if (numberOfLinesNeeded <= 1) {
     return;
   }
 
   applyStyleToCell(cell, { alignment: { wrapText: true } });
 
-  const row = tab.getRow(cell.row);
-  const heightAdjustFormula = (x, defaultHeight) => (34.5 * x - 2.5 * x * x - 25) * (defaultHeight / 22);
+  const heightAdjustFormula = (x, defaultHeight) => Math.ceil((34.5 * x - 2.5 * x * x - 25) * (defaultHeight / 22));
   const adjustedHeight = heightAdjustFormula(numberOfLinesNeeded, defaultHeight);
 
+  const row = tab.getRow(cell.row);
   row.height = Math.max(row.height ?? 0, adjustedHeight);
 };
 
-const calibriWidthMap = {
+const charPixelWidth = {
   0: 6.08,
   1: 6.08,
   2: 6.08,
@@ -606,12 +604,40 @@ const calibriWidthMap = {
   ':': 3.21,
 };
 
-const getWidthInCalibri = (text) => {
+const getFontWidthInCalibri = (text) => {
   return lodash
     .chain(text.split(''))
-    .map((char) => calibriWidthMap[char] ?? 7)
+    .map((char) => charPixelWidth[char] ?? 7)
     .sum()
     .value();
 };
 
-exports.getWidthInCalibri = getWidthInCalibri;
+exports.getWidthInCalibri = getFontWidthInCalibri;
+
+const countNumberOfLinesInDefaultFont = (text, columnWidth = 35) => {
+  const words = text?.split(/[ -]/);
+  if (!words?.length) {
+    return 1;
+  }
+
+  const columnWidthInPixels = 5.8 * columnWidth;
+  const whitespaceWidth = charPixelWidth[' '];
+
+  const allWordsWidths = words.map(getFontWidthInCalibri);
+
+  let lineNumbers = 1;
+  let currentLineWidth = allWordsWidths[0];
+
+  allWordsWidths.slice(1).forEach((wordWidth) => {
+    currentLineWidth += wordWidth + whitespaceWidth;
+    const canFitSingleLine = currentLineWidth <= columnWidthInPixels;
+    if (!canFitSingleLine) {
+      lineNumbers += 1;
+      currentLineWidth = wordWidth;
+    }
+  });
+
+  return lineNumbers;
+};
+
+exports.countNumberOfLinesInCalibriFont = countNumberOfLinesInDefaultFont;

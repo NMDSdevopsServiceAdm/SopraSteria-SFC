@@ -152,7 +152,8 @@ const setHeightsAndWidths = (tab, columnsToDisplay) => {
   const autoAdjustRange = colCache.encode(HeaderRowNumber + 1, 2, tab.lastRow.number, trainingNameColumnNumber);
 
   forEachCellInRange(tab, autoAdjustRange, (cell) => {
-    autoAdjustWrapTextAndRowHeight(tab, cell);
+    const columnWidth = tab.getColumn(cell.col).width;
+    autoAdjustWrapTextAndRowHeight(tab, cell, columnWidth);
   });
 };
 
