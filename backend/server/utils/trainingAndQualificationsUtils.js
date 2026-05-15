@@ -102,22 +102,27 @@ const convertEachWorkerTrainingBreakdown = (worker) => {
 
 exports.convertEachWorkerTrainingBreakdown = convertEachWorkerTrainingBreakdown;
 
-const convertWorkerWithCareCertificateStatus = (worker) => {
+const convertWorkerWithCareCertificateStatus = (worker, establishmentName, isParent = false) => {
   return {
     workerId: numberCheck(worker.get('NameOrIdValue')),
+
+    ...(isParent && { establishmentName }),
+
     jobRole: worker.mainJob.title,
-    status: worker.get('CareCertificateValue') ? worker.get('CareCertificateValue') : '',
+
+    careCertificate: worker.get('CareCertificateValue') || '-',
+
+    l2CareCertificate: worker.get('Level2CareCertificateValue') || '-',
   };
 };
 
-exports.convertWorkersWithCareCertificateStatus = (establishments) => {
-  return establishments.map((establishment) => {
-    return {
-      establishmentName: establishment.get('NameValue'),
-      workers: establishment.workers.map((worker) => {
-        return convertWorkerWithCareCertificateStatus(worker);
-      }),
-    };
+exports.convertWorkersWithCareCertificateStatus = (establishments, isParent = false) => {
+  return establishments.flatMap((establishment) => {
+    const establishmentName = establishment.get('NameValue');
+
+    return establishment.workers.map((worker) => {
+      return convertWorkerWithCareCertificateStatus(worker, establishmentName, isParent);
+    });
   });
 };
 
