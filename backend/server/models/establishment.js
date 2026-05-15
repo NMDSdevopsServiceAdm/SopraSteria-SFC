@@ -2363,7 +2363,7 @@ module.exports = function (sequelize, DataTypes) {
         {
           model: sequelize.models.worker,
           as: 'workers',
-          attributes: ['NameOrIdValue', 'CareCertificateValue'],
+          attributes: ['NameOrIdValue', 'CareCertificateValue', 'Level2CareCertificateValue'],
           where: {
             CareCertificateValue: { [Op.ne]: null },
             archived: false,
