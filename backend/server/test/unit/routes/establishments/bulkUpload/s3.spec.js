@@ -1,5 +1,6 @@
 const sinon = require('sinon');
 const S3 = require('../../../../../routes/establishments/bulkUpload/s3');
+const s3ClientV3 = require('../../../../../routes/establishments/bulkUpload/s3clientv3');
 const expect = require('chai').expect;
 
 const extraData = {
@@ -99,14 +100,10 @@ describe('s3', () => {
     sinon.restore();
   });
 
-  beforeEach(() => {});
   describe('deleteFilesS3', () => {
     it('should delete the files from s3', async () => {
-      sinon.stub(S3.s3, 'listObjects').returns({
-        promise: async () => {
-          return listObjects;
-        },
-      });
+      sinon.stub(s3ClientV3, 'listObjects').resolves(listObjects);
+
       const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
       deleteObjects.returns({
         promise: async () => {
@@ -117,24 +114,19 @@ describe('s3', () => {
       sinon.assert.calledWith(deleteObjects, deleteFiles);
     });
   });
+
   describe('purgeBulkUploadS3Objects', () => {
     it('should delete all the files', async () => {
-      const listObjects = sinon.stub(S3.s3, 'listObjects');
-
-      listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '1/latest/' }).returns({
-        promise: async () => {
-          return latestFiles;
-        },
-      });
-      listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '1/validation/' }).returns({
-        promise: async () => {
-          return validationFiles;
-        },
-      });
-      listObjects.withArgs({ Bucket: 'sfcbulkuploadfiles', Prefix: '1/intermediary/' }).returns({
-        promise: async () => {
-          return intermediaryFiles;
-        },
+      const s3listObject = sinon.stub(s3ClientV3, 'listObjects');
+      s3listObject.callsFake(async (listParams) => {
+        switch (listParams?.Prefix) {
+          case '1/latest/':
+            return latestFiles;
+          case '1/validation/':
+            return validationFiles;
+          case '1/intermediary/':
+            return intermediaryFiles;
+        }
       });
 
       const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
@@ -162,13 +154,11 @@ describe('s3', () => {
       sinon.assert.calledWith(deleteObjects, expectedResult);
     });
   });
+
   describe('listMetaData', () => {
     it('should list the files from s3', async () => {
-      sinon.stub(S3.s3, 'listObjects').returns({
-        promise: async () => {
-          return latestFiles;
-        },
-      });
+      sinon.stub(s3ClientV3, 'listObjects').resolves(latestFiles);
+
       const getObject = sinon.stub(S3.s3, 'getObject');
 
       var workerFileBuffer = Buffer.from(
