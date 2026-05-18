@@ -594,20 +594,36 @@ exports.mockEstablishmentsCareCertificateResponse = [
     get() {
       return 'Care Home 1';
     },
+
     workers: [
       {
         get(property) {
-          return property === 'NameOrIdValue' ? 'Bob Ross' : 'No';
+          const values = {
+            NameOrIdValue: 'Bob Ross',
+            CareCertificateValue: 'No',
+            Level2CareCertificateValue: 'No',
+          };
+
+          return values[property];
         },
+
         mainJob: {
           id: 1,
           title: 'Care Worker',
         },
       },
+
       {
         get(property) {
-          return property === 'NameOrIdValue' ? 'Mike Mill' : 'Yes, in progress or partially completed';
+          const values = {
+            NameOrIdValue: 'Mike Mill',
+            CareCertificateValue: 'Yes, in progress or partially completed',
+            Level2CareCertificateValue: 'Yes, completed',
+          };
+
+          return values[property];
         },
+
         mainJob: {
           id: 2,
           title: 'Care Coordinator',
@@ -615,24 +631,41 @@ exports.mockEstablishmentsCareCertificateResponse = [
       },
     ],
   },
+
   {
     get() {
       return 'Care Home 2';
     },
+
     workers: [
       {
         get(property) {
-          return property === 'NameOrIdValue' ? 'Bill Bailey' : 'Yes, completed';
+          const values = {
+            NameOrIdValue: 'Bill Bailey',
+            CareCertificateValue: 'Yes, completed',
+            Level2CareCertificateValue: '-',
+          };
+
+          return values[property];
         },
+
         mainJob: {
           id: 1,
           title: 'Care Worker',
         },
       },
+
       {
         get(property) {
-          return property === 'NameOrIdValue' ? 'Jenny Jones' : 'No';
+          const values = {
+            NameOrIdValue: 'Jenny Jones',
+            CareCertificateValue: 'No',
+            Level2CareCertificateValue: 'Yes, started',
+          };
+
+          return values[property];
         },
+
         mainJob: {
           id: 1,
           title: 'Care Worker',
