@@ -1,22 +1,11 @@
 const {
-  addHeading,
-  addLine,
-  setTableHeadingsStyle,
   backgroundColours,
-  textColours,
-  addBordersToAllFilledCells,
-  fitColumnsToSize,
-  alignColumnToLeft,
-  addBlankRowIfTableEmpty,
   newBackgroundColours,
   addText,
   setColourForRange,
-  tableHeaderCellStyle,
-  applyStyleToRange,
   setBasicTableStyle,
   autoFitColumnWidthByTextLength,
 } = require('../../../utils/excelUtils');
-const models = require('../../../models');
 
 const colCache = require('exceljs/lib/utils/col-cache');
 const lodash = require('lodash');
