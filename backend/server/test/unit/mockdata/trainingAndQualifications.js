@@ -386,12 +386,19 @@ exports.mockWorkersWithCareCertificateStatus = [
   {
     workerId: 'Bob',
     jobRole: 'Care Worker',
-    status: 'No',
+
+    careCertificate: 'Not started',
+
+    l2CareCertificate: 'Not started',
   },
+
   {
     workerId: 'Mike',
     jobRole: 'Care Coordinator',
-    status: 'Yes, in progress or partially completed',
+
+    careCertificate: 'Yes, in progress or partially completed',
+
+    l2CareCertificate: 'Yes, completed',
   },
 ];
 
