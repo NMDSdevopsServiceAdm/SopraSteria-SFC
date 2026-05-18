@@ -100,6 +100,10 @@ const convertEachWorkerTrainingBreakdown = (worker) => {
   };
 };
 
+const formatCareCertificateValue = (value) => {
+  return value === 'No' ? 'Not started' : value || '-';
+};
+
 exports.convertEachWorkerTrainingBreakdown = convertEachWorkerTrainingBreakdown;
 
 const convertWorkerWithCareCertificateStatus = (worker, establishmentName, isParent = false) => {
@@ -110,9 +114,9 @@ const convertWorkerWithCareCertificateStatus = (worker, establishmentName, isPar
 
     jobRole: worker.mainJob.title,
 
-    careCertificate: worker.get('CareCertificateValue') || '-',
+    careCertificate: formatCareCertificateValue(worker.get('CareCertificateValue')),
 
-    l2CareCertificate: worker.get('Level2CareCertificateValue') || '-',
+    l2CareCertificate: formatCareCertificateValue(worker.get('Level2CareCertificateValue')),
   };
 };
 
