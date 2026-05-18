@@ -127,55 +127,64 @@ describe('trainingAndQualificationsUtils', () => {
   });
 
   describe('convertWorkersWithCareCertificateStatus', () => {
-    describe('First establishment', async () => {
-      it('should return the workplace name for the first establishment', () => {
-        const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse);
+    it('should convert care certificate workers correctly', () => {
+      const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse);
 
-        expect(result[0].establishmentName).to.deep.equal('Care Home 1');
-      });
-
-      it('should return the converted worker care certificate status object for first worker in the first establishment', () => {
-        const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse);
-        expect(result[0].workers[0]).to.deep.equal({
+      expect(result).to.deep.equal([
+        {
           workerId: 'Bob Ross',
-          jobRole: 'Care Worker',
-          status: 'No',
-        });
-      });
 
-      it('should return the converted worker care certificate status object for second worker in the first establishment', () => {
-        const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse);
-        expect(result[0].workers[1]).to.deep.equal({
+          jobRole: 'Care Worker',
+
+          careCertificate: 'Not started',
+
+          l2CareCertificate: 'Not started',
+        },
+
+        {
           workerId: 'Mike Mill',
+
           jobRole: 'Care Coordinator',
-          status: 'Yes, in progress or partially completed',
-        });
-      });
-    });
 
-    describe('Second establishment', async () => {
-      it('should return the workplace name for the second establishment', () => {
-        const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse);
+          careCertificate: 'Yes, in progress or partially completed',
 
-        expect(result[1].establishmentName).to.deep.equal('Care Home 2');
-      });
+          l2CareCertificate: 'Yes, completed',
+        },
 
-      it('should return the converted worker care certificate status object for first worker in the second establishment', () => {
-        const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse);
-        expect(result[1].workers[0]).to.deep.equal({
+        {
           workerId: 'Bill Bailey',
-          jobRole: 'Care Worker',
-          status: 'Yes, completed',
-        });
-      });
 
-      it('should return the converted worker care certificate status object for second worker in the second establishment', () => {
-        const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse);
-        expect(result[1].workers[1]).to.deep.equal({
-          workerId: 'Jenny Jones',
           jobRole: 'Care Worker',
-          status: 'No',
-        });
+
+          careCertificate: 'Yes, completed',
+
+          l2CareCertificate: '-',
+        },
+
+        {
+          workerId: 'Jenny Jones',
+
+          jobRole: 'Care Worker',
+
+          careCertificate: 'Not started',
+
+          l2CareCertificate: 'Yes, started',
+        },
+      ]);
+    });
+    it('should include establishment name when isParent is true', () => {
+      const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse, true);
+
+      expect(result[0]).to.deep.equal({
+        establishmentName: 'Care Home 1',
+
+        workerId: 'Bob Ross',
+
+        jobRole: 'Care Worker',
+
+        careCertificate: 'Not started',
+
+        l2CareCertificate: 'Not started',
       });
     });
   });

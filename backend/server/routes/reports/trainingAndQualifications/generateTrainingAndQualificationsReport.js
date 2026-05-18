@@ -19,6 +19,7 @@ const {
   buildTrainingCategorySummary,
   convertTrainingForEstablishments,
   listAllExistingAndMissingTrainings,
+  convertWorkersWithCareCertificateStatus,
 } = require('../../../utils/trainingAndQualificationsUtils');
 
 const { generateExpiredTrainingTab } = require('./expiredTrainingTab');
@@ -42,6 +43,13 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
       false,
     );
 
+    const rawEstablishmentCareCertificateStatus = await models.establishment.getWorkersWithCareCertificateStatus(
+      establishment.id,
+      false,
+    );
+
+    const careCertificateStatus = convertWorkersWithCareCertificateStatus(rawEstablishmentCareCertificateStatus);
+
     const workerTrainingBreakdowns = await buildWorkerTrainingBreakdownWithWorkplaceInfo(
       rawEstablishmentTrainingBreakdowns,
     );
@@ -58,7 +66,7 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
     await generateTrainingTab(workbook, establishment.id);
 
     await generateQualificationsTab(workbook, establishment.id);
-    await generateCareCertificateTab(workbook, establishment.id);
+    await generateCareCertificateTab(workbook, careCertificateStatus);
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader(

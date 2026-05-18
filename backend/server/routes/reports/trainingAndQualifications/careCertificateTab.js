@@ -1,77 +1,109 @@
-const { convertWorkersWithCareCertificateStatus } = require('../../../utils/trainingAndQualificationsUtils');
 const {
-  addHeading,
-  addLine,
-  setTableHeadingsStyle,
   backgroundColours,
-  textColours,
-  addBordersToAllFilledCells,
-  fitColumnsToSize,
-  alignColumnToLeft,
-  addBlankRowIfTableEmpty,
+  newBackgroundColours,
+  addText,
+  setColourForRange,
+  setBasicTableStyle,
+  autoFitColumnWidthByTextLength,
 } = require('../../../utils/excelUtils');
-const models = require('../../../models');
 
-const generateCareCertificateTab = async (workbook, establishmentId, isParent = false) => {
-  const rawEstablishments = await models.establishment.getWorkersWithCareCertificateStatus(establishmentId, isParent);
+const colCache = require('exceljs/lib/utils/col-cache');
+const lodash = require('lodash');
 
-  const establishments = convertWorkersWithCareCertificateStatus(rawEstablishments);
+const HeaderRowNumber = 3;
+const generateCareCertificateTab = async (workbook, careCertificateStatus, isParent = false) => {
   const careCertificateTab = workbook.addWorksheet('Care Certificate', { views: [{ showGridLines: false }] });
-  addContentToCareCertificateTab(careCertificateTab, establishments, isParent);
-};
 
-const addContentToCareCertificateTab = (careCertificateTab, establishments, isParent) => {
-  addHeading(careCertificateTab, 'B2', 'D2', 'Care Certificate');
-  addLine(careCertificateTab, 'A4', isParent ? 'E4' : 'D4');
-  alignColumnToLeft(careCertificateTab, 2);
-  if (isParent) alignColumnToLeft(careCertificateTab, 3);
+  const columnsToDisplay = [
+    ...(isParent ? [{ columnName: 'Workplace', field: 'establishmentName' }] : []),
 
-  const careCertificateTable = createCareCertificateTable(careCertificateTab, isParent);
-  addRowsToCareCertificateTable(careCertificateTable, establishments, isParent);
+    { columnName: 'Name or ID number', field: 'workerId' },
 
-  fitColumnsToSize(careCertificateTab, 2, 5.5);
-  addBordersToAllFilledCells(careCertificateTab, 5);
-};
-
-const createCareCertificateTable = (careCertificateTab, isParent) => {
-  setTableHeadingsStyle(
-    careCertificateTab,
-    6,
-    backgroundColours.blue,
-    textColours.white,
-    isParent ? ['B', 'C', 'D', 'E'] : ['B', 'C', 'D'],
-  );
-
-  const columns = [
-    { name: 'Worker ID', filterButton: true },
-    { name: 'Job role', filterButton: true },
-    { name: 'Status', filterButton: true },
+    { columnName: 'Main job role', field: 'jobRole' },
+    { columnName: 'Care Certificate', field: 'careCertificate' },
+    { columnName: 'L2 Adult Social Care Certificate', field: 'l2CareCertificate' },
   ];
 
-  isParent && columns.unshift({ name: 'Workplace', filterButton: true });
+  addTitle(careCertificateTab);
 
-  return careCertificateTab.addTable({
+  const sortedData = lodash.sortBy(careCertificateStatus, ['establishmentName', 'workerId']);
+
+  addCareCertificateTable(careCertificateTab, sortedData, columnsToDisplay);
+
+  setHeightsAndWidths(careCertificateTab);
+  addFootNote(careCertificateTab);
+};
+
+const addTitle = (careCertificateTab) => {
+  addText(careCertificateTab, 'B1:Z1', 'Care Certificates', { size: 24, bold: true });
+  careCertificateTab.getCell('B1').alignment = { vertical: 'middle' };
+  setColourForRange(careCertificateTab, 'A1:Z1', { backgroundColour: newBackgroundColours.lightGrey });
+};
+
+const addCareCertificateTable = (tab, sortedData, columnsToDisplay) => {
+  const tableRows = sortedData.map((careCertificateData) => {
+    return columnsToDisplay.map(({ field }) => careCertificateData[field] ?? '-');
+  });
+
+  if (tableRows.length === 0) {
+    tableRows.push(Array(columnsToDisplay.length).fill(''));
+  }
+
+  const careCertificateTable = tab.addTable({
     name: 'careCertificateTable',
-    ref: 'B6',
-    columns,
-    rows: [],
+    ref: `B${HeaderRowNumber}`,
+    columns: columnsToDisplay.map(({ columnName }) => ({ name: columnName, filterButton: true })),
+    rows: tableRows,
+  });
+  const tableRange = careCertificateTable.model.tableRef;
+
+  careCertificateTable.commit();
+
+  setBasicTableStyle(tab, tableRange, {
+    hasTotalRow: false,
+    alignHorizontalCenter: false,
+    bold: false,
+  });
+
+  setFreezePane(tab);
+};
+
+const setHeightsAndWidths = (tab) => {
+  const columnWidths = [22, 22, 28, 28];
+
+  columnWidths.forEach((width, index) => {
+    const column = tab.getColumn(index + 2);
+    column.width = width;
+  });
+
+  [2, 3, 4, 5].forEach((column) => {
+    autoFitColumnWidthByTextLength(tab, column, 12);
+  });
+
+  const rowHeights = [48, 18, 35, 30];
+
+  rowHeights.forEach((height, index) => {
+    tab.getRow(index + 1).height = height;
+  });
+
+  for (let i = 4; i <= tab.lastRow.number; i++) {
+    tab.getRow(i).height = 22;
+  }
+};
+
+const addFootNote = (tab) => {
+  const footNoteText = ['Note, the data displayed in this table has been generated from staff records.'];
+
+  tab.addRow([]);
+
+  footNoteText.forEach((text) => {
+    const newRow = tab.lastRow.number + 1;
+    addText(tab, `B${newRow}`, text);
   });
 };
 
-const addRowsToCareCertificateTable = (careCertificateTable, establishments, isParent) => {
-  establishments.forEach((establishment) => {
-    const { workers, establishmentName } = establishment;
-    workers.forEach((worker) => {
-      const { workerId, jobRole, status } = worker;
-      const data = [workerId, jobRole, status];
-      isParent && data.unshift(establishmentName);
-      careCertificateTable.addRow(data);
-    });
-  });
-
-  addBlankRowIfTableEmpty(careCertificateTable, isParent ? 4 : 3);
-  careCertificateTable.commit();
+const setFreezePane = (tab) => {
+  tab.views = [{ state: 'frozen', ySplit: 3, activeCell: 'B1' }, { showGridLines: false }];
 };
 
 module.exports.generateCareCertificateTab = generateCareCertificateTab;
-module.exports.addContentToCareCertificateTab = addContentToCareCertificateTab;
