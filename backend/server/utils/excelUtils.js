@@ -24,6 +24,17 @@ exports.standardFont = standardFont;
 const textBoxAlignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
 exports.textBoxAlignment = textBoxAlignment;
 
+const alignments = {
+  leftMiddle: { vertical: 'middle', horizontal: 'left' },
+  centerMiddle: { vertical: 'middle', horizontal: 'center' },
+  centerBottom: { vertical: 'bottom', horizontal: 'center' },
+  topLeft: { vertical: 'top', horizontal: 'left' },
+  topLeftWrapText: { vertical: 'top', horizontal: 'left', wrapText: true },
+  leftMiddleWrapText: { vertical: 'middle', horizontal: 'left', wrapText: true },
+};
+
+exports.alignments = alignments;
+
 exports.backgroundColours = {
   yellow: { argb: 'FFEA99' },
   blue: { argb: '0050AB' },
@@ -338,7 +349,7 @@ exports.addLine = (worksheet, startCell, endCell) => {
   };
 };
 
-const addText = (tab, range, content, fontOptions = {}) => {
+const addText = (tab, range, content, fontOptions = {}, otherStyleOptions = null) => {
   const [startCell, endCell] = range.split(':');
   if (endCell) {
     tab.mergeCells(`${startCell}:${endCell}`);
@@ -348,6 +359,10 @@ const addText = (tab, range, content, fontOptions = {}) => {
   const cell = tab.getCell(startCell);
   cell.value = content;
   cell.font = font;
+
+  if (otherStyleOptions) {
+    applyStyleToCell(cell, otherStyleOptions);
+  }
 };
 exports.addText = addText;
 
