@@ -212,8 +212,8 @@ const moveFolders = async (folderToMove, destinationFolder) => {
       Delimiter: '/',
     });
 
-    const folderContentInfo = listObjectsResponse.Contents;
-    const folderPrefix = listObjectsResponse.Prefix;
+    const folderContentInfo = listObjectsResponse.Contents ?? [];
+    const folderPrefix = listObjectsResponse.Prefix ?? folderToMove ?? '';
 
     await Promise.all(
       folderContentInfo.map(async (fileInfo) => {
@@ -260,7 +260,12 @@ const listMetaData = async (establishmentId, folder) => {
     Bucket,
     Prefix: `${establishmentId}${folder}`,
   };
+
   const filesInFolder = await s3ClientV3.listObjects(listParams);
+  if (!filesInFolder?.Contents) {
+    return [];
+  }
+
   filesInFolder.Contents.forEach(async (myFile) => {
     if (findMetaDataObjects.test(myFile.Key)) {
       toDownload.push(downloadContent(myFile.Key, myFile.Size, myFile.LastModified));
@@ -280,6 +285,10 @@ const findFilesS3 = async (establishmentId, fileName) => {
   const listParams = params(establishmentId);
   const latestObjects = await s3ClientV3.listObjects(listParams);
   const foundFiles = [];
+
+  if (!latestObjects?.Contents) {
+    return [];
+  }
 
   latestObjects.Contents.forEach(async (myFile) => {
     const ignoreRoot = /.*\/$/;

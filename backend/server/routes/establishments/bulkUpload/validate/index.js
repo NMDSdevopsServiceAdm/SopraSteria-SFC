@@ -4,6 +4,7 @@ const { Worker } = require('worker_threads');
 const { buStates } = require('../states');
 
 const validate = async (req) => {
+  console.log(' ===== called =====');
   const newReq = {
     establishmentId: req.establishmentId,
     username: req.username,
