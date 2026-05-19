@@ -7,7 +7,7 @@ const models = require('../../../models');
 const Authorization = require('../../../utils/security/isAuthenticated');
 const { hasPermission } = require('../../../utils/security/hasPermission');
 
-const { generateSummaryTab } = require('./summaryTab');
+const { generateSummaryTab } = require('./standaloneSummaryTab');
 const { generateTrainingTab } = require('./trainingTab');
 const { generateQualificationsTab } = require('./qualificationsTab');
 const { generateCareCertificateTab } = require('./careCertificateTab');
@@ -35,8 +35,6 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
 
     await generateIntroTab(workbook, establishment);
 
-    await generateSummaryTab(workbook, establishment.id);
-
     const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(establishment.id, true);
     const rawEstablishmentWithTrainingRecords = await models.establishment.getEstablishmentTrainingRecords(
       establishment.id,
@@ -57,6 +55,8 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
     const establishmentWithTrainingRecords = convertTrainingForEstablishments(rawEstablishmentWithTrainingRecords);
     const allTrainingRecordsAndMissingTrainings = listAllExistingAndMissingTrainings(establishmentWithTrainingRecords);
     const trainingByCategoryBreakdowns = buildTrainingCategorySummary(establishmentWithTrainingRecords);
+
+    await generateSummaryTab(workbook, { establishment, workerTrainingBreakdowns });
 
     await generateTrainingByStaffTab(workbook, workerTrainingBreakdowns);
     await generateTrainingByCategoryTab(workbook, trainingByCategoryBreakdowns);
