@@ -44,6 +44,7 @@ exports.textColours = {
 
 const newBackgroundColours = {
   lightGrey: { argb: 'EFEFEF' },
+  white: { argb: 'FFFFFF' },
   green: { argb: '34A853' },
   orange: { argb: 'FF7C1C' },
   red: { argb: 'EA4335' },
@@ -639,3 +640,44 @@ const countNumberOfLinesInDefaultFont = (text, columnWidth = 35) => {
 };
 
 exports.countNumberOfLinesInCalibriFont = countNumberOfLinesInDefaultFont;
+
+const drawColourBoxWithBorder = (tab, range, { backgroundColour = null, textColour = null }) => {
+  const { top, left, bottom, right } = colCache.decode(range);
+
+  const newCellStyle = {};
+  if (backgroundColour) {
+    newCellStyle.fill = { type: 'pattern', pattern: 'solid', fgColor: backgroundColour };
+  }
+  if (textColour) {
+    newCellStyle.font = { color: textColour };
+  }
+
+  forEachCellInRange(tab, range, (cell) => {
+    const { col, row } = colCache.decode(cell.address);
+
+    const border = checkCellBorders({ top, left, bottom, right, col, row });
+
+    applyStyleToCell(cell, { ...newCellStyle, border });
+  });
+};
+
+exports.drawColourBoxWithBorder = drawColourBoxWithBorder;
+
+function checkCellBorders({ top, left, bottom, right, col, row }, borderStyle = null) {
+  borderStyle = borderStyle ?? { style: 'thin', color: borderColours.black };
+
+  let borders = {};
+  if (top === row) {
+    borders.top = borderStyle;
+  }
+  if (bottom === row) {
+    borders.bottom = borderStyle;
+  }
+  if (left === col) {
+    borders.left = borderStyle;
+  }
+  if (right === col) {
+    borders.right = borderStyle;
+  }
+  return borders;
+}
