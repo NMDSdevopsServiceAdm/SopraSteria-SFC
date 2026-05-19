@@ -15,7 +15,21 @@ const {
   newBackgroundColours,
   drawColourBoxWithBorder,
   newTextColours,
+  alignments,
 } = require('../../../utils/excelUtils');
+
+const missingRecordsExplanationText = {
+  richText: [
+    { font: { size: 12, bold: true, family: 4 }, text: 'Missing records.' },
+    {
+      font: {
+        size: 12,
+        family: 4,
+      },
+      text: ' If a training category is mandatory, you must add a record for everybody who needs that training. Note, missing records may include training not yet taken by new starters.',
+    },
+  ],
+};
 
 const generateSummaryTab = async (workbook, establishmentData) => {
   const summaryTab = workbook.addWorksheet('Summary', { views: [{ showGridLines: false }] });
@@ -32,8 +46,8 @@ const generateSummaryTab = async (workbook, establishmentData) => {
 
 const setHeightAndWidths = (tab) => {
   const columnWidths = [
-    2.5, 3, 1.75, 32, 1.75, 1.75, 1.75, 32, 1.75, 1.75, 1.75, 32, 1.75, 3, 2.4, 3, 1.75, 32, 1.75, 1.75, 1.75, 32, 1.75,
-    1.75, 1.75, 32, 1.75, 3,
+    2.5, 3, 1.75, 33, 1.75, 1.75, 1.75, 33, 1.75, 1.75, 1.75, 33, 1.75, 3, 2.4, 3, 1.75, 33, 1.75, 1.75, 1.75, 33, 1.75,
+    1.75, 1.75, 33, 1.75, 3,
   ];
   const rowHeights = [
     45, 45, 45, 45, 45, 10, 20, 45, 10, 20, 45, 10, 20, 45, 10, 20, 45, 10, 20, 45, 10, 45, 18, 45, 10, 10, 22,
@@ -116,7 +130,6 @@ const drawColouredArea = (tab) => {
 };
 
 const calculateTotals = (workerTrainingBreakdowns) => {
-  // TODO: refactor DIY
   if (!workerTrainingBreakdowns?.length) {
     return {};
   }
@@ -137,58 +150,63 @@ const calculateTotals = (workerTrainingBreakdowns) => {
 const addStaffsBreakdown = (tab, workerTrainingBreakdowns) => {
   const totals = calculateTotals(workerTrainingBreakdowns);
 
-  addText(tab, 'D4:L4', 'All staff (could include staff flagged as long-term absent)', { bold: true, size: 18 });
-
-  const cellData = {
-    D5: 'All training records',
-    D8: totals.trainingCount,
-    D11: totals.expiredTrainingCount,
-    D14: totals.expiringTrainingCount,
-    D17: totals.upToDateTrainingCount,
-
-    H5: 'Mandatory training records',
-    H8: totals.mandatoryTrainingCount,
-    H11: totals.expiredMandatoryTrainingCount,
-    H14: totals.expiringMandatoryTrainingCount,
-    H17: totals.upToDateMandatoryTrainingCount,
-
-    L5: 'Non-mandatory training records',
-    L8: totals.nonMandatoryTrainingCount,
-    L11: totals.expiredNonMandatoryTrainingCount,
-    L14: totals.expiringNonMandatoryTrainingCount,
-    L17: totals.upToDateNonMandatoryTrainingCount,
-
-    D7: 'Total',
-    H7: 'Total',
-    L7: 'Total',
-    D10: 'Expired',
-    H10: 'Expired',
-    L10: 'Expired',
-    D13: 'Expiring soon',
-    H13: 'Expiring soon',
-    L13: 'Expiring soon',
-    D16: 'Up-to-date',
-    H16: 'Up-to-date',
-    L16: 'Up-to-date',
-
-    'H20:H22': {
-      richText: [
-        { font: { size: 12, bold: true, family: 4 }, text: 'Missing records.' },
-        {
-          font: {
-            size: 12,
-            family: 4,
-          },
-          text: 'If a training category is mandatory, you must add a record for everybody who needs that training. Note, missing records may include training not yet taken by new starters.',
-        },
-      ],
+  const longTexts = [
+    {
+      range: 'D4:L4',
+      value: 'All staff (could include staff flagged as long-term absent)',
+      size: 18,
+      alignment: alignments.centerMiddle,
     },
-    H23: 'Missing records',
-    H24: totals.missingMandatoryTrainingCount,
-  };
+    { range: 'H20:H22', value: missingRecordsExplanationText, alignment: alignments.leftMiddleWrapText },
+  ];
 
-  Object.entries(cellData).forEach(([coord, value]) => {
-    addText(tab, coord, value);
+  const columnHeadings = [
+    { range: 'D5', value: 'All training records' },
+    { range: 'H5', value: 'Mandatory training records' },
+    { range: 'L5', value: 'Non-mandatory training records' },
+  ].map((cell) => ({ ...cell, size: 14 }));
+
+  const cellLabels = [
+    { range: 'D7', value: 'Total' },
+    { range: 'D10', value: 'Expired' },
+    { range: 'D13', value: 'Expiring soon' },
+    { range: 'D16', value: 'Up-to-date' },
+
+    { range: 'H7', value: 'Total' },
+    { range: 'H10', value: 'Expired' },
+    { range: 'H13', value: 'Expiring soon' },
+    { range: 'H16', value: 'Up-to-date' },
+
+    { range: 'L7', value: 'Total' },
+    { range: 'L10', value: 'Expired' },
+    { range: 'L13', value: 'Expiring soon' },
+    { range: 'L16', value: 'Up-to-date' },
+
+    { range: 'H23', value: 'Missing records' },
+  ].map((cell) => ({ ...cell, alignment: alignments.centerBottom }));
+
+  const numbers = [
+    { range: 'D8', value: totals.trainingCount },
+    { range: 'D11', value: totals.expiredTrainingCount },
+    { range: 'D14', value: totals.expiringTrainingCount },
+    { range: 'D17', value: totals.upToDateTrainingCount },
+    { range: 'H8', value: totals.mandatoryTrainingCount },
+    { range: 'H11', value: totals.expiredMandatoryTrainingCount },
+    { range: 'H14', value: totals.expiringMandatoryTrainingCount },
+    { range: 'H17', value: totals.upToDateMandatoryTrainingCount },
+    { range: 'L8', value: totals.nonMandatoryTrainingCount },
+    { range: 'L11', value: totals.expiredNonMandatoryTrainingCount },
+    { range: 'L14', value: totals.expiringNonMandatoryTrainingCount },
+    { range: 'L17', value: totals.upToDateNonMandatoryTrainingCount },
+    { range: 'H24', value: totals.missingMandatoryTrainingCount },
+  ].map((cell) => ({ ...cell, size: 30 }));
+
+  const cellData = columnHeadings.concat(longTexts, cellLabels, numbers);
+
+  cellData.forEach(({ range, value, size, alignment }) => {
+    const font = { size, bold: true };
+    const textAlignment = alignment ? { alignment } : { alignment: alignments.centerMiddle };
+    addText(tab, range, value, font, textAlignment);
   });
 };
 
