@@ -400,42 +400,68 @@ const getTotalForCareQualifications = (establishmentWithCareCertificateData) => 
 
   const careCertificateCounts = lodash.countBy(careProvidingWorkers, 'CareCertificateValue');
   const level2CareCertificateCounts = lodash.countBy(careProvidingWorkers, 'Level2CareCertificateValue');
-  const socialCareQualificationCounts = lodash.countBy(careProvidingWorkers, 'socialCareQualification.level');
-
-  const socialCareLevel5OrAboveCount = lodash
-    .chain(socialCareQualificationCounts)
-    .at([
-      WorkerSocialCareQualificationLevel.Level5,
-      WorkerSocialCareQualificationLevel.Level6,
-      WorkerSocialCareQualificationLevel.Level7,
-      WorkerSocialCareQualificationLevel.Level8OrAbove,
-    ])
-    .filter(lodash.isNumber)
-    .sum()
-    .value();
-
-  const socialCareLevel2OrAboveCount =
-    lodash
-      .chain(socialCareQualificationCounts)
-      .at([
-        WorkerSocialCareQualificationLevel.Level2,
-        WorkerSocialCareQualificationLevel.Level3,
-        WorkerSocialCareQualificationLevel.Level4,
-      ])
-      .filter(lodash.isNumber)
-      .sum()
-      .value() + socialCareLevel5OrAboveCount;
-
-  socialCareQualificationCounts['Level 2 or above'] = socialCareLevel2OrAboveCount;
-  socialCareQualificationCounts['Level 5 or above'] = socialCareLevel5OrAboveCount;
+  // const socialCareQualificationCounts = countWorkerSocialCareQualificationLevels(careProvidingWorkers);
 
   return {
     ...emptyResult,
     careProvidingStaffsCount: careProvidingWorkers.length,
     careCertificate: careCertificateCounts,
     level2CareCertificate: level2CareCertificateCounts,
-    socialCareQualificationLevel: socialCareQualificationCounts,
+    // socialCareQualificationLevel: socialCareQualificationCounts,
   };
 };
 
+const getPercentagesForSocialCareQualificationLevels = (workers) => {
+  const workerCounts = workers?.length;
+
+  if (!workerCounts) {
+    return {};
+  }
+
+  const socialCareQualificationCounts = lodash.omit(
+    lodash.countBy(workers, 'socialCareQualification.level'),
+    'undefined',
+  );
+
+  const levelFiveOrAbove = [
+    WorkerSocialCareQualificationLevel.Level5,
+    WorkerSocialCareQualificationLevel.Level6,
+    WorkerSocialCareQualificationLevel.Level7,
+    WorkerSocialCareQualificationLevel.Level8OrAbove,
+  ];
+
+  const levelTwoToFour = [
+    WorkerSocialCareQualificationLevel.Level2,
+    WorkerSocialCareQualificationLevel.Level3,
+    WorkerSocialCareQualificationLevel.Level4,
+  ];
+
+  const socialCareLevel5OrAboveCount = lodash
+    .chain(socialCareQualificationCounts)
+    .at(levelFiveOrAbove)
+    .filter(lodash.isNumber)
+    .sum()
+    .value();
+
+  const socialCareLevel2To4Count = lodash
+    .chain(socialCareQualificationCounts)
+    .at(levelTwoToFour)
+    .filter(lodash.isNumber)
+    .sum()
+    .value();
+
+  const socialCareLevel2OrAboveCount = socialCareLevel2To4Count + socialCareLevel5OrAboveCount;
+
+  socialCareQualificationCounts['Level 2 or above'] = socialCareLevel2OrAboveCount;
+  socialCareQualificationCounts['Level 5 or above'] = socialCareLevel5OrAboveCount;
+
+  const percentages = lodash.mapValues(
+    socialCareQualificationCounts,
+    (count) => Math.round((count / workerCounts) * 100) + '%',
+  );
+
+  return percentages;
+};
+
 exports.getTotalForCareQualifications = getTotalForCareQualifications;
+exports.getPercentagesForSocialCareQualificationLevels = getPercentagesForSocialCareQualificationLevels;
