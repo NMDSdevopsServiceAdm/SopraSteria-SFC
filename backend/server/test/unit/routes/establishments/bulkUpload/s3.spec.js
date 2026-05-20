@@ -113,6 +113,14 @@ describe('s3', () => {
       await S3.deleteFilesS3(123, 'filename1');
       sinon.assert.calledWith(deleteObjects, deleteFiles);
     });
+
+    it('should handle the case when listObjects found no result', async () => {
+      sinon.stub(s3ClientV3, 'listObjects').resolves({});
+      const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
+
+      await S3.deleteFilesS3(123, 'filename1');
+      sinon.assert.notCalled(deleteObjects);
+    });
   });
 
   describe('purgeBulkUploadS3Objects', () => {
@@ -152,6 +160,14 @@ describe('s3', () => {
       await S3.purgeBulkUploadS3Objects(1);
 
       sinon.assert.calledWith(deleteObjects, expectedResult);
+    });
+
+    it('should handle the case when listObjects found no result', async () => {
+      sinon.stub(s3ClientV3, 'listObjects').resolves({});
+      const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
+
+      await S3.deleteFilesS3(123, 'filename1');
+      sinon.assert.notCalled(deleteObjects);
     });
   });
 
@@ -262,6 +278,17 @@ describe('s3', () => {
       ];
 
       expect(results).to.deep.equal(expectedResult);
+    });
+
+    it('should handle the case when listObjects found no result', async () => {
+      sinon.stub(s3ClientV3, 'listObjects').resolves({});
+
+      const getObject = sinon.stub(S3.s3, 'getObject');
+
+      const results = await S3.listMetaData(123, '/lastBulkUpload/');
+
+      expect(getObject).not.to.be.called;
+      expect(results).to.deep.equal([]);
     });
   });
 });

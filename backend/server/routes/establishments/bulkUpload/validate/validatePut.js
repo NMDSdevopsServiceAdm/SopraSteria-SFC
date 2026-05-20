@@ -28,9 +28,10 @@ const validatePut = async (req, res) => {
 
   try {
     const bucketFiles = await S3.listObjectsInBucket(req.establishmentId);
+    const bucketFilesContents = bucketFiles?.Contents ?? [];
 
     await Promise.all(
-      bucketFiles.Contents.map(async (fileInfo) => {
+      bucketFilesContents.map(async (fileInfo) => {
         if (isNotMetadata(fileInfo.Key)) {
           const file = await S3.downloadContent(fileInfo.Key);
           const fileType = getFileType(file.data);
