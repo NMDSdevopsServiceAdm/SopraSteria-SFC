@@ -582,63 +582,50 @@ exports.mockEstablishmentsQualificationsResponse = [
 
 exports.mockEstablishmentsCareCertificateResponse = [
   {
-    get() {
-      return 'Care Home 1';
-    },
+    id: 1234,
+    NameValue: 'Care Home 1',
 
     workers: [
       {
-        get(property) {
-          const values = {
-            NameOrIdValue: 'Bob Ross',
-            CareCertificateValue: 'No',
-            Level2CareCertificateValue: 'No',
-          };
-
-          return values[property];
-        },
+        NameOrIdValue: 'Bob Ross',
+        CareCertificateValue: 'No',
+        Level2CareCertificateValue: 'No',
 
         mainJob: {
           id: 1,
           title: 'Care Worker',
+          isCareProvidingRole: true,
+        },
+        socialCareQualification: {
+          level: 'Level 4',
         },
       },
 
       {
-        get(property) {
-          const values = {
-            NameOrIdValue: 'Mike Mill',
-            CareCertificateValue: 'Yes, in progress or partially completed',
-            Level2CareCertificateValue: 'Yes, completed',
-          };
-
-          return values[property];
-        },
+        NameOrIdValue: 'Mike Mill',
+        CareCertificateValue: 'Yes, in progress or partially completed',
+        Level2CareCertificateValue: 'Yes, completed',
 
         mainJob: {
           id: 2,
           title: 'Care Coordinator',
+          isCareProvidingRole: true,
+        },
+        socialCareQualification: {
+          level: 'Level 8 or above',
         },
       },
     ],
   },
 
   {
-    get() {
-      return 'Care Home 2';
-    },
+    NameValue: 'Care Home 2',
 
     workers: [
       {
-        get(property) {
-          const values = {
-            NameOrIdValue: 'Bill Bailey',
-            CareCertificateValue: 'Yes, completed',
-            Level2CareCertificateValue: '-',
-          };
-
-          return values[property];
-        },
+        NameOrIdValue: 'Bill Bailey',
+        CareCertificateValue: 'Yes, completed',
+        Level2CareCertificateValue: null,
 
         mainJob: {
           id: 1,
@@ -647,15 +634,9 @@ exports.mockEstablishmentsCareCertificateResponse = [
       },
 
       {
-        get(property) {
-          const values = {
-            NameOrIdValue: 'Jenny Jones',
-            CareCertificateValue: 'No',
-            Level2CareCertificateValue: 'Yes, started',
-          };
-
-          return values[property];
-        },
+        NameOrIdValue: 'Jenny Jones',
+        CareCertificateValue: 'No',
+        Level2CareCertificateValue: 'Yes, started',
 
         mainJob: {
           id: 1,

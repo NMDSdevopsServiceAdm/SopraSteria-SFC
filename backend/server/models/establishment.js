@@ -2363,7 +2363,12 @@ module.exports = function (sequelize, DataTypes) {
         {
           model: sequelize.models.worker,
           as: 'workers',
-          attributes: ['NameOrIdValue', 'CareCertificateValue', 'Level2CareCertificateValue'],
+          attributes: [
+            'NameOrIdValue',
+            'CareCertificateValue',
+            'Level2CareCertificateValue',
+            'SocialCareQualificationFkValue',
+          ],
           where: {
             archived: false,
           },
@@ -2373,6 +2378,12 @@ module.exports = function (sequelize, DataTypes) {
               model: sequelize.models.job,
               as: 'mainJob',
               attributes: ['id', 'title', 'isCareProvidingRole'],
+              required: false,
+            },
+            {
+              model: sequelize.models.qualification,
+              as: 'socialCareQualification',
+              attributes: ['id', 'level'],
               required: false,
             },
           ],
