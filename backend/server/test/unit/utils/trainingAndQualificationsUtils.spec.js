@@ -1,5 +1,6 @@
 const expect = require('chai').expect;
 const dayjs = require('dayjs');
+const lodash = require('lodash');
 const {
   getTrainingTotals,
   convertQualificationsForEstablishments,
@@ -10,6 +11,7 @@ const {
   listMissingMandatoryTrainings,
   listAllExistingAndMissingTrainings,
   buildTrainingCategorySummary,
+  getTotalForCareQualifications,
 } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   mockWorkerTrainingBreakdowns,
@@ -172,6 +174,7 @@ describe('trainingAndQualificationsUtils', () => {
         },
       ]);
     });
+
     it('should include establishment name when isParent is true', () => {
       const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse, true);
 
@@ -186,6 +189,17 @@ describe('trainingAndQualificationsUtils', () => {
 
         l2CareCertificate: 'Not started',
       });
+    });
+
+    it('should skip the workers who has no data for both careCertificate and l2CareCertificate', () => {
+      const mockData = lodash.cloneDeep(mockEstablishmentsCareCertificateResponse);
+      mockData[0].workers[0].CareCertificateValue = null;
+      mockData[0].workers[0].Level2CareCertificateValue = null;
+
+      const result = convertWorkersWithCareCertificateStatus(mockData);
+
+      expect(result.length).to.equal(3);
+      expect(result[0].workerId).to.deep.equal(mockData[0].workers[1].NameOrIdValue);
     });
   });
 
@@ -573,6 +587,61 @@ describe('trainingAndQualificationsUtils', () => {
         upToDate: 2,
         missing: 3,
       });
+    });
+  });
+
+  describe('getTotalForCareQualifications', () => {
+    it('should calculate the totals numbers of an establishment related to care qualifications', () => {
+      const mockRawData = mockEstablishmentsCareCertificateResponse[0];
+      const expected = {
+        workplaceId: 1234,
+        workplaceName: 'Care Home 1',
+        careProvidingStaffsCount: 2,
+        careCertificate: {
+          'Yes, in progress or partially completed': 1,
+          No: 1,
+        },
+        level2CareCertificate: {
+          No: 1,
+          'Yes, completed': 1,
+        },
+        socialCareQualificationLevel: {
+          'Level 4': 1,
+          'Level 8 or above': 1,
+          'Level 2 or above': 2,
+          'Level 5 or above': 1,
+        },
+      };
+
+      const result = getTotalForCareQualifications(mockRawData);
+
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('should not include worker that is not a care providing role', () => {
+      const mockRawData = lodash.cloneDeep(mockEstablishmentsCareCertificateResponse[0]);
+      mockRawData.workers[0].mainJob.isCareProvidingRole = false;
+
+      const expected = {
+        workplaceId: 1234,
+        workplaceName: 'Care Home 1',
+        careProvidingStaffsCount: 1,
+        careCertificate: {
+          'Yes, in progress or partially completed': 1,
+        },
+        level2CareCertificate: {
+          'Yes, completed': 1,
+        },
+        socialCareQualificationLevel: {
+          'Level 8 or above': 1,
+          'Level 2 or above': 1,
+          'Level 5 or above': 1,
+        },
+      };
+
+      const result = getTotalForCareQualifications(mockRawData);
+
+      expect(result).to.deep.equal(expected);
     });
   });
 });

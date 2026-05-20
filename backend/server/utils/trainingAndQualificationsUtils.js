@@ -1,4 +1,6 @@
 const dayjs = require('dayjs');
+const lodash = require('lodash');
+const { WorkerSocialCareQualificationLevel } = require('../../reference/databaseEnumTypes');
 
 const createEmptySummaryRow = () => ({
   total: 0,
@@ -108,23 +110,26 @@ exports.convertEachWorkerTrainingBreakdown = convertEachWorkerTrainingBreakdown;
 
 const convertWorkerWithCareCertificateStatus = (worker, establishmentName, isParent = false) => {
   return {
-    workerId: numberCheck(worker.get('NameOrIdValue')),
+    workerId: numberCheck(worker.NameOrIdValue),
 
     ...(isParent && { establishmentName }),
 
     jobRole: worker.mainJob.title,
 
-    careCertificate: formatCareCertificateValue(worker.get('CareCertificateValue')),
+    careCertificate: formatCareCertificateValue(worker.CareCertificateValue),
 
-    l2CareCertificate: formatCareCertificateValue(worker.get('Level2CareCertificateValue')),
+    l2CareCertificate: formatCareCertificateValue(worker.Level2CareCertificateValue),
   };
 };
 
 exports.convertWorkersWithCareCertificateStatus = (establishments, isParent = false) => {
-  return establishments.flatMap((establishment) => {
-    const establishmentName = establishment.get('NameValue');
+  const workerHasDataForCareCertOrL2CareCert = (worker) =>
+    Boolean(worker?.CareCertificateValue || worker?.Level2CareCertificateValue);
 
-    return establishment.workers.map((worker) => {
+  return establishments.flatMap((establishment) => {
+    const establishmentName = establishment.NameValue;
+
+    return establishment.workers.filter(workerHasDataForCareCertOrL2CareCert).map((worker) => {
       return convertWorkerWithCareCertificateStatus(worker, establishmentName, isParent);
     });
   });
@@ -373,3 +378,60 @@ const listAllExistingAndMissingTrainings = (establishmentsWithTrainingRecords) =
 
 exports.listAllExistingAndMissingTrainings = listAllExistingAndMissingTrainings;
 exports.buildTrainingCategorySummary = buildTrainingCategorySummary;
+
+const getTotalForCareQualifications = (establishmentWithCareCertificateData) => {
+  const careProvidingWorkers = establishmentWithCareCertificateData.workers.filter(
+    (worker) => worker?.mainJob?.isCareProvidingRole,
+  );
+
+  const emptyResult = {
+    workplaceId: establishmentWithCareCertificateData.id,
+    workplaceName: establishmentWithCareCertificateData.NameValue,
+    careProvidingStaffsCount: 0,
+  };
+
+  if (!careProvidingWorkers?.length) {
+    return emptyResult;
+  }
+
+  const careCertificateCounts = lodash.countBy(careProvidingWorkers, 'CareCertificateValue');
+  const level2CareCertificateCounts = lodash.countBy(careProvidingWorkers, 'Level2CareCertificateValue');
+  const socialCareQualificationCounts = lodash.countBy(careProvidingWorkers, 'socialCareQualification.level');
+
+  const socialCareLevel5OrAboveCount = lodash
+    .chain(socialCareQualificationCounts)
+    .at([
+      WorkerSocialCareQualificationLevel.Level5,
+      WorkerSocialCareQualificationLevel.Level6,
+      WorkerSocialCareQualificationLevel.Level7,
+      WorkerSocialCareQualificationLevel.Level8OrAbove,
+    ])
+    .filter(lodash.isNumber)
+    .sum()
+    .value();
+
+  const socialCareLevel2OrAboveCount =
+    lodash
+      .chain(socialCareQualificationCounts)
+      .at([
+        WorkerSocialCareQualificationLevel.Level2,
+        WorkerSocialCareQualificationLevel.Level3,
+        WorkerSocialCareQualificationLevel.Level4,
+      ])
+      .filter(lodash.isNumber)
+      .sum()
+      .value() + socialCareLevel5OrAboveCount;
+
+  socialCareQualificationCounts['Level 2 or above'] = socialCareLevel2OrAboveCount;
+  socialCareQualificationCounts['Level 5 or above'] = socialCareLevel5OrAboveCount;
+
+  return {
+    ...emptyResult,
+    careProvidingStaffsCount: careProvidingWorkers.length,
+    careCertificate: careCertificateCounts,
+    level2CareCertificate: level2CareCertificateCounts,
+    socialCareQualificationLevel: socialCareQualificationCounts,
+  };
+};
+
+exports.getTotalForCareQualifications = getTotalForCareQualifications;
