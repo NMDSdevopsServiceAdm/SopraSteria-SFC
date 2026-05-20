@@ -572,10 +572,10 @@ describe.only('trainingAndQualificationsUtils', () => {
           'Yes, completed': 1,
         },
         socialCareQualificationLevel: {
-          'Level 4': 1,
-          'Level 8 or above': 1,
-          'Level 2 or above': 2,
-          'Level 5 or above': 1,
+          'Level 4': '50%',
+          'Level 8 or above': '50%',
+          'Level 2 or above': '100%',
+          'Level 5 or above': '50%',
         },
       };
 
@@ -599,9 +599,9 @@ describe.only('trainingAndQualificationsUtils', () => {
           'Yes, completed': 1,
         },
         socialCareQualificationLevel: {
-          'Level 8 or above': 1,
-          'Level 2 or above': 1,
-          'Level 5 or above': 1,
+          'Level 8 or above': '100%',
+          'Level 2 or above': '100%',
+          'Level 5 or above': '100%',
         },
       };
 
@@ -611,7 +611,7 @@ describe.only('trainingAndQualificationsUtils', () => {
     });
   });
 
-  describe.only('getPercentagesForSocialCareQualificationLevels', () => {
+  describe('getPercentagesForSocialCareQualificationLevels', () => {
     it('should return an empty object if no worker was given', () => {
       const mockWorkers = [];
 

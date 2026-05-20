@@ -400,16 +400,29 @@ const getTotalForCareQualifications = (establishmentWithCareCertificateData) => 
 
   const careCertificateCounts = lodash.countBy(careProvidingWorkers, 'CareCertificateValue');
   const level2CareCertificateCounts = lodash.countBy(careProvidingWorkers, 'Level2CareCertificateValue');
-  // const socialCareQualificationCounts = countWorkerSocialCareQualificationLevels(careProvidingWorkers);
+  const socialCareQualificationPercentages = getPercentagesForSocialCareQualificationLevels(careProvidingWorkers);
 
   return {
     ...emptyResult,
     careProvidingStaffsCount: careProvidingWorkers.length,
     careCertificate: careCertificateCounts,
     level2CareCertificate: level2CareCertificateCounts,
-    // socialCareQualificationLevel: socialCareQualificationCounts,
+    socialCareQualificationLevel: socialCareQualificationPercentages,
   };
 };
+
+const levelFiveOrAbove = [
+  WorkerSocialCareQualificationLevel.Level5,
+  WorkerSocialCareQualificationLevel.Level6,
+  WorkerSocialCareQualificationLevel.Level7,
+  WorkerSocialCareQualificationLevel.Level8OrAbove,
+];
+
+const levelTwoToFour = [
+  WorkerSocialCareQualificationLevel.Level2,
+  WorkerSocialCareQualificationLevel.Level3,
+  WorkerSocialCareQualificationLevel.Level4,
+];
 
 const getPercentagesForSocialCareQualificationLevels = (workers) => {
   const workerCounts = workers?.length;
@@ -418,23 +431,11 @@ const getPercentagesForSocialCareQualificationLevels = (workers) => {
     return {};
   }
 
-  const socialCareQualificationCounts = lodash.omit(
-    lodash.countBy(workers, 'socialCareQualification.level'),
-    'undefined',
-  );
-
-  const levelFiveOrAbove = [
-    WorkerSocialCareQualificationLevel.Level5,
-    WorkerSocialCareQualificationLevel.Level6,
-    WorkerSocialCareQualificationLevel.Level7,
-    WorkerSocialCareQualificationLevel.Level8OrAbove,
-  ];
-
-  const levelTwoToFour = [
-    WorkerSocialCareQualificationLevel.Level2,
-    WorkerSocialCareQualificationLevel.Level3,
-    WorkerSocialCareQualificationLevel.Level4,
-  ];
+  const socialCareQualificationCounts = lodash
+    .chain(workers)
+    .countBy('socialCareQualification.level')
+    .omit('undefined')
+    .value();
 
   const socialCareLevel5OrAboveCount = lodash
     .chain(socialCareQualificationCounts)
