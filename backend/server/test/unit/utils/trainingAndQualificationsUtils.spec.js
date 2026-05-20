@@ -12,6 +12,7 @@ const {
   listAllExistingAndMissingTrainings,
   buildTrainingCategorySummary,
   getTotalForCareQualifications,
+  getPercentagesForSocialCareQualificationLevels,
 } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   mockWorkerTrainingBreakdowns,
@@ -20,8 +21,9 @@ const {
   mockEstablishmentsTrainingResponse,
   mockWorkerTrainingRecords,
 } = require('../mockdata/trainingAndQualifications');
+const { WorkerSocialCareQualificationLevel } = require('../../../../reference/databaseEnumTypes');
 
-describe('trainingAndQualificationsUtils', () => {
+describe.only('trainingAndQualificationsUtils', () => {
   describe('getTrainingTotals', () => {
     it('should return object with sums of all worker training records', () => {
       const result = getTrainingTotals(mockWorkerTrainingBreakdowns);
@@ -642,6 +644,79 @@ describe('trainingAndQualificationsUtils', () => {
       const result = getTotalForCareQualifications(mockRawData);
 
       expect(result).to.deep.equal(expected);
+    });
+  });
+
+  describe.only('getPercentagesForSocialCareQualificationLevels', () => {
+    it('should return an empty object if no worker was given', () => {
+      const mockWorkers = [];
+
+      const result = getPercentagesForSocialCareQualificationLevels(mockWorkers);
+      expect(result).to.deep.equal({});
+    });
+
+    it('should return percentages as 0 if no worker has SocialCareQualification', () => {
+      const mockWorkers = [{}, {}];
+
+      const result = getPercentagesForSocialCareQualificationLevels(mockWorkers);
+      expect(result).to.deep.equal({
+        'Level 2 or above': '0%',
+        'Level 5 or above': '0%',
+      });
+    });
+
+    it('should calculate the social care qualification level percentages for the given workers', () => {
+      const mockWorkers = [
+        {
+          socialCareQualification: {
+            level: 'Level 1',
+          },
+        },
+        {
+          socialCareQualification: {
+            level: 'Level 2',
+          },
+        },
+        {
+          socialCareQualification: {
+            level: 'Level 3',
+          },
+        },
+      ];
+
+      const result = getPercentagesForSocialCareQualificationLevels(mockWorkers);
+      expect(result).to.deep.equal({
+        'Level 1': '33%',
+        'Level 2': '33%',
+        'Level 3': '33%',
+        'Level 2 or above': '67%',
+        'Level 5 or above': '0%',
+      });
+    });
+
+    it('should correctly handle "Entry level", "Level 8 or above" and "Don\'t know"', () => {
+      const mockWorkers = Object.values(WorkerSocialCareQualificationLevel).map((level) => ({
+        socialCareQualification: {
+          level,
+        },
+      }));
+
+      const result = getPercentagesForSocialCareQualificationLevels(mockWorkers);
+      expect(result).to.deep.equal({
+        'Entry level': '10%',
+        'Level 1': '10%',
+        'Level 2': '10%',
+        'Level 3': '10%',
+        'Level 4': '10%',
+        'Level 5': '10%',
+        'Level 6': '10%',
+        'Level 7': '10%',
+        'Level 8 or above': '10%',
+        "Don't know": '10%',
+
+        'Level 2 or above': '70%',
+        'Level 5 or above': '40%',
+      });
     });
   });
 });
