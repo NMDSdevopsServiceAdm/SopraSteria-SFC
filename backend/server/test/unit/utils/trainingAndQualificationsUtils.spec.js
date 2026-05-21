@@ -14,6 +14,7 @@ const {
   convertAndFlattenQualificationsForEstablishments,
   getTotalForCareQualifications,
   getPercentagesForSocialCareQualificationLevels,
+  buildWorkplaceSummaryData,
 } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   mockWorkerTrainingBreakdowns,
@@ -21,6 +22,8 @@ const {
   mockEstablishmentsCareCertificateResponse,
   mockEstablishmentsTrainingResponse,
   mockWorkerTrainingRecords,
+  totalCountsForMockWorkplaceA,
+  careCertAndQualificationLevelsForWorkplaceA,
 } = require('../mockdata/trainingAndQualifications');
 const { WorkerSocialCareQualificationLevel } = require('../../../../reference/databaseEnumTypes');
 
@@ -176,7 +179,7 @@ describe.only('trainingAndQualificationsUtils', () => {
       const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse, true);
 
       expect(result[0]).to.deep.equal({
-        establishmentName: 'Care Home 1',
+        establishmentName: 'mock care home 1',
 
         workerId: 'Bob Ross',
 
@@ -559,25 +562,7 @@ describe.only('trainingAndQualificationsUtils', () => {
   describe('getTotalForCareQualifications', () => {
     it('should calculate the totals numbers of an establishment related to care qualifications', () => {
       const mockRawData = mockEstablishmentsCareCertificateResponse[0];
-      const expected = {
-        workplaceId: 1234,
-        workplaceName: 'Care Home 1',
-        careProvidingStaffsCount: 2,
-        careCertificate: {
-          'Yes, in progress or partially completed': 1,
-          No: 1,
-        },
-        level2CareCertificate: {
-          No: 1,
-          'Yes, completed': 1,
-        },
-        socialCareQualificationLevel: {
-          'Level 4': '50%',
-          'Level 8 or above': '50%',
-          'Level 2 or above': '100%',
-          'Level 5 or above': '50%',
-        },
-      };
+      const expected = careCertAndQualificationLevelsForWorkplaceA;
 
       const result = getTotalForCareQualifications(mockRawData);
 
@@ -590,8 +575,9 @@ describe.only('trainingAndQualificationsUtils', () => {
 
       const expected = {
         workplaceId: 1234,
-        workplaceName: 'Care Home 1',
+        workplaceName: 'mock care home 1',
         careProvidingStaffsCount: 1,
+
         careCertificate: {
           'Yes, in progress or partially completed': 1,
         },
@@ -599,9 +585,9 @@ describe.only('trainingAndQualificationsUtils', () => {
           'Yes, completed': 1,
         },
         socialCareQualificationLevel: {
-          'Level 8 or above': '100%',
-          'Level 2 or above': '100%',
-          'Level 5 or above': '100%',
+          'Level 8 or above': 1.0,
+          'Level 2 or above': 1.0,
+          'Level 5 or above': 1.0,
         },
       };
 
@@ -624,8 +610,8 @@ describe.only('trainingAndQualificationsUtils', () => {
 
       const result = getPercentagesForSocialCareQualificationLevels(mockWorkers);
       expect(result).to.deep.equal({
-        'Level 2 or above': '0%',
-        'Level 5 or above': '0%',
+        'Level 2 or above': 0.0,
+        'Level 5 or above': 0.0,
       });
     });
 
@@ -650,11 +636,11 @@ describe.only('trainingAndQualificationsUtils', () => {
 
       const result = getPercentagesForSocialCareQualificationLevels(mockWorkers);
       expect(result).to.deep.equal({
-        'Level 1': '33%',
-        'Level 2': '33%',
-        'Level 3': '33%',
-        'Level 2 or above': '67%',
-        'Level 5 or above': '0%',
+        'Level 1': 0.33,
+        'Level 2': 0.33,
+        'Level 3': 0.33,
+        'Level 2 or above': 0.67,
+        'Level 5 or above': 0.0,
       });
     });
 
@@ -667,20 +653,55 @@ describe.only('trainingAndQualificationsUtils', () => {
 
       const result = getPercentagesForSocialCareQualificationLevels(mockWorkers);
       expect(result).to.deep.equal({
-        'Entry level': '10%',
-        'Level 1': '10%',
-        'Level 2': '10%',
-        'Level 3': '10%',
-        'Level 4': '10%',
-        'Level 5': '10%',
-        'Level 6': '10%',
-        'Level 7': '10%',
-        'Level 8 or above': '10%',
-        "Don't know": '10%',
+        'Entry level': 0.1,
+        'Level 1': 0.1,
+        'Level 2': 0.1,
+        'Level 3': 0.1,
+        'Level 4': 0.1,
+        'Level 5': 0.1,
+        'Level 6': 0.1,
+        'Level 7': 0.1,
+        'Level 8 or above': 0.1,
+        "Don't know": 0.1,
 
-        'Level 2 or above': '70%',
-        'Level 5 or above': '40%',
+        'Level 2 or above': 0.7,
+        'Level 5 or above': 0.4,
       });
+    });
+  });
+
+  describe('buildWorkplaceSummaryData', () => {
+    const rawEstablishmentCareCertificateStatus = mockEstablishmentsCareCertificateResponse;
+    const workerTrainingBreakdowns = mockWorkerTrainingBreakdowns;
+
+    it('should build workplace summary data from rawEstablishmentCareCertificateStatus and workerTrainingBreakdowns', () => {
+      const result = buildWorkplaceSummaryData(workerTrainingBreakdowns, [rawEstablishmentCareCertificateStatus[0]]);
+      const expected = [
+        {
+          workplaceId: '1234',
+          workplaceName: 'mock care home 1',
+          trainingBreakdownTotals: totalCountsForMockWorkplaceA,
+          careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceA,
+        },
+      ];
+
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('should put a dummy object for trainingBreakdownTotals if a child workplace does not have any training record', () => {
+      const result = buildWorkplaceSummaryData([], [rawEstablishmentCareCertificateStatus[0]]);
+      const expected = {
+        workplaceId: '1234',
+        workplaceName: 'mock care home 1',
+        careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceA,
+      };
+
+      expect(result[0]).to.deep.include(expected);
+
+      const trainingBreakdownTotalsInResult = result[0].trainingBreakdownTotals;
+      expect(trainingBreakdownTotalsInResult.trainingCount).to.equal(null);
+      expect(trainingBreakdownTotalsInResult.mandatoryTrainingCount).to.equal(null);
+      expect(trainingBreakdownTotalsInResult.nonMandatoryTrainingCount).to.equal(null);
     });
   });
 });
