@@ -349,7 +349,7 @@ exports.addLine = (worksheet, startCell, endCell) => {
   };
 };
 
-const addText = (tab, range, content, fontOptions = {}, otherStyleOptions = null) => {
+const addText = (tab, range, content, fontOptions = {}, otherStyleOptions = {}) => {
   const [startCell, endCell] = range.split(':');
   if (endCell) {
     tab.mergeCells(`${startCell}:${endCell}`);
@@ -358,11 +358,10 @@ const addText = (tab, range, content, fontOptions = {}, otherStyleOptions = null
   const font = { family: 4, size: 12, ...fontOptions };
   const cell = tab.getCell(startCell);
   cell.value = content;
-  cell.font = font;
 
-  if (otherStyleOptions) {
-    applyStyleToCell(cell, otherStyleOptions);
-  }
+  const styleToApply = { font, ...otherStyleOptions };
+
+  applyStyleToCell(cell, styleToApply);
 };
 exports.addText = addText;
 

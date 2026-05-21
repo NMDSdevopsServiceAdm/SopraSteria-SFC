@@ -100,7 +100,7 @@ exports.mockWorkerTrainingBreakdowns = [
   },
 ];
 
-exports.totalCountsForMockWorkplaceA = {
+const totalCountsForMockWorkplaceA = {
   trainingCount: 35,
   mandatoryTrainingCount: 11,
   nonMandatoryTrainingCount: 24,
@@ -120,6 +120,7 @@ exports.totalCountsForMockWorkplaceA = {
   missingMandatoryTrainingCount: 5,
   qualificationCount: 2,
 };
+exports.totalCountsForMockWorkplaceA = totalCountsForMockWorkplaceA;
 
 exports.mockWorkerTrainingBreakdownsWithNoMandatoryTraining = [
   {
@@ -664,7 +665,7 @@ exports.mockEstablishmentsCareCertificateResponse = [
   },
 ];
 
-exports.careCertAndQualificationLevelsForWorkplaceA = {
+const careCertAndQualificationLevelsForWorkplaceA = {
   workplaceId: 1234,
   workplaceName: 'mock care home 1',
   careProvidingStaffsCount: 2,
@@ -683,6 +684,7 @@ exports.careCertAndQualificationLevelsForWorkplaceA = {
     'Level 5 or above': 0.5,
   },
 };
+exports.careCertAndQualificationLevelsForWorkplaceA = careCertAndQualificationLevelsForWorkplaceA;
 
 const today = dayjs().format('YYYY-MM-DD');
 const yesterday = dayjs().subtract(1, 'days').format('YYYY-MM-DD');
@@ -804,3 +806,12 @@ exports.mockEstablishmentsTrainingResponse = [
     ],
   },
 ];
+
+const mockSummaryTabDataForWorkplaceA = {
+  workplaceId: 1234,
+  workplaceName: 'mock care home 1',
+  trainingBreakdownTotals: totalCountsForMockWorkplaceA,
+  careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceA,
+};
+
+exports.mockSummaryTabDataForWorkplaceA = mockSummaryTabDataForWorkplaceA;

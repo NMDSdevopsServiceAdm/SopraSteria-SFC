@@ -1,23 +1,24 @@
 const expect = require('chai').expect;
-const sinon = require('sinon');
 const excelJS = require('exceljs');
 
-const { getTrainingTotals } = require('../../../../../utils/trainingAndQualificationsUtils');
-const { mockWorkerTrainingBreakdowns } = require('../../../mockdata/trainingAndQualifications');
+const { mockSummaryTabDataForWorkplaceA } = require('../../../mockdata/trainingAndQualifications');
 const { generateSummaryTab } = require('../../../../../routes/reports/trainingAndQualifications/standaloneSummaryTab');
 
-describe('SummaryTab (Standalone)', () => {
+describe.only('SummaryTab (Standalone)', () => {
   let workbook;
 
   beforeEach(() => {
     workbook = new excelJS.Workbook();
   });
 
-  const mockWorkplace = {};
-
   describe('generateSummaryTab', () => {
     it('should add a worksheet for summary', () => {
-      generateSummaryTab(workbook);
+      generateSummaryTab(workbook, [mockSummaryTabDataForWorkplaceA]);
+
+      const tab = workbook.getWorksheet('Summary');
+
+      expect(tab.getCell('D2').value).to.deep.equal('mock care home 1');
+      expect(tab.getCell('D3').value).to.deep.equal('Summary');
     });
   });
 });
