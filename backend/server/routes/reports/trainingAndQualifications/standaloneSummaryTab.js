@@ -9,12 +9,12 @@ const {
 const { WorkerCareCertificate, WorkerLevel2CareCertificate } = require('../../../../reference/databaseEnumTypes');
 
 const generateSummaryTab = async (workbook, summaryTabData) => {
-  if (!summaryTabData?.length) {
+  if (!summaryTabData) {
     return;
   }
 
   const summaryTab = workbook.addWorksheet('Summary', { views: [{ showGridLines: false }] });
-  const establishmentName = summaryTabData[0].workplaceName;
+  const establishmentName = summaryTabData.workplaceName;
 
   setHeightAndWidths(summaryTab);
   addBannerImage(workbook, summaryTab);
@@ -22,8 +22,8 @@ const generateSummaryTab = async (workbook, summaryTabData) => {
 
   drawColouredArea(summaryTab);
 
-  addtrainingBreakdownTotals(summaryTab, summaryTabData[0].trainingBreakdownTotals);
-  addCareCertAndQualificationLevels(summaryTab, summaryTabData[0].careCertAndQualificationLevels);
+  addtrainingBreakdownTotals(summaryTab, summaryTabData.trainingBreakdownTotals);
+  addCareCertAndQualificationLevels(summaryTab, summaryTabData.careCertAndQualificationLevels);
 };
 
 const setHeightAndWidths = (tab) => {
