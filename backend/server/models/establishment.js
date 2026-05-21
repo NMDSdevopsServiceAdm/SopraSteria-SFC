@@ -2184,6 +2184,7 @@ module.exports = function (sequelize, DataTypes) {
     let attributes = [
       'id',
       'NameOrIdValue',
+      'LongTermAbsence',
       [
         sequelize.literal(
           `
@@ -2199,7 +2200,6 @@ module.exports = function (sequelize, DataTypes) {
         ),
         'mandatoryTrainingCategories',
       ],
-      'LongTermAbsence',
     ];
     let subsidiaries = [];
     if (isParent) {
@@ -2314,9 +2314,9 @@ module.exports = function (sequelize, DataTypes) {
               required: false,
             },
             {
-              model: sequelize.models.workerQualifications,
+              model: sequelize.models.workerQualifications.scope('withCertificateData'),
               as: 'qualifications',
-              attributes: ['Year'],
+              attributes: ['year', 'id'],
               include: [
                 {
                   model: sequelize.models.workerAvailableQualifications,

@@ -29,18 +29,19 @@ const orderOfColumnNameAndDataFields = [
     isMandatoryTrainingField: true,
   },
   { columnName: 'Up-to-date', field: 'upToDateMandatoryTrainingCount', isMandatoryTrainingField: true },
-  { columnName: 'Total', field: 'mandatoryTrainingCount', isMandatoryTrainingField: true },
+  // Note: white space are added around the text, as Excel raise error on duplicated column names in table
+  { columnName: ' Total ', field: 'mandatoryTrainingCount', isMandatoryTrainingField: true },
   { columnName: 'Missing', field: 'missingMandatoryTrainingCount', isMandatoryTrainingField: true },
-  { columnName: 'Expired', field: 'expiredNonMandatoryTrainingCount' },
+  { columnName: ' Expired ', field: 'expiredNonMandatoryTrainingCount' },
   {
-    columnName: 'Expiring soon',
+    columnName: ' Expiring soon ',
     field: 'expiringNonMandatoryTrainingCount',
   },
   {
-    columnName: 'Up-to-date',
+    columnName: ' Up-to-date ',
     field: 'upToDateNonMandatoryTrainingCount',
   },
-  { columnName: 'Total', field: 'nonMandatoryTrainingCount' },
+  { columnName: '  Total  ', field: 'nonMandatoryTrainingCount' },
 ];
 
 const generateTrainingByStaffTab = async (workbook, workerTrainingBreakdowns, isParent = false) => {
@@ -95,17 +96,22 @@ const addWorkerTable = (tab, workerTrainingBreakdowns, isParent) => {
   const headerRow = tab.getRow(HeaderRowNumber);
   headerRow.values = ['', ...tableColumnNames];
 
-  workerTableData.forEach((rowData) => {
-    tab.addRow(['', ...rowData]);
+  const trainingTable = tab.addTable({
+    name: 'trainingByStaffTable',
+    ref: `B${HeaderRowNumber}`,
+    columns: columnsToDisplay.map(({ columnName }) => ({ name: columnName, filterButton: true })),
+    rows: workerTableData,
   });
+
+  trainingTable.commit();
 
   const totalNumbers = calculateTotals(workerTrainingBreakdowns);
 
   addTotalRow(tab, totalNumbers, columnsToDisplay);
 
   const [top, left, bottom, right] = [HeaderRowNumber, 2, tab.lastRow.number, columnsToDisplay.length + 1];
-  const tableRange = colCache.encode(top, left, bottom, right);
 
+  const tableRange = colCache.encode(top, left, bottom, right);
   setStyleForWorkerTable(tab, tableRange);
 };
 
@@ -169,9 +175,9 @@ const setStyleForWorkerTable = (tab, tableRange) => {
     rules: [
       ...conditionalColoursForTrainingExpiry,
       {
-        type: 'cellIs',
-        operator: 'equal',
-        formulae: ['"Total"'],
+        type: 'containsText',
+        operator: 'containsText',
+        text: 'Total',
         style: {
           fill: { type: 'pattern', pattern: 'solid', bgColor: newBackgroundColours.lightGrey },
           font: { bold: true, size: 12, family: 4, color: newTextColours.black },

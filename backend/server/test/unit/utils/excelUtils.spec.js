@@ -11,6 +11,8 @@ const {
   setColourForRange,
   newBackgroundColours,
   forEachCellInRange,
+  autoAdjustWrapTextAndRowHeight,
+  countNumberOfLinesInCalibriFont,
 } = require('../../../utils/excelUtils');
 
 describe('excelUtils', () => {
@@ -114,6 +116,129 @@ describe('excelUtils', () => {
       const actual = parseRange(input);
 
       expect(actual).to.deep.equal(expected);
+    });
+  });
+
+  describe('autoAdjustWrapTextAndRowHeight', () => {
+    it('should set a cell to { wrapText: true } and increase the height if text is longer than the given length', () => {
+      const mockWorksheet = setup();
+
+      const cell = mockWorksheet.getCell('B2');
+      cell.value = 'some very very very very very very very very very very long text';
+
+      autoAdjustWrapTextAndRowHeight(mockWorksheet, cell);
+
+      expect(mockWorksheet.getCell('B2').alignment).to.deep.equal({ wrapText: true });
+      expect(mockWorksheet.getRow('2').height).to.equal(34);
+    });
+
+    it('should not change the cell properties if the text is not long enough', () => {
+      const mockWorksheet = setup();
+
+      const cell = mockWorksheet.getCell('B2');
+      cell.value = 'some value';
+      cell.alignment = {};
+
+      autoAdjustWrapTextAndRowHeight(mockWorksheet, cell);
+
+      expect(mockWorksheet.getCell('B2').alignment).to.deep.equal({});
+      expect(mockWorksheet.getRow('2').height).to.equal(undefined);
+    });
+
+    it('should accept an optional length and default row height as argument', () => {
+      const mockWorksheet = setup();
+
+      const cell = mockWorksheet.getCell('B2');
+      cell.value = 'a text of length 20 ';
+
+      autoAdjustWrapTextAndRowHeight(mockWorksheet, cell, 5, 15);
+      const expectedRowHeight = 15 * (20 / 5) - 10;
+
+      expect(mockWorksheet.getCell('B2').alignment).to.deep.equal({ wrapText: true });
+      expect(mockWorksheet.getRow('2').height).to.equal(expectedRowHeight);
+    });
+  });
+
+  describe('countNumberOfLinesInCalibriFont', () => {
+    it('should return 1 if given an empty input', () => {
+      const testCases = ['', ' ', '    ', undefined, null];
+      testCases.forEach((input) => {
+        expect(countNumberOfLinesInCalibriFont(input)).to.equal(1);
+      });
+    });
+
+    describe('should estimated the number of lines needed to show the given text within the given column width', () => {
+      const testCases = [
+        {
+          text: 'Awareness of end of life care (level 2)',
+          expected: 1,
+        },
+        {
+          text: 'Delivering chair-based exercise with',
+          expected: 1,
+        },
+        {
+          text: 'Delivering chair-based exercise with frailer',
+          expected: 2,
+        },
+        {
+          text: 'Advanced Award in Social Work (AASW, level 7)',
+          expected: 2,
+        },
+        {
+          text: 'Supporting individuals with autism (level 3)',
+          expected: 2,
+        },
+        {
+          text: 'V1 or other internal verifier NVQ (level 3)',
+          expected: 1,
+        },
+        {
+          text: 'Food safety in health and social care, and early years and childcare settings (level 2)',
+          expected: 3,
+        },
+        {
+          text: 'Delivering chair-based exercise with frailer older adults and adults with disabilities in care and community settings (level 2)',
+          expected: 4,
+        },
+        {
+          text: 'Understanding the safe handling of medication in health and social care (level 2)',
+          expected: 3,
+        },
+        {
+          text: 'Any Learning Disabled Awards Framework ',
+          expected: 2,
+        },
+      ];
+
+      testCases.forEach(({ text, expected }) => {
+        it(`text input: ${text}, expected number of lines: ${expected}`, () => {
+          const actual = countNumberOfLinesInCalibriFont(text);
+          expect(actual).to.equal(expected);
+        });
+      });
+    });
+
+    it('should handle word break with hyphen', () => {
+      const text = 'Any qualification in assessment of work-based learning, other than social work';
+      const expected = 2;
+
+      const actual = countNumberOfLinesInCalibriFont(text);
+      expect(actual).to.equal(expected);
+    });
+
+    it('should give different results according to column width', () => {
+      const textInput = 'Activity provision and wellbeing course A';
+
+      const testCases = [
+        { columnWidth: 30, expectedNumberOfLines: 2 },
+        { columnWidth: 35, expectedNumberOfLines: 1 },
+      ];
+
+      testCases.forEach(({ columnWidth, expectedNumberOfLines }) => {
+        const actual = countNumberOfLinesInCalibriFont(textInput, columnWidth);
+        expect(actual).to.equal(expectedNumberOfLines);
+      });
     });
   });
 });

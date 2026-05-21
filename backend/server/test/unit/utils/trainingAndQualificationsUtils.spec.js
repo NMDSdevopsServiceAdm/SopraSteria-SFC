@@ -1,8 +1,9 @@
 const expect = require('chai').expect;
 const dayjs = require('dayjs');
+const lodash = require('lodash');
+
 const {
   getTrainingTotals,
-  convertQualificationsForEstablishments,
   convertWorkersWithCareCertificateStatus,
   convertTrainingForEstablishments,
   getTrainingRecordStatus,
@@ -10,6 +11,7 @@ const {
   listMissingMandatoryTrainings,
   listAllExistingAndMissingTrainings,
   buildTrainingCategorySummary,
+  convertAndFlattenQualificationsForEstablishments,
 } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   mockWorkerTrainingBreakdowns,
@@ -60,69 +62,63 @@ describe('trainingAndQualificationsUtils', () => {
     });
   });
 
-  describe('convertQualificationsForEstablishments', () => {
-    describe('First establishment', async () => {
-      it('should return the workplace name for the first establishment', () => {
-        const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
+  describe('convertAndFlattenQualificationsForEstablishments', () => {
+    it('should return a list of qualification records', () => {
+      const result = convertAndFlattenQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
 
-        expect(result[0].name).to.deep.equal('Workplace Name');
+      expect(result[0]).to.deep.equal({
+        workplaceName: 'Workplace Name',
+        workerName: 'Bob Ross',
+        jobRole: 'Activities worker or co-ordinator',
+        qualificationType: 'NVQ',
+        qualificationName: 'Care NVQ',
+        qualificationLevel: 3,
+        yearAchieved: 2020,
+        certificateUploaded: 'Yes',
       });
 
-      it('should return the converted qualification for the first worker', () => {
-        const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-        expect(result[0].qualifications[0]).to.deep.equal({
-          workerName: 'Bob Ross',
-          jobRole: 'Activities worker or co-ordinator',
-          qualificationType: 'NVQ',
-          qualificationName: 'Care NVQ',
-          qualificationLevel: '3',
-          yearAchieved: 2020,
-        });
+      expect(result[1]).to.deep.equal({
+        workplaceName: 'Workplace Name',
+        workerName: 'Martin Mill',
+        jobRole: 'Care Giver',
+        qualificationType: 'Award',
+        qualificationName: 'Good Name Award',
+        qualificationLevel: 2,
+        yearAchieved: 2018,
+        certificateUploaded: 'No',
       });
 
-      it('should return the converted qualification for the second worker when first has only one qualification', () => {
-        const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-        expect(result[0].qualifications[1]).to.deep.equal({
-          workerName: 'Martin Mill',
-          jobRole: 'Care Giver',
-          qualificationType: 'Award',
-          qualificationName: 'Good Name Award',
-          qualificationLevel: '2',
-          yearAchieved: 2018,
-        });
+      expect(result[1]).to.deep.equal({
+        workplaceName: 'Workplace Name',
+        workerName: 'Martin Mill',
+        jobRole: 'Care Giver',
+        qualificationType: 'Award',
+        qualificationName: 'Good Name Award',
+        qualificationLevel: 2,
+        yearAchieved: 2018,
+        certificateUploaded: 'No',
+      });
+
+      expect(result[2]).to.deep.equal({
+        workplaceName: 'Subsidiary Workplace Name',
+        workerName: 'Roly Poly',
+        jobRole: 'Roll Connoisseur',
+        qualificationType: 'Degree',
+        qualificationName: 'Rolling',
+        qualificationLevel: 6,
+        yearAchieved: 2020,
+        certificateUploaded: 'Yes',
       });
     });
 
-    describe('Second establishment', async () => {
-      it('should return the workplace name for the second establishment', () => {
-        const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
+    it('should convert establishment name to number type if it is digit only', () => {
+      const mockData = lodash.cloneDeep(mockEstablishmentsQualificationsResponse);
+      mockData[0].NameValue = '80';
 
-        expect(result[1].name).to.deep.equal('Subsidiary Workplace Name');
-      });
+      const result = convertAndFlattenQualificationsForEstablishments(mockData);
 
-      it('should return the first converted qualification for the first worker', () => {
-        const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-        expect(result[1].qualifications[0]).to.deep.equal({
-          workerName: 'Roly Poly',
-          jobRole: 'Roll Connoisseur',
-          qualificationType: 'Degree',
-          qualificationName: 'Rolling',
-          qualificationLevel: '6',
-          yearAchieved: 2020,
-        });
-      });
-
-      it('should return the second converted qualification for the first worker when more than qualification', () => {
-        const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-        expect(result[1].qualifications[1]).to.deep.equal({
-          workerName: 'Roly Poly',
-          jobRole: 'Roll Connoisseur',
-          qualificationType: 'Degree',
-          qualificationName: 'Rolling Masters',
-          qualificationLevel: '7',
-          yearAchieved: 2021,
-        });
-      });
+      expect(typeof result[0].workplaceName).to.deep.equal('number');
+      expect(result[0].workplaceName).to.deep.equal(80);
     });
   });
 
@@ -230,7 +226,7 @@ describe('trainingAndQualificationsUtils', () => {
 
         expect(firstWorker.workerId).to.equal('New staff record');
         expect(firstWorker.jobRole).to.equal('Activities worker or co-ordinator');
-        expect(firstWorker.longTermAbsence).to.equal('');
+        expect(firstWorker.isInLongTermAbsence).to.equal('No');
         expect(firstWorker.mandatoryTraining).to.deep.equal(['Communication skills']);
       });
 
@@ -284,7 +280,7 @@ describe('trainingAndQualificationsUtils', () => {
 
         expect(secondWorker.workerId).to.equal('Another staff record');
         expect(secondWorker.jobRole).to.equal('Care giver');
-        expect(secondWorker.longTermAbsence).to.equal('Yes');
+        expect(secondWorker.isInLongTermAbsence).to.equal('Yes');
         expect(secondWorker.mandatoryTraining).to.deep.equal(['Learning']);
       });
 
@@ -327,37 +323,6 @@ describe('trainingAndQualificationsUtils', () => {
       });
     });
 
-    describe('convertQualificationsForEstablishments', () => {
-      describe('First establishment', async () => {
-        it('should return array with first establishment name', () => {
-          const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-
-          expect(result[0].name).to.equal('Workplace Name');
-        });
-
-        it('should return a string if number in string', () => {
-          mockEstablishmentsQualificationsResponse[0].NameValue = '80abc';
-          const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-
-          expect(result[0].name).to.equal('80abc');
-        });
-
-        it('should return a string if number in string with letters', () => {
-          mockEstablishmentsQualificationsResponse[0].NameValue = '80abc';
-          const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-
-          expect(typeof result[0].name).to.deep.equal('string');
-        });
-
-        it('should return a number if only number in string', () => {
-          mockEstablishmentsQualificationsResponse[0].NameValue = '80';
-          const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-
-          expect(typeof result[0].name).to.deep.equal('number');
-        });
-      });
-    });
-
     describe('Second establishment', async () => {
       it('should return array with second establishment name', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
@@ -371,7 +336,7 @@ describe('trainingAndQualificationsUtils', () => {
 
         expect(firstWorker.workerId).to.equal('Test staff record');
         expect(firstWorker.jobRole).to.equal('Activities worker and care');
-        expect(firstWorker.longTermAbsence).to.equal('');
+        expect(firstWorker.isInLongTermAbsence).to.equal('No');
         expect(firstWorker.mandatoryTraining).to.deep.equal(['Autism']);
       });
 

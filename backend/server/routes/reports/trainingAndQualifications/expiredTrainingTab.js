@@ -11,18 +11,17 @@ const {
   conditionalColoursForTrainingExpiry,
   forEachCellInRange,
   autoFitColumnWidthByTextLength,
-  dateFormat,
   defaultDateFormat,
 } = require('../../../utils/excelUtils');
 
 const columnNameAndDataFields = [
-  { columnName: 'Workplace', field: 'workplaceName' },
-  { columnName: 'Training category', field: 'category' },
-  { columnName: 'Training or course name', field: 'trainingName' },
-  { columnName: 'Name or ID number', field: 'workerNameOrId' },
-  { columnName: 'Mandatory', field: 'isMandatory' },
-  { columnName: 'Status', field: 'status' },
-  { columnName: 'Expiry date', field: 'expiryDate' },
+  { columnName: 'Workplace', field: 'workplaceName', width: 33 },
+  { columnName: 'Training category', field: 'category', width: 33 },
+  { columnName: 'Training or course name', field: 'trainingName', width: 33 },
+  { columnName: 'Name or ID number', field: 'workerNameOrId', width: 22 },
+  { columnName: 'Mandatory', field: 'isMandatory', width: 15 },
+  { columnName: 'Status', field: 'status', width: 15 },
+  { columnName: 'Expiry date', field: 'expiryDate', width: 15 },
 ];
 
 const HeaderRowNumber = 4;
@@ -43,7 +42,7 @@ const generateExpiredTrainingTab = async (workbook, trainingRecords, isParent = 
 
   addExpiredTrainingsTable(expiredTrainingTab, sortedData, columnsToDisplay);
 
-  setHeightsAndWidths(expiredTrainingTab);
+  setHeightsAndWidths(expiredTrainingTab, columnsToDisplay);
 
   setFreezePane(expiredTrainingTab);
 };
@@ -61,6 +60,7 @@ const addTopTableHeader = (tab, columnsToDisplay) => {
   addText(tab, topHeaderRange, 'Training', { size: 12, bold: true });
   applyStyleToRange(tab, topHeaderRange, tableHeaderCellStyle);
 };
+
 const addExpiredTrainingsTable = (tab, sortedData, columnsToDisplay) => {
   const tableRows = sortedData.map((trainingData) => {
     return columnsToDisplay.map(({ field }) => trainingData[field] ?? '-');
@@ -127,8 +127,8 @@ const setDateFormatForExpiryDateColumn = (tab) => {
   tab.getColumn(expiryDateColumnNumber).alignment = { horizontal: 'left', vertical: 'middle' };
 };
 
-const setHeightsAndWidths = (tab) => {
-  const columnWidths = [7, 33, 33, 22, 15, 15, 15];
+const setHeightsAndWidths = (tab, columnsToDisplay) => {
+  const columnWidths = [7, ...columnsToDisplay.map((column) => column.width)];
 
   columnWidths.forEach((width, index) => {
     const column = tab.getColumn(index + 1);

@@ -143,7 +143,7 @@ const convertWorkerTrainingRecords = (workers, expiresSoonAlertDate) => {
     return {
       workerId: numberCheck(worker.NameOrIdValue),
       jobRole: worker.mainJob.title,
-      longTermAbsence: worker.LongTermAbsence ? worker.LongTermAbsence : '',
+      isInLongTermAbsence: worker.LongTermAbsence ? 'Yes' : 'No',
       mandatoryTraining: mandatoryTrainingCategories,
       missingMandatoryTrainings: listMissingMandatoryTrainings(worker),
       trainingRecords: convertIndividualWorkerTrainingRecords(
@@ -161,19 +161,19 @@ const convertIndividualWorkerTrainingRecords = (
   mandatoryTrainingCategories = [],
 ) => {
   return workerTraining.map((trainingRecord) => {
-    const expiryDate = trainingRecord.expires ? new Date(trainingRecord.expires) : '';
-    const dateCompleted = trainingRecord.completed ? new Date(trainingRecord.completed) : '';
+    const expiryDate = trainingRecord.expires ? new Date(trainingRecord.expires) : null;
+    const dateCompleted = trainingRecord.completed ? new Date(trainingRecord.completed) : null;
     const isMandatory = mandatoryTrainingCategories.includes(trainingRecord.category.category) ? 'Yes' : 'No';
     const trainingCertificateUploaded = trainingRecord.trainingCertificatesCount > 0 ? 'Yes' : 'No';
 
     return {
       category: trainingRecord.category.category,
       categoryFK: trainingRecord.categoryFk,
-      trainingName: trainingRecord.title ? trainingRecord.title : '',
+      trainingName: trainingRecord.title,
       expiryDate,
       status: getTrainingRecordStatus(expiryDate, expiresSoonAlertDate),
       dateCompleted,
-      accredited: trainingRecord.accredited ? trainingRecord.accredited : '',
+      accredited: trainingRecord.accredited,
 
       isMandatory,
       validityPeriodInMonth: trainingRecord.validityPeriodInMonth,
@@ -213,30 +213,32 @@ exports.convertTrainingForEstablishments = (rawEstablishments) => {
 
 const convertIndividualWorkerQualifications = (worker) => {
   return worker.qualifications.map((qualification) => {
+    const qualificationLevel = numberCheck(qualification.qualification.level);
+    const certificateUploaded = qualification.qualificationCertificatesCount > 0 ? 'Yes' : 'No';
+
     return {
-      workerName: numberCheck(worker.get('NameOrIdValue')),
+      workerName: numberCheck(worker.NameOrIdValue),
       jobRole: worker.mainJob.title,
       qualificationType: qualification.qualification.group,
       qualificationName: qualification.qualification.title,
-      qualificationLevel: qualification.qualification.level,
-      yearAchieved: qualification.get('Year'),
+      qualificationLevel,
+      yearAchieved: qualification.year,
+      certificateUploaded,
     };
   });
 };
 
-const convertWorkerQualifications = (rawWorkerQualifications) => {
-  return rawWorkerQualifications.workers.reduce((convertedWorkerQualifications, worker) => {
-    return convertedWorkerQualifications.concat(convertIndividualWorkerQualifications(worker));
-  }, []);
-};
+exports.convertAndFlattenQualificationsForEstablishments = (rawEstablishments) => {
+  const allQualificationRecords = rawEstablishments.flatMap((workplace) => {
+    const convertedQualifications = workplace.workers.flatMap(convertIndividualWorkerQualifications);
 
-exports.convertQualificationsForEstablishments = (rawEstablishments) => {
-  return rawEstablishments.map((establishment) => {
-    return {
-      name: numberCheck(establishment.NameValue),
-      qualifications: convertWorkerQualifications(establishment),
-    };
+    return convertedQualifications.map((qualificationRecord) => ({
+      ...qualificationRecord,
+      workplaceName: numberCheck(workplace.NameValue),
+    }));
   });
+
+  return allQualificationRecords;
 };
 
 const numberCheck = (value) => {
@@ -365,6 +367,8 @@ const listAllExistingAndMissingTrainings = (establishmentsWithTrainingRecords) =
           ...training,
           workplaceName: establishment.name,
           workerNameOrId: worker.workerId,
+          mainJobRole: worker.jobRole,
+          isInLongTermAbsence: worker.isInLongTermAbsence,
         };
       });
     });
