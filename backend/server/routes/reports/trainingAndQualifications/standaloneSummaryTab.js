@@ -1,15 +1,4 @@
-const lodash = require('lodash');
-
-const { convertWorkerTrainingBreakdowns, getTrainingTotals } = require('../../../utils/trainingAndQualificationsUtils');
 const {
-  addHeading,
-  addLine,
-  backgroundColours,
-  textColours,
-  setCellTextAndBackgroundColour,
-  setTableHeadingsStyle,
-  alignColumnToLeft,
-  addBordersToAllFilledCells,
   addText,
   setColourForRange,
   newBackgroundColours,
@@ -17,23 +6,15 @@ const {
   newTextColours,
   alignments,
 } = require('../../../utils/excelUtils');
+const { WorkerCareCertificate, WorkerLevel2CareCertificate } = require('../../../../reference/databaseEnumTypes');
 
-const missingRecordsExplanationText = {
-  richText: [
-    { font: { size: 12, bold: true, family: 4 }, text: 'Missing records.' },
-    {
-      font: {
-        size: 12,
-        family: 4,
-      },
-      text: ' If a training category is mandatory, you must add a record for everybody who needs that training. Note, missing records may include training not yet taken by new starters.',
-    },
-  ],
-};
+const generateSummaryTab = async (workbook, summaryTabData) => {
+  if (!summaryTabData?.length) {
+    return;
+  }
 
-const generateSummaryTab = async (workbook, establishmentData) => {
   const summaryTab = workbook.addWorksheet('Summary', { views: [{ showGridLines: false }] });
-  const establishmentName = establishmentData.establishment.NameValue;
+  const establishmentName = summaryTabData[0].workplaceName;
 
   setHeightAndWidths(summaryTab);
   addBannerImage(workbook, summaryTab);
@@ -41,13 +22,14 @@ const generateSummaryTab = async (workbook, establishmentData) => {
 
   drawColouredArea(summaryTab);
 
-  addStaffsBreakdown(summaryTab, establishmentData.workerTrainingBreakdowns);
+  addtrainingBreakdownTotals(summaryTab, summaryTabData[0].trainingBreakdownTotals);
+  addCareCertAndQualificationLevels(summaryTab, summaryTabData[0].careCertAndQualificationLevels);
 };
 
 const setHeightAndWidths = (tab) => {
   const columnWidths = [
-    2.5, 3, 1.75, 33, 1.75, 1.75, 1.75, 33, 1.75, 1.75, 1.75, 33, 1.75, 3, 2.4, 3, 1.75, 33, 1.75, 1.75, 1.75, 33, 1.75,
-    1.75, 1.75, 33, 1.75, 3,
+    2.5, 3, 1.75, 33, 1.75, 1.75, 1.75, 33, 1.75, 1.75, 1.75, 33, 1.75, 3.5, 3, 3.5, 1.75, 33, 1.75, 1.75, 1.75, 33,
+    1.75, 1.75, 1.75, 33, 1.75, 3,
   ];
   const rowHeights = [
     45, 45, 45, 45, 45, 10, 20, 45, 10, 20, 45, 10, 20, 45, 10, 20, 45, 10, 20, 45, 10, 45, 18, 45, 10, 10, 22,
@@ -115,10 +97,10 @@ const drawColouredArea = (tab) => {
     { range: 'V13:V14', backgroundColour: newBackgroundColours.darkBlue, textColour: newTextColours.white },
 
     { range: 'Z7:Z8', backgroundColour: newBackgroundColours.darkBlue, textColour: newTextColours.white },
-    { range: 'Z10:Z11', backgroundColour: newBackgroundColours.lightBlue, textColour: newTextColours.white },
-    { range: 'Z13:Z14', backgroundColour: newBackgroundColours.lightBlue, textColour: newTextColours.white },
-    { range: 'Z16:Z17', backgroundColour: newBackgroundColours.lightBlue, textColour: newTextColours.white },
-    { range: 'Z19:Z20', backgroundColour: newBackgroundColours.lightBlue, textColour: newTextColours.white },
+    { range: 'Z10:Z11', backgroundColour: newBackgroundColours.lightBlue, textColour: newTextColours.darkBlue },
+    { range: 'Z13:Z14', backgroundColour: newBackgroundColours.lightBlue, textColour: newTextColours.darkBlue },
+    { range: 'Z16:Z17', backgroundColour: newBackgroundColours.lightBlue, textColour: newTextColours.darkBlue },
+    { range: 'Z19:Z20', backgroundColour: newBackgroundColours.lightBlue, textColour: newTextColours.darkBlue },
   ];
 
   colourBoxes.forEach((colourBox) => {
@@ -129,27 +111,8 @@ const drawColouredArea = (tab) => {
   });
 };
 
-const calculateTotals = (workerTrainingBreakdowns) => {
-  if (!workerTrainingBreakdowns?.length) {
-    return {};
-  }
-
-  const fieldNames = Object.keys(workerTrainingBreakdowns[0]);
-  const numericFields = fieldNames.filter((field) => field.endsWith('Count'));
-  const result = {};
-
-  numericFields.forEach((field) => {
-    const countsForAllWorkersOfThisField = lodash.map(workerTrainingBreakdowns, field);
-    const total = lodash.sum(countsForAllWorkersOfThisField);
-    result[field] = total;
-  });
-
-  return result;
-};
-
-const addStaffsBreakdown = (tab, workerTrainingBreakdowns) => {
-  const totals = calculateTotals(workerTrainingBreakdowns);
-
+const addtrainingBreakdownTotals = (tab, trainingBreakdownTotals) => {
+  const totals = trainingBreakdownTotals;
   const longTexts = [
     {
       range: 'D4:L4',
@@ -204,10 +167,94 @@ const addStaffsBreakdown = (tab, workerTrainingBreakdowns) => {
   const cellData = columnHeadings.concat(longTexts, cellLabels, numbers);
 
   cellData.forEach(({ range, value, size, alignment }) => {
-    const font = { size, bold: true };
+    const font = { size: size ?? 12, bold: true };
+    const textAlignment = alignment ? { alignment } : { alignment: alignments.centerMiddle };
+    addText(tab, range, value, font, textAlignment);
+  });
+};
+
+const addCareCertAndQualificationLevels = (tab, careCertAndQualificationLevels) => {
+  const data = careCertAndQualificationLevels;
+  const defaultValue = data?.careProvidingStaffsCount > 0 ? 0 : '-';
+
+  const sectionHeading = `Care-providing staff only (${data?.careProvidingStaffsCount ?? 0})`;
+
+  const longTexts = [
+    {
+      range: 'P4:AA4',
+      value: sectionHeading,
+      size: 18,
+      alignment: alignments.centerMiddle,
+    },
+    { range: 'Q16:W17', value: careCertExplanationText, size: 12, alignment: alignments.leftMiddleWrapText },
+    { range: 'Q19:W20', value: careCertNotesText, size: 12, alignment: alignments.leftMiddleWrapText },
+  ];
+
+  const columnHeadings = [
+    { range: 'R5', value: 'Care Certificates' },
+    { range: 'V5', value: 'L2 Adult Social Care Certificates' },
+    { range: 'Z5', value: 'Social care qualification levels' },
+  ].map((cell) => ({ ...cell, size: 14 }));
+
+  const cellLabels = [
+    { range: 'R7', value: 'Completed' },
+    { range: 'R10', value: 'Started or partially completed' },
+    { range: 'R13', value: 'Not started' },
+
+    { range: 'V7', value: 'Completed' },
+    { range: 'V10', value: 'Started' },
+    { range: 'V13', value: 'Not started' },
+
+    { range: 'Z7', value: 'Level 2 or higher' },
+    { range: 'Z10', value: 'Level 2' },
+    { range: 'Z13', value: 'Level 3' },
+    { range: 'Z16', value: 'Level 4' },
+    { range: 'Z19', value: 'Level 5 or above' },
+  ].map((cell) => ({ ...cell, alignment: alignments.centerBottom }));
+
+  const numbers = [
+    { range: 'R8', value: data?.careCertificate?.[WorkerCareCertificate.YesCompleted] },
+    { range: 'R11', value: data?.careCertificate?.[WorkerCareCertificate.YesInProgress] },
+    { range: 'R14', value: data?.careCertificate?.[WorkerCareCertificate.No] },
+    { range: 'V8', value: data?.level2CareCertificate?.[WorkerLevel2CareCertificate.YesCompleted] },
+    { range: 'V11', value: data?.level2CareCertificate?.[WorkerLevel2CareCertificate.YesStarted] },
+    { range: 'V14', value: data?.level2CareCertificate?.[WorkerLevel2CareCertificate.No] },
+    { range: 'Z8', value: data?.socialCareQualificationLevel?.['Level 2 or above'] },
+    { range: 'Z11', value: data?.socialCareQualificationLevel?.['Level 2'] },
+    { range: 'Z14', value: data?.socialCareQualificationLevel?.['Level 3'] },
+    { range: 'Z17', value: data?.socialCareQualificationLevel?.['Level 4'] },
+    { range: 'Z20', value: data?.socialCareQualificationLevel?.['Level 5 or above'] },
+  ].map((cell) => {
+    const cellValue = cell.value ?? defaultValue;
+    return { ...cell, value: cellValue, size: 30 };
+  });
+
+  const cellData = columnHeadings.concat(longTexts, cellLabels, numbers);
+
+  cellData.forEach(({ range, value, size, alignment }) => {
+    const font = { size: size ?? 12, bold: true };
     const textAlignment = alignment ? { alignment } : { alignment: alignments.centerMiddle };
     addText(tab, range, value, font, textAlignment);
   });
 };
 
 module.exports.generateSummaryTab = generateSummaryTab;
+
+const missingRecordsExplanationText = {
+  richText: [
+    { font: { size: 12, bold: true, family: 4 }, text: 'Missing records.' },
+    {
+      font: {
+        size: 12,
+        family: 4,
+      },
+      text: ' If a training category is mandatory, you must add a record for everybody who needs that training. Note, missing records may include training not yet taken by new starters.',
+    },
+  ],
+};
+
+const careCertExplanationText =
+  'The Care Certificates, L2 Adult Social Care Certificates and social care qualifications summary statistics only refer to care-providing staff (this includes care and support workers, registered and deputy managers, supervisors and team leaders).';
+
+const careCertNotesText =
+  'Note, the data displayed in this report has been generated from both staff records and from training and qualification records.';
