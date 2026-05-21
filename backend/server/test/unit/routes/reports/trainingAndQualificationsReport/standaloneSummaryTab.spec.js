@@ -4,6 +4,7 @@ const excelJS = require('exceljs');
 const {
   mockSummaryTabDataForWorkplaceA,
   totalCountsForMockWorkplaceA,
+  mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining,
 } = require('../../../mockdata/trainingAndQualifications');
 const { generateSummaryTab } = require('../../../../../routes/reports/trainingAndQualifications/standaloneSummaryTab');
 
@@ -108,6 +109,38 @@ describe.only('SummaryTab (Standalone)', () => {
       const missingRecordCount = mandatoryTrainingRecordColumn.values[missingRecordLabelRow + 1];
 
       expect(missingRecordCount.value).to.equal(totalCountsForMockWorkplaceA.missingRecordCount);
+    });
+
+    it('should show a special message and counts as "-" if the workplace has no mandatory training at all', () => {
+      generateSummaryTab(workbook, mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining);
+
+      const tab = workbook.getWorksheet('Summary');
+
+      const headerRow = tab.getRow(5);
+
+      const mandatoryTrainingRecordColumn = tab.getColumn(headerRow.values.indexOf('Mandatory training records'));
+
+      expect(mandatoryTrainingRecordColumn.values.slice(7, 18)).to.deep.equals([
+        'Total',
+        'No training categories have been made mandatory yet',
+        undefined,
+
+        'Expired',
+        '-',
+        undefined,
+
+        'Expiring soon',
+        '-',
+        undefined,
+
+        'Up-to-date',
+        '-',
+      ]);
+
+      const missingRecordLabelRow = mandatoryTrainingRecordColumn.values.indexOf('Missing records');
+      const missingRecordCount = mandatoryTrainingRecordColumn.values[missingRecordLabelRow + 1];
+
+      expect(missingRecordCount.value).to.equal('-');
     });
   });
 });

@@ -122,6 +122,28 @@ const totalCountsForMockWorkplaceA = {
 };
 exports.totalCountsForMockWorkplaceA = totalCountsForMockWorkplaceA;
 
+const totalCountsForMockWorkplaceAWithoutMandatoryTraining = {
+  trainingCount: 35,
+  mandatoryTrainingCount: 0,
+  nonMandatoryTrainingCount: 35,
+
+  expiredTrainingCount: 12,
+  expiredMandatoryTrainingCount: 0,
+  expiredNonMandatoryTrainingCount: 12,
+
+  expiringTrainingCount: 8,
+  expiringMandatoryTrainingCount: 0,
+  expiringNonMandatoryTrainingCount: 8,
+
+  upToDateTrainingCount: 15,
+  upToDateMandatoryTrainingCount: 0,
+  upToDateNonMandatoryTrainingCount: 15,
+
+  missingMandatoryTrainingCount: 0,
+  qualificationCount: 2,
+};
+exports.totalCountsForMockWorkplaceA = totalCountsForMockWorkplaceA;
+
 exports.mockWorkerTrainingBreakdownsWithNoMandatoryTraining = [
   {
     name: 'Bob Test',
@@ -805,4 +827,13 @@ const mockSummaryTabDataForWorkplaceA = {
   careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceA,
 };
 
+const mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining = {
+  workplaceId: 1234,
+  workplaceName: 'mock care home 1',
+  trainingBreakdownTotals: totalCountsForMockWorkplaceAWithoutMandatoryTraining,
+  careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceA,
+};
+
 exports.mockSummaryTabDataForWorkplaceA = mockSummaryTabDataForWorkplaceA;
+exports.mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining =
+  mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining;
