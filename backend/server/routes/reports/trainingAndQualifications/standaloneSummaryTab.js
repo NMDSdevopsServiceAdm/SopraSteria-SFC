@@ -5,6 +5,7 @@ const {
   drawColourBoxWithBorder,
   newTextColours,
   alignments,
+  newStandardFont,
 } = require('../../../utils/excelUtils');
 const { WorkerCareCertificate, WorkerLevel2CareCertificate } = require('../../../../reference/databaseEnumTypes');
 
@@ -220,6 +221,12 @@ const addCareCertAndQualificationLevels = (tab, careCertAndQualificationLevels) 
     { range: 'V8', value: data?.level2CareCertificate?.[WorkerLevel2CareCertificate.YesCompleted] },
     { range: 'V11', value: data?.level2CareCertificate?.[WorkerLevel2CareCertificate.YesStarted] },
     { range: 'V14', value: data?.level2CareCertificate?.[WorkerLevel2CareCertificate.No] },
+  ].map((cell) => {
+    const cellValue = cell.value ?? defaultValue;
+    return { ...cell, value: cellValue, size: 30 };
+  });
+
+  const percentages = [
     { range: 'Z8', value: data?.socialCareQualificationLevel?.['Level 2 or above'] },
     { range: 'Z11', value: data?.socialCareQualificationLevel?.['Level 2'] },
     { range: 'Z14', value: data?.socialCareQualificationLevel?.['Level 3'] },
@@ -230,16 +237,23 @@ const addCareCertAndQualificationLevels = (tab, careCertAndQualificationLevels) 
     return { ...cell, value: cellValue, size: 30 };
   });
 
-  const cellData = columnHeadings.concat(longTexts, cellLabels, numbers);
+  const cellData = columnHeadings.concat(longTexts, cellLabels, numbers, percentages);
 
   cellData.forEach(({ range, value, size, alignment }) => {
     const font = { size: size ?? 12, bold: true };
     const textAlignment = alignment ? { alignment } : { alignment: alignments.centerMiddle };
     addText(tab, range, value, font, textAlignment);
   });
+
+  setSocialCareQualificationLevelToPercentage(tab, percentages);
 };
 
-module.exports.generateSummaryTab = generateSummaryTab;
+const setSocialCareQualificationLevelToPercentage = (tab, percentageCells) => {
+  percentageCells.forEach(({ range }) => {
+    const cell = tab.getCell(range);
+    cell.numFmt = '0%';
+  });
+};
 
 const missingRecordsExplanationText = {
   richText: [
@@ -254,8 +268,22 @@ const missingRecordsExplanationText = {
   ],
 };
 
-const careCertExplanationText =
-  'The Care Certificates, L2 Adult Social Care Certificates and social care qualifications summary statistics only refer to care-providing staff (this includes care and support workers, registered and deputy managers, supervisors and team leaders).';
+const careCertExplanationText = {
+  richText: [
+    {
+      font: newStandardFont,
+      text: 'The Care Certificates, L2 Adult Social Care Certificates and social care qualifications summary statistics only refer to care-providing staff (this includes care and support workers, registered and deputy managers, supervisors and team leaders).',
+    },
+  ],
+};
 
-const careCertNotesText =
-  'Note, the data displayed in this report has been generated from both staff records and from training and qualification records.';
+const careCertNotesText = {
+  richText: [
+    {
+      font: newStandardFont,
+      text: 'Note, the data displayed in this report has been generated from both staff records and from training and qualification records.',
+    },
+  ],
+};
+
+module.exports.generateSummaryTab = generateSummaryTab;

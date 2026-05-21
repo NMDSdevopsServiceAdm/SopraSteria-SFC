@@ -21,6 +21,9 @@ exports.fullBorder = fullBorder;
 const standardFont = { name: 'Serif', family: 4, size: 12 };
 exports.standardFont = standardFont;
 
+const newStandardFont = { family: 4, size: 12 };
+exports.newStandardFont = newStandardFont;
+
 const textBoxAlignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
 exports.textBoxAlignment = textBoxAlignment;
 
