@@ -97,6 +97,7 @@ const drawColouredArea = (tab) => {
     { range: 'V13:V14', backgroundColour: newBackgroundColours.darkBlue, textColour: newTextColours.white },
 
     { range: 'Z7:Z8', backgroundColour: newBackgroundColours.darkBlue, textColour: newTextColours.white },
+
     { range: 'Z10:Z11', backgroundColour: newBackgroundColours.lightBlue, textColour: newTextColours.darkBlue },
     { range: 'Z13:Z14', backgroundColour: newBackgroundColours.lightBlue, textColour: newTextColours.darkBlue },
     { range: 'Z16:Z17', backgroundColour: newBackgroundColours.lightBlue, textColour: newTextColours.darkBlue },
