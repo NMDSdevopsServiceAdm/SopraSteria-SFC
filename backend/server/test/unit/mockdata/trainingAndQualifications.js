@@ -5,6 +5,8 @@ exports.mockWorkerTrainingBreakdowns = [
   {
     name: 'Bob Test',
     workplaceName: 'mock care home 1',
+    workplaceId: 1234,
+
     trainingCount: 6,
     mandatoryTrainingCount: 2,
     nonMandatoryTrainingCount: 4,
@@ -27,6 +29,8 @@ exports.mockWorkerTrainingBreakdowns = [
   {
     name: 'Mike test',
     workplaceName: 'mock care home 1',
+    workplaceId: 1234,
+
     trainingCount: 10,
     mandatoryTrainingCount: 5,
     nonMandatoryTrainingCount: 5,
@@ -49,6 +53,8 @@ exports.mockWorkerTrainingBreakdowns = [
   {
     name: 'Andrew Test',
     workplaceName: 'mock care home 1',
+    workplaceId: 1234,
+
     trainingCount: 13,
     mandatoryTrainingCount: 3,
     nonMandatoryTrainingCount: 10,
@@ -71,6 +77,8 @@ exports.mockWorkerTrainingBreakdowns = [
   {
     name: 'Daniel Craig',
     workplaceName: 'mock care home 1',
+    workplaceId: 1234,
+
     trainingCount: 6,
     mandatoryTrainingCount: 1,
     nonMandatoryTrainingCount: 5,
@@ -592,7 +600,7 @@ exports.mockEstablishmentsQualificationsResponse = [
 exports.mockEstablishmentsCareCertificateResponse = [
   {
     id: 1234,
-    NameValue: 'Care Home 1',
+    NameValue: 'mock care home 1',
 
     workers: [
       {
@@ -628,7 +636,7 @@ exports.mockEstablishmentsCareCertificateResponse = [
   },
 
   {
-    NameValue: 'Care Home 2',
+    NameValue: 'mock care home 2',
 
     workers: [
       {
@@ -655,6 +663,26 @@ exports.mockEstablishmentsCareCertificateResponse = [
     ],
   },
 ];
+
+exports.careCertAndQualificationLevelsForWorkplaceA = {
+  workplaceId: 1234,
+  workplaceName: 'mock care home 1',
+  careProvidingStaffsCount: 2,
+  careCertificate: {
+    'Yes, in progress or partially completed': 1,
+    No: 1,
+  },
+  level2CareCertificate: {
+    No: 1,
+    'Yes, completed': 1,
+  },
+  socialCareQualificationLevel: {
+    'Level 4': 0.5,
+    'Level 8 or above': 0.5,
+    'Level 2 or above': 1.0,
+    'Level 5 or above': 0.5,
+  },
+};
 
 const today = dayjs().format('YYYY-MM-DD');
 const yesterday = dayjs().subtract(1, 'days').format('YYYY-MM-DD');
