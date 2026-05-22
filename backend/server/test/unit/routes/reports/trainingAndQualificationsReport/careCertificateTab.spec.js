@@ -18,7 +18,7 @@ describe('CareCertificateTab', () => {
     it('should create the worksheet', () => {
       generateCareCertificateTab(workbook, mockWorkersWithCareCertificateStatus);
 
-      const tab = workbook.getWorksheet('Care Certificate');
+      const tab = workbook.getWorksheet('Care Certificates');
 
       expect(tab).to.exist;
     });
@@ -26,7 +26,7 @@ describe('CareCertificateTab', () => {
     it('should add title to cell B1', () => {
       generateCareCertificateTab(workbook, mockWorkersWithCareCertificateStatus);
 
-      const tab = workbook.getWorksheet('Care Certificate');
+      const tab = workbook.getWorksheet('Care Certificates');
 
       expect(tab.getCell('B1').value).to.equal('Care Certificates');
     });
@@ -34,7 +34,7 @@ describe('CareCertificateTab', () => {
     it('should add correct table headers', () => {
       generateCareCertificateTab(workbook, mockWorkersWithCareCertificateStatus);
 
-      const tab = workbook.getWorksheet('Care Certificate');
+      const tab = workbook.getWorksheet('Care Certificates');
 
       expect(tab.getCell('B3').value).to.equal('Name or ID number');
 
@@ -48,7 +48,7 @@ describe('CareCertificateTab', () => {
     it('should add worker data to the table', () => {
       generateCareCertificateTab(workbook, mockWorkersWithCareCertificateStatus);
 
-      const tab = workbook.getWorksheet('Care Certificate');
+      const tab = workbook.getWorksheet('Care Certificates');
 
       const firstWorker = mockWorkersWithCareCertificateStatus[0];
 
@@ -64,7 +64,7 @@ describe('CareCertificateTab', () => {
     it('should add a blank row when there is no data', () => {
       generateCareCertificateTab(workbook, []);
 
-      const tab = workbook.getWorksheet('Care Certificate');
+      const tab = workbook.getWorksheet('Care Certificates');
 
       expect(tab.getCell('B4').value).to.equal('');
       expect(tab.getCell('C4').value).to.equal('');
@@ -75,7 +75,7 @@ describe('CareCertificateTab', () => {
     it('should add footnote text', () => {
       generateCareCertificateTab(workbook, mockWorkersWithCareCertificateStatus);
 
-      const tab = workbook.getWorksheet('Care Certificate');
+      const tab = workbook.getWorksheet('Care Certificates');
 
       const footnoteCell = tab.getCell(`B${tab.lastRow.number}`);
 
@@ -89,7 +89,7 @@ describe('CareCertificateTab', () => {
     it('should add workplace column when isParent is true', () => {
       generateCareCertificateTab(workbook, mockWorkersWithCareCertificateStatus, true);
 
-      const tab = workbook.getWorksheet('Care Certificate');
+      const tab = workbook.getWorksheet('Care Certificates');
 
       expect(tab.getCell('B3').value).to.equal('Workplace');
 

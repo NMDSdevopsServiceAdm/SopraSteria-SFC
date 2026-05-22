@@ -8,6 +8,7 @@ const {
   borderStyles,
   addText,
   setColourForRange,
+  applyStyleToRange,
 } = require('../../../utils/excelUtils');
 const { formatDateTime } = require('../../../utils/dateUtils');
 
@@ -94,7 +95,7 @@ const addLinksToOtherTabs = (introTab) => {
     const rowNumber = 11 + index;
     addLink(introTab, `B${rowNumber}:G${rowNumber}`, link, { size: 16 });
 
-    introTab.getCell(`B${rowNumber}`).border = borderStyles.lightGreyBorderTopAndBottom;
+    applyStyleToRange(introTab, `B${rowNumber}:G${rowNumber}`, { border: borderStyles.lightGreyBorderTopAndBottom });
   });
 };
 
