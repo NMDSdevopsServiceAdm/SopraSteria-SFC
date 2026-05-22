@@ -150,20 +150,26 @@ const addtrainingBreakdownTotals = (tab, trainingBreakdownTotals) => {
     { range: 'H23', value: 'Missing records' },
   ].map((cell) => ({ ...cell, alignment: alignments.centerBottom }));
 
+  const mandatoryTrainingCells = [
+    { range: 'H8', value: totals.mandatoryTrainingCount },
+    { range: 'H11', value: totals.expiredMandatoryTrainingCount },
+    { range: 'H14', value: totals.expiringMandatoryTrainingCount },
+    { range: 'H17', value: totals.upToDateMandatoryTrainingCount },
+    { range: 'H24', value: totals.missingMandatoryTrainingCount },
+  ];
+
   const numbers = [
     { range: 'D8', value: totals.trainingCount },
     { range: 'D11', value: totals.expiredTrainingCount },
     { range: 'D14', value: totals.expiringTrainingCount },
     { range: 'D17', value: totals.upToDateTrainingCount },
-    { range: 'H8', value: totals.mandatoryTrainingCount },
-    { range: 'H11', value: totals.expiredMandatoryTrainingCount },
-    { range: 'H14', value: totals.expiringMandatoryTrainingCount },
-    { range: 'H17', value: totals.upToDateMandatoryTrainingCount },
+
+    ...mandatoryTrainingCells,
+
     { range: 'L8', value: totals.nonMandatoryTrainingCount },
     { range: 'L11', value: totals.expiredNonMandatoryTrainingCount },
     { range: 'L14', value: totals.expiringNonMandatoryTrainingCount },
     { range: 'L17', value: totals.upToDateNonMandatoryTrainingCount },
-    { range: 'H24', value: totals.missingMandatoryTrainingCount },
   ].map((cell) => ({ ...cell, size: 30 }));
 
   const cellData = columnHeadings.concat(longTexts, cellLabels, numbers);

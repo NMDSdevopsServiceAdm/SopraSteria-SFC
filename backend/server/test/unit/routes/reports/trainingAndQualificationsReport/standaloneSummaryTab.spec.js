@@ -8,7 +8,7 @@ const {
 } = require('../../../mockdata/trainingAndQualifications');
 const { generateSummaryTab } = require('../../../../../routes/reports/trainingAndQualifications/standaloneSummaryTab');
 
-describe.only('SummaryTab (Standalone)', () => {
+describe('SummaryTab (Standalone)', () => {
   let workbook;
 
   beforeEach(() => {

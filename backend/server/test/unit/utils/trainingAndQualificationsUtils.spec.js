@@ -27,7 +27,7 @@ const {
 } = require('../mockdata/trainingAndQualifications');
 const { WorkerSocialCareQualificationLevel } = require('../../../../reference/databaseEnumTypes');
 
-describe.only('trainingAndQualificationsUtils', () => {
+describe('trainingAndQualificationsUtils', () => {
   describe('getTrainingTotals', () => {
     it('should return object with sums of all worker training records', () => {
       const result = getTrainingTotals(mockWorkerTrainingBreakdowns);
