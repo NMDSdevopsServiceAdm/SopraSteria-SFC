@@ -5,11 +5,11 @@ const {
   drawColourBoxWithBorder,
   newTextColours,
   alignments,
-  newStandardFont,
+  applyStyleToRange,
 } = require('../../../utils/excelUtils');
 const { WorkerCareCertificate, WorkerLevel2CareCertificate } = require('../../../../reference/databaseEnumTypes');
 
-const generateSummaryTab = async (workbook, summaryTabData) => {
+const generateSummaryTab = (workbook, summaryTabData) => {
   if (!summaryTabData) {
     return;
   }
@@ -63,47 +63,34 @@ const drawColouredArea = (tab) => {
   setColourForRange(tab, 'B5:N27', { backgroundColour: newBackgroundColours.lightGrey });
   setColourForRange(tab, 'P5:AB27', { backgroundColour: newBackgroundColours.lightGrey });
 
+  const whiteAreas = ['C6:E18', 'G6:I18', 'K6:M18', 'G20:I26', 'Q6:S15', 'U6:W15', 'Y6:AA21'];
+  const totals = ['D7:D8', 'H7:H8', 'L7:L8'];
+  const expiredOrMissing = ['D10:D11', 'H10:H11', 'L10:L11', 'H23:H24'];
+  const expiringSoon = ['D13:D14', 'H13:H14', 'L13:L14'];
+  const upToDate = ['D16:D17', 'H16:H17', 'L16:L17'];
+
+  const whiteTextOnBlue = ['R7:R8', 'R10:R11', 'R13:R14', 'V7:V8', 'V10:V11', 'V13:V14', 'Z7:Z8'];
+  const darkBlueTextOnLightBlue = ['Z10:Z11', 'Z13:Z14', 'Z16:Z17', 'Z19:Z20'];
+
   const colourBoxes = [
-    { range: 'C6:E18', backgroundColour: newBackgroundColours.white },
-    { range: 'G6:I18', backgroundColour: newBackgroundColours.white },
-    { range: 'K6:M18', backgroundColour: newBackgroundColours.white },
-    { range: 'G20:I26', backgroundColour: newBackgroundColours.white },
-    { range: 'Q6:S15', backgroundColour: newBackgroundColours.white },
-    { range: 'U6:W15', backgroundColour: newBackgroundColours.white },
-    { range: 'Y6:AA21', backgroundColour: newBackgroundColours.white },
+    whiteAreas.map((range) => ({ range, backgroundColour: newBackgroundColours.white })),
+    totals.map((range) => ({ range, backgroundColour: newBackgroundColours.lightGrey })),
+    expiredOrMissing.map((range) => ({ range, backgroundColour: newBackgroundColours.red })),
+    expiringSoon.map((range) => ({ range, backgroundColour: newBackgroundColours.orange })),
+    upToDate.map((range) => ({ range, backgroundColour: newBackgroundColours.green })),
 
-    { range: 'D7:D8', backgroundColour: newBackgroundColours.lightGrey },
-    { range: 'D10:D11', backgroundColour: newBackgroundColours.red },
-    { range: 'D13:D14', backgroundColour: newBackgroundColours.orange },
-    { range: 'D16:D17', backgroundColour: newBackgroundColours.green },
+    whiteTextOnBlue.map((range) => ({
+      range,
+      backgroundColour: newBackgroundColours.darkBlue,
+      textColour: newTextColours.white,
+    })),
 
-    { range: 'H7:H8', backgroundColour: newBackgroundColours.lightGrey },
-    { range: 'H10:H11', backgroundColour: newBackgroundColours.red },
-    { range: 'H13:H14', backgroundColour: newBackgroundColours.orange },
-    { range: 'H16:H17', backgroundColour: newBackgroundColours.green },
-
-    { range: 'L7:L8', backgroundColour: newBackgroundColours.lightGrey },
-    { range: 'L10:L11', backgroundColour: newBackgroundColours.red },
-    { range: 'L13:L14', backgroundColour: newBackgroundColours.orange },
-    { range: 'L16:L17', backgroundColour: newBackgroundColours.green },
-
-    { range: 'H23:H24', backgroundColour: newBackgroundColours.red },
-
-    { range: 'R7:R8', backgroundColour: newBackgroundColours.darkBlue, textColour: newTextColours.white },
-    { range: 'R10:R11', backgroundColour: newBackgroundColours.darkBlue, textColour: newTextColours.white },
-    { range: 'R13:R14', backgroundColour: newBackgroundColours.darkBlue, textColour: newTextColours.white },
-
-    { range: 'V7:V8', backgroundColour: newBackgroundColours.darkBlue, textColour: newTextColours.white },
-    { range: 'V10:V11', backgroundColour: newBackgroundColours.darkBlue, textColour: newTextColours.white },
-    { range: 'V13:V14', backgroundColour: newBackgroundColours.darkBlue, textColour: newTextColours.white },
-
-    { range: 'Z7:Z8', backgroundColour: newBackgroundColours.darkBlue, textColour: newTextColours.white },
-
-    { range: 'Z10:Z11', backgroundColour: newBackgroundColours.lightBlue, textColour: newTextColours.darkBlue },
-    { range: 'Z13:Z14', backgroundColour: newBackgroundColours.lightBlue, textColour: newTextColours.darkBlue },
-    { range: 'Z16:Z17', backgroundColour: newBackgroundColours.lightBlue, textColour: newTextColours.darkBlue },
-    { range: 'Z19:Z20', backgroundColour: newBackgroundColours.lightBlue, textColour: newTextColours.darkBlue },
-  ];
+    darkBlueTextOnLightBlue.map((range) => ({
+      range,
+      backgroundColour: newBackgroundColours.lightBlue,
+      textColour: newTextColours.darkBlue,
+    })),
+  ].flat();
 
   colourBoxes.forEach((colourBox) => {
     drawColourBoxWithBorder(tab, colourBox.range, {
@@ -150,13 +137,7 @@ const addtrainingBreakdownTotals = (tab, trainingBreakdownTotals) => {
     { range: 'H23', value: 'Missing records' },
   ].map((cell) => ({ ...cell, alignment: alignments.centerBottom }));
 
-  const mandatoryTrainingCells = [
-    { range: 'H8', value: totals.mandatoryTrainingCount },
-    { range: 'H11', value: totals.expiredMandatoryTrainingCount },
-    { range: 'H14', value: totals.expiringMandatoryTrainingCount },
-    { range: 'H17', value: totals.upToDateMandatoryTrainingCount },
-    { range: 'H24', value: totals.missingMandatoryTrainingCount },
-  ];
+  const mandatoryTrainingCells = buildMandatoryTrainingCells(totals);
 
   const numbers = [
     { range: 'D8', value: totals.trainingCount },
@@ -164,15 +145,13 @@ const addtrainingBreakdownTotals = (tab, trainingBreakdownTotals) => {
     { range: 'D14', value: totals.expiringTrainingCount },
     { range: 'D17', value: totals.upToDateTrainingCount },
 
-    ...mandatoryTrainingCells,
-
     { range: 'L8', value: totals.nonMandatoryTrainingCount },
     { range: 'L11', value: totals.expiredNonMandatoryTrainingCount },
     { range: 'L14', value: totals.expiringNonMandatoryTrainingCount },
     { range: 'L17', value: totals.upToDateNonMandatoryTrainingCount },
   ].map((cell) => ({ ...cell, size: 30 }));
 
-  const cellData = columnHeadings.concat(longTexts, cellLabels, numbers);
+  const cellData = columnHeadings.concat(longTexts, cellLabels, mandatoryTrainingCells, numbers);
 
   cellData.forEach(({ range, value, size, alignment }) => {
     const font = { size: size ?? 12, bold: true };
@@ -181,21 +160,52 @@ const addtrainingBreakdownTotals = (tab, trainingBreakdownTotals) => {
   });
 };
 
+const buildMandatoryTrainingCells = (totals) => {
+  const workplaceHasNoMandatoryTraining = totals.mandatoryTrainingCount + totals.missingMandatoryTrainingCount === 0;
+
+  const showTotalCount = { range: 'H8', value: totals.mandatoryTrainingCount, size: 30 };
+  const showSpecialMessage = {
+    range: 'H8',
+    value: noMandatoryTrainingMessage,
+    size: 14,
+    alignment: alignments.centerMiddleWrapText,
+  };
+
+  const totalCell = workplaceHasNoMandatoryTraining ? showSpecialMessage : showTotalCount;
+
+  const otherCells = [
+    { range: 'H11', value: totals.expiredMandatoryTrainingCount },
+    { range: 'H14', value: totals.expiringMandatoryTrainingCount },
+    { range: 'H17', value: totals.upToDateMandatoryTrainingCount },
+    { range: 'H24', value: totals.missingMandatoryTrainingCount },
+  ].map((cell) => {
+    if (workplaceHasNoMandatoryTraining) {
+      return { ...cell, value: '-', size: 30 };
+    } else {
+      return { ...cell, size: 30 };
+    }
+  });
+
+  return [totalCell, ...otherCells];
+};
+
 const addCareCertAndQualificationLevels = (tab, careCertAndQualificationLevels) => {
   const data = careCertAndQualificationLevels;
   const defaultValue = data?.careProvidingStaffsCount > 0 ? 0 : '-';
 
-  const sectionHeading = `Care-providing staff only (${data?.careProvidingStaffsCount ?? 0})`;
+  const sectionHeadingText = `Care-providing staff only (${data?.careProvidingStaffsCount ?? 0})`;
 
-  const longTexts = [
+  const sectionHeading = [
     {
       range: 'P4:AA4',
-      value: sectionHeading,
+      value: sectionHeadingText,
       size: 18,
       alignment: alignments.centerMiddle,
     },
+  ];
+  const longTexts = [
     { range: 'Q16:W17', value: careCertExplanationText, size: 12, alignment: alignments.leftMiddleWrapText },
-    { range: 'Q19:W20', value: careCertNotesText, size: 12, alignment: alignments.leftMiddleWrapText },
+    { range: 'Q19:W20', value: careCertNotesText, size: 12, alignment: alignments.topLeftWrapText },
   ];
 
   const columnHeadings = [
@@ -243,7 +253,7 @@ const addCareCertAndQualificationLevels = (tab, careCertAndQualificationLevels) 
     return { ...cell, value: cellValue, size: 30 };
   });
 
-  const cellData = columnHeadings.concat(longTexts, cellLabels, numbers, percentages);
+  const cellData = sectionHeading.concat(columnHeadings, longTexts, cellLabels, numbers, percentages);
 
   cellData.forEach(({ range, value, size, alignment }) => {
     const font = { size: size ?? 12, bold: true };
@@ -251,13 +261,20 @@ const addCareCertAndQualificationLevels = (tab, careCertAndQualificationLevels) 
     addText(tab, range, value, font, textAlignment);
   });
 
-  setSocialCareQualificationLevelToPercentage(tab, percentages);
+  showAsPercentageFormat(tab, percentages);
+  removeBoldForLongTexts(tab, longTexts);
 };
 
-const setSocialCareQualificationLevelToPercentage = (tab, percentageCells) => {
+const showAsPercentageFormat = (tab, percentageCells) => {
   percentageCells.forEach(({ range }) => {
     const cell = tab.getCell(range);
     cell.numFmt = '0%';
+  });
+};
+
+const removeBoldForLongTexts = (tab, longTexts) => {
+  longTexts.forEach(({ range }) => {
+    applyStyleToRange(tab, range, { font: { bold: false } });
   });
 };
 
@@ -274,22 +291,12 @@ const missingRecordsExplanationText = {
   ],
 };
 
-const careCertExplanationText = {
-  richText: [
-    {
-      font: newStandardFont,
-      text: 'The Care Certificates, L2 Adult Social Care Certificates and social care qualifications summary statistics only refer to care-providing staff (this includes care and support workers, registered and deputy managers, supervisors and team leaders).',
-    },
-  ],
-};
+const noMandatoryTrainingMessage = 'No training categories have been made mandatory yet';
 
-const careCertNotesText = {
-  richText: [
-    {
-      font: newStandardFont,
-      text: 'Note, the data displayed in this report has been generated from both staff records and from training and qualification records.',
-    },
-  ],
-};
+const careCertExplanationText =
+  'The Care Certificates, L2 Adult Social Care Certificates and social care qualifications summary statistics only refer to care-providing staff (this includes care and support workers, registered and deputy managers, supervisors and team leaders).';
+
+const careCertNotesText =
+  'Note, the data displayed in this report has been generated from both staff records and from training and qualification records.';
 
 module.exports.generateSummaryTab = generateSummaryTab;

@@ -32,6 +32,7 @@ const alignments = {
   centerMiddle: { vertical: 'middle', horizontal: 'center' },
   centerBottom: { vertical: 'bottom', horizontal: 'center' },
   topLeft: { vertical: 'top', horizontal: 'left' },
+  centerMiddleWrapText: { vertical: 'middle', horizontal: 'center', wrapText: true },
   topLeftWrapText: { vertical: 'top', horizontal: 'left', wrapText: true },
   leftMiddleWrapText: { vertical: 'middle', horizontal: 'left', wrapText: true },
 };
