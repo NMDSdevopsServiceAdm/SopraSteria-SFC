@@ -24,6 +24,9 @@ const {
   mockWorkerTrainingRecords,
   totalCountsForMockWorkplaceA,
   careCertAndQualificationLevelsForWorkplaceA,
+  secondMockWorkerTrainingBreakdowns,
+  totalCountsForMockWorkplaceB,
+  careCertAndQualificationLevelsForWorkplaceB,
 } = require('../mockdata/trainingAndQualifications');
 const { WorkerSocialCareQualificationLevel } = require('../../../../reference/databaseEnumTypes');
 
@@ -702,6 +705,34 @@ describe('trainingAndQualificationsUtils', () => {
       expect(trainingBreakdownTotalsInResult.trainingCount).to.equal(null);
       expect(trainingBreakdownTotalsInResult.mandatoryTrainingCount).to.equal(null);
       expect(trainingBreakdownTotalsInResult.nonMandatoryTrainingCount).to.equal(null);
+    });
+
+    it('should process the data of multiple workplaces correctly (for parent summary)', () => {
+      const combinedWorkerTrainingBreakdowns = [...workerTrainingBreakdowns, ...secondMockWorkerTrainingBreakdowns];
+
+      const result = buildWorkplaceSummaryData(combinedWorkerTrainingBreakdowns, rawEstablishmentCareCertificateStatus);
+
+      expect(result.length).to.equal(2);
+
+      // expect(result[1].workplaceName).to.deep.equal('mock care home 2');
+
+      const expectedWorkplaceA = {
+        workplaceId: '1234',
+        workplaceName: 'mock care home 1',
+        trainingBreakdownTotals: totalCountsForMockWorkplaceA,
+        careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceA,
+      };
+
+      expect(result[0]).to.deep.equal(expectedWorkplaceA);
+
+      const expectedWorkplaceB = {
+        workplaceId: '2345',
+        workplaceName: 'mock care home 2',
+        trainingBreakdownTotals: totalCountsForMockWorkplaceB,
+        careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceB,
+      };
+
+      expect(result[1]).to.deep.equal(expectedWorkplaceB);
     });
   });
 });
