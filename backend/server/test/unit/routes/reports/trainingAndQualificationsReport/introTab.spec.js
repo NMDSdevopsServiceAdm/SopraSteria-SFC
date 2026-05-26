@@ -19,7 +19,7 @@ describe('introTab', () => {
   describe('addHeadingsToIntroTab', () => {
     let clock;
     before(() => {
-      clock = sinon.useFakeTimers({ now: 1775043296000 });
+      clock = sinon.useFakeTimers({ now: 1775043296000 }); // '01 April 2026, 12:34'
     });
     after(() => {
       clock.restore();

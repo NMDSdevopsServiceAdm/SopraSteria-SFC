@@ -1,5 +1,6 @@
 const expect = require('chai').expect;
 const excelJS = require('exceljs');
+const sinon = require('sinon');
 
 const {
   mockSummaryTabDataForWorkplaceA,
@@ -12,6 +13,13 @@ const { generateSummaryTab } = require('../../../../../routes/reports/trainingAn
 
 describe('SummaryTab (Standalone)', () => {
   let workbook;
+  let clock;
+  before(() => {
+    clock = sinon.useFakeTimers({ now: 1775043296000 });
+  });
+  after(() => {
+    clock.restore();
+  });
 
   beforeEach(() => {
     workbook = new excelJS.Workbook();
@@ -25,6 +33,13 @@ describe('SummaryTab (Standalone)', () => {
 
       expect(tab.getCell('D2').value).to.deep.equal('mock care home 1');
       expect(tab.getCell('D3').value).to.deep.equal('Summary');
+    });
+
+    it('should show the current date and time ', async () => {
+      generateSummaryTab(workbook, mockSummaryTabDataForWorkplaceA);
+      const tab = workbook.getWorksheet('Summary');
+
+      expect(tab.getCell('Y3').value).to.equal('01 April 2026, 12:34');
     });
 
     it('should fill in the total counts for training records', () => {

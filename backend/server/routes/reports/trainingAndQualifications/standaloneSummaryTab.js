@@ -8,6 +8,7 @@ const {
   applyStyleToRange,
 } = require('../../../utils/excelUtils');
 const { WorkerCareCertificate, WorkerLevel2CareCertificate } = require('../../../../reference/databaseEnumTypes');
+const { formatDateTime } = require('../../../utils/dateUtils');
 
 const generateSummaryTab = (workbook, summaryTabData) => {
   if (!summaryTabData) {
@@ -54,7 +55,15 @@ const addBannerImage = (workbook, tab) => {
 
 const addTitle = (tab, establishmentName) => {
   addText(tab, 'D2:J2', establishmentName, { size: 26, bold: true });
-  addText(tab, 'D3:Z3', 'Summary', { size: 24, bold: true });
+  addText(tab, 'D3:J3', 'Summary', { size: 24, bold: true });
+
+  addText(
+    tab,
+    'Y3:AB3',
+    formatDateTime(new Date(), 'DD MMMM YYYY, HH:mm'),
+    { size: 13, bold: true },
+    { alignment: alignments.rightMiddle },
+  );
 
   setColourForRange(tab, 'A2:AN3', { backgroundColour: newBackgroundColours.lightGrey });
 };
