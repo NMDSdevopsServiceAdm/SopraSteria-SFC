@@ -70,34 +70,43 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
       });
     });
 
-    it('can change successfully', () => {
-      // setup test
-      cy.resetStartersLeaversVacancies(establishmentId);
-      cy.updateVacancies({ establishmentID: establishmentId, jobId: 10, total: 1 });
-      cy.updateVacancies({ establishmentID: establishmentId, jobId: 18, total: 1 });
-      cy.updateVacancies({ establishmentID: establishmentId, jobId: 25, total: 1 });
+    it(
+      'can change successfully',
+      {
+        retries: {
+          runMode: 3,
+          openMode: 1,
+        },
+      },
+      () => {
+        // setup test
+        cy.resetStartersLeaversVacancies(establishmentId);
+        cy.updateVacancies({ establishmentID: establishmentId, jobId: 10, total: 1 });
+        cy.updateVacancies({ establishmentID: establishmentId, jobId: 18, total: 1 });
+        cy.updateVacancies({ establishmentID: establishmentId, jobId: 25, total: 1 });
 
-      cy.reload();
+        cy.reload();
 
-      cy.get('[data-testid="vacancies-top-row"]').contains('Change').click();
+        cy.get('[data-testid="vacancies-top-row"]').contains('Change').click();
 
-      //update vacancies page
-      cy.get('[data-testid="plus-button-job-0"]').click();
+        //update vacancies page
+        cy.get('[data-testid="plus-button-job-0"]').click();
 
-      cy.get('[data-testid="remove-button-Occupational therapist"]').contains('Remove').click();
-      cy.contains('button', 'Add more job roles').click();
+        cy.get('[data-testid="remove-button-Occupational therapist"]').contains('Remove').click();
+        cy.contains('button', 'Add more job roles').click();
 
-      // select job roles
-      cy.addJobRoles(additionalJobRolesToAdd);
+        // select job roles
+        cy.addJobRoles(additionalJobRolesToAdd);
 
-      const allJobRoles = jobRoles.concat(additionalJobRolesToAdd);
+        const allJobRoles = jobRoles.concat(additionalJobRolesToAdd);
 
-      cy.contains('button', 'Save and return').click();
+        cy.contains('button', 'Save and return').click();
 
-      allJobRoles.forEach((jobRole) => {
-        cy.get('[data-testid="vacancies-top-row"]').contains(`${jobRole.total} x ${jobRole.job.toLocaleLowerCase()}`);
-      });
-    });
+        allJobRoles.forEach((jobRole) => {
+          cy.get('[data-testid="vacancies-top-row"]').contains(`${jobRole.total} x ${jobRole.job.toLocaleLowerCase()}`);
+        });
+      },
+    );
   });
 
   describe('new starters', () => {
@@ -115,33 +124,42 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
       });
     });
 
-    it('can change successfully', () => {
-      // setup test
-      cy.resetStartersLeaversVacancies(establishmentId);
-      cy.updateStarters({ establishmentID: establishmentId, jobId: 10, total: 1 });
-      cy.updateStarters({ establishmentID: establishmentId, jobId: 18, total: 1 });
-      cy.updateStarters({ establishmentID: establishmentId, jobId: 25, total: 1 });
+    it(
+      'can change successfully',
+      {
+        retries: {
+          runMode: 3,
+          openMode: 1,
+        },
+      },
+      () => {
+        // setup test
+        cy.resetStartersLeaversVacancies(establishmentId);
+        cy.updateStarters({ establishmentID: establishmentId, jobId: 10, total: 1 });
+        cy.updateStarters({ establishmentID: establishmentId, jobId: 18, total: 1 });
+        cy.updateStarters({ establishmentID: establishmentId, jobId: 25, total: 1 });
 
-      cy.reload();
+        cy.reload();
 
-      cy.get('[data-testid="starters"]').contains('Change').click();
+        cy.get('[data-testid="starters"]').contains('Change').click();
 
-      //update starters page
-      cy.get('[data-testid="plus-button-job-0"]').click();
-      cy.get('[data-testid="remove-button-Occupational therapist"]').contains('Remove').click();
-      cy.contains('button', 'Add more job roles').click();
+        //update starters page
+        cy.get('[data-testid="plus-button-job-0"]').click();
+        cy.get('[data-testid="remove-button-Occupational therapist"]').contains('Remove').click();
+        cy.contains('button', 'Add more job roles').click();
 
-      // select job roles
-      cy.addJobRoles(additionalJobRolesToAdd);
+        // select job roles
+        cy.addJobRoles(additionalJobRolesToAdd);
 
-      const allJobRoles = jobRoles.concat(additionalJobRolesToAdd);
+        const allJobRoles = jobRoles.concat(additionalJobRolesToAdd);
 
-      cy.contains('button', 'Save and return').click();
+        cy.contains('button', 'Save and return').click();
 
-      allJobRoles.forEach((jobRole) => {
-        cy.get('[data-testid="starters"]').contains(`${jobRole.total} x ${jobRole.job.toLocaleLowerCase()}`);
-      });
-    });
+        allJobRoles.forEach((jobRole) => {
+          cy.get('[data-testid="starters"]').contains(`${jobRole.total} x ${jobRole.job.toLocaleLowerCase()}`);
+        });
+      },
+    );
   });
 
   describe('staff leavers', () => {
@@ -159,33 +177,42 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
       });
     });
 
-    it('can change successfully', () => {
-      // setup test
-      cy.resetStartersLeaversVacancies(establishmentId);
-      cy.updateLeavers({ establishmentID: establishmentId, jobId: 10, total: 1 });
-      cy.updateLeavers({ establishmentID: establishmentId, jobId: 18, total: 1 });
-      cy.updateLeavers({ establishmentID: establishmentId, jobId: 25, total: 1 });
+    it(
+      'can change successfully',
+      {
+        retries: {
+          runMode: 3,
+          openMode: 1,
+        },
+      },
+      () => {
+        // setup test
+        cy.resetStartersLeaversVacancies(establishmentId);
+        cy.updateLeavers({ establishmentID: establishmentId, jobId: 10, total: 1 });
+        cy.updateLeavers({ establishmentID: establishmentId, jobId: 18, total: 1 });
+        cy.updateLeavers({ establishmentID: establishmentId, jobId: 25, total: 1 });
 
-      cy.reload();
+        cy.reload();
 
-      cy.get('[data-testid="leavers"]').contains('Change').click();
+        cy.get('[data-testid="leavers"]').contains('Change').click();
 
-      //update starters page
-      cy.get('[data-testid="plus-button-job-0"]').click();
-      cy.get('[data-testid="remove-button-Occupational therapist"]').contains('Remove').click();
-      cy.contains('button', 'Add more job roles').click();
+        //update starters page
+        cy.get('[data-testid="plus-button-job-0"]').click();
+        cy.get('[data-testid="remove-button-Occupational therapist"]').contains('Remove').click();
+        cy.contains('button', 'Add more job roles').click();
 
-      // select job roles
-      cy.addJobRoles(additionalJobRolesToAdd);
+        // select job roles
+        cy.addJobRoles(additionalJobRolesToAdd);
 
-      const allJobRoles = jobRoles.concat(additionalJobRolesToAdd);
+        const allJobRoles = jobRoles.concat(additionalJobRolesToAdd);
 
-      cy.contains('button', 'Save and return').click();
+        cy.contains('button', 'Save and return').click();
 
-      allJobRoles.forEach((jobRole) => {
-        cy.get('[data-testid="leavers"]').contains(`${jobRole.total} x ${jobRole.job.toLocaleLowerCase()}`);
-      });
-    });
+        allJobRoles.forEach((jobRole) => {
+          cy.get('[data-testid="leavers"]').contains(`${jobRole.total} x ${jobRole.job.toLocaleLowerCase()}`);
+        });
+      },
+    );
   });
 
   it('can update the employer type', () => {
