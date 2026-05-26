@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
+const { build, fake, sequence, oneOf } = require('@jackfranklin/test-data-bot');
 const httpMocks = require('node-mocks-http');
 const moment = require('moment');
 
@@ -8,12 +8,10 @@ const models = require('../../../../models/index');
 const workerRoute = require('../../../../routes/establishments/worker');
 const WdfCalculator = require('../../../../models/classes/wdfCalculator').WdfCalculator;
 
-let i = 0;
 const worker = {
   establishmentId: 1,
   workerId: '29155c11-11bb-4ab3-ada0-bccac7acecc1',
   id: 1,
-  i,
 };
 const establishment = {
   establishmentId: 2,
@@ -21,12 +19,8 @@ const establishment = {
 
 describe('worker route', () => {
   before(() => {
-    sinon.stub(models.worker, 'findOne').callsFake(async (args) => {
-      return args.i === 3 ? {} : worker;
-    });
-    sinon.stub(models.worker, 'create').callsFake(async () => {
-      return worker;
-    });
+    sinon.stub(models.worker, 'findOne').resolves(worker);
+    sinon.stub(models.worker, 'create').resolves(worker);
     sinon.stub(models.worker, 'update').callsFake(async () => {
       const mockWorker = {
         get: () => {
@@ -35,12 +29,8 @@ describe('worker route', () => {
       };
       return [1, [mockWorker]];
     });
-    sinon.stub(models.workerAudit, 'bulkCreate').callsFake(async () => {
-      return {};
-    });
-    sinon.stub(models.establishment, 'findOne').callsFake(async () => {
-      return establishment;
-    });
+    sinon.stub(models.workerAudit, 'bulkCreate').resolves({});
+    sinon.stub(models.establishment, 'findOne').resolves(establishment);
   });
 
   after(() => {
@@ -307,6 +297,287 @@ describe('worker route', () => {
     });
   });
 
+  describe('getAllWorkersGroupedByJobRole()', () => {
+    const jobRoles = [
+      { id: 10, title: 'Care worker' },
+      { id: 22, title: 'Registered manager' },
+      { id: 25, title: 'Senior care worker' },
+    ];
+    const mockWorkers = [
+      {
+        uid: 'uid-0',
+        mainJob: jobRoles[2],
+      },
+      {
+        uid: 'uid-1',
+        mainJob: jobRoles[1],
+      },
+      {
+        uid: 'uid-2',
+        mainJob: jobRoles[0],
+      },
+      {
+        uid: 'uid-3',
+        mainJob: jobRoles[1],
+      },
+      {
+        uid: 'uid-4',
+        mainJob: jobRoles[2],
+      },
+      {
+        uid: 'uid-5',
+        mainJob: jobRoles[2],
+      },
+    ];
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    const request = {
+      method: 'GET',
+      url: '/api/establishment/:uid/worker/getAllWorkersGroupedByJobRole',
+      params: {
+        id: 'mock-uid',
+      },
+      establishmentId: 123,
+    };
+
+    it('should respond with 200 and all workers in the workplace, grouped by their job roles', async () => {
+      sinon.stub(models.worker, 'findAll').resolves(mockWorkers);
+      const expectedResponse = {
+        groups: [
+          { jobId: 10, title: 'Care worker', count: 1, workers: [mockWorkers[2]] },
+          { jobId: 22, title: 'Registered manager', count: 2, workers: [mockWorkers[1], mockWorkers[3]] },
+          {
+            jobId: 25,
+            title: 'Senior care worker',
+            count: 3,
+            workers: [mockWorkers[0], mockWorkers[4], mockWorkers[5]],
+          },
+        ],
+      };
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await workerRoute.getAllWorkersGroupedByJobRole(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getJSONData()).to.deep.equal(expectedResponse);
+    });
+
+    it('should respond with 200 and an empty array if no workers were found', async () => {
+      sinon.stub(models.worker, 'findAll').resolves([]);
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await workerRoute.getAllWorkersGroupedByJobRole(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getJSONData()).to.deep.equal({ groups: [] });
+    });
+
+    it('should respond with 500 if error occured', async () => {
+      sinon.stub(models.worker, 'findAll').rejects(new Error('some database error'));
+      sinon.stub(console, 'error');
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await workerRoute.getAllWorkersGroupedByJobRole(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
+    });
+  });
+
+  describe('getWorkersWithPayData()', () => {
+    const workerBuilder = build('Worker', {
+      fields: {
+        uid: fake((f) => f.datatype.uuid()),
+        nameOrId: fake((f) => f.name.findName()),
+        mainJob: {
+          id: sequence(),
+          title: fake((f) => f.name.jobTitle()),
+        },
+        annualHourlyPay: oneOf(
+          { value: 'Annually', rate: '25000' },
+          { value: 'Hourly', rate: '15' },
+          { value: "Don't know" },
+        ),
+      },
+    });
+    const mockEstablishmentId = 123;
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    const request = {
+      method: 'GET',
+      url: '/api/establishment/:uid/worker/withPayData',
+      params: {
+        id: 'mock-uid',
+      },
+      establishmentId: mockEstablishmentId,
+    };
+
+    const mockWorkers = [workerBuilder(), workerBuilder(), workerBuilder()];
+    const mockQueryResult = { count: mockWorkers, workers: mockWorkers };
+
+    it('should respond with 200 and a list of workers and their pay data', async () => {
+      sinon.stub(models.establishment, 'fetchWorkersWithPayData').resolves(mockQueryResult);
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await workerRoute.getWorkersWithPayData(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getJSONData()).to.deep.equal(mockQueryResult);
+      expect(models.establishment.fetchWorkersWithPayData).to.have.been.calledWith({
+        establishmentId: mockEstablishmentId,
+        itemsPerPage: 15,
+        pageIndex: 0,
+        sortBy: 'staffNameAsc',
+      });
+    });
+
+    it('should handle pagination and sort parameters from query', async () => {
+      const requestWithParams = {
+        ...request,
+        query: { itemsPerPage: 20, pageIndex: 2, sortBy: 'jobRoleAsc' },
+      };
+      sinon.stub(models.establishment, 'fetchWorkersWithPayData').resolves(mockQueryResult);
+
+      const req = httpMocks.createRequest(requestWithParams);
+      const res = httpMocks.createResponse();
+
+      await workerRoute.getWorkersWithPayData(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getJSONData()).to.deep.equal(mockQueryResult);
+      expect(models.establishment.fetchWorkersWithPayData).to.have.been.calledWith({
+        establishmentId: mockEstablishmentId,
+        itemsPerPage: 20,
+        pageIndex: 2,
+        sortBy: 'jobRoleAsc',
+      });
+    });
+
+    it('should allow search by job id', async () => {
+      const requestWithParams = {
+        ...request,
+        query: { jobId: 19 },
+      };
+      sinon.stub(models.establishment, 'fetchWorkersWithPayData').resolves(mockQueryResult);
+
+      const req = httpMocks.createRequest(requestWithParams);
+      const res = httpMocks.createResponse();
+
+      await workerRoute.getWorkersWithPayData(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getJSONData()).to.deep.equal(mockQueryResult);
+      expect(models.establishment.fetchWorkersWithPayData).to.have.been.calledWith({
+        establishmentId: mockEstablishmentId,
+        itemsPerPage: 15,
+        pageIndex: 0,
+        sortBy: 'staffNameAsc',
+        jobId: 19,
+      });
+    });
+
+    it('should ignore any unexpected query params', async () => {
+      const requestWithParams = {
+        ...request,
+        query: {
+          pageIndex: 'apple',
+          itemsPerPage: 'banana',
+          sortBy: 'some-random-string',
+          jobId: 'abcd',
+          role: 'admin',
+          subQuery: 'drop table Students;',
+        },
+      };
+
+      sinon.stub(models.establishment, 'fetchWorkersWithPayData').resolves(mockQueryResult);
+
+      const req = httpMocks.createRequest(requestWithParams);
+      const res = httpMocks.createResponse();
+
+      await workerRoute.getWorkersWithPayData(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getJSONData()).to.deep.equal(mockQueryResult);
+      expect(models.establishment.fetchWorkersWithPayData).to.have.been.calledWith({
+        establishmentId: mockEstablishmentId,
+        itemsPerPage: 15,
+        pageIndex: 0,
+        sortBy: 'staffNameAsc',
+      });
+    });
+
+    it('should response with 500 if error occured', async () => {
+      sinon.stub(models.establishment, 'fetchWorkersWithPayData').rejects(new Error('database error'));
+      sinon.stub(console, 'error');
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+      await workerRoute.getWorkersWithPayData(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
+    });
+  });
+
+  describe('getMainJobRoleForAllWorkers', () => {
+    const mockEstablishmentId = 123;
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    const request = {
+      method: 'GET',
+      url: '/api/establishment/:uid/worker/mainJobRoles',
+      params: {
+        id: 'mock-uid',
+      },
+      establishmentId: mockEstablishmentId,
+    };
+
+    const mockMainJobRoles = [
+      { title: 'Care worker', id: 10, jobRoleGroup: 'Care providing roles' },
+      { title: 'Other (directly involved in providing care)', id: 20, jobRoleGroup: 'Care providing roles' },
+      { title: 'Senior care worker', id: 25, jobRoleGroup: 'Care providing roles' },
+    ];
+
+    it('should response with 200 with a list of main job roles of workers in workplace', async () => {
+      sinon.stub(models.establishment, 'fetchAllWorkersMainJobRole').resolves(mockMainJobRoles);
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+      await workerRoute.getMainJobRoleForAllWorkers(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getJSONData()).to.deep.equal({ mainJobRoles: mockMainJobRoles });
+      expect(models.establishment.fetchAllWorkersMainJobRole).to.have.been.calledWith(mockEstablishmentId);
+    });
+
+    it('should response with 500 if error occur', async () => {
+      sinon.stub(models.establishment, 'fetchAllWorkersMainJobRole').rejects(new Error('database error'));
+      sinon.stub(console, 'error');
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await workerRoute.getMainJobRoleForAllWorkers(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
+    });
+  });
+
   describe('getTotalWorkers()', () => {
     const workerBuilder = build('Worker', {
       fields: {
@@ -321,9 +592,11 @@ describe('worker route', () => {
         workers: [worker],
       });
     });
+
     afterEach(() => {
       sinon.restore();
     });
+
     it('should return a total number of staff', async () => {
       const req = httpMocks.createRequest({
         method: 'GET',

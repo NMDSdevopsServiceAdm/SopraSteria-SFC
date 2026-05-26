@@ -1,0 +1,28 @@
+<span data-testid="search" class="govuk-auto-suggest">
+  <input
+    [id]="inputBoxId"
+    class="govuk-input"
+    [class.govuk-input--error]="hasError"
+    type="text"
+    [ngClass]="{ 'overflow-ellipsis': showEllipsis }"
+    [formControl]="textInput"
+    (keydown.enter)="$event.preventDefault()"
+  />
+  @if (showSuggestion() && suggestions.length > 0) {
+    <ul cdkListbox data-testid="tray-list" role="listbox">
+      @for (item of suggestions; track item) {
+        <li
+          [class]="{ 'tray-list-item': showEllipsis }"
+          (click)="onClick(item)"
+          [tabIndex]="0"
+          (keyup.enter)="onClick(item)"
+          role="option"
+          [cdkOption]="item"
+          [attr.aria-describedby]="inputBoxId"
+        >
+          {{ item }}
+        </li>
+      }
+    </ul>
+  }
+</span>

@@ -7,10 +7,10 @@ import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-new-tabs',
-    templateUrl: './new-tabs.component.html',
-    styleUrls: ['./new-tabs.component.scss'],
-    standalone: false
+  selector: 'app-new-tabs',
+  templateUrl: './new-tabs.component.html',
+  styleUrls: ['./new-tabs.component.scss'],
+  standalone: false,
 })
 export class NewTabsComponent implements OnInit, OnDestroy {
   @Output() selectedTabClick = new EventEmitter<{ tabSlug: string }>();
@@ -82,7 +82,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
 
   private handleMainDashboardTabChange(navigationEvent: NavigationEnd): boolean {
     const tabInUrl = this.getTabSlugFromMainDashboardUrl(navigationEvent);
-    if (tabInUrl && this.tabs[this.currentTab].slug !== tabInUrl) {
+    if (tabInUrl && this.tabs[this.currentTab]?.slug !== tabInUrl) {
       this.tabsService.selectedTab = tabInUrl;
       return true;
     }
@@ -119,9 +119,11 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     const hash = this.isParentViewingSub ? this.getTabSlugInSubView() : this.route.snapshot.fragment;
 
     if (hash) {
-      const activeTab = this.tabs.findIndex((tab) => tab.slug === hash);
-      if (activeTab) {
-        this.selectTab(null, activeTab, false, false, true);
+      const activeTabIndex = this.tabs.findIndex((tab) => tab.slug === hash);
+      const foundActiveTab = activeTabIndex !== -1;
+
+      if (foundActiveTab) {
+        this.selectTab(null, activeTabIndex, false, false, true);
       }
     }
     const activeTabs = this.tabs.filter((tab) => tab.active);

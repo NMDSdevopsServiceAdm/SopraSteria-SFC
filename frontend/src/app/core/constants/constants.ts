@@ -11,6 +11,11 @@ export const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z
 export const INT_PATTERN = /^-?[0-9]*$/;
 export const FLOAT_PATTERN = /^([0-9]*[.])?[0-9]+$/;
 export const SALARY_PATTERN = /^-?\d*$|^-?\d*\.\d{0,2}$/;
+
+// aliases for clarity
+export const HOURLY_PAY_PATTERN = SALARY_PATTERN;
+export const ANNUAL_SALARY_PATTERN = INT_PATTERN;
+
 export const API_PATTERN = /^\/api\//;
 export const ADD_USER_API = `${environment.appRunnerEndpoint}/api/user/add`;
 export const ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES = /^[A-Za-z0-9_-]*$/;
@@ -22,3 +27,13 @@ export const DATE_MONTH_VALID = /^(0?[1-9]|[1][0-2])$/;
 
 export const ADD_WORKPLACE_DETAILS_ROUTE = ['workplace-data', 'add-workplace-details'];
 export const WORKPLACE_SUMMARY_ROUTE = ['workplace-data', 'workplace-summary'];
+
+export const HourlyPayRateLimits = { min: 2.5, max: 200, asString: { min: '£2.50', max: '£200.00' } };
+export const AnnualSalaryLimits = { min: 500, max: 200000, asString: { min: '£500', max: '£200,000' } };
+export const AnnualSalaryLimitsForSeniorManagement = {
+  min: 500,
+  max: 250000,
+  asString: { min: '£500', max: '£250,000' },
+};
+
+export const SeniorManagementJobId = 26;

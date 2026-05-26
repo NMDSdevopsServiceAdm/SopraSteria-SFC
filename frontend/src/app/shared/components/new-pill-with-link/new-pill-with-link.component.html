@@ -1,0 +1,18 @@
+@if (linkText) {
+  <div data-testid="new-pill-with-link">
+    <span class="govuk-!-font-size-19 new-pill-with-link">
+      @if (showNewPill) {
+        <img src="/assets/images/big-red-pill.svg" data-testid="new-pill" alt="" class="new-pill-with-link__icon" />
+      }
+      <a
+        role="button"
+        href="#"
+        data-testid="link"
+        class="new-pill-with-link__link govuk-link--no-visited-state"
+        (click)="onLinkClick($event)"
+      >
+        {{ linkText }}</a
+      >
+    </span>
+  </div>
+}

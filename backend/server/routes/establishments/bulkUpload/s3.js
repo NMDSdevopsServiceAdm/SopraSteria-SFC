@@ -1,9 +1,14 @@
 'use strict';
 const moment = require('moment');
 const config = require('../../../config/config');
-const s3 = new (require('aws-sdk').S3)({
+
+const AWS_SDK_V2 = require('aws-sdk');
+const s3 = new AWS_SDK_V2.S3({
   region: String(config.get('bulkupload.region')),
 });
+
+const s3ClientV3 = require('./s3clientv3');
+
 const Bucket = String(config.get('bulkupload.bucketname'));
 
 const params = (establishmentId) => {
@@ -201,16 +206,14 @@ const purgeBulkUploadS3Objects = async (establishmentId) => {
 
 const moveFolders = async (folderToMove, destinationFolder) => {
   try {
-    const listObjectsResponse = await s3
-      .listObjects({
-        Bucket,
-        Prefix: folderToMove,
-        Delimiter: '/',
-      })
-      .promise();
+    const listObjectsResponse = await s3ClientV3.listObjects({
+      Bucket,
+      Prefix: folderToMove,
+      Delimiter: '/',
+    });
 
-    const folderContentInfo = listObjectsResponse.Contents;
-    const folderPrefix = listObjectsResponse.Prefix;
+    const folderContentInfo = listObjectsResponse.Contents ?? [];
+    const folderPrefix = listObjectsResponse.Prefix ?? folderToMove ?? '';
 
     await Promise.all(
       folderContentInfo.map(async (fileInfo) => {
@@ -233,7 +236,11 @@ const moveFolders = async (folderToMove, destinationFolder) => {
 const getKeysFromFolder = async (listParams) => {
   const results = [];
 
-  const filesInFolder = await s3.listObjects(listParams).promise();
+  const filesInFolder = await s3ClientV3.listObjects(listParams);
+  if (!filesInFolder?.Contents) {
+    return [];
+  }
+
   filesInFolder.Contents.forEach((myFile) => {
     const ignoreRoot = /.*\/$/;
     if (!ignoreRoot.test(myFile.Key)) {
@@ -253,7 +260,12 @@ const listMetaData = async (establishmentId, folder) => {
     Bucket,
     Prefix: `${establishmentId}${folder}`,
   };
-  const filesInFolder = await s3.listObjects(listParams).promise();
+
+  const filesInFolder = await s3ClientV3.listObjects(listParams);
+  if (!filesInFolder?.Contents) {
+    return [];
+  }
+
   filesInFolder.Contents.forEach(async (myFile) => {
     if (findMetaDataObjects.test(myFile.Key)) {
       toDownload.push(downloadContent(myFile.Key, myFile.Size, myFile.LastModified));
@@ -271,8 +283,12 @@ const listMetaData = async (establishmentId, folder) => {
 
 const findFilesS3 = async (establishmentId, fileName) => {
   const listParams = params(establishmentId);
-  const latestObjects = await s3.listObjects(listParams).promise();
+  const latestObjects = await s3ClientV3.listObjects(listParams);
   const foundFiles = [];
+
+  if (!latestObjects?.Contents) {
+    return [];
+  }
 
   latestObjects.Contents.forEach(async (myFile) => {
     const ignoreRoot = /.*\/$/;
@@ -302,12 +318,10 @@ const deleteFilesS3 = async (establishmentId, fileName) => {
 };
 
 const listObjectsInBucket = async (establishmentId) => {
-  return await s3
-    .listObjects({
-      Bucket,
-      Prefix: `${establishmentId}/latest/`,
-    })
-    .promise();
+  return await s3ClientV3.listObjects({
+    Bucket,
+    Prefix: `${establishmentId}/latest/`,
+  });
 };
 
 module.exports = {
@@ -328,4 +342,5 @@ module.exports = {
   listMetaData,
   listObjectsInBucket,
   uploadDisbursementFileToS3,
+  getKeysFromFolder,
 };

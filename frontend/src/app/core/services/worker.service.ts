@@ -19,7 +19,15 @@ import {
 } from '@core/model/training.model';
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
-import { MandatoryInfoAndMetadataFields, Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
+import {
+  MandatoryInfoAndMetadataFields,
+  Worker,
+  WorkerEditResponse,
+  WorkersGroupedByJobRole,
+  WorkersGroupedByJobRoleResponse,
+  WorkersResponse,
+  WorkersWithPayDataResponse,
+} from '@core/model/worker.model';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -61,6 +69,7 @@ export class WorkerService {
   public workers$: Observable<Worker[]> = this._workers$.asObservable();
   public tabChanged: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public _doYouWantToDownloadTrainAndQualsAnswer = null;
+  private _workersGroupedByJobRole: WorkersGroupedByJobRoleResponse = null;
 
   constructor(private http: HttpClient) {}
 
@@ -137,6 +146,21 @@ export class WorkerService {
         params: queryParams || {},
       })
       .pipe(map((data) => data));
+  }
+
+  public getAllWorkersGroupedByJobRole(establishmentUid: string): Observable<WorkersGroupedByJobRoleResponse> {
+    return this.http.get<WorkersGroupedByJobRoleResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/worker/groupedByJobRole`,
+    );
+  }
+
+  public getWorkersWithPayData(establishmentUid: string, queryParams?: Params): Observable<WorkersWithPayDataResponse> {
+    return this.http.get<WorkersWithPayDataResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/worker/withPayData`,
+      {
+        params: queryParams || {},
+      },
+    );
   }
 
   public getTotalStaffRecords(establishmentuid: string): Observable<number> {
@@ -362,5 +386,17 @@ export class WorkerService {
 
   public clearDoYouWantToDownloadTrainAndQualsAnswer(): void {
     this._doYouWantToDownloadTrainAndQualsAnswer = null;
+  }
+
+  public getWorkersGroupedByJobRole(): WorkersGroupedByJobRoleResponse {
+    return this._workersGroupedByJobRole;
+  }
+
+  public setWorkersGroupedByJobRole(workers: WorkersGroupedByJobRoleResponse) {
+    this._workersGroupedByJobRole = workers;
+  }
+
+  public clearWorkersGroupedByJobRole(): void {
+    this._workersGroupedByJobRole = null;
   }
 }

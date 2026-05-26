@@ -1,4 +1,5 @@
 import { OverlayModule } from '@angular/cdk/overlay';
+import { CdkListboxModule } from '@angular/cdk/listbox';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -148,6 +149,9 @@ import { DecimalInputWithButtonsComponent } from './components/decimal-input-wit
 import { AddWorkplaceDetailsPathPipe } from './pipes/add-workplace-details-path.pipe';
 import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
 import { FormatMoneyWithDecimalsPipe } from './pipes/format-money-with-decimals.pipe';
+import { NewPillWithLinkComponent } from './components/new-pill-with-link/new-pill-with-link.component';
+import { NewAutoSuggestComponent } from './components/auto-suggest-new/new-auto-suggest.component';
+import { SearchInputAutoSuggestComponent } from './components/search-input-auto-suggest/search-input-auto-suggest.component';
 
 @NgModule({
   imports: [
@@ -157,6 +161,7 @@ import { FormatMoneyWithDecimalsPipe } from './pipes/format-money-with-decimals.
     RouterModule,
     OverlayModule,
     A11yModule,
+    CdkListboxModule,
     AddWorkplaceDetailsPathPipe,
     WorkplaceSummaryPathPipe,
   ],
@@ -164,6 +169,7 @@ import { FormatMoneyWithDecimalsPipe } from './pipes/format-money-with-decimals.
     AbsoluteNumberPipe,
     AlertComponent,
     AutoSuggestComponent,
+    NewAutoSuggestComponent,
     BackLinkComponent,
     BasicRecordComponent,
     BreadcrumbsComponent,
@@ -239,6 +245,7 @@ import { FormatMoneyWithDecimalsPipe } from './pipes/format-money-with-decimals.
     RemoveParentConfirmationComponent,
     PaginationComponent,
     SearchInputComponent,
+    SearchInputAutoSuggestComponent,
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
     WorkplaceSubmitButtonComponent,
@@ -302,11 +309,13 @@ import { FormatMoneyWithDecimalsPipe } from './pipes/format-money-with-decimals.
     ShowTrainingValidityPipe,
     DecimalInputWithButtonsComponent,
     FormatMoneyWithDecimalsPipe,
+    NewPillWithLinkComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
     AlertComponent,
     AutoSuggestComponent,
+    NewAutoSuggestComponent,
     BackLinkComponent,
     BasicRecordComponent,
     BreadcrumbsComponent,
@@ -379,6 +388,7 @@ import { FormatMoneyWithDecimalsPipe } from './pipes/format-money-with-decimals.
     RemoveParentConfirmationComponent,
     PaginationComponent,
     SearchInputComponent,
+    SearchInputAutoSuggestComponent,
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
     WorkplaceSubmitButtonComponent,
@@ -439,6 +449,7 @@ import { FormatMoneyWithDecimalsPipe } from './pipes/format-money-with-decimals.
     AddWorkplaceDetailsPathPipe,
     WorkplaceSummaryPathPipe,
     FormatMoneyWithDecimalsPipe,
+    NewPillWithLinkComponent,
   ],
   providers: [
     DialogService,

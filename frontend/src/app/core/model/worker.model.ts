@@ -1,5 +1,5 @@
 import { Contracts } from './contracts.enum';
-import { JobRole } from './job.model';
+import { Job, JobRole } from './job.model';
 import { NurseSpecialism } from './nurse-specialism.model';
 import { WDFValue } from './wdf.model';
 
@@ -170,9 +170,37 @@ export interface WorkerWdfRecord {
   zeroHoursContract: WDFValue;
 }
 
+export type WorkersGroupedByJobRole = {
+  title: string;
+  jobId: number;
+  workers: Array<{ uid: string }>;
+  count: number;
+  annualHourlyPay?: WorkerPay;
+};
+
+export interface WorkersGroupedByJobRoleResponse {
+  groups: Array<WorkersGroupedByJobRole>;
+}
+
+export type WorkersGroupedByJobRoleWithIndex = WorkersGroupedByJobRole & {
+  originalIndex: number;
+};
+
 export interface WorkersResponse {
   workers: Worker[];
   workerCount: number;
+}
+
+export type WorkerWithPayData = {
+  uid: string;
+  nameOrId: string;
+  mainJob: Job;
+  annualHourlyPay: WorkerPay;
+};
+
+export interface WorkersWithPayDataResponse {
+  workers: WorkerWithPayData[];
+  count: number;
 }
 
 export interface WorkerEditResponse {
