@@ -5,6 +5,8 @@ exports.mockWorkerTrainingBreakdowns = [
   {
     name: 'Bob Test',
     workplaceName: 'mock care home 1',
+    workplaceId: 1234,
+
     trainingCount: 6,
     mandatoryTrainingCount: 2,
     nonMandatoryTrainingCount: 4,
@@ -27,6 +29,8 @@ exports.mockWorkerTrainingBreakdowns = [
   {
     name: 'Mike test',
     workplaceName: 'mock care home 1',
+    workplaceId: 1234,
+
     trainingCount: 10,
     mandatoryTrainingCount: 5,
     nonMandatoryTrainingCount: 5,
@@ -49,6 +53,8 @@ exports.mockWorkerTrainingBreakdowns = [
   {
     name: 'Andrew Test',
     workplaceName: 'mock care home 1',
+    workplaceId: 1234,
+
     trainingCount: 13,
     mandatoryTrainingCount: 3,
     nonMandatoryTrainingCount: 10,
@@ -71,6 +77,8 @@ exports.mockWorkerTrainingBreakdowns = [
   {
     name: 'Daniel Craig',
     workplaceName: 'mock care home 1',
+    workplaceId: 1234,
+
     trainingCount: 6,
     mandatoryTrainingCount: 1,
     nonMandatoryTrainingCount: 5,
@@ -92,7 +100,7 @@ exports.mockWorkerTrainingBreakdowns = [
   },
 ];
 
-exports.totalCountsForMockWorkplaceA = {
+const totalCountsForMockWorkplaceA = {
   trainingCount: 35,
   mandatoryTrainingCount: 11,
   nonMandatoryTrainingCount: 24,
@@ -112,6 +120,29 @@ exports.totalCountsForMockWorkplaceA = {
   missingMandatoryTrainingCount: 5,
   qualificationCount: 2,
 };
+exports.totalCountsForMockWorkplaceA = totalCountsForMockWorkplaceA;
+
+const totalCountsForMockWorkplaceAWithoutMandatoryTraining = {
+  trainingCount: 35,
+  mandatoryTrainingCount: 0,
+  nonMandatoryTrainingCount: 35,
+
+  expiredTrainingCount: 12,
+  expiredMandatoryTrainingCount: 0,
+  expiredNonMandatoryTrainingCount: 12,
+
+  expiringTrainingCount: 8,
+  expiringMandatoryTrainingCount: 0,
+  expiringNonMandatoryTrainingCount: 8,
+
+  upToDateTrainingCount: 15,
+  upToDateMandatoryTrainingCount: 0,
+  upToDateNonMandatoryTrainingCount: 15,
+
+  missingMandatoryTrainingCount: 0,
+  qualificationCount: 2,
+};
+exports.totalCountsForMockWorkplaceA = totalCountsForMockWorkplaceA;
 
 exports.mockWorkerTrainingBreakdownsWithNoMandatoryTraining = [
   {
@@ -165,7 +196,9 @@ exports.mockWorkerTrainingBreakdownsWithNoMandatoryTraining = [
 exports.secondMockWorkerTrainingBreakdowns = [
   {
     name: 'Jane Test',
+    workplaceId: 2345,
     workplaceName: 'mock care home 2',
+
     trainingCount: 13,
     mandatoryTrainingCount: 5,
     nonMandatoryTrainingCount: 8,
@@ -187,6 +220,7 @@ exports.secondMockWorkerTrainingBreakdowns = [
   },
   {
     name: 'John Test',
+    workplaceId: 2345,
     workplaceName: 'mock care home 2',
 
     trainingCount: 10,
@@ -210,6 +244,28 @@ exports.secondMockWorkerTrainingBreakdowns = [
     qualificationCount: 2,
   },
 ];
+
+const totalCountsForMockWorkplaceB = {
+  trainingCount: 23,
+  mandatoryTrainingCount: 7,
+  nonMandatoryTrainingCount: 16,
+
+  expiredTrainingCount: 4,
+  expiredMandatoryTrainingCount: 0,
+  expiredNonMandatoryTrainingCount: 4,
+
+  expiringTrainingCount: 6,
+  expiringMandatoryTrainingCount: 2,
+  expiringNonMandatoryTrainingCount: 4,
+
+  upToDateTrainingCount: 13,
+  upToDateMandatoryTrainingCount: 5,
+  upToDateNonMandatoryTrainingCount: 8,
+
+  missingMandatoryTrainingCount: 2,
+  qualificationCount: 2,
+};
+exports.totalCountsForMockWorkplaceB = totalCountsForMockWorkplaceB;
 
 exports.mockWorkerTrainingRecords = [
   {
@@ -582,89 +638,122 @@ exports.mockEstablishmentsQualificationsResponse = [
 
 exports.mockEstablishmentsCareCertificateResponse = [
   {
-    get() {
-      return 'Care Home 1';
-    },
+    id: 1234,
+    NameValue: 'mock care home 1',
 
     workers: [
       {
-        get(property) {
-          const values = {
-            NameOrIdValue: 'Bob Ross',
-            CareCertificateValue: 'No',
-            Level2CareCertificateValue: 'No',
-          };
-
-          return values[property];
-        },
+        NameOrIdValue: 'Bob Ross',
+        CareCertificateValue: 'No',
+        Level2CareCertificateValue: 'No',
 
         mainJob: {
           id: 1,
           title: 'Care Worker',
+          isCareProvidingRole: true,
+        },
+        socialCareQualification: {
+          level: 'Level 4',
         },
       },
 
       {
-        get(property) {
-          const values = {
-            NameOrIdValue: 'Mike Mill',
-            CareCertificateValue: 'Yes, in progress or partially completed',
-            Level2CareCertificateValue: 'Yes, completed',
-          };
-
-          return values[property];
-        },
+        NameOrIdValue: 'Mike Mill',
+        CareCertificateValue: 'Yes, in progress or partially completed',
+        Level2CareCertificateValue: 'Yes, completed',
 
         mainJob: {
           id: 2,
           title: 'Care Coordinator',
+          isCareProvidingRole: true,
+        },
+        socialCareQualification: {
+          level: 'Level 8 or above',
         },
       },
     ],
   },
 
   {
-    get() {
-      return 'Care Home 2';
-    },
+    id: 2345,
+    NameValue: 'mock care home 2',
 
     workers: [
       {
-        get(property) {
-          const values = {
-            NameOrIdValue: 'Bill Bailey',
-            CareCertificateValue: 'Yes, completed',
-            Level2CareCertificateValue: '-',
-          };
-
-          return values[property];
-        },
+        NameOrIdValue: 'Bill Bailey',
+        CareCertificateValue: 'Yes, completed',
+        Level2CareCertificateValue: null,
 
         mainJob: {
           id: 1,
           title: 'Care Worker',
+          isCareProvidingRole: true,
+        },
+        socialCareQualification: {
+          level: 'Level 2',
         },
       },
 
       {
-        get(property) {
-          const values = {
-            NameOrIdValue: 'Jenny Jones',
-            CareCertificateValue: 'No',
-            Level2CareCertificateValue: 'Yes, started',
-          };
-
-          return values[property];
-        },
+        NameOrIdValue: 'Jenny Jones',
+        CareCertificateValue: 'No',
+        Level2CareCertificateValue: 'Yes, started',
 
         mainJob: {
           id: 1,
           title: 'Care Worker',
+          isCareProvidingRole: true,
+        },
+        socialCareQualification: {
+          level: 'Level 3',
         },
       },
     ],
   },
 ];
+
+const careCertAndQualificationLevelsForWorkplaceA = {
+  workplaceId: 1234,
+  workplaceName: 'mock care home 1',
+  careProvidingStaffsCount: 2,
+  careCertificate: {
+    'Yes, in progress or partially completed': 1,
+    No: 1,
+  },
+  level2CareCertificate: {
+    No: 1,
+    'Yes, completed': 1,
+  },
+  socialCareQualificationLevel: {
+    'Level 4': 0.5,
+    'Level 8 or above': 0.5,
+    'Level 2 or above': 1.0,
+    'Level 5 or above': 0.5,
+  },
+};
+
+const careCertAndQualificationLevelsForWorkplaceB = {
+  workplaceId: 2345,
+  workplaceName: 'mock care home 2',
+  careProvidingStaffsCount: 2,
+  careCertificate: {
+    'Yes, completed': 1,
+    No: 1,
+  },
+  level2CareCertificate: {
+    'Yes, started': 1,
+    null: 1,
+  },
+  socialCareQualificationLevel: {
+    'Level 2': 0.5,
+    'Level 3': 0.5,
+    'Level 2 or above': 1.0,
+    'Level 5 or above': 0.0,
+  },
+};
+
+exports.careCertAndQualificationLevelsForWorkplaceA = careCertAndQualificationLevelsForWorkplaceA;
+exports.careCertAndQualificationLevelsForWorkplaceB = careCertAndQualificationLevelsForWorkplaceB;
 
 const today = dayjs().format('YYYY-MM-DD');
 const yesterday = dayjs().subtract(1, 'days').format('YYYY-MM-DD');
@@ -786,3 +875,32 @@ exports.mockEstablishmentsTrainingResponse = [
     ],
   },
 ];
+
+const mockSummaryTabDataForWorkplaceA = {
+  workplaceId: 1234,
+  workplaceName: 'mock care home 1',
+  trainingBreakdownTotals: totalCountsForMockWorkplaceA,
+  careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceA,
+};
+
+const mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining = {
+  workplaceId: 1234,
+  workplaceName: 'mock care home 1',
+  trainingBreakdownTotals: totalCountsForMockWorkplaceAWithoutMandatoryTraining,
+  careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceA,
+};
+
+const mockSummaryTabDataForWorkplaceAWithNoCareProvidingStaffs = {
+  workplaceId: 1234,
+  workplaceName: 'mock care home 1',
+  trainingBreakdownTotals: totalCountsForMockWorkplaceAWithoutMandatoryTraining,
+  careCertAndQualificationLevels: {
+    careProvidingStaffsCount: 0,
+  },
+};
+
+exports.mockSummaryTabDataForWorkplaceA = mockSummaryTabDataForWorkplaceA;
+exports.mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining =
+  mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining;
+exports.mockSummaryTabDataForWorkplaceAWithNoCareProvidingStaffs =
+  mockSummaryTabDataForWorkplaceAWithNoCareProvidingStaffs;

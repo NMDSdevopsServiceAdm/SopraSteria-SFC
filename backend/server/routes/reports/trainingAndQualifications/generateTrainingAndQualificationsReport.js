@@ -7,17 +7,18 @@ const models = require('../../../models');
 const Authorization = require('../../../utils/security/isAuthenticated');
 const { hasPermission } = require('../../../utils/security/hasPermission');
 
-const { generateSummaryTab } = require('./summaryTab');
+const { generateSummaryTab } = require('./standaloneSummaryTab');
 const { generateCareCertificateTab } = require('./careCertificateTab');
 const { generateIntroTab } = require('./introTab');
 const { generateTrainingByStaffTab } = require('./trainingByStaffTab');
 const { generateTrainingByCategoryTab } = require('./trainingByCategoryTab');
 const {
-  buildWorkerTrainingBreakdownWithWorkplaceInfo,
+  buildWorkerTrainingBreakdown,
   buildTrainingCategorySummary,
   convertTrainingForEstablishments,
   listAllExistingAndMissingTrainings,
   convertWorkersWithCareCertificateStatus,
+  buildWorkplaceSummaryData,
 } = require('../../../utils/trainingAndQualificationsUtils');
 
 const { generateExpiredTrainingTab } = require('./expiredTrainingTab');
@@ -29,38 +30,33 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
     const workbook = new excelJS.Workbook();
 
     const establishment = await models.establishment.findByUid(req.params.id);
+    const rawData = await getRawDataForTrainingAndQualificationsReport(establishment.id, false);
 
     workbook.creator = 'Skills-For-Care';
     workbook.properties.date1904 = true;
 
     await generateIntroTab(workbook, establishment);
 
-    await generateSummaryTab(workbook, establishment.id);
-
-    const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(establishment.id, true);
-    const rawEstablishmentWithTrainingRecords = await models.establishment.getEstablishmentTrainingRecords(
-      establishment.id,
-      false,
+    const careCertificateStatus = convertWorkersWithCareCertificateStatus(
+      rawData.rawEstablishmentCareCertificateStatus,
+    );
+    const workerTrainingBreakdowns = await buildWorkerTrainingBreakdown(rawData.rawEstablishmentTrainingBreakdowns);
+    const summaryTabData = buildWorkplaceSummaryData(
+      workerTrainingBreakdowns,
+      rawData.rawEstablishmentCareCertificateStatus,
     );
 
-    const rawEstablishmentCareCertificateStatus = await models.establishment.getWorkersWithCareCertificateStatus(
-      establishment.id,
-      false,
+    await generateSummaryTab(workbook, summaryTabData[0]);
+
+    await generateTrainingByStaffTab(workbook, workerTrainingBreakdowns);
+
+    const establishmentWithTrainingRecords = convertTrainingForEstablishments(
+      rawData.rawEstablishmentWithTrainingRecords,
     );
-
-    const careCertificateStatus = convertWorkersWithCareCertificateStatus(rawEstablishmentCareCertificateStatus);
-
-    const workerTrainingBreakdowns = await buildWorkerTrainingBreakdownWithWorkplaceInfo(
-      rawEstablishmentTrainingBreakdowns,
-    );
-
-    const establishmentWithTrainingRecords = convertTrainingForEstablishments(rawEstablishmentWithTrainingRecords);
     const allTrainingRecordsAndMissingTrainings = listAllExistingAndMissingTrainings(establishmentWithTrainingRecords);
     const trainingByCategoryBreakdowns = buildTrainingCategorySummary(establishmentWithTrainingRecords);
 
-    await generateTrainingByStaffTab(workbook, workerTrainingBreakdowns);
     await generateTrainingByCategoryTab(workbook, trainingByCategoryBreakdowns);
-
     await generateExpiredTrainingTab(workbook, allTrainingRecordsAndMissingTrainings);
 
     await generateTrainingRecordDetailsTab(workbook, allTrainingRecordsAndMissingTrainings);
@@ -80,6 +76,28 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
     console.error(error);
     return res.status(500).send();
   }
+};
+
+const getRawDataForTrainingAndQualificationsReport = async (establishmentId, isParent = false) => {
+  const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(
+    establishmentId,
+    true,
+    isParent,
+  );
+  const rawEstablishmentWithTrainingRecords = await models.establishment.getEstablishmentTrainingRecords(
+    establishmentId,
+    isParent,
+  );
+  const rawEstablishmentCareCertificateStatus = await models.establishment.getWorkersWithCareCertificateStatus(
+    establishmentId,
+    isParent,
+  );
+
+  return {
+    rawEstablishmentTrainingBreakdowns,
+    rawEstablishmentWithTrainingRecords,
+    rawEstablishmentCareCertificateStatus,
+  };
 };
 
 router

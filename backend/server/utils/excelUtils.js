@@ -21,8 +21,25 @@ exports.fullBorder = fullBorder;
 const standardFont = { name: 'Serif', family: 4, size: 12 };
 exports.standardFont = standardFont;
 
+const newStandardFont = { family: 4, size: 12 };
+exports.newStandardFont = newStandardFont;
+
 const textBoxAlignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
 exports.textBoxAlignment = textBoxAlignment;
+
+const alignments = {
+  leftMiddle: { vertical: 'middle', horizontal: 'left' },
+  centerMiddle: { vertical: 'middle', horizontal: 'center' },
+  centerBottom: { vertical: 'bottom', horizontal: 'center' },
+  topLeft: { vertical: 'top', horizontal: 'left' },
+  rightMiddle: { vertical: 'middle', horizontal: 'right' },
+
+  centerMiddleWrapText: { vertical: 'middle', horizontal: 'center', wrapText: true },
+  topLeftWrapText: { vertical: 'top', horizontal: 'left', wrapText: true },
+  leftMiddleWrapText: { vertical: 'middle', horizontal: 'left', wrapText: true },
+};
+
+exports.alignments = alignments;
 
 exports.backgroundColours = {
   yellow: { argb: 'FFEA99' },
@@ -44,6 +61,7 @@ exports.textColours = {
 
 const newBackgroundColours = {
   lightGrey: { argb: 'EFEFEF' },
+  white: { argb: 'FFFFFF' },
   green: { argb: '34A853' },
   orange: { argb: 'FF7C1C' },
   red: { argb: 'EA4335' },
@@ -337,7 +355,7 @@ exports.addLine = (worksheet, startCell, endCell) => {
   };
 };
 
-const addText = (tab, range, content, fontOptions = {}) => {
+const addText = (tab, range, content, fontOptions = {}, otherStyleOptions = {}) => {
   const [startCell, endCell] = range.split(':');
   if (endCell) {
     tab.mergeCells(`${startCell}:${endCell}`);
@@ -346,7 +364,10 @@ const addText = (tab, range, content, fontOptions = {}) => {
   const font = { family: 4, size: 12, ...fontOptions };
   const cell = tab.getCell(startCell);
   cell.value = content;
-  cell.font = font;
+
+  const styleToApply = { font, ...otherStyleOptions };
+
+  applyStyleToCell(cell, styleToApply);
 };
 exports.addText = addText;
 
@@ -639,3 +660,44 @@ const countNumberOfLinesInDefaultFont = (text, columnWidth = 35) => {
 };
 
 exports.countNumberOfLinesInCalibriFont = countNumberOfLinesInDefaultFont;
+
+const drawColourBoxWithBorder = (tab, range, { backgroundColour = null, textColour = null }) => {
+  const { top, left, bottom, right } = colCache.decode(range);
+
+  const newCellStyle = {};
+  if (backgroundColour) {
+    newCellStyle.fill = { type: 'pattern', pattern: 'solid', fgColor: backgroundColour };
+  }
+  if (textColour) {
+    newCellStyle.font = { color: textColour };
+  }
+
+  forEachCellInRange(tab, range, (cell) => {
+    const { col, row } = colCache.decode(cell.address);
+
+    const border = checkCellBorders({ top, left, bottom, right, col, row });
+
+    applyStyleToCell(cell, { ...newCellStyle, border });
+  });
+};
+
+exports.drawColourBoxWithBorder = drawColourBoxWithBorder;
+
+function checkCellBorders({ top, left, bottom, right, col, row }, borderStyle = null) {
+  borderStyle = borderStyle ?? { style: 'thin', color: borderColours.black };
+
+  let borders = {};
+  if (top === row) {
+    borders.top = borderStyle;
+  }
+  if (bottom === row) {
+    borders.bottom = borderStyle;
+  }
+  if (left === col) {
+    borders.left = borderStyle;
+  }
+  if (right === col) {
+    borders.right = borderStyle;
+  }
+  return borders;
+}

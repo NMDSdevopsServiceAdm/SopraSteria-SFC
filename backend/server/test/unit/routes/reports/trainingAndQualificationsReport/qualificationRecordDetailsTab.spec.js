@@ -1,6 +1,7 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const excelJS = require('exceljs');
+const lodash = require('lodash');
 
 const models = require('../../../../../models');
 
@@ -74,6 +75,25 @@ describe('QualificationRecordDetailsTab', () => {
           expect(row.values.slice(2)).to.deep.equal(expectedData);
         });
       });
+    });
+
+    it('should show an empty row if the workplace has no qualification records', async () => {
+      const mockDataWithNoRecord = lodash.cloneDeep(mockEstablishmentsQualificationsResponse);
+      mockDataWithNoRecord.forEach((workplace) =>
+        workplace.workers.forEach((worker) => {
+          worker.qualifications = [];
+        }),
+      );
+
+      sinon.restore();
+      sinon.stub(models.establishment, 'getWorkerQualifications').resolves(mockDataWithNoRecord);
+
+      await generateQualificationRecordDetailsTab(workbook, 'mock-establishment-id');
+
+      const tab = workbook.getWorksheet('Qualification record details');
+      expect(tab.getCell('B1').value).to.deep.equal('Qualification record details');
+
+      expect(tab.getRow(4).values.slice(2)).to.deep.equal(['', '', '', '', '', '', '']);
     });
   });
 });

@@ -1,5 +1,4 @@
 const {
-  backgroundColours,
   newBackgroundColours,
   addText,
   setColourForRange,
@@ -7,12 +6,11 @@ const {
   autoFitColumnWidthByTextLength,
 } = require('../../../utils/excelUtils');
 
-const colCache = require('exceljs/lib/utils/col-cache');
 const lodash = require('lodash');
 
 const HeaderRowNumber = 3;
 const generateCareCertificateTab = async (workbook, careCertificateStatus, isParent = false) => {
-  const careCertificateTab = workbook.addWorksheet('Care Certificate', { views: [{ showGridLines: false }] });
+  const careCertificateTab = workbook.addWorksheet('Care Certificates', { views: [{ showGridLines: false }] });
 
   const columnsToDisplay = [
     ...(isParent ? [{ columnName: 'Workplace', field: 'establishmentName' }] : []),

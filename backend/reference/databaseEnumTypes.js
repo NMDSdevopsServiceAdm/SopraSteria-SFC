@@ -14,4 +14,36 @@ const TrainingCourseDeliveryMode = {
   ELearning: Enum.TrainingCourseDeliveryMode[1],
 };
 
-module.exports = { Enum, TrainingCourseDeliveredBy, TrainingCourseDeliveryMode };
+const WorkerCareCertificate = {
+  YesCompleted: 'Yes, completed',
+  YesInProgress: 'Yes, in progress or partially completed',
+  No: 'No',
+};
+
+const WorkerLevel2CareCertificate = {
+  YesCompleted: 'Yes, completed',
+  YesStarted: 'Yes, started',
+  No: 'No',
+};
+
+const WorkerSocialCareQualificationLevel = {
+  EntryLevel: 'Entry level',
+  Level1: 'Level 1',
+  Level2: 'Level 2',
+  Level3: 'Level 3',
+  Level4: 'Level 4',
+  Level5: 'Level 5',
+  Level6: 'Level 6',
+  Level7: 'Level 7',
+  Level8OrAbove: 'Level 8 or above',
+  DontKnow: "Don't know",
+};
+
+module.exports = {
+  Enum,
+  TrainingCourseDeliveredBy,
+  TrainingCourseDeliveryMode,
+  WorkerCareCertificate,
+  WorkerLevel2CareCertificate,
+  WorkerSocialCareQualificationLevel,
+};

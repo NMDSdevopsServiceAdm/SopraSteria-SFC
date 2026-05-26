@@ -31,6 +31,7 @@ const generateQualificationRecordDetailsTab = async (workbook, establishmentId, 
 
   const rawEstablishments = await models.establishment.getWorkerQualifications(establishmentId, isParent);
   const qualificationData = convertAndFlattenQualificationsForEstablishments(rawEstablishments);
+
   const sortedData = lodash.sortBy(qualificationData, ['workplaceName', 'workerName', 'qualificationName']);
 
   addTitle(qualificationTab);
@@ -52,6 +53,9 @@ const addQualificationRecordsTable = (tab, trainingData, columnsToDisplay) => {
   const tableRows = trainingData.map((training) => {
     return columnsToDisplay.map(({ field }) => training[field] ?? '-');
   });
+  if (tableRows.length === 0) {
+    tableRows.push(Array(columnsToDisplay.length).fill(''));
+  }
 
   const qualificationTable = tab.addTable({
     name: 'qualificationRecordDetailsTable',

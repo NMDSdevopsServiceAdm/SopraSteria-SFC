@@ -46,7 +46,7 @@ describe('excelUtils', () => {
     it('should apply given font to the cell', () => {
       const mockWorksheet = setup();
       addText(mockWorksheet, 'B3', 'some text', { color: newTextColours.darkBlue, bold: true });
-      expect(mockWorksheet.getCell('B3').font).to.include({ color: newTextColours.darkBlue, bold: true });
+      expect(mockWorksheet.getCell('B3').font).to.deep.include({ color: newTextColours.darkBlue, bold: true });
     });
   });
 
@@ -59,7 +59,7 @@ describe('excelUtils', () => {
       const cell = mockWorksheet.getCell('B3');
 
       expect(cell.value).to.deep.equal({ text: 'link text', hyperlink: "#'worksheet2'!A1" });
-      expect(cell.font).to.include({ color: newTextColours.linkBlue, underline: true });
+      expect(cell.font).to.deep.include({ color: newTextColours.linkBlue, underline: true });
     });
   });
 
