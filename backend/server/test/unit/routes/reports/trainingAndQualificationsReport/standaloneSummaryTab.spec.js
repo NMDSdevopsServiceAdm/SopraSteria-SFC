@@ -1,6 +1,5 @@
 const expect = require('chai').expect;
 const excelJS = require('exceljs');
-const lodash = require('lodash');
 
 const {
   mockSummaryTabDataForWorkplaceA,

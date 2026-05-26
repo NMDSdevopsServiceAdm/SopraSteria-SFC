@@ -63,7 +63,7 @@ const drawColouredArea = (tab) => {
   setColourForRange(tab, 'B5:N27', { backgroundColour: newBackgroundColours.lightGrey });
   setColourForRange(tab, 'P5:AB27', { backgroundColour: newBackgroundColours.lightGrey });
 
-  const whiteAreas = ['C6:E18', 'G6:I18', 'K6:M18', 'G20:I26', 'Q6:S15', 'U6:W15', 'Y6:AA21'];
+  const whiteAreas = ['C6:E18', 'G6:I18', 'K6:M18', 'G20:I25', 'Q6:S15', 'U6:W15', 'Y6:AA21'];
   const totals = ['D7:D8', 'H7:H8', 'L7:L8'];
   const expiredOrMissing = ['D10:D11', 'H10:H11', 'L10:L11', 'H23:H24'];
   const expiringSoon = ['D13:D14', 'H13:H14', 'L13:L14'];
@@ -294,7 +294,8 @@ const missingRecordsExplanationText = {
 const noMandatoryTrainingMessage = 'No training categories have been made mandatory yet';
 
 const careCertExplanationText =
-  'The Care Certificates, L2 Adult Social Care Certificates and social care qualifications summary statistics only refer to care-providing staff (this includes care and support workers, registered and deputy managers, supervisors and team leaders).';
+  'The Care Certificates, L2 Adult Social Care Certificates and social care qualifications summary statistics only refer to care-providing staff ' +
+  '(this includes care and support workers, registered managers, supervisors, team leaders, community support and outreach and other job roles directly involved in providing care).';
 
 const careCertNotesText =
   'Note, the data displayed in this report has been generated from both staff records and from training and qualification records.';
