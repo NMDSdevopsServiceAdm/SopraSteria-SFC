@@ -899,8 +899,17 @@ const mockSummaryTabDataForWorkplaceAWithNoCareProvidingStaffs = {
   },
 };
 
+const mockSummaryTabDataForWorkplaceB = {
+  workplaceId: 2345,
+  workplaceName: 'mock care home 2',
+  trainingBreakdownTotals: totalCountsForMockWorkplaceB,
+  careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceB,
+};
+
 exports.mockSummaryTabDataForWorkplaceA = mockSummaryTabDataForWorkplaceA;
 exports.mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining =
   mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining;
 exports.mockSummaryTabDataForWorkplaceAWithNoCareProvidingStaffs =
   mockSummaryTabDataForWorkplaceAWithNoCareProvidingStaffs;
+
+exports.mockSummaryTabDataForParent = [mockSummaryTabDataForWorkplaceA, mockSummaryTabDataForWorkplaceB];
