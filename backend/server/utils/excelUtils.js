@@ -184,7 +184,32 @@ const colourSchemeForTrainingExpiry = [
   { text: 'Up-to-date', colour: newBackgroundColours.green },
   { text: 'Missing', colour: newBackgroundColours.red },
 ];
+
+const basicStyleForParentSummaryTable = {
+  font: { size: 12, family: 4, bold: true },
+  fill: { type: 'pattern', pattern: 'solid', fgColor: newBackgroundColours.white },
+  border: borderStyles.blackBorderAllSides,
+  alignment: { vertical: 'middle', horizontal: 'center' },
+};
+const getCellStyleForParentSummary = (columnName) => {
+  switch (columnName) {
+    case 'Expired':
+    case 'Missing records': {
+      return lodash.merge({}, basicStyleForParentSummaryTable, { fill: { fgColor: newBackgroundColours.red } });
+    }
+    case 'Expiring soon': {
+      return lodash.merge({}, basicStyleForParentSummaryTable, { fill: { fgColor: newBackgroundColours.orange } });
+    }
+    case 'Up-to-date': {
+      return lodash.merge({}, basicStyleForParentSummaryTable, { fill: { fgColor: newBackgroundColours.green } });
+    }
+  }
+
+  return basicStyleForParentSummaryTable;
+};
+
 exports.colourSchemeForTrainingExpiry = colourSchemeForTrainingExpiry;
+exports.getCellStyleForParentSummary = getCellStyleForParentSummary;
 
 exports.conditionalColoursForTrainingExpiry = colourSchemeForTrainingExpiry.map(({ text, colour }) => {
   return {

@@ -1,10 +1,25 @@
 const lodash = require('lodash');
-const { addText, setColourForRange, newBackgroundColours } = require('../../../../utils/excelUtils');
+const {
+  addText,
+  setColourForRange,
+  newBackgroundColours,
+  setBasicTableStyle,
+  applyStyleToRange,
+  tableHeaderCellStyle,
+  colourSchemeForParentSummary,
+  getCellStyleForParentSummary,
+} = require('../../../../utils/excelUtils');
 const {
   WorkerCareCertificate,
   WorkerLevel2CareCertificate,
   WorkerSocialCareQualificationLevel,
 } = require('../../../../../reference/databaseEnumTypes');
+
+const colCache = require('exceljs/lib/utils/col-cache');
+
+const GroupHeaderRowNumber = 5;
+const HeaderRowNumber = 6;
+const GrandTotalRowNumber = 7;
 
 const generateParentSummaryTab = async (workbook, establishment, summaryTabData) => {
   const summaryTab = workbook.addWorksheet('Summary', { views: [{ showGridLines: false }] });
@@ -36,7 +51,6 @@ const setHeightAndWidths = (tab) => {
   columnWidths.forEach((width, index) => {
     const column = tab.getColumn(index + 1);
     column.width = width;
-    column.alignment = { vertical: 'middle' };
   });
 
   rowHeights.forEach((height, index) => {
@@ -63,6 +77,28 @@ const addSummaryTable = (tab, summaryTabData) => {
       return lodash.get(workplace, column.field, defaultValue);
     });
     tab.addRow(['', ...rowData]);
+  });
+
+  const tableHeaderRange = `B${GroupHeaderRowNumber}:Z${GrandTotalRowNumber}`;
+  const tableRange = `B${GrandTotalRowNumber}:Z${tab.lastRow.number}`;
+
+  setBasicTableStyle(tab, tableRange, { hasTotalRow: false, alignHorizontalCenter: true, bold: true });
+
+  applyStyleToRange(tab, tableHeaderRange, tableHeaderCellStyle);
+
+  setColourStyleForTable(tab, tableRange);
+};
+
+const setColourStyleForTable = (tab, tableRange) => {
+  const { bottom } = colCache.decode(tableRange);
+
+  columnsToDisplay.forEach((column, index) => {
+    const columnNumber = index + 2;
+    const range = colCache.encode(GrandTotalRowNumber + 1, columnNumber, bottom, columnNumber);
+    const cellStyle = getCellStyleForParentSummary(column.columnName);
+    if (cellStyle) {
+      applyStyleToRange(tab, range, cellStyle);
+    }
   });
 };
 
