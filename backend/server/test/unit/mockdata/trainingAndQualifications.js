@@ -907,6 +907,7 @@ const mockSummaryTabDataForWorkplaceB = {
 };
 
 exports.mockSummaryTabDataForWorkplaceA = mockSummaryTabDataForWorkplaceA;
+exports.mockSummaryTabDataForWorkplaceB = mockSummaryTabDataForWorkplaceB;
 exports.mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining =
   mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining;
 exports.mockSummaryTabDataForWorkplaceAWithNoCareProvidingStaffs =
