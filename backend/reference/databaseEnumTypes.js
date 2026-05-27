@@ -37,6 +37,10 @@ const WorkerSocialCareQualificationLevel = {
   Level7: 'Level 7',
   Level8OrAbove: 'Level 8 or above',
   DontKnow: "Don't know",
+
+  // The below two options does not exist in database. only for purpose of excel report.
+  Level2OrAbove: 'Level 2 or above',
+  Level5OrAbove: 'Level 5 or above',
 };
 
 module.exports = {

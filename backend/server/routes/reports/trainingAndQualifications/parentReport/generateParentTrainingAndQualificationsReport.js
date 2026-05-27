@@ -36,6 +36,7 @@ const generateParentTrainingAndQualificationsReport = async (req, res) => {
     const careCertificateStatus = convertWorkersWithCareCertificateStatus(
       rawData.rawEstablishmentCareCertificateStatus,
     );
+
     const workerTrainingBreakdowns = await buildWorkerTrainingBreakdown(rawData.rawEstablishmentTrainingBreakdowns);
     const summaryTabData = buildWorkplaceSummaryData(
       workerTrainingBreakdowns,

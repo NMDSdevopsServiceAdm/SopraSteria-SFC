@@ -1,5 +1,10 @@
 const lodash = require('lodash');
 const { addText, setColourForRange, newBackgroundColours } = require('../../../../utils/excelUtils');
+const {
+  WorkerCareCertificate,
+  WorkerLevel2CareCertificate,
+  WorkerSocialCareQualificationLevel,
+} = require('../../../../../reference/databaseEnumTypes');
 
 const generateParentSummaryTab = async (workbook, establishment, summaryTabData) => {
   const summaryTab = workbook.addWorksheet('Summary', { views: [{ showGridLines: false }] });
@@ -9,8 +14,6 @@ const generateParentSummaryTab = async (workbook, establishment, summaryTabData)
   addBannerImage(workbook, summaryTab);
 
   addSummaryTable(summaryTab, summaryTabData);
-
-  console.log(JSON.stringify(summaryTabData), '<------');
 
   setHeightAndWidths(summaryTab);
 };
@@ -43,6 +46,7 @@ const setHeightAndWidths = (tab) => {
 };
 
 const addSummaryTable = (tab, summaryTabData) => {
+  const defaultValue = 0;
   addText(tab, 'B4', 'All staff', { size: 18, bold: true });
 
   subheadings.forEach(({ text, range }) => {
@@ -54,10 +58,10 @@ const addSummaryTable = (tab, summaryTabData) => {
 
   tab.addRow(['', 'All workplaces', '']);
 
-  const fieldNames = columnsToDisplay.map((column) => column.field);
-
   summaryTabData.forEach((workplace) => {
-    const rowData = lodash.at(workplace, fieldNames);
+    const rowData = columnsToDisplay.map((column) => {
+      return lodash.get(workplace, column.field, defaultValue);
+    });
     tab.addRow(['', ...rowData]);
   });
 };
@@ -73,30 +77,89 @@ const subheadings = [
 
 const columnsToDisplay = [
   { columnName: 'Workplace', field: 'workplaceName' },
-  { columnName: 'Expired', field: 'trainingBreakdownTotals.expiredTrainingCount' },
-  { columnName: 'Expiring soon', field: 'trainingBreakdownTotals.expiringTrainingCount' },
-  // { columnName: 'Up-to-date', field: '' },
-  // { columnName: 'Total', field: '' },
-  // { columnName: 'Expired', field: '' },
-  // { columnName: 'Expiring soon', field: '' },
-  // { columnName: 'Up-to-date', field: '' },
-  // { columnName: 'Total', field: '' },
-  // { columnName: 'Missing records', field: '' },
-  // { columnName: 'Expired', field: '' },
-  // { columnName: 'Expiring soon', field: '' },
-  // { columnName: 'Up-to-date', field: '' },
-  // { columnName: 'Total', field: '' },
-  // { columnName: 'Completed', field: '' },
-  // { columnName: 'Started', field: '' },
-  // { columnName: 'Not started', field: '' },
-  // { columnName: 'Completed', field: '' },
-  // { columnName: 'Started', field: '' },
-  // { columnName: 'Not started', field: '' },
-  // { columnName: 'Level 2 or higher', field: '' },
-  // { columnName: 'Level 2', field: '' },
-  // { columnName: 'Level 3', field: '' },
-  // { columnName: 'Level 4', field: '' },
-  // { columnName: 'Level 5 or above', field: '' },
+
+  { columnName: 'Expired', field: ['trainingBreakdownTotals', 'expiredTrainingCount'] },
+  { columnName: 'Expiring soon', field: ['trainingBreakdownTotals', 'expiringTrainingCount'] },
+  { columnName: 'Up-to-date', field: ['trainingBreakdownTotals', 'upToDateTrainingCount'] },
+  { columnName: 'Total', field: ['trainingBreakdownTotals', 'trainingCount'] },
+
+  { columnName: 'Expired', field: ['trainingBreakdownTotals', 'expiredMandatoryTrainingCount'] },
+  { columnName: 'Expiring soon', field: ['trainingBreakdownTotals', 'expiringMandatoryTrainingCount'] },
+  { columnName: 'Up-to-date', field: ['trainingBreakdownTotals', 'upToDateMandatoryTrainingCount'] },
+  { columnName: 'Total', field: ['trainingBreakdownTotals', 'mandatoryTrainingCount'] },
+  { columnName: 'Missing records', field: ['trainingBreakdownTotals', 'missingMandatoryTrainingCount'] },
+
+  { columnName: 'Expired', field: ['trainingBreakdownTotals', 'expiredNonMandatoryTrainingCount'] },
+  { columnName: 'Expiring soon', field: ['trainingBreakdownTotals', 'expiringNonMandatoryTrainingCount'] },
+  { columnName: 'Up-to-date', field: ['trainingBreakdownTotals', 'upToDateNonMandatoryTrainingCount'] },
+  { columnName: 'Total', field: ['trainingBreakdownTotals', 'nonMandatoryTrainingCount'] },
+
+  {
+    columnName: 'Completed',
+    field: ['careCertAndQualificationLevels', 'careCertificate', WorkerCareCertificate.YesCompleted],
+  },
+  {
+    columnName: 'Started',
+    field: ['careCertAndQualificationLevels', 'careCertificate', WorkerCareCertificate.YesInProgress],
+  },
+  {
+    columnName: 'Not started',
+    field: ['careCertAndQualificationLevels', 'careCertificate', WorkerCareCertificate.No],
+  },
+
+  {
+    columnName: 'Completed',
+    field: ['careCertAndQualificationLevels', 'level2CareCertificate', WorkerLevel2CareCertificate.YesCompleted],
+  },
+  {
+    columnName: 'Started',
+    field: ['careCertAndQualificationLevels', 'level2CareCertificate', WorkerLevel2CareCertificate.YesStarted],
+  },
+  {
+    columnName: 'Not started',
+    field: ['careCertAndQualificationLevels', 'level2CareCertificate', WorkerLevel2CareCertificate.No],
+  },
+
+  {
+    columnName: 'Level 2 or higher',
+    field: [
+      'careCertAndQualificationLevels',
+      'socialCareQualificationLevel',
+      WorkerSocialCareQualificationLevel.Level2OrAbove,
+    ],
+  },
+  {
+    columnName: 'Level 2',
+    field: [
+      'careCertAndQualificationLevels',
+      'socialCareQualificationLevel',
+      WorkerSocialCareQualificationLevel.Level2,
+    ],
+  },
+  {
+    columnName: 'Level 3',
+    field: [
+      'careCertAndQualificationLevels',
+      'socialCareQualificationLevel',
+      WorkerSocialCareQualificationLevel.Level3,
+    ],
+  },
+  {
+    columnName: 'Level 4',
+    field: [
+      'careCertAndQualificationLevels',
+      'socialCareQualificationLevel',
+      WorkerSocialCareQualificationLevel.Level4,
+    ],
+  },
+  {
+    columnName: 'Level 5 or above',
+    field: [
+      'careCertAndQualificationLevels',
+      'socialCareQualificationLevel',
+      WorkerSocialCareQualificationLevel.Level5OrAbove,
+    ],
+  },
 ];
 
 module.exports = { generateParentSummaryTab };
