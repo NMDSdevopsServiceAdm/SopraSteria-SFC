@@ -961,4 +961,10 @@ exports.mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining =
 exports.mockSummaryTabDataForWorkplaceAWithNoCareProvidingStaffs =
   mockSummaryTabDataForWorkplaceAWithNoCareProvidingStaffs;
 
-exports.mockSummaryTabDataForParent = [mockSummaryTabDataForWorkplaceA, mockSummaryTabDataForWorkplaceB];
+exports.mockSummaryTabDataForParent = {
+  total: {
+    trainingBreakdownTotals: grandTotalCountsForMockWorkplaceAAndB,
+    careCertAndQualificationLevels: grandTotalCareCertAndQualificationLevelsForWorkplaceAAndB,
+  },
+  workplacesData: [mockSummaryTabDataForWorkplaceA, mockSummaryTabDataForWorkplaceB],
+};

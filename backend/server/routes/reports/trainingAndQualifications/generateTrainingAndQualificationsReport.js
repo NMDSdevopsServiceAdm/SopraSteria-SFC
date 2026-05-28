@@ -42,12 +42,12 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
       rawData.rawEstablishmentCareCertificateStatus,
     );
     const workerTrainingBreakdowns = await buildWorkerTrainingBreakdown(rawData.rawEstablishmentTrainingBreakdowns);
-    const summaryTabData = buildWorkplaceSummaryData(
+    const { workplacesData } = buildWorkplaceSummaryData(
       workerTrainingBreakdowns,
       rawData.rawEstablishmentCareCertificateStatus,
     );
 
-    await generateSummaryTab(workbook, summaryTabData[0]);
+    await generateSummaryTab(workbook, workplacesData[0]);
 
     await generateTrainingByStaffTab(workbook, workerTrainingBreakdowns);
 

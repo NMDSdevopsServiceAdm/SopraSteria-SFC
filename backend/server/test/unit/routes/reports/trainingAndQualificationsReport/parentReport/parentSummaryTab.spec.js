@@ -43,7 +43,7 @@ describe('SummaryTab (Parent)', () => {
 
       const tab = workbook.getWorksheet('Summary');
 
-      mockSummaryTabDataForParent.forEach((workplace, index) => {
+      mockSummaryTabDataForParent.workplacesData.forEach((workplace, index) => {
         const expectedRowNumber = 8 + index;
         const row = tab.getRow(expectedRowNumber);
 

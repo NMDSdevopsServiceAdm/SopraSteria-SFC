@@ -9,6 +9,7 @@ const {
   colourSchemeForParentSummary,
   getCellStyleForParentSummary,
   borderStyles,
+  alignments,
 } = require('../../../../utils/excelUtils');
 const {
   WorkerCareCertificate,
@@ -26,6 +27,7 @@ const GrandTotalRowNumber = 7;
 
 const generateParentSummaryTab = async (workbook, establishment, summaryTabData) => {
   const summaryTab = workbook.addWorksheet('Summary', { views: [{ showGridLines: false }] });
+
   const establishmentName = establishment.NameValue;
 
   addTitle(summaryTab, establishmentName);
@@ -38,7 +40,7 @@ const generateParentSummaryTab = async (workbook, establishment, summaryTabData)
 
 const addTitle = (tab, establishmentName) => {
   addText(tab, 'B2:I2', establishmentName, { size: 26, bold: true });
-  addText(tab, 'B3:C3', 'Summary', { size: 24, bold: true });
+  addText(tab, 'B3:C3', 'Summary', { size: 24, bold: true }, { alignment: alignments.leftMiddle });
 
   setColourForRange(tab, 'A2:AP3', { backgroundColour: newBackgroundColours.lightGrey });
 };
@@ -69,7 +71,9 @@ const setHeightAndWidths = (tab) => {
 
 const addSummaryTable = (tab, summaryTabData) => {
   const defaultValue = 0;
-  addText(tab, 'B4', 'All staff', { size: 18, bold: true });
+  addText(tab, 'B4', 'All staff', { size: 18, bold: true }, { alignment: alignments.leftMiddle });
+
+  const { total, workplacesData } = summaryTabData;
 
   subheadings.forEach(({ text, range }) => {
     addText(tab, range, text, { size: 12, bold: true });
@@ -78,10 +82,10 @@ const addSummaryTable = (tab, summaryTabData) => {
   const allColumnLabels = columnsToDisplay.map((column) => column.columnName);
   tab.addRow(['', ...allColumnLabels]);
 
-  if (summaryTabData?.length) {
-    tab.addRow(['', 'All workplaces', '']);
+  if (workplacesData?.length) {
+    addTotalRowToTable(tab, total, defaultValue);
 
-    summaryTabData.forEach((workplace) => {
+    workplacesData.forEach((workplace) => {
       const rowData = columnsToDisplay.map((column) => {
         return lodash.get(workplace, column.field, defaultValue);
       });
@@ -91,19 +95,36 @@ const addSummaryTable = (tab, summaryTabData) => {
     addEmptyRowToTable(tab);
   }
 
-  const tableHeaderRange = `B${GroupHeaderRowNumber}:Z${GrandTotalRowNumber}`;
   const tableRange = `B${GrandTotalRowNumber}:Z${tab.lastRow.number}`;
 
   setBasicTableStyle(tab, tableRange, { hasTotalRow: false, alignHorizontalCenter: true, bold: true });
 
-  applyStyleToRange(tab, tableHeaderRange, tableHeaderCellStyle);
+  setColourStyleForTableHeader(tab);
 
   setColourStyleForTable(tab, tableRange);
   addThickBordersToTable(tab, tableRange);
 };
 
+const addTotalRowToTable = (tab, total, defaultValue) => {
+  const numberColumns = columnsToDisplay.slice(1);
+  const rowData = numberColumns.map((column) => {
+    return lodash.get(total, column.field, defaultValue);
+  });
+
+  tab.addRow(['', 'All workplaces', ...rowData]);
+};
+
 const addEmptyRowToTable = (tab) => {
   tab.addRow(Array(columnsToDisplay.length + 1).fill(''));
+};
+
+const setColourStyleForTableHeader = (tab) => {
+  const tableHeaderRange = `B${GroupHeaderRowNumber}:Z${GrandTotalRowNumber}`;
+
+  applyStyleToRange(tab, tableHeaderRange, tableHeaderCellStyle);
+
+  const areaToAlignAtCenter = `C${HeaderRowNumber}:Z${GrandTotalRowNumber}`;
+  applyStyleToRange(tab, areaToAlignAtCenter, { alignment: alignments.centerMiddle });
 };
 
 const setColourStyleForTable = (tab, tableRange) => {
