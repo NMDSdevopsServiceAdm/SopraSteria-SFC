@@ -27,6 +27,8 @@ const {
   secondMockWorkerTrainingBreakdowns,
   totalCountsForMockWorkplaceB,
   careCertAndQualificationLevelsForWorkplaceB,
+  grandTotalCountsForMockWorkplaceAAndB,
+  grandTotalCareCertAndQualificationLevelsForWorkplaceAAndB,
 } = require('../mockdata/trainingAndQualifications');
 const { WorkerSocialCareQualificationLevel } = require('../../../../reference/databaseEnumTypes');
 
@@ -679,7 +681,7 @@ describe('trainingAndQualificationsUtils', () => {
 
     it('should build workplace summary data from rawEstablishmentCareCertificateStatus and workerTrainingBreakdowns', () => {
       const result = buildWorkplaceSummaryData(workerTrainingBreakdowns, [rawEstablishmentCareCertificateStatus[0]]);
-      const expected = [
+      const expectedWorkplacesData = [
         {
           workplaceId: '1234',
           workplaceName: 'mock care home 1',
@@ -688,7 +690,7 @@ describe('trainingAndQualificationsUtils', () => {
         },
       ];
 
-      expect(result).to.deep.equal(expected);
+      expect(result.workplacesData).to.deep.equal(expectedWorkplacesData);
     });
 
     it('should put a dummy object for trainingBreakdownTotals if a child workplace does not have any training record', () => {
@@ -699,22 +701,20 @@ describe('trainingAndQualificationsUtils', () => {
         careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceA,
       };
 
-      expect(result[0]).to.deep.include(expected);
+      expect(result.workplacesData[0]).to.deep.include(expected);
 
-      const trainingBreakdownTotalsInResult = result[0].trainingBreakdownTotals;
+      const trainingBreakdownTotalsInResult = result.workplacesData[0].trainingBreakdownTotals;
       expect(trainingBreakdownTotalsInResult.trainingCount).to.equal(null);
       expect(trainingBreakdownTotalsInResult.mandatoryTrainingCount).to.equal(null);
       expect(trainingBreakdownTotalsInResult.nonMandatoryTrainingCount).to.equal(null);
     });
 
-    it('should process the data of multiple workplaces correctly (for parent summary)', () => {
-      const combinedWorkerTrainingBreakdowns = [...workerTrainingBreakdowns, ...secondMockWorkerTrainingBreakdowns];
+    const combinedWorkerTrainingBreakdowns = [...workerTrainingBreakdowns, ...secondMockWorkerTrainingBreakdowns];
 
+    it('should process the data of multiple workplaces correctly (for parent summary)', () => {
       const result = buildWorkplaceSummaryData(combinedWorkerTrainingBreakdowns, rawEstablishmentCareCertificateStatus);
 
-      expect(result.length).to.equal(2);
-
-      // expect(result[1].workplaceName).to.deep.equal('mock care home 2');
+      expect(result.workplacesData.length).to.equal(2);
 
       const expectedWorkplaceA = {
         workplaceId: '1234',
@@ -723,7 +723,7 @@ describe('trainingAndQualificationsUtils', () => {
         careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceA,
       };
 
-      expect(result[0]).to.deep.equal(expectedWorkplaceA);
+      expect(result.workplacesData[0]).to.deep.equal(expectedWorkplaceA);
 
       const expectedWorkplaceB = {
         workplaceId: '2345',
@@ -732,7 +732,31 @@ describe('trainingAndQualificationsUtils', () => {
         careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceB,
       };
 
-      expect(result[1]).to.deep.equal(expectedWorkplaceB);
+      expect(result.workplacesData[1]).to.deep.equal(expectedWorkplaceB);
+    });
+
+    it('should calculate the total training counts of workplaces', () => {
+      const result = buildWorkplaceSummaryData(combinedWorkerTrainingBreakdowns, rawEstablishmentCareCertificateStatus);
+
+      expect(result.total).to.deep.equal({
+        trainingBreakdownTotals: grandTotalCountsForMockWorkplaceAAndB,
+        careCertAndQualificationLevels: grandTotalCareCertAndQualificationLevelsForWorkplaceAAndB,
+      });
+    });
+
+    it('should calculate the totals correctly when there are no care providing workers in workplaces', () => {
+      const mockRawDataWithNoCareProvidingWorker = lodash.cloneDeep(rawEstablishmentCareCertificateStatus);
+      mockRawDataWithNoCareProvidingWorker.forEach((workplace) => {
+        workplace.workers.forEach((worker) => {
+          worker.mainJob.isCareProvidingRole = false;
+        });
+      });
+
+      const result = buildWorkplaceSummaryData(combinedWorkerTrainingBreakdowns, mockRawDataWithNoCareProvidingWorker);
+      expect(result.total).to.deep.equal({
+        trainingBreakdownTotals: grandTotalCountsForMockWorkplaceAAndB,
+        careCertAndQualificationLevels: { careProvidingStaffsCount: 0 },
+      });
     });
   });
 });

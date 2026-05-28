@@ -22,6 +22,9 @@ describe('generateParentTrainingAndQualificationsReport', () => {
           name: 'Test',
           workers: [],
           get: () => {},
+          countMandatoryTraining: () => {
+            return 0;
+          },
         },
       ],
     });

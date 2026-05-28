@@ -383,19 +383,29 @@ const listAllExistingAndMissingTrainings = (establishmentsWithTrainingRecords) =
 exports.listAllExistingAndMissingTrainings = listAllExistingAndMissingTrainings;
 exports.buildTrainingCategorySummary = buildTrainingCategorySummary;
 
-const getTotalForCareCertsAndQualificationsLevels = (establishmentWithCareCertificateData) => {
-  const careProvidingWorkers = establishmentWithCareCertificateData.workers.filter(
-    (worker) => worker?.mainJob?.isCareProvidingRole,
-  );
-
-  const emptyResult = {
+const getTotalForCareQualifications = (establishmentWithCareCertificateData) => {
+  const workplaceInfo = {
     workplaceId: establishmentWithCareCertificateData.id,
     workplaceName: establishmentWithCareCertificateData.NameValue,
-    careProvidingStaffsCount: 0,
   };
 
+  const calculationResults = calculateTotalForCareQualificationsFromWorkers(
+    establishmentWithCareCertificateData.workers,
+  );
+
+  return {
+    ...workplaceInfo,
+    ...calculationResults,
+  };
+};
+
+const calculateTotalForCareQualificationsFromWorkers = (workers) => {
+  const careProvidingWorkers = workers.filter((worker) => worker?.mainJob?.isCareProvidingRole);
+
   if (!careProvidingWorkers?.length) {
-    return emptyResult;
+    return {
+      careProvidingStaffsCount: 0,
+    };
   }
 
   const careCertificateCounts = lodash.countBy(careProvidingWorkers, 'CareCertificateValue');
@@ -403,7 +413,6 @@ const getTotalForCareCertsAndQualificationsLevels = (establishmentWithCareCertif
   const socialCareQualificationPercentages = getPercentagesForSocialCareQualificationLevels(careProvidingWorkers);
 
   return {
-    ...emptyResult,
     careProvidingStaffsCount: careProvidingWorkers.length,
     careCertificate: careCertificateCounts,
     level2CareCertificate: level2CareCertificateCounts,
@@ -464,7 +473,7 @@ const getPercentagesForSocialCareQualificationLevels = (workers) => {
   return percentages;
 };
 
-exports.getTotalForCareQualifications = getTotalForCareCertsAndQualificationsLevels;
+exports.getTotalForCareQualifications = getTotalForCareQualifications;
 exports.getPercentagesForSocialCareQualificationLevels = getPercentagesForSocialCareQualificationLevels;
 
 const calculateTotalsForWorkerTrainingBreakdowns = (workerTrainingBreakdowns) => {
@@ -493,9 +502,7 @@ exports.buildWorkplaceSummaryData = (workerTrainingBreakdowns, rawEstablishmentC
     .value();
 
   const careCertAndQualificationLevelsForEachWorkplace = Object.fromEntries(
-    rawEstablishmentCareCertificateStatus
-      .map(getTotalForCareCertsAndQualificationsLevels)
-      .map((data) => [data.workplaceId, data]),
+    rawEstablishmentCareCertificateStatus.map(getTotalForCareQualifications).map((data) => [data.workplaceId, data]),
   );
 
   const workplaceIdsFromTrainingBreakdown = Object.keys(trainingBreakdownsTotalsForEachWorkplace);
@@ -510,7 +517,7 @@ exports.buildWorkplaceSummaryData = (workerTrainingBreakdowns, rawEstablishmentC
     },
   );
 
-  const combinedData = combinedIds.map((workplaceId) => {
+  const workplacesData = combinedIds.map((workplaceId) => {
     const workplaceName =
       trainingBreakdownsTotalsForEachWorkplace[workplaceId]?.workplaceName ??
       careCertAndQualificationLevelsForEachWorkplace[workplaceId]?.workplaceName;
@@ -523,5 +530,19 @@ exports.buildWorkplaceSummaryData = (workerTrainingBreakdowns, rawEstablishmentC
     };
   });
 
-  return combinedData;
+  const grandTotalsForTrainings = calculateTotalsForWorkerTrainingBreakdowns(
+    Object.values(trainingBreakdownsTotalsForEachWorkplace),
+  );
+  const workersFromAllWorkplaces = rawEstablishmentCareCertificateStatus.flatMap(
+    (workplace) => workplace?.workers ?? [],
+  );
+
+  const grandTotalsForCareCertAndQuals = calculateTotalForCareQualificationsFromWorkers(workersFromAllWorkplaces);
+
+  const total = {
+    trainingBreakdownTotals: grandTotalsForTrainings,
+    careCertAndQualificationLevels: grandTotalsForCareCertAndQuals,
+  };
+
+  return { total, workplacesData };
 };
