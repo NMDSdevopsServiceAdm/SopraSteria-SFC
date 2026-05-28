@@ -8,6 +8,7 @@ const {
   tableHeaderCellStyle,
   colourSchemeForParentSummary,
   getCellStyleForParentSummary,
+  borderStyles,
 } = require('../../../../utils/excelUtils');
 const {
   WorkerCareCertificate,
@@ -87,6 +88,7 @@ const addSummaryTable = (tab, summaryTabData) => {
   applyStyleToRange(tab, tableHeaderRange, tableHeaderCellStyle);
 
   setColourStyleForTable(tab, tableRange);
+  addThickBordersToTable(tab, tableRange);
 };
 
 const setColourStyleForTable = (tab, tableRange) => {
@@ -99,6 +101,17 @@ const setColourStyleForTable = (tab, tableRange) => {
     if (cellStyle) {
       applyStyleToRange(tab, range, cellStyle);
     }
+  });
+};
+
+const addThickBordersToTable = (tab, tableRange) => {
+  const groupsToAddThickBorder = subheadings.slice(0, -1);
+  const { bottom } = colCache.decode(tableRange);
+
+  groupsToAddThickBorder.forEach((subheading) => {
+    const { right } = colCache.decode(subheading.range);
+    const cellsToAddThickBorder = colCache.encode(GroupHeaderRowNumber, right, bottom, right);
+    applyStyleToRange(tab, cellsToAddThickBorder, { border: borderStyles.thickBlackBorderRight });
   });
 };
 

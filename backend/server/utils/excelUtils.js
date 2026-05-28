@@ -193,6 +193,9 @@ const basicStyleForParentSummaryTable = {
 };
 const getCellStyleForParentSummary = (columnName) => {
   switch (columnName) {
+    case 'Workplace': {
+      return { font: { bold: false }, alignment: alignments.leftMiddle };
+    }
     case 'Expired':
     case 'Missing records': {
       return lodash.merge({}, basicStyleForParentSummaryTable, { fill: { fgColor: newBackgroundColours.red } });
@@ -202,6 +205,25 @@ const getCellStyleForParentSummary = (columnName) => {
     }
     case 'Up-to-date': {
       return lodash.merge({}, basicStyleForParentSummaryTable, { fill: { fgColor: newBackgroundColours.green } });
+    }
+    case 'Completed':
+    case 'Started':
+    case 'Not started':
+    case 'Level 2 or higher': {
+      return lodash.merge({}, basicStyleForParentSummaryTable, {
+        fill: { fgColor: newBackgroundColours.darkBlue },
+        font: { color: newTextColours.white },
+      });
+    }
+
+    case 'Level 2':
+    case 'Level 3':
+    case 'Level 4':
+    case 'Level 5 or above': {
+      return lodash.merge({}, basicStyleForParentSummaryTable, {
+        fill: { fgColor: newBackgroundColours.lightBlue },
+        font: { color: newTextColours.darkBlue },
+      });
     }
   }
 
