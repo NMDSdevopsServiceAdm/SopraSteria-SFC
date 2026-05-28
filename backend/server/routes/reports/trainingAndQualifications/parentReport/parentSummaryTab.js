@@ -6,11 +6,11 @@ const {
   setBasicTableStyle,
   applyStyleToRange,
   tableHeaderCellStyle,
-  colourSchemeForParentSummary,
   getCellStyleForParentSummary,
   borderStyles,
   alignments,
   forEachCellInRange,
+  MissingRecordsExplanationText,
 } = require('../../../../utils/excelUtils');
 const {
   WorkerCareCertificate,
@@ -37,6 +37,8 @@ const generateParentSummaryTab = async (workbook, establishment, summaryTabData)
   addSummaryTable(summaryTab, summaryTabData);
 
   setHeightAndWidths(summaryTab);
+
+  addMissingRecordFootNote(summaryTab);
 };
 
 const addTitle = (tab, establishmentName) => {
@@ -165,6 +167,13 @@ const addThickBordersToTable = (tab, tableRange) => {
     const cellsToAddThickBorder = colCache.encode(GroupHeaderRowNumber, right, bottom, right);
     applyStyleToRange(tab, cellsToAddThickBorder, { border: borderStyles.thickBlackBorderRight });
   });
+};
+
+const addMissingRecordFootNote = (tab) => {
+  const rowNumber = tab.lastRow.number + 2;
+  const footNoteRange = `B${rowNumber}:E${rowNumber + 2}`;
+
+  addText(tab, footNoteRange, MissingRecordsExplanationText, {}, { alignment: alignments.topLeftWrapText });
 };
 
 const subheadings = [

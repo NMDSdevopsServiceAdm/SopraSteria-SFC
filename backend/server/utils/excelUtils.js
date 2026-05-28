@@ -248,6 +248,20 @@ exports.conditionalColoursForTrainingExpiry = colourSchemeForTrainingExpiry.map(
 
 exports.defaultDateFormat = 'd mmm yyyy';
 
+const MissingRecordsExplanationText = {
+  richText: [
+    { font: { size: 12, bold: true, family: 4 }, text: 'Missing records.' },
+    {
+      font: {
+        size: 12,
+        family: 4,
+      },
+      text: ' If a training category is mandatory, you must add a record for everybody who needs that training. Note, missing records may include training not yet taken by new starters.',
+    },
+  ],
+};
+exports.MissingRecordsExplanationText = MissingRecordsExplanationText;
+
 //  ===== helper methods =====
 
 function eachColumnInRange(ws, col1, col2, cb) {
