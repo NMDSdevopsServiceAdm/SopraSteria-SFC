@@ -10,6 +10,7 @@ const {
   getCellStyleForParentSummary,
   borderStyles,
   alignments,
+  forEachCellInRange,
 } = require('../../../../utils/excelUtils');
 const {
   WorkerCareCertificate,
@@ -101,6 +102,8 @@ const addSummaryTable = (tab, summaryTabData) => {
 
   setColourStyleForTableHeader(tab);
 
+  showSocialCareQualsLevelAsPercentageFormat(tab, tableRange);
+
   setColourStyleForTable(tab, tableRange);
   addThickBordersToTable(tab, tableRange);
 };
@@ -125,6 +128,19 @@ const setColourStyleForTableHeader = (tab) => {
 
   const areaToAlignAtCenter = `C${HeaderRowNumber}:Z${GrandTotalRowNumber}`;
   applyStyleToRange(tab, areaToAlignAtCenter, { alignment: alignments.centerMiddle });
+};
+
+const showSocialCareQualsLevelAsPercentageFormat = (tab, tableRange) => {
+  const subHeadingForSocialCareQualsLevel = subheadings.at(-1);
+  const { left, right } = colCache.decode(subHeadingForSocialCareQualsLevel.range);
+  const { bottom } = colCache.decode(tableRange);
+  const top = GrandTotalRowNumber;
+
+  const areaToShowAsPercentage = colCache.encode(top, left, bottom, right);
+
+  forEachCellInRange(tab, areaToShowAsPercentage, (cell) => {
+    cell.numFmt = '0%';
+  });
 };
 
 const setColourStyleForTable = (tab, tableRange) => {
