@@ -60,6 +60,11 @@ const addTrainingRecordsTable = (tab, trainingData, columnsToDisplay) => {
     return columnsToDisplay.map(({ field }) => training[field] ?? '-');
   });
 
+  if (tableRows.length === 0) {
+    console.log(columnsToDisplay.length, '<--- number of columns');
+    tableRows.push(Array(columnsToDisplay.length).fill(''));
+  }
+
   const trainingTable = tab.addTable({
     name: 'trainingRecordDetailsTable',
     ref: `B${HeaderRowNumber}`,
