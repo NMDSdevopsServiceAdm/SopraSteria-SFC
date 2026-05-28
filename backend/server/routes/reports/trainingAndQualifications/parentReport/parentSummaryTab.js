@@ -14,6 +14,8 @@ const {
   WorkerCareCertificate,
   WorkerLevel2CareCertificate,
   WorkerSocialCareQualificationLevel,
+  Level2OrAbove,
+  Level5OrAbove,
 } = require('../../../../../reference/databaseEnumTypes');
 
 const colCache = require('exceljs/lib/utils/col-cache');
@@ -58,6 +60,11 @@ const setHeightAndWidths = (tab) => {
     const row = tab.getRow(index + 1);
     row.height = height;
   });
+
+  for (let i = GrandTotalRowNumber; i <= tab.lastRow.number; i++) {
+    const row = tab.getRow(i);
+    row.height = 22;
+  }
 };
 
 const addSummaryTable = (tab, summaryTabData) => {
@@ -71,14 +78,18 @@ const addSummaryTable = (tab, summaryTabData) => {
   const allColumnLabels = columnsToDisplay.map((column) => column.columnName);
   tab.addRow(['', ...allColumnLabels]);
 
-  tab.addRow(['', 'All workplaces', '']);
+  if (summaryTabData?.length) {
+    tab.addRow(['', 'All workplaces', '']);
 
-  summaryTabData.forEach((workplace) => {
-    const rowData = columnsToDisplay.map((column) => {
-      return lodash.get(workplace, column.field, defaultValue);
+    summaryTabData.forEach((workplace) => {
+      const rowData = columnsToDisplay.map((column) => {
+        return lodash.get(workplace, column.field, defaultValue);
+      });
+      tab.addRow(['', ...rowData]);
     });
-    tab.addRow(['', ...rowData]);
-  });
+  } else {
+    addEmptyRowToTable(tab);
+  }
 
   const tableHeaderRange = `B${GroupHeaderRowNumber}:Z${GrandTotalRowNumber}`;
   const tableRange = `B${GrandTotalRowNumber}:Z${tab.lastRow.number}`;
@@ -89,6 +100,10 @@ const addSummaryTable = (tab, summaryTabData) => {
 
   setColourStyleForTable(tab, tableRange);
   addThickBordersToTable(tab, tableRange);
+};
+
+const addEmptyRowToTable = (tab) => {
+  tab.addRow(Array(columnsToDisplay.length + 1).fill(''));
 };
 
 const setColourStyleForTable = (tab, tableRange) => {
@@ -171,11 +186,7 @@ const columnsToDisplay = [
 
   {
     columnName: 'Level 2 or higher',
-    field: [
-      'careCertAndQualificationLevels',
-      'socialCareQualificationLevel',
-      WorkerSocialCareQualificationLevel.Level2OrAbove,
-    ],
+    field: ['careCertAndQualificationLevels', 'socialCareQualificationLevel', Level2OrAbove],
   },
   {
     columnName: 'Level 2',
@@ -203,11 +214,7 @@ const columnsToDisplay = [
   },
   {
     columnName: 'Level 5 or above',
-    field: [
-      'careCertAndQualificationLevels',
-      'socialCareQualificationLevel',
-      WorkerSocialCareQualificationLevel.Level5OrAbove,
-    ],
+    field: ['careCertAndQualificationLevels', 'socialCareQualificationLevel', Level5OrAbove],
   },
 ];
 

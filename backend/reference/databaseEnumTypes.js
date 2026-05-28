@@ -38,10 +38,13 @@ const WorkerSocialCareQualificationLevel = {
   Level8OrAbove: 'Level 8 or above',
   DontKnow: "Don't know",
 
-  // The below two options does not exist in database. only for purpose of excel report.
-  Level2OrAbove: 'Level 2 or above',
-  Level5OrAbove: 'Level 5 or above',
+  // // The below two options does not exist in database. only for purpose of excel report.
+  // Level2OrAbove: 'Level 2 or above',
+  // Level5OrAbove: 'Level 5 or above',
 };
+
+const Level2OrAbove = 'Level 2 or above';
+const Level5OrAbove = 'Level 5 or above';
 
 module.exports = {
   Enum,
@@ -50,4 +53,6 @@ module.exports = {
   WorkerCareCertificate,
   WorkerLevel2CareCertificate,
   WorkerSocialCareQualificationLevel,
+  Level2OrAbove,
+  Level5OrAbove,
 };

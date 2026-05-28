@@ -17,7 +17,7 @@ const {
   WorkerSocialCareQualificationLevel,
 } = require('../../../../../../../reference/databaseEnumTypes');
 
-describe.only('SummaryTab (Parent)', () => {
+describe('SummaryTab (Parent)', () => {
   let workbook;
 
   beforeEach(() => {
@@ -86,6 +86,13 @@ describe.only('SummaryTab (Parent)', () => {
       });
 
       expect(tab.getCell('B9').value).to.equal(mockSummaryTabDataForWorkplaceB.workplaceName);
+    });
+
+    it('should show an empty table if there are no worker and no trainings in every workplace', () => {
+      generateParentSummaryTab(workbook, mockParentWorkplace, []);
+
+      const tab = workbook.getWorksheet('Summary');
+      expect(tab.getRow(7).values.slice(1)).to.deep.equal(Array(26).fill(''));
     });
   });
 });
