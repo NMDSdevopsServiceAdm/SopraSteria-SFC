@@ -15,7 +15,7 @@ const {
   countNumberOfLinesInCalibriFont,
 } = require('../../../utils/excelUtils');
 
-describe.only('excelUtils', () => {
+describe('excelUtils', () => {
   const setup = () => new excelJS.Workbook().addWorksheet('mock worksheet');
 
   describe('addText', () => {
@@ -120,7 +120,27 @@ describe.only('excelUtils', () => {
   });
 
   describe('autoAdjustWrapTextAndRowHeight', () => {
-    it('should set a cell to { wrapText: true } and increase the height if text is longer than the given length', () => {
+    const setup = () => {
+      const mockWorksheet = new excelJS.Workbook().addWorksheet('mock worksheet');
+      const cell = mockWorksheet.getCell('B2');
+      cell.value = 'some text';
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+      mockWorksheet.getRow(2).height = 22;
+
+      return mockWorksheet;
+    };
+
+    it('should set the cell alignment to { wrapText: true }', () => {
+      const mockWorksheet = setup();
+
+      const cell = mockWorksheet.getCell('B2');
+
+      autoAdjustWrapTextAndRowHeight(mockWorksheet, cell);
+
+      expect(cell.alignment).to.deep.equal({ vertical: 'middle', horizontal: 'center', wrapText: true });
+    });
+
+    it('should set the height to undefined if text is longer than the given length (to trigger excel internal adjustment)', () => {
       const mockWorksheet = setup();
 
       const cell = mockWorksheet.getCell('B2');
@@ -128,34 +148,47 @@ describe.only('excelUtils', () => {
 
       autoAdjustWrapTextAndRowHeight(mockWorksheet, cell);
 
-      expect(mockWorksheet.getCell('B2').alignment).to.deep.equal({ wrapText: true });
-      expect(mockWorksheet.getRow('2').height).to.equal(34);
-    });
-
-    it('should not change the cell properties if the text is not long enough', () => {
-      const mockWorksheet = setup();
-
-      const cell = mockWorksheet.getCell('B2');
-      cell.value = 'some value';
-      cell.alignment = {};
-
-      autoAdjustWrapTextAndRowHeight(mockWorksheet, cell);
-
-      expect(mockWorksheet.getCell('B2').alignment).to.deep.equal({});
+      expect(mockWorksheet.getCell('B2').alignment).to.deep.equal({
+        vertical: 'middle',
+        horizontal: 'center',
+        wrapText: true,
+      });
       expect(mockWorksheet.getRow('2').height).to.equal(undefined);
     });
 
-    it('should accept an optional length and default row height as argument', () => {
+    it('should keep the current row height if text is not long enough', () => {
       const mockWorksheet = setup();
 
       const cell = mockWorksheet.getCell('B2');
-      cell.value = 'a text of length 20 ';
+      cell.value = 'very short';
 
-      autoAdjustWrapTextAndRowHeight(mockWorksheet, cell, 5, 15);
-      const expectedRowHeight = 15 * (20 / 5) - 10;
+      autoAdjustWrapTextAndRowHeight(mockWorksheet, cell);
 
-      expect(mockWorksheet.getCell('B2').alignment).to.deep.equal({ wrapText: true });
-      expect(mockWorksheet.getRow('2').height).to.equal(expectedRowHeight);
+      expect(mockWorksheet.getCell('B2').alignment).to.deep.equal({
+        vertical: 'middle',
+        horizontal: 'center',
+        wrapText: true,
+      });
+      expect(mockWorksheet.getRow('2').height).to.equal(22);
+    });
+
+    it('should accept an optional columnWidth as argument', () => {
+      const mockWorksheet = setup();
+
+      const cell = mockWorksheet.getCell('B2');
+
+      cell.value = 'a text of length 20';
+
+      const columnWidth = 5;
+
+      autoAdjustWrapTextAndRowHeight(mockWorksheet, cell, columnWidth);
+
+      expect(mockWorksheet.getCell('B2').alignment).to.deep.equal({
+        vertical: 'middle',
+        horizontal: 'center',
+        wrapText: true,
+      });
+      expect(mockWorksheet.getRow('2').height).to.equal(undefined);
     });
   });
 

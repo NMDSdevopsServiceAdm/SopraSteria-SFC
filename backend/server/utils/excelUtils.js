@@ -596,8 +596,15 @@ const rangeOfNumber = (startNumber, endNumber) => {
 
 exports.rangeOfNumber = rangeOfNumber;
 
-exports.autoAdjustWrapTextAndRowHeight = (tab, cell, columnWidth = 35, defaultHeight = 22) => {
+exports.autoAdjustWrapTextAndRowHeight = (tab, cell, columnWidth = 35) => {
   if (cell.type !== excelJS.ValueType.String || !cell.value?.length) {
+    return;
+  }
+
+  applyStyleToCell(cell, { alignment: { wrapText: true } });
+
+  const row = tab.getRow(cell.row);
+  if (lodash.isNil(row.height)) {
     return;
   }
 
@@ -608,13 +615,7 @@ exports.autoAdjustWrapTextAndRowHeight = (tab, cell, columnWidth = 35, defaultHe
     return;
   }
 
-  applyStyleToCell(cell, { alignment: { wrapText: true } });
-
-  const heightAdjustFormula = (x, defaultHeight) => Math.ceil((34.5 * x - 2.5 * x * x - 25) * (defaultHeight / 22));
-  const adjustedHeight = heightAdjustFormula(numberOfLinesNeeded, defaultHeight);
-
-  const row = tab.getRow(cell.row);
-  row.height = Math.max(row.height ?? 0, adjustedHeight);
+  row.height = undefined;
 };
 
 const charPixelWidth = {
