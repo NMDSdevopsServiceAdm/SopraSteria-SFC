@@ -10,6 +10,8 @@ const {
   borderStyles,
   applyStyleToRange,
   autoFitColumnWidthByTextLength,
+  forEachCellInRange,
+  colourSchemeForTrainingExpiry,
 } = require('../../../utils/excelUtils');
 
 const colCache = require('exceljs/lib/utils/col-cache');
@@ -170,20 +172,12 @@ const setStyleForWorkerTable = (tab, tableRange) => {
     lastColumnInTable,
   );
 
-  tab.addConditionalFormatting({
-    ref: headerCellsWithColourCode,
-    rules: [
-      ...conditionalColoursForTrainingExpiry,
-      {
-        type: 'containsText',
-        operator: 'containsText',
-        text: 'Total',
-        style: {
-          fill: { type: 'pattern', pattern: 'solid', bgColor: newBackgroundColours.lightGrey },
-          font: { bold: true, size: 12, family: 4, color: newTextColours.black },
-        },
-      },
-    ],
+  forEachCellInRange(tab, headerCellsWithColourCode, (cell) => {
+    const textInCell = cell.value;
+    const backgroundColourForCell = colourSchemeForTrainingExpiry.find(({ text }) => textInCell.includes(text))?.colour;
+    if (backgroundColourForCell) {
+      setColourForCell(cell, { backgroundColour: backgroundColourForCell });
+    }
   });
 
   const lastRowNumber = colCache.decode(tableRange).bottom;
