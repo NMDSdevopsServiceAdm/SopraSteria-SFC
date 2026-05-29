@@ -26,6 +26,8 @@ describe('SummaryTab (Standalone)', () => {
   });
 
   describe('generateSummaryTab', () => {
+    const headerRowNumber = 6;
+
     it('should add a worksheet for summary', () => {
       generateSummaryTab(workbook, mockSummaryTabDataForWorkplaceA);
 
@@ -47,10 +49,10 @@ describe('SummaryTab (Standalone)', () => {
 
       const tab = workbook.getWorksheet('Summary');
 
-      const headerRow = tab.getRow(5);
+      const headerRow = tab.getRow(headerRowNumber);
 
       const allTrainingRecordColumn = tab.getColumn(headerRow.values.indexOf('All training records'));
-      expect(allTrainingRecordColumn.values.slice(7)).to.deep.equals([
+      expect(allTrainingRecordColumn.values.slice(8)).to.deep.equals([
         'Total',
         totalCountsForMockWorkplaceA.trainingCount,
         undefined,
@@ -73,12 +75,12 @@ describe('SummaryTab (Standalone)', () => {
 
       const tab = workbook.getWorksheet('Summary');
 
-      const headerRow = tab.getRow(5);
+      const headerRow = tab.getRow(headerRowNumber);
 
       const nonMandatoryTrainingRecordColumn = tab.getColumn(
         headerRow.values.indexOf('Non-mandatory training records'),
       );
-      expect(nonMandatoryTrainingRecordColumn.values.slice(7)).to.deep.equals([
+      expect(nonMandatoryTrainingRecordColumn.values.slice(8)).to.deep.equals([
         'Total',
         totalCountsForMockWorkplaceA.nonMandatoryTrainingCount,
         undefined,
@@ -101,11 +103,11 @@ describe('SummaryTab (Standalone)', () => {
 
       const tab = workbook.getWorksheet('Summary');
 
-      const headerRow = tab.getRow(5);
+      const headerRow = tab.getRow(headerRowNumber);
 
       const mandatoryTrainingRecordColumn = tab.getColumn(headerRow.values.indexOf('Mandatory training records'));
 
-      expect(mandatoryTrainingRecordColumn.values.slice(7, 18)).to.deep.equals([
+      expect(mandatoryTrainingRecordColumn.values.slice(8, 19)).to.deep.equals([
         'Total',
         totalCountsForMockWorkplaceA.mandatoryTrainingCount,
         undefined,
@@ -133,10 +135,10 @@ describe('SummaryTab (Standalone)', () => {
 
       const tab = workbook.getWorksheet('Summary');
 
-      const headerRow = tab.getRow(5);
+      const headerRow = tab.getRow(headerRowNumber);
       const mandatoryTrainingRecordColumn = tab.getColumn(headerRow.values.indexOf('Mandatory training records'));
 
-      expect(mandatoryTrainingRecordColumn.values.slice(7, 18)).to.deep.equals([
+      expect(mandatoryTrainingRecordColumn.values.slice(8, 19)).to.deep.equals([
         'Total',
         'No training categories have been made mandatory yet',
         undefined,
@@ -167,7 +169,7 @@ describe('SummaryTab (Standalone)', () => {
 
       const expected = `Care-providing staff only (${careProvidingStaffsCount})`;
 
-      expect(tab.getCell('P4').value).to.equal(expected);
+      expect(tab.getCell('P5').value).to.equal(expected);
     });
 
     it('should show the care cert counts and social care qualification levels', () => {
@@ -175,10 +177,10 @@ describe('SummaryTab (Standalone)', () => {
 
       const tab = workbook.getWorksheet('Summary');
 
-      const headerRow = tab.getRow(5);
+      const headerRow = tab.getRow(headerRowNumber);
       const careCertColumn = tab.getColumn(headerRow.values.indexOf('Care Certificates'));
 
-      expect(careCertColumn.values.slice(7, 15)).to.deep.equal([
+      expect(careCertColumn.values.slice(8, 16)).to.deep.equal([
         'Completed',
         0,
         undefined,
@@ -191,7 +193,7 @@ describe('SummaryTab (Standalone)', () => {
 
       const L2CareCertColumn = tab.getColumn(headerRow.values.indexOf('L2 Adult Social Care Certificates'));
 
-      expect(L2CareCertColumn.values.slice(7, 15)).to.deep.equal([
+      expect(L2CareCertColumn.values.slice(8, 16)).to.deep.equal([
         'Completed',
         careCertAndQualificationLevelsForWorkplaceA.level2CareCertificate['Yes, completed'],
         undefined,
@@ -204,7 +206,7 @@ describe('SummaryTab (Standalone)', () => {
 
       const socialCareQualificationLevel = tab.getColumn(headerRow.values.indexOf('Social care qualification levels'));
 
-      expect(socialCareQualificationLevel.values.slice(7, 21)).to.deep.equal([
+      expect(socialCareQualificationLevel.values.slice(8, 22)).to.deep.equal([
         'Level 2 or higher',
         careCertAndQualificationLevelsForWorkplaceA.socialCareQualificationLevel['Level 2 or above'],
         undefined,
@@ -227,10 +229,10 @@ describe('SummaryTab (Standalone)', () => {
 
       const tab = workbook.getWorksheet('Summary');
 
-      const headerRow = tab.getRow(5);
+      const headerRow = tab.getRow(headerRowNumber);
       const careCertColumn = tab.getColumn(headerRow.values.indexOf('Care Certificates'));
 
-      expect(careCertColumn.values.slice(7, 15)).to.deep.equal([
+      expect(careCertColumn.values.slice(8, 16)).to.deep.equal([
         'Completed',
         '-',
         undefined,
@@ -243,7 +245,7 @@ describe('SummaryTab (Standalone)', () => {
 
       const L2CareCertColumn = tab.getColumn(headerRow.values.indexOf('L2 Adult Social Care Certificates'));
 
-      expect(L2CareCertColumn.values.slice(7, 15)).to.deep.equal([
+      expect(L2CareCertColumn.values.slice(8, 16)).to.deep.equal([
         'Completed',
         '-',
         undefined,
@@ -256,7 +258,7 @@ describe('SummaryTab (Standalone)', () => {
 
       const socialCareQualificationLevel = tab.getColumn(headerRow.values.indexOf('Social care qualification levels'));
 
-      expect(socialCareQualificationLevel.values.slice(7, 21)).to.deep.equal([
+      expect(socialCareQualificationLevel.values.slice(8, 22)).to.deep.equal([
         'Level 2 or higher',
         '-',
         undefined,
