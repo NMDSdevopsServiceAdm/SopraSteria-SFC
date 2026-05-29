@@ -191,7 +191,11 @@ describe('excelUtils', () => {
         },
         {
           text: 'V1 or other internal verifier NVQ (level 3)',
-          expected: 1,
+          expected: 2,
+        },
+        {
+          text: 'Higher apprenticeship in care leadership and management (framework, level 5)',
+          expected: 3,
         },
         {
           text: 'Food safety in health and social care, and early years and childcare settings (level 2)',
@@ -232,7 +236,7 @@ describe('excelUtils', () => {
 
       const testCases = [
         { columnWidth: 30, expectedNumberOfLines: 2 },
-        { columnWidth: 35, expectedNumberOfLines: 1 },
+        { columnWidth: 50, expectedNumberOfLines: 1 },
       ];
 
       testCases.forEach(({ columnWidth, expectedNumberOfLines }) => {

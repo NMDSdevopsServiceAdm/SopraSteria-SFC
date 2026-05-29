@@ -603,7 +603,7 @@ exports.autoAdjustWrapTextAndRowHeight = (tab, cell, columnWidth = 35, defaultHe
 
   const textInCell = cell.value;
 
-  const numberOfLinesNeeded = countNumberOfLinesInDefaultFont(textInCell, columnWidth);
+  const numberOfLinesNeeded = countNumberOfLinesInCalibriFont(textInCell, columnWidth);
   if (numberOfLinesNeeded <= 1) {
     return;
   }
@@ -696,13 +696,13 @@ const getTextWidthInDefaultFont = (text) => {
     .value();
 };
 
-const countNumberOfLinesInDefaultFont = (text, columnWidth = 35) => {
+const countNumberOfLinesInCalibriFont = (text, columnWidth = 35) => {
   const words = text?.split(/[ -]/);
   if (!words?.length) {
     return 1;
   }
 
-  const columnWidthInPixels = 5.8 * columnWidth;
+  const columnWidthInPixels = 5.62 * columnWidth;
   const whitespaceWidth = charPixelWidth[' '];
 
   const allWordsWidths = words.map(getTextWidthInDefaultFont);
@@ -722,7 +722,7 @@ const countNumberOfLinesInDefaultFont = (text, columnWidth = 35) => {
   return lineNumbers;
 };
 
-exports.countNumberOfLinesInCalibriFont = countNumberOfLinesInDefaultFont;
+exports.countNumberOfLinesInCalibriFont = countNumberOfLinesInCalibriFont;
 
 const drawColourBoxWithBorder = (tab, range, { backgroundColour = null, textColour = null }) => {
   const { top, left, bottom, right } = colCache.decode(range);
