@@ -702,17 +702,26 @@ const countNumberOfLinesInCalibriFont = (text, columnWidth = 35) => {
     return 1;
   }
 
-  const columnWidthInPixels = 5.62 * columnWidth;
+  const columnWidthInPixels = 5.58 * columnWidth;
   const whitespaceWidth = charPixelWidth[' '];
 
-  const allWordsWidths = words.map(getTextWidthInDefaultFont);
+  const allWordsWidths = words.map(getTextWidthInDefaultFont).flatMap((wordWidth) => {
+    if (wordWidth <= columnWidthInPixels) {
+      return wordWidth;
+    }
+
+    const linesTaked = Math.floor(wordWidth / columnWidthInPixels);
+    const remainingWidth = wordWidth - columnWidthInPixels * linesTaked;
+    return Array(linesTaked).fill(columnWidthInPixels).concat([remainingWidth]);
+  });
 
   let lineNumbers = 1;
   let currentLineWidth = allWordsWidths[0];
 
   allWordsWidths.slice(1).forEach((nextWord) => {
     currentLineWidth += nextWord + whitespaceWidth;
-    const canFitSingleLine = currentLineWidth <= columnWidthInPixels;
+
+    const canFitSingleLine = currentLineWidth < columnWidthInPixels;
     if (!canFitSingleLine) {
       lineNumbers += 1;
       currentLineWidth = nextWord;

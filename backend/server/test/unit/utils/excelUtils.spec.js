@@ -15,7 +15,7 @@ const {
   countNumberOfLinesInCalibriFont,
 } = require('../../../utils/excelUtils');
 
-describe('excelUtils', () => {
+describe.only('excelUtils', () => {
   const setup = () => new excelJS.Workbook().addWorksheet('mock worksheet');
 
   describe('addText', () => {
@@ -195,6 +195,18 @@ describe('excelUtils', () => {
         },
         {
           text: 'Higher apprenticeship in care leadership and management (framework, level 5)',
+          expected: 3,
+        },
+        {
+          text: 'longnamewithoutanyspaceorwordbreak',
+          expected: 2,
+        },
+        {
+          text: 'a longnamewithoutanyspaceorwordbreak',
+          expected: 3,
+        },
+        {
+          text: 'longlonglonglonglonglonglonglonglonglonglongnamewithoutanyspaceorwordbreak',
           expected: 3,
         },
         {
