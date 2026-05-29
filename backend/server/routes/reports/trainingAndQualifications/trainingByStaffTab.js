@@ -3,15 +3,14 @@ const {
   setColourForRange,
   newBackgroundColours,
   newTextColours,
-  conditionalColoursForTrainingExpiry,
   setColourForCell,
   setBasicTableStyle,
   tableHeaderCellStyle,
   borderStyles,
   applyStyleToRange,
-  autoFitColumnWidthByTextLength,
   forEachCellInRange,
   colourSchemeForTrainingExpiry,
+  autoAdjustWrapTextAndRowHeight,
 } = require('../../../utils/excelUtils');
 
 const colCache = require('exceljs/lib/utils/col-cache');
@@ -20,42 +19,45 @@ const lodash = require('lodash');
 const GroupHeaderRowNumber = 3;
 const HeaderRowNumber = 4;
 
-const orderOfColumnNameAndDataFields = [
-  { columnName: 'Workplace', field: 'workplaceName' },
-  { columnName: 'Name or ID number', field: 'name' },
-  { columnName: 'Total', field: 'trainingCount' },
-  { columnName: 'Expired', field: 'expiredMandatoryTrainingCount', isMandatoryTrainingField: true },
+const columnNamesAndDataFields = [
+  { columnName: 'Workplace', field: 'workplaceName', width: 30 },
+  { columnName: 'Name or ID number', field: 'name', width: 30 },
+  { columnName: 'Total', field: 'trainingCount', width: 14 },
+  { columnName: 'Expired', field: 'expiredMandatoryTrainingCount', isMandatoryTrainingField: true, width: 14 },
   {
     columnName: 'Expiring soon',
     field: 'expiringMandatoryTrainingCount',
     isMandatoryTrainingField: true,
+    width: 14,
   },
-  { columnName: 'Up-to-date', field: 'upToDateMandatoryTrainingCount', isMandatoryTrainingField: true },
+  { columnName: 'Up-to-date', field: 'upToDateMandatoryTrainingCount', isMandatoryTrainingField: true, width: 14 },
   // Note: white space are added around the text, as Excel raise error on duplicated column names in table
-  { columnName: ' Total ', field: 'mandatoryTrainingCount', isMandatoryTrainingField: true },
-  { columnName: 'Missing', field: 'missingMandatoryTrainingCount', isMandatoryTrainingField: true },
-  { columnName: ' Expired ', field: 'expiredNonMandatoryTrainingCount' },
+  { columnName: ' Total ', field: 'mandatoryTrainingCount', isMandatoryTrainingField: true, width: 14 },
+  { columnName: 'Missing', field: 'missingMandatoryTrainingCount', isMandatoryTrainingField: true, width: 14 },
+  { columnName: ' Expired ', field: 'expiredNonMandatoryTrainingCount', width: 14 },
   {
     columnName: ' Expiring soon ',
     field: 'expiringNonMandatoryTrainingCount',
+    width: 14,
   },
   {
     columnName: ' Up-to-date ',
     field: 'upToDateNonMandatoryTrainingCount',
   },
-  { columnName: '  Total  ', field: 'nonMandatoryTrainingCount' },
+  { columnName: '  Total  ', field: 'nonMandatoryTrainingCount', width: 14 },
 ];
 
 const generateTrainingByStaffTab = async (workbook, workerTrainingBreakdowns, isParent = false) => {
   const trainingByStaffTab = workbook.addWorksheet('Training by staff', { views: [{ showGridLines: false }] });
+  const columnsToDisplay = isParent ? columnNamesAndDataFields : columnNamesAndDataFields.slice(1);
 
   addTitle(trainingByStaffTab);
 
   addGroupHeaderRow(trainingByStaffTab, isParent);
 
-  addWorkerTable(trainingByStaffTab, workerTrainingBreakdowns, isParent);
+  addWorkerTable(trainingByStaffTab, workerTrainingBreakdowns, columnsToDisplay);
 
-  setHeightsAndWidths(trainingByStaffTab);
+  setHeightsAndWidths(trainingByStaffTab, columnsToDisplay);
 
   addFootNote(trainingByStaffTab);
 
@@ -79,9 +81,7 @@ const addGroupHeaderRow = (tab, isParent) => {
   applyStyleToRange(tab, `B3:${lastColumnLetter}3`, tableHeaderCellStyle);
 };
 
-const addWorkerTable = (tab, workerTrainingBreakdowns, isParent) => {
-  const columnsToDisplay = isParent ? orderOfColumnNameAndDataFields : orderOfColumnNameAndDataFields.slice(1);
-
+const addWorkerTable = (tab, workerTrainingBreakdowns, columnsToDisplay) => {
   const workerTableData = workerTrainingBreakdowns.map((worker) => {
     const maskMandatoryTrainingCount = worker.workplaceHasMandatoryTraining === false;
 
@@ -222,17 +222,13 @@ const addFootNote = (tab) => {
   });
 };
 
-const setHeightsAndWidths = (tab) => {
-  const columnWidths = [8, 26.8, Array(10).fill(14)].flat();
+const setHeightsAndWidths = (tab, columnsToDisplay) => {
+  const columnWidths = [8, ...columnsToDisplay.map((column) => column.width)];
 
   columnWidths.forEach((width, index) => {
     const column = tab.getColumn(index + 1);
     column.width = width;
   });
-
-  const workerNameColumn = 'B';
-  const fontsize = 12;
-  autoFitColumnWidthByTextLength(tab, workerNameColumn, fontsize);
 
   const rowHeights = [45, 19, 22, 38];
 
@@ -245,10 +241,24 @@ const setHeightsAndWidths = (tab) => {
     const row = tab.getRow(i);
     row.height = 22;
   }
+
+  autoAdjustWrapTextForColumns(tab);
 };
 
 const setFreezePane = (tab) => {
-  tab.views = [{ state: 'frozen', ySplit: 4, activeCell: 'B1' }, { showGridLines: false }];
+  tab.views = [{ state: 'frozen', ySplit: HeaderRowNumber, activeCell: 'B1' }, { showGridLines: false }];
+};
+
+const autoAdjustWrapTextForColumns = (tab) => {
+  const top = HeaderRowNumber + 1;
+  const bottom = tab.lastRow.number;
+
+  const autoAdjustRange = `B${top}:C${bottom}`;
+
+  forEachCellInRange(tab, autoAdjustRange, (cell) => {
+    const columnWidth = tab.getColumn(cell.col).width;
+    autoAdjustWrapTextAndRowHeight(tab, cell, columnWidth);
+  });
 };
 
 module.exports = { generateTrainingByStaffTab };
