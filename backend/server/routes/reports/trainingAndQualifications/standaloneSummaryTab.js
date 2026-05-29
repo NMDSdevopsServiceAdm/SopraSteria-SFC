@@ -214,8 +214,8 @@ const addCareCertAndQualificationLevels = (tab, careCertAndQualificationLevels) 
     },
   ];
   const longTexts = [
-    { range: 'Q17:W18', value: careCertExplanationText, size: 12, alignment: alignments.middleLeftWrapText },
-    { range: 'Q20:W21', value: careCertNotesText, size: 12, alignment: alignments.topLeftWrapText },
+    { range: 'Q17:W20', value: careCertExplanationText, size: 12, alignment: alignments.middleLeftWrapText },
+    { range: 'Q21:W22', value: careCertNotesText, size: 12, alignment: alignments.topLeftWrapText },
   ];
 
   const columnHeadings = [
