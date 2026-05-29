@@ -61,7 +61,6 @@ const addTrainingRecordsTable = (tab, trainingData, columnsToDisplay) => {
   });
 
   if (tableRows.length === 0) {
-    console.log(columnsToDisplay.length, '<--- number of columns');
     tableRows.push(Array(columnsToDisplay.length).fill(''));
   }
 
