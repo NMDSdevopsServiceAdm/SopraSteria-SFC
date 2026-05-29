@@ -641,10 +641,10 @@ describe('trainingAndQualificationsUtils', () => {
 
       const result = getPercentagesForSocialCareQualificationLevels(mockWorkers);
       expect(result).to.deep.equal({
-        'Level 1': 0.33,
-        'Level 2': 0.33,
-        'Level 3': 0.33,
-        'Level 2 or above': 0.67,
+        'Level 1': 0.3333,
+        'Level 2': 0.3333,
+        'Level 3': 0.3333,
+        'Level 2 or above': 0.6667,
         'Level 5 or above': 0.0,
       });
     });

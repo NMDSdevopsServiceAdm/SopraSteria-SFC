@@ -467,7 +467,7 @@ const getPercentagesForSocialCareQualificationLevels = (workers) => {
 
   const percentages = lodash.mapValues(
     socialCareQualificationCounts,
-    (count) => Math.round((count * 100) / workerCounts) / 100,
+    (count) => Math.round((count * 10000) / workerCounts) / 10000,
   );
 
   return percentages;
