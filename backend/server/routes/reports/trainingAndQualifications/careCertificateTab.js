@@ -68,14 +68,14 @@ const addCareCertificateTable = (tab, sortedData, columnsToDisplay) => {
 };
 
 const setHeightsAndWidths = (tab, columnsToDisplay) => {
-  const columnWidths = columnsToDisplay.map((column) => column.width);
+  const columnWidths = [8, ...columnsToDisplay.map((column) => column.width)];
 
   columnWidths.forEach((width, index) => {
-    const column = tab.getColumn(index + 2);
+    const column = tab.getColumn(index + 1);
     column.width = width;
   });
 
-  const rowHeights = [48, 18, 35, 30];
+  const rowHeights = [45, 18, 35, 30];
 
   rowHeights.forEach((height, index) => {
     tab.getRow(index + 1).height = height;

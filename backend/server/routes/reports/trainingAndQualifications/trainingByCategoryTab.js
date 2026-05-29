@@ -124,14 +124,14 @@ const addTotalRow = (tab, sortedData, columnsToDisplay) => {
 };
 
 const setHeightsAndWidths = (tab) => {
-  const columnWidths = [7, 33, 18, 18, 18, 18, 18, 18];
+  const columnWidths = [8, 33, 18, 18, 18, 18, 18, 18];
 
   columnWidths.forEach((width, index) => {
     const column = tab.getColumn(index + 1);
     column.width = width;
   });
 
-  const rowHeights = [48, 18, 22, 44];
+  const rowHeights = [45, 18, 22, 44];
 
   rowHeights.forEach((height, index) => {
     const row = tab.getRow(index + 1);

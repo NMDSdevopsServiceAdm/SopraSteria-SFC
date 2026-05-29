@@ -94,14 +94,14 @@ const setFormatForLevelColumn = (tab) => {
 };
 
 const setHeightsAndWidths = (tab, columnsToDisplay) => {
-  const columnWidths = [9, ...columnsToDisplay.map((column) => column.width)];
+  const columnWidths = [8, ...columnsToDisplay.map((column) => column.width)];
 
   columnWidths.forEach((width, index) => {
     const column = tab.getColumn(index + 1);
     column.width = width;
   });
 
-  const rowHeights = [48, 18, 36];
+  const rowHeights = [45, 18, 36];
 
   rowHeights.forEach((height, index) => {
     const row = tab.getRow(index + 1);

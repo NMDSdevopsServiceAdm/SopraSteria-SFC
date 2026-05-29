@@ -223,7 +223,7 @@ const addFootNote = (tab) => {
 };
 
 const setHeightsAndWidths = (tab) => {
-  const columnWidths = [6.8, 26.8, Array(10).fill(14)].flat();
+  const columnWidths = [8, 26.8, Array(10).fill(14)].flat();
 
   columnWidths.forEach((width, index) => {
     const column = tab.getColumn(index + 1);
@@ -234,7 +234,7 @@ const setHeightsAndWidths = (tab) => {
   const fontsize = 12;
   autoFitColumnWidthByTextLength(tab, workerNameColumn, fontsize);
 
-  const rowHeights = [47, 19, 22, 38];
+  const rowHeights = [45, 19, 22, 38];
 
   rowHeights.forEach((height, index) => {
     const row = tab.getRow(index + 1);
