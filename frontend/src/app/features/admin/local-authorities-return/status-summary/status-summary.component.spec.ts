@@ -60,6 +60,11 @@ describe('StatusSummaryComponent', () => {
     expect(heading.textContent).toEqual('Status summary');
   });
 
+  it('should display the year', async () => {
+    const { component } = await setup();
+    expect(component.currentYear).toBe(new Date().getFullYear());
+  });
+
   describe('Status summary table', () => {
     it('should display the table headers', async () => {
       const { getByTestId } = await setup();
