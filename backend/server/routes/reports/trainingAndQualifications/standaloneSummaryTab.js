@@ -63,7 +63,7 @@ const addTitle = (tab, establishmentName) => {
     'Y3:AB3',
     formatDateTime(new Date(), 'DD MMMM YYYY, HH:mm'),
     { size: 13, bold: true },
-    { alignment: alignments.rightMiddle },
+    { alignment: alignments.middleRight },
   );
 
   setColourForRange(tab, 'A2:AN3', { backgroundColour: newBackgroundColours.lightGrey });
@@ -117,7 +117,7 @@ const addtrainingBreakdownTotals = (tab, trainingBreakdownTotals) => {
       range: 'D4:L4',
       value: 'All staff (could include staff flagged as long-term absent)',
       size: 18,
-      alignment: alignments.centerMiddle,
+      alignment: alignments.middleCenter,
     },
     { range: 'H20:H22', value: MissingRecordsExplanationText, alignment: alignments.leftMiddleWrapText },
   ];
@@ -145,7 +145,7 @@ const addtrainingBreakdownTotals = (tab, trainingBreakdownTotals) => {
     { range: 'L16', value: 'Up-to-date' },
 
     { range: 'H23', value: 'Missing records' },
-  ].map((cell) => ({ ...cell, alignment: alignments.centerBottom }));
+  ].map((cell) => ({ ...cell, alignment: alignments.bottomCenter }));
 
   const mandatoryTrainingCells = buildMandatoryTrainingCells(totals);
 
@@ -165,7 +165,7 @@ const addtrainingBreakdownTotals = (tab, trainingBreakdownTotals) => {
 
   cellData.forEach(({ range, value, size, alignment }) => {
     const font = { size: size ?? 12, bold: true };
-    const textAlignment = alignment ? { alignment } : { alignment: alignments.centerMiddle };
+    const textAlignment = alignment ? { alignment } : { alignment: alignments.middleCenter };
     addText(tab, range, value, font, textAlignment);
   });
 };
@@ -178,7 +178,7 @@ const buildMandatoryTrainingCells = (totals) => {
     range: 'H8',
     value: noMandatoryTrainingMessage,
     size: 14,
-    alignment: alignments.centerMiddleWrapText,
+    alignment: alignments.middleCenterWrapText,
   };
 
   const totalCell = workplaceHasNoMandatoryTraining ? showSpecialMessage : showTotalCount;
@@ -210,11 +210,11 @@ const addCareCertAndQualificationLevels = (tab, careCertAndQualificationLevels) 
       range: 'P4:AA4',
       value: sectionHeadingText,
       size: 18,
-      alignment: alignments.centerMiddle,
+      alignment: alignments.middleCenter,
     },
   ];
   const longTexts = [
-    { range: 'Q16:W17', value: careCertExplanationText, size: 12, alignment: alignments.leftMiddleWrapText },
+    { range: 'Q16:W17', value: careCertExplanationText, size: 12, alignment: alignments.middleLeftWrapText },
     { range: 'Q19:W20', value: careCertNotesText, size: 12, alignment: alignments.topLeftWrapText },
   ];
 
@@ -238,7 +238,7 @@ const addCareCertAndQualificationLevels = (tab, careCertAndQualificationLevels) 
     { range: 'Z13', value: 'Level 3' },
     { range: 'Z16', value: 'Level 4' },
     { range: 'Z19', value: 'Level 5 or above' },
-  ].map((cell) => ({ ...cell, alignment: alignments.centerBottom }));
+  ].map((cell) => ({ ...cell, alignment: alignments.bottomCenter }));
 
   const numbers = [
     { range: 'R8', value: data?.careCertificate?.[WorkerCareCertificate.YesCompleted] },
@@ -267,7 +267,7 @@ const addCareCertAndQualificationLevels = (tab, careCertAndQualificationLevels) 
 
   cellData.forEach(({ range, value, size, alignment }) => {
     const font = { size: size ?? 12, bold: true };
-    const textAlignment = alignment ? { alignment } : { alignment: alignments.centerMiddle };
+    const textAlignment = alignment ? { alignment } : { alignment: alignments.middleCenter };
     addText(tab, range, value, font, textAlignment);
   });
 

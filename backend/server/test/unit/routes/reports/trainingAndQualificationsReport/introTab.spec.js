@@ -43,33 +43,23 @@ describe('introTab', () => {
 
   describe('addLinksToOtherTabs', () => {
     it('should add links to jump to other tabs', () => {
+      const expectedMenuItems = [
+        { text: 'Summary', hyperlink: "#'Summary'!A1" },
+        { text: 'Training records by staff', hyperlink: "#'Training by staff'!A1" },
+        { text: 'Training records by category', hyperlink: "#'Training by category'!A1" },
+        { text: 'Expired and missing training', hyperlink: "#'Expired training'!A1" },
+        { text: 'Training record details', hyperlink: "#'Training record details'!A1" },
+        { text: 'Care Certificates', hyperlink: "#'Care Certificates'!A1" },
+        { text: 'Qualification record details', hyperlink: "#'Qualification record details'!A1" },
+      ];
+
       const introTab = setup();
+      const firstRowForLinkMenu = 12;
+
       addLinksToOtherTabs(introTab);
 
-      expect(introTab.getCell('B11').value).to.deep.equal({ text: 'Summary', hyperlink: "#'Summary'!A1" });
-      expect(introTab.getCell('B12').value).to.deep.equal({
-        text: 'Training records by staff',
-        hyperlink: "#'Training by staff'!A1",
-      });
-      expect(introTab.getCell('B13').value).to.deep.equal({
-        text: 'Training records by category',
-        hyperlink: "#'Training by category'!A1",
-      });
-      expect(introTab.getCell('B14').value).to.deep.equal({
-        text: 'Expired and missing training',
-        hyperlink: "#'Expired training'!A1",
-      });
-      expect(introTab.getCell('B15').value).to.deep.equal({
-        text: 'Training record details',
-        hyperlink: "#'Training record details'!A1",
-      });
-      expect(introTab.getCell('B16').value).to.deep.equal({
-        text: 'Care Certificates',
-        hyperlink: "#'Care Certificates'!A1",
-      });
-      expect(introTab.getCell('B17').value).to.deep.equal({
-        text: 'Qualification record details',
-        hyperlink: "#'Qualification record details'!A1",
+      expectedMenuItems.forEach((item, index) => {
+        expect(introTab.getCell(`B${firstRowForLinkMenu + index}`).value).to.deep.equal(item);
       });
     });
   });

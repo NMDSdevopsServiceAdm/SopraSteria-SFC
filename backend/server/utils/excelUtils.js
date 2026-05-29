@@ -28,15 +28,17 @@ const textBoxAlignment = { vertical: 'middle', horizontal: 'left', wrapText: tru
 exports.textBoxAlignment = textBoxAlignment;
 
 const alignments = {
-  leftMiddle: { vertical: 'middle', horizontal: 'left' },
-  centerMiddle: { vertical: 'middle', horizontal: 'center' },
-  centerBottom: { vertical: 'bottom', horizontal: 'center' },
+  middleLeft: { vertical: 'middle', horizontal: 'left' },
+  middleCenter: { vertical: 'middle', horizontal: 'center' },
+  bottomCenter: { vertical: 'bottom', horizontal: 'center' },
   topLeft: { vertical: 'top', horizontal: 'left' },
-  rightMiddle: { vertical: 'middle', horizontal: 'right' },
+  bottomLeft: { vertical: 'bottom', horizontal: 'left' },
+  bottomRight: { vertical: 'bottom', horizontal: 'right' },
+  middleRight: { vertical: 'middle', horizontal: 'right' },
 
-  centerMiddleWrapText: { vertical: 'middle', horizontal: 'center', wrapText: true },
+  middleCenterWrapText: { vertical: 'middle', horizontal: 'center', wrapText: true },
   topLeftWrapText: { vertical: 'top', horizontal: 'left', wrapText: true },
-  leftMiddleWrapText: { vertical: 'middle', horizontal: 'left', wrapText: true },
+  middleLeftWrapText: { vertical: 'middle', horizontal: 'left', wrapText: true },
 };
 
 exports.alignments = alignments;
