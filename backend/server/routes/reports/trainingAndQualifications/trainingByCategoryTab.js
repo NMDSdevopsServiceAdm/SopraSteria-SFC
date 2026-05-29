@@ -9,6 +9,8 @@ const {
   applyStyleToRange,
   autoFitColumnWidthByTextLength,
   colourSchemeForTrainingExpiry,
+  forEachCellInRange,
+  autoAdjustWrapTextAndRowHeight,
 } = require('../../../utils/excelUtils');
 
 const colCache = require('exceljs/lib/utils/col-cache');
@@ -129,10 +131,6 @@ const setHeightsAndWidths = (tab) => {
     column.width = width;
   });
 
-  [2, 3, 4, 5].forEach((column) => {
-    autoFitColumnWidthByTextLength(tab, column, 12);
-  });
-
   const rowHeights = [48, 18, 22, 44];
 
   rowHeights.forEach((height, index) => {
@@ -144,6 +142,20 @@ const setHeightsAndWidths = (tab) => {
     const row = tab.getRow(i);
     row.height = 22;
   }
+
+  autoAdjustWrapTextForCategoryNameAndWorkplaceColumn(tab);
+};
+
+const autoAdjustWrapTextForCategoryNameAndWorkplaceColumn = (tab) => {
+  const top = HeaderRowNumber + 1;
+  const bottom = tab.lastRow.number;
+
+  const autoAdjustRange = `B${top}:C${bottom}`;
+
+  forEachCellInRange(tab, autoAdjustRange, (cell) => {
+    const columnWidth = tab.getColumn(cell.col).width;
+    autoAdjustWrapTextAndRowHeight(tab, cell, columnWidth);
+  });
 };
 
 const setAlignmentForColumns = (tab) => {
