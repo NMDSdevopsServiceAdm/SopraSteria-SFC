@@ -7,7 +7,6 @@ const {
   setBasicTableStyle,
   tableHeaderCellStyle,
   applyStyleToRange,
-  autoFitColumnWidthByTextLength,
   colourSchemeForTrainingExpiry,
   forEachCellInRange,
   autoAdjustWrapTextAndRowHeight,

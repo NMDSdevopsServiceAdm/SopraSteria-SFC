@@ -140,11 +140,27 @@ describe('excelUtils', () => {
       expect(cell.alignment).to.deep.equal({ vertical: 'middle', horizontal: 'center', wrapText: true });
     });
 
-    it('should set the height to undefined if text is longer than the given length (to trigger excel internal adjustment)', () => {
+    it('should set the height to 2 lines if text is expected to take 2 lines', () => {
       const mockWorksheet = setup();
 
       const cell = mockWorksheet.getCell('B2');
-      cell.value = 'some very very very very very very very very very very long text';
+      cell.value = 'Activity provision in social care (level 3)';
+
+      autoAdjustWrapTextAndRowHeight(mockWorksheet, cell);
+
+      expect(mockWorksheet.getCell('B2').alignment).to.deep.equal({
+        vertical: 'middle',
+        horizontal: 'center',
+        wrapText: true,
+      });
+      expect(mockWorksheet.getRow('2').height).to.equal(34);
+    });
+
+    it('should set the height to undefined if text need more than 2 lines (to trigger excel internal adjustment)', () => {
+      const mockWorksheet = setup();
+
+      const cell = mockWorksheet.getCell('B2');
+      cell.value = 'Higher apprenticeship in care leadership and management (framework, level 5)';
 
       autoAdjustWrapTextAndRowHeight(mockWorksheet, cell);
 
@@ -205,6 +221,14 @@ describe('excelUtils', () => {
         {
           text: 'Awareness of end of life care (level 2)',
           expected: 1,
+        },
+        {
+          text: 'A1, A2 or other assessor NVQ (level 3)',
+          expected: 1,
+        },
+        {
+          text: 'Activity provision in social care (level 3)',
+          expected: 2,
         },
         {
           text: 'Delivering chair-based exercise with',
@@ -270,7 +294,7 @@ describe('excelUtils', () => {
 
     it('should handle word break with hyphen', () => {
       const text = 'Any qualification in assessment of work-based learning, other than social work';
-      const expected = 2;
+      const expected = 3;
 
       const actual = countNumberOfLinesInCalibriFont(text);
       expect(actual).to.equal(expected);

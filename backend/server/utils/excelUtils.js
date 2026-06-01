@@ -596,7 +596,7 @@ const rangeOfNumber = (startNumber, endNumber) => {
 
 exports.rangeOfNumber = rangeOfNumber;
 
-exports.autoAdjustWrapTextAndRowHeight = (tab, cell, columnWidth = 35) => {
+exports.autoAdjustWrapTextAndRowHeight = (tab, cell, columnWidth = 35, defaultHeight = 22) => {
   if (cell.type !== excelJS.ValueType.String || !cell.value?.length) {
     return;
   }
@@ -604,6 +604,7 @@ exports.autoAdjustWrapTextAndRowHeight = (tab, cell, columnWidth = 35) => {
   applyStyleToCell(cell, { alignment: { wrapText: true } });
 
   const row = tab.getRow(cell.row);
+
   if (lodash.isNil(row.height)) {
     return;
   }
@@ -611,11 +612,17 @@ exports.autoAdjustWrapTextAndRowHeight = (tab, cell, columnWidth = 35) => {
   const textInCell = cell.value;
 
   const numberOfLinesNeeded = countNumberOfLinesInCalibriFont(textInCell, columnWidth);
+
   if (numberOfLinesNeeded <= 1) {
     return;
   }
 
-  row.height = undefined;
+  if (numberOfLinesNeeded === 2) {
+    row.height = Math.max(row.height, defaultHeight * 2 - 10);
+    return;
+  }
+
+  row.height = undefined; // to trigger excel's internal auto fit adjustment
 };
 
 const charPixelWidth = {
@@ -696,6 +703,7 @@ const getTextWidthInDefaultFont = (text) => {
     .sum()
     .value();
 };
+exports.getTextWidthInDefaultFont = getTextWidthInDefaultFont;
 
 const countNumberOfLinesInCalibriFont = (text, columnWidth = 35) => {
   const words = text?.split(/[ -]/);
@@ -703,7 +711,7 @@ const countNumberOfLinesInCalibriFont = (text, columnWidth = 35) => {
     return 1;
   }
 
-  const columnWidthInPixels = 5.58 * columnWidth;
+  const columnWidthInPixels = 5.46 * columnWidth;
   const whitespaceWidth = charPixelWidth[' '];
 
   const allWordsWidths = words.map(getTextWidthInDefaultFont).flatMap((wordWidth) => {
@@ -728,6 +736,13 @@ const countNumberOfLinesInCalibriFont = (text, columnWidth = 35) => {
       currentLineWidth = nextWord;
     }
   });
+
+  const lastLineFullness = currentLineWidth / columnWidthInPixels;
+
+  // special adjustment to handle borderline case between 2 lines and 3 lines
+  if (lastLineFullness > 0.8 && lineNumbers === 2) {
+    return lineNumbers + 1;
+  }
 
   return lineNumbers;
 };
