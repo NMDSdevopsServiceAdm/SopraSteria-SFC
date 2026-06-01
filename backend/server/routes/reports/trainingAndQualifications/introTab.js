@@ -33,7 +33,7 @@ const generateIntroTab = async (workbook, establishment) => {
 };
 
 const setCellSizeAndFormats = (tab) => {
-  const columnWidths = [8, Array(5).fill(12.5), 14.5, 8].flat();
+  const columnWidths = [8, Array(5).fill(12.5), 14, 8, 8].flat();
   const rowHeights = [Array(2).fill(45), 33, 12, 45, Array(4).fill(28), 33, 37, Array(9).fill(31)].flat();
 
   columnWidths.forEach((width, index) => {
@@ -46,7 +46,7 @@ const setCellSizeAndFormats = (tab) => {
   });
 
   setColourForRange(tab, 'A2:Z4', { backgroundColour: newBackgroundColours.lightGrey });
-  setColourForRange(tab, 'A11:H19', { backgroundColour: newBackgroundColours.lightGrey });
+  setColourForRange(tab, 'A11:I19', { backgroundColour: newBackgroundColours.lightGrey });
 };
 
 const addBannerImage = (workbook, introTab) => {
@@ -70,7 +70,7 @@ const addHeadingsToIntroTab = (introTab, establishment) => {
   );
   addText(
     introTab,
-    'G3:H3',
+    'G3:I3',
     formatDateTime(new Date(), 'DD MMMM YYYY, HH:mm'),
     { size: 13, bold: true },
     { alignment: alignments.bottomRight },
@@ -102,13 +102,13 @@ const addLinksToOtherTabs = (introTab) => {
     { text: 'Qualification record details', hyperlink: "#'Qualification record details'!A1" },
   ];
 
-  addHeading(introTab, 'B11', 'H11', 'Menu', newTextColours.black, 18);
+  addHeading(introTab, 'B11', 'I11', 'Menu', newTextColours.black, 18);
 
   links.forEach((link, index) => {
     const rowNumber = 12 + index;
-    addLink(introTab, `B${rowNumber}:G${rowNumber}`, link, { size: 16 });
+    addLink(introTab, `B${rowNumber}:H${rowNumber}`, link, { size: 16 });
 
-    applyStyleToRange(introTab, `B${rowNumber}:G${rowNumber}`, { border: borderStyles.lightGreyBorderTopAndBottom });
+    applyStyleToRange(introTab, `B${rowNumber}:H${rowNumber}`, { border: borderStyles.lightGreyBorderTopAndBottom });
   });
 };
 
