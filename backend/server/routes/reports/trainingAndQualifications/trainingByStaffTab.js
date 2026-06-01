@@ -43,6 +43,7 @@ const columnNamesAndDataFields = [
   {
     columnName: ' Up-to-date ',
     field: 'upToDateNonMandatoryTrainingCount',
+    width: 14,
   },
   { columnName: '  Total  ', field: 'nonMandatoryTrainingCount', width: 14 },
 ];

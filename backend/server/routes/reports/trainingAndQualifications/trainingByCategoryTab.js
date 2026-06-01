@@ -131,7 +131,7 @@ const setHeightsAndWidths = (tab) => {
     column.width = width;
   });
 
-  const rowHeights = [45, 18, 22, 44];
+  const rowHeights = [45, 18, 22, 38];
 
   rowHeights.forEach((height, index) => {
     const row = tab.getRow(index + 1);
