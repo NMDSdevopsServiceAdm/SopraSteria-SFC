@@ -739,9 +739,12 @@ const countNumberOfLinesInCalibriFont = (text, columnWidth = 35) => {
 
   const lastLineFullness = currentLineWidth / columnWidthInPixels;
 
-  // special adjustment to handle borderline case between 2 lines and 3 lines
-  if (lastLineFullness > 0.8 && lineNumbers === 2) {
-    return lineNumbers + 1;
+  // special adjustments to handle borderline cases
+  if (lastLineFullness > 0.97 && lineNumbers === 1) {
+    return 2;
+  }
+  if (lastLineFullness > 0.9 && lineNumbers === 2) {
+    return 3;
   }
 
   return lineNumbers;

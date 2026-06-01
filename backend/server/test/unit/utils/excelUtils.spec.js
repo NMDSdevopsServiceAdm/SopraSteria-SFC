@@ -219,6 +219,10 @@ describe('excelUtils', () => {
     describe('should estimated the number of lines needed to show the given text within the given column width', () => {
       const testCases = [
         {
+          text: 'Adult care (level 4)',
+          expected: 1,
+        },
+        {
           text: 'Awareness of end of life care (level 2)',
           expected: 1,
         },
@@ -279,7 +283,7 @@ describe('excelUtils', () => {
           expected: 3,
         },
         {
-          text: 'Any Learning Disabled Awards Framework ',
+          text: 'Any Learning Disabled Awards Framework',
           expected: 2,
         },
       ];
