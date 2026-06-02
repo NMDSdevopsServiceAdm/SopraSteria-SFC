@@ -11,6 +11,7 @@ const {
   alignments,
   forEachCellInRange,
   MissingRecordsExplanationText,
+  autoAdjustWrapTextAndRowHeight,
 } = require('../../../../utils/excelUtils');
 const {
   WorkerCareCertificate,
@@ -38,12 +39,14 @@ const generateParentSummaryTab = async (workbook, establishment, summaryTabData)
 
   setHeightAndWidths(summaryTab);
 
+  autoAdjustWrapTextForWorkplaceColumn(summaryTab);
+
   addMissingRecordFootNote(summaryTab);
 };
 
 const addTitle = (tab, establishmentName) => {
-  addText(tab, 'B2:I2', establishmentName, { size: 26, bold: true });
-  addText(tab, 'B3:C3', 'Summary', { size: 24, bold: true }, { alignment: alignments.leftMiddle });
+  addText(tab, 'B2:I2', establishmentName, { size: 26, bold: true }, { alignment: alignments.middleLeft });
+  addText(tab, 'B3:C3', 'Summary', { size: 24, bold: true }, { alignment: alignments.middleLeft });
 
   setColourForRange(tab, 'A2:AP3', { backgroundColour: newBackgroundColours.lightGrey });
 };
@@ -53,7 +56,7 @@ const addBannerImage = (workbook, tab) => {
 };
 
 const setHeightAndWidths = (tab) => {
-  const columnWidths = [6.83, 26.83, ...Array(24).fill(16.83)];
+  const columnWidths = [8, 26.83, ...Array(24).fill(16.83)];
   const rowHeights = [45, 45, 45, 36, 36, 36];
 
   columnWidths.forEach((width, index) => {
@@ -74,7 +77,7 @@ const setHeightAndWidths = (tab) => {
 
 const addSummaryTable = (tab, summaryTabData) => {
   const defaultValue = 0;
-  addText(tab, 'B4', 'All staff', { size: 18, bold: true }, { alignment: alignments.leftMiddle });
+  addText(tab, 'B4', 'All staff', { size: 18, bold: true }, { alignment: alignments.middleLeft });
 
   const { total, workplacesData } = summaryTabData;
 
@@ -129,7 +132,7 @@ const setColourStyleForTableHeader = (tab) => {
   applyStyleToRange(tab, tableHeaderRange, tableHeaderCellStyle);
 
   const areaToAlignAtCenter = `C${HeaderRowNumber}:Z${GrandTotalRowNumber}`;
-  applyStyleToRange(tab, areaToAlignAtCenter, { alignment: alignments.centerMiddle });
+  applyStyleToRange(tab, areaToAlignAtCenter, { alignment: alignments.middleCenter });
 };
 
 const showSocialCareQualsLevelAsPercentageFormat = (tab, tableRange) => {
@@ -166,6 +169,18 @@ const addThickBordersToTable = (tab, tableRange) => {
     const { right } = colCache.decode(subheading.range);
     const cellsToAddThickBorder = colCache.encode(GroupHeaderRowNumber, right, bottom, right);
     applyStyleToRange(tab, cellsToAddThickBorder, { border: borderStyles.thickBlackBorderRight });
+  });
+};
+
+const autoAdjustWrapTextForWorkplaceColumn = (tab) => {
+  const top = GrandTotalRowNumber + 1;
+  const bottom = tab.lastRow.number;
+
+  const autoAdjustRange = `B${top}:B${bottom}`;
+
+  forEachCellInRange(tab, autoAdjustRange, (cell) => {
+    const columnWidth = tab.getColumn(cell.col).width;
+    autoAdjustWrapTextAndRowHeight(tab, cell, columnWidth);
   });
 };
 

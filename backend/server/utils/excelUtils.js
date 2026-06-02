@@ -196,7 +196,7 @@ const basicStyleForParentSummaryTable = {
 const getCellStyleForParentSummary = (columnName) => {
   switch (columnName) {
     case 'Workplace': {
-      return { font: { bold: false }, alignment: alignments.leftMiddle };
+      return { font: { bold: false }, alignment: alignments.middleLeft };
     }
     case 'Expired':
     case 'Missing records': {
