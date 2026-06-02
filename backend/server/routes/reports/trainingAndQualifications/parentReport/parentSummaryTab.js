@@ -93,7 +93,7 @@ const addSummaryTable = (tab, summaryTabData) => {
 
     workplacesData.forEach((workplace) => {
       const rowData = columnsToDisplay.map((column) => {
-        return lodash.get(workplace, column.field, defaultValue);
+        return lodash.get(workplace, column.field, defaultValue) ?? '-';
       });
       tab.addRow(['', ...rowData]);
     });

@@ -1,21 +1,14 @@
 const expect = require('chai').expect;
+const lodash = require('lodash');
 const excelJS = require('exceljs');
-const sinon = require('sinon');
 const {
   mockSummaryTabDataForParent,
-  mockSummaryTabDataForWorkplaceA,
   mockSummaryTabDataForWorkplaceB,
-  totalCountsForMockWorkplaceA,
-  careCertAndQualificationLevelsForWorkplaceA,
+  mockSummaryTabDataForWorkplaceA,
 } = require('../../../../mockdata/trainingAndQualifications');
 const {
   generateParentSummaryTab,
 } = require('../../../../../../routes/reports/trainingAndQualifications/parentReport/parentSummaryTab');
-const {
-  WorkerCareCertificate,
-  WorkerLevel2CareCertificate,
-  WorkerSocialCareQualificationLevel,
-} = require('../../../../../../../reference/databaseEnumTypes');
 
 describe('SummaryTab (Parent)', () => {
   let workbook;
@@ -93,6 +86,36 @@ describe('SummaryTab (Parent)', () => {
 
       const tab = workbook.getWorksheet('Summary');
       expect(tab.getRow(7).values.slice(1)).to.deep.equal(Array(26).fill(''));
+    });
+
+    it('should show the training counts as "-" if a child workplace has no workers', () => {
+      const mockData = lodash.cloneDeep(mockSummaryTabDataForParent);
+      mockData.workplacesData[0].trainingBreakdownTotals = new Proxy(
+        {},
+        {
+          get: () => null,
+        },
+      );
+
+      generateParentSummaryTab(workbook, mockParentWorkplace, mockData);
+
+      const tab = workbook.getWorksheet('Summary');
+      expect(tab.getRow(8).values.slice(2, 16)).to.deep.equal([
+        mockSummaryTabDataForWorkplaceA.workplaceName,
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+        '-',
+      ]);
     });
   });
 });
