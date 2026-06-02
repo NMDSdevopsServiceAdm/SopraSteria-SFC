@@ -6,7 +6,7 @@ const moment = require('moment');
 const Authorization = require('../../../../utils/security/isAuthenticated');
 const { hasPermission } = require('../../../../utils/security/hasPermission');
 
-const { generateSummaryTab } = require('./parentSummaryTab');
+const { generateParentSummaryTab } = require('./parentSummaryTab');
 const { generateCareCertificateTab } = require('../careCertificateTab');
 const models = require('../../../../models');
 const { generateIntroTab } = require('../introTab');
@@ -15,8 +15,12 @@ const { generateExpiredTrainingTab } = require('../expiredTrainingTab');
 const {
   convertTrainingForEstablishments,
   listAllExistingAndMissingTrainings,
+  convertWorkersWithCareCertificateStatus,
+  buildWorkerTrainingBreakdown,
+  buildWorkplaceSummaryData,
 } = require('../../../../utils/trainingAndQualificationsUtils');
 const { generateQualificationRecordDetailsTab } = require('../qualificationRecordDetailsTab');
+const { getRawDataForTrainingAndQualificationsReport } = require('../getRawData');
 
 const generateParentTrainingAndQualificationsReport = async (req, res) => {
   try {
@@ -27,9 +31,20 @@ const generateParentTrainingAndQualificationsReport = async (req, res) => {
     workbook.creator = 'Skills-For-Care';
     workbook.properties.date1904 = true;
 
-    generateIntroTab(workbook, establishment);
+    const rawData = await getRawDataForTrainingAndQualificationsReport(establishment.id, true);
 
-    await generateSummaryTab(workbook, establishment.id);
+    const careCertificateStatus = convertWorkersWithCareCertificateStatus(
+      rawData.rawEstablishmentCareCertificateStatus,
+    );
+
+    const workerTrainingBreakdowns = await buildWorkerTrainingBreakdown(rawData.rawEstablishmentTrainingBreakdowns);
+    const summaryTabData = buildWorkplaceSummaryData(
+      workerTrainingBreakdowns,
+      rawData.rawEstablishmentCareCertificateStatus,
+    );
+
+    generateIntroTab(workbook, establishment);
+    await generateParentSummaryTab(workbook, establishment, summaryTabData);
 
     const rawEstablishmentWithTrainingRecords = await models.establishment.getEstablishmentTrainingRecords(
       establishment.id,

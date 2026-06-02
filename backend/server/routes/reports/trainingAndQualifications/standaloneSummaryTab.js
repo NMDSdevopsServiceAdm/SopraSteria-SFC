@@ -6,6 +6,7 @@ const {
   newTextColours,
   alignments,
   applyStyleToRange,
+  MissingRecordsExplanationText,
 } = require('../../../utils/excelUtils');
 const { WorkerCareCertificate, WorkerLevel2CareCertificate } = require('../../../../reference/databaseEnumTypes');
 const { formatDateTime } = require('../../../utils/dateUtils');
@@ -118,7 +119,7 @@ const addtrainingBreakdownTotals = (tab, trainingBreakdownTotals) => {
       size: 18,
       alignment: alignments.centerMiddle,
     },
-    { range: 'H20:H22', value: missingRecordsExplanationText, alignment: alignments.leftMiddleWrapText },
+    { range: 'H20:H22', value: MissingRecordsExplanationText, alignment: alignments.leftMiddleWrapText },
   ];
 
   const columnHeadings = [
@@ -285,19 +286,6 @@ const removeBoldForLongTexts = (tab, longTexts) => {
   longTexts.forEach(({ range }) => {
     applyStyleToRange(tab, range, { font: { bold: false } });
   });
-};
-
-const missingRecordsExplanationText = {
-  richText: [
-    { font: { size: 12, bold: true, family: 4 }, text: 'Missing records.' },
-    {
-      font: {
-        size: 12,
-        family: 4,
-      },
-      text: ' If a training category is mandatory, you must add a record for everybody who needs that training. Note, missing records may include training not yet taken by new starters.',
-    },
-  ],
 };
 
 const noMandatoryTrainingMessage = 'No training categories have been made mandatory yet';

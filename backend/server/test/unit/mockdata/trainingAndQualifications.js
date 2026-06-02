@@ -267,6 +267,29 @@ const totalCountsForMockWorkplaceB = {
 };
 exports.totalCountsForMockWorkplaceB = totalCountsForMockWorkplaceB;
 
+const grandTotalCountsForMockWorkplaceAAndB = {
+  trainingCount: 58,
+  mandatoryTrainingCount: 18,
+  nonMandatoryTrainingCount: 40,
+
+  expiredTrainingCount: 16,
+  expiredMandatoryTrainingCount: 4,
+  expiredNonMandatoryTrainingCount: 12,
+
+  expiringTrainingCount: 14,
+  expiringMandatoryTrainingCount: 4,
+  expiringNonMandatoryTrainingCount: 10,
+
+  upToDateTrainingCount: 28,
+  upToDateMandatoryTrainingCount: 10,
+  upToDateNonMandatoryTrainingCount: 18,
+
+  missingMandatoryTrainingCount: 7,
+  qualificationCount: 4,
+};
+
+exports.grandTotalCountsForMockWorkplaceAAndB = grandTotalCountsForMockWorkplaceAAndB;
+
 exports.mockWorkerTrainingRecords = [
   {
     name: 'AAPNES East Area Business Support',
@@ -752,8 +775,33 @@ const careCertAndQualificationLevelsForWorkplaceB = {
   },
 };
 
+const grandTotalCareCertAndQualificationLevelsForWorkplaceAAndB = {
+  careProvidingStaffsCount: 4,
+  careCertificate: {
+    'Yes, in progress or partially completed': 1,
+    'Yes, completed': 1,
+    No: 2,
+  },
+  level2CareCertificate: {
+    'Yes, started': 1,
+    null: 1,
+    No: 1,
+    'Yes, completed': 1,
+  },
+  socialCareQualificationLevel: {
+    'Level 2': 0.25,
+    'Level 3': 0.25,
+    'Level 4': 0.25,
+    'Level 8 or above': 0.25,
+    'Level 2 or above': 1.0,
+    'Level 5 or above': 0.25,
+  },
+};
+
 exports.careCertAndQualificationLevelsForWorkplaceA = careCertAndQualificationLevelsForWorkplaceA;
 exports.careCertAndQualificationLevelsForWorkplaceB = careCertAndQualificationLevelsForWorkplaceB;
+exports.grandTotalCareCertAndQualificationLevelsForWorkplaceAAndB =
+  grandTotalCareCertAndQualificationLevelsForWorkplaceAAndB;
 
 const today = dayjs().format('YYYY-MM-DD');
 const yesterday = dayjs().subtract(1, 'days').format('YYYY-MM-DD');
@@ -899,8 +947,24 @@ const mockSummaryTabDataForWorkplaceAWithNoCareProvidingStaffs = {
   },
 };
 
+const mockSummaryTabDataForWorkplaceB = {
+  workplaceId: 2345,
+  workplaceName: 'mock care home 2',
+  trainingBreakdownTotals: totalCountsForMockWorkplaceB,
+  careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceB,
+};
+
 exports.mockSummaryTabDataForWorkplaceA = mockSummaryTabDataForWorkplaceA;
+exports.mockSummaryTabDataForWorkplaceB = mockSummaryTabDataForWorkplaceB;
 exports.mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining =
   mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining;
 exports.mockSummaryTabDataForWorkplaceAWithNoCareProvidingStaffs =
   mockSummaryTabDataForWorkplaceAWithNoCareProvidingStaffs;
+
+exports.mockSummaryTabDataForParent = {
+  total: {
+    trainingBreakdownTotals: grandTotalCountsForMockWorkplaceAAndB,
+    careCertAndQualificationLevels: grandTotalCareCertAndQualificationLevelsForWorkplaceAAndB,
+  },
+  workplacesData: [mockSummaryTabDataForWorkplaceA, mockSummaryTabDataForWorkplaceB],
+};

@@ -24,6 +24,7 @@ const {
 const { generateExpiredTrainingTab } = require('./expiredTrainingTab');
 const { generateTrainingRecordDetailsTab } = require('./trainingRecordDetailsTab');
 const { generateQualificationRecordDetailsTab } = require('./qualificationRecordDetailsTab');
+const { getRawDataForTrainingAndQualificationsReport } = require('./getRawData');
 
 const generateTrainingAndQualificationsReport = async (req, res) => {
   try {
@@ -41,12 +42,12 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
       rawData.rawEstablishmentCareCertificateStatus,
     );
     const workerTrainingBreakdowns = await buildWorkerTrainingBreakdown(rawData.rawEstablishmentTrainingBreakdowns);
-    const summaryTabData = buildWorkplaceSummaryData(
+    const { workplacesData } = buildWorkplaceSummaryData(
       workerTrainingBreakdowns,
       rawData.rawEstablishmentCareCertificateStatus,
     );
 
-    await generateSummaryTab(workbook, summaryTabData[0]);
+    await generateSummaryTab(workbook, workplacesData[0]);
 
     await generateTrainingByStaffTab(workbook, workerTrainingBreakdowns);
 
@@ -76,28 +77,6 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
     console.error(error);
     return res.status(500).send();
   }
-};
-
-const getRawDataForTrainingAndQualificationsReport = async (establishmentId, isParent = false) => {
-  const rawEstablishmentTrainingBreakdowns = await models.establishment.workersAndTraining(
-    establishmentId,
-    true,
-    isParent,
-  );
-  const rawEstablishmentWithTrainingRecords = await models.establishment.getEstablishmentTrainingRecords(
-    establishmentId,
-    isParent,
-  );
-  const rawEstablishmentCareCertificateStatus = await models.establishment.getWorkersWithCareCertificateStatus(
-    establishmentId,
-    isParent,
-  );
-
-  return {
-    rawEstablishmentTrainingBreakdowns,
-    rawEstablishmentWithTrainingRecords,
-    rawEstablishmentCareCertificateStatus,
-  };
 };
 
 router

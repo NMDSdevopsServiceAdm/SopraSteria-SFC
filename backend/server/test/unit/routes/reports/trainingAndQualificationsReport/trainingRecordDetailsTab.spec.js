@@ -82,6 +82,14 @@ describe('TrainingRecordDetailsTab', () => {
       });
     });
 
+    it('should show one empty row if there are no training records at all', () => {
+      generateTrainingRecordDetailsTab(workbook, []);
+
+      const tab = workbook.getWorksheet('Training record details');
+
+      expect(tab.getRow(4).values.slice(2)).to.deep.equal(Array(15).fill(''));
+    });
+
     it('should show the missing mandatory trainings for every worker', () => {
       generateTrainingRecordDetailsTab(workbook, allTrainingRecordsAndMissingTrainings);
 

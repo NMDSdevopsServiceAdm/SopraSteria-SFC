@@ -184,7 +184,54 @@ const colourSchemeForTrainingExpiry = [
   { text: 'Up-to-date', colour: newBackgroundColours.green },
   { text: 'Missing', colour: newBackgroundColours.red },
 ];
+
+const basicStyleForParentSummaryTable = {
+  font: { size: 12, family: 4, bold: true },
+  fill: { type: 'pattern', pattern: 'solid', fgColor: newBackgroundColours.white },
+  border: borderStyles.blackBorderAllSides,
+  alignment: { vertical: 'middle', horizontal: 'center' },
+};
+const getCellStyleForParentSummary = (columnName) => {
+  switch (columnName) {
+    case 'Workplace': {
+      return { font: { bold: false }, alignment: alignments.leftMiddle };
+    }
+    case 'Expired':
+    case 'Missing records': {
+      return lodash.merge({}, basicStyleForParentSummaryTable, { fill: { fgColor: newBackgroundColours.red } });
+    }
+    case 'Expiring soon': {
+      return lodash.merge({}, basicStyleForParentSummaryTable, { fill: { fgColor: newBackgroundColours.orange } });
+    }
+    case 'Up-to-date': {
+      return lodash.merge({}, basicStyleForParentSummaryTable, { fill: { fgColor: newBackgroundColours.green } });
+    }
+    case 'Completed':
+    case 'Started':
+    case 'Not started':
+    case 'Level 2 or higher': {
+      return lodash.merge({}, basicStyleForParentSummaryTable, {
+        fill: { fgColor: newBackgroundColours.darkBlue },
+        font: { color: newTextColours.white },
+      });
+    }
+
+    case 'Level 2':
+    case 'Level 3':
+    case 'Level 4':
+    case 'Level 5 or above': {
+      return lodash.merge({}, basicStyleForParentSummaryTable, {
+        fill: { fgColor: newBackgroundColours.lightBlue },
+        font: { color: newTextColours.darkBlue },
+      });
+    }
+  }
+
+  return basicStyleForParentSummaryTable;
+};
+
 exports.colourSchemeForTrainingExpiry = colourSchemeForTrainingExpiry;
+exports.getCellStyleForParentSummary = getCellStyleForParentSummary;
 
 exports.conditionalColoursForTrainingExpiry = colourSchemeForTrainingExpiry.map(({ text, colour }) => {
   return {
@@ -200,6 +247,20 @@ exports.conditionalColoursForTrainingExpiry = colourSchemeForTrainingExpiry.map(
 });
 
 exports.defaultDateFormat = 'd mmm yyyy';
+
+const MissingRecordsExplanationText = {
+  richText: [
+    { font: { size: 12, bold: true, family: 4 }, text: 'Missing records.' },
+    {
+      font: {
+        size: 12,
+        family: 4,
+      },
+      text: ' If a training category is mandatory, you must add a record for everybody who needs that training. Note, missing records may include training not yet taken by new starters.',
+    },
+  ],
+};
+exports.MissingRecordsExplanationText = MissingRecordsExplanationText;
 
 //  ===== helper methods =====
 

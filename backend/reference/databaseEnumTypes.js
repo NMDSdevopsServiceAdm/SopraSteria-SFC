@@ -39,6 +39,9 @@ const WorkerSocialCareQualificationLevel = {
   DontKnow: "Don't know",
 };
 
+const Level2OrAbove = 'Level 2 or above';
+const Level5OrAbove = 'Level 5 or above';
+
 module.exports = {
   Enum,
   TrainingCourseDeliveredBy,
@@ -46,4 +49,6 @@ module.exports = {
   WorkerCareCertificate,
   WorkerLevel2CareCertificate,
   WorkerSocialCareQualificationLevel,
+  Level2OrAbove,
+  Level5OrAbove,
 };
