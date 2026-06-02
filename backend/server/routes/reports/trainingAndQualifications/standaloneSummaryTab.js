@@ -31,11 +31,11 @@ const generateSummaryTab = (workbook, summaryTabData) => {
 
 const setHeightAndWidths = (tab) => {
   const columnWidths = [
-    2.5, 3, 1.75, 33, 1.75, 1.75, 1.75, 33, 1.75, 1.75, 1.75, 33, 1.75, 3.5, 3, 3.5, 1.75, 33, 1.75, 1.75, 1.75, 33,
+    3.1, 3, 1.75, 33, 1.75, 1.75, 1.75, 33, 1.75, 1.75, 1.75, 33, 1.75, 3.5, 3, 3.5, 1.75, 33, 1.75, 1.75, 1.75, 33,
     1.75, 1.75, 1.75, 33, 1.75, 3,
   ];
   const rowHeights = [
-    45, 45, 45, 45, 45, 10, 20, 45, 10, 20, 45, 10, 20, 45, 10, 20, 45, 10, 20, 45, 10, 45, 18, 45, 10, 10, 22,
+    45, 45, 33, 12, 45, 45, 10, 20, 45, 10, 20, 45, 10, 20, 45, 10, 20, 45, 10, 20, 45, 10, 45, 18, 45, 10, 10, 22,
   ];
 
   columnWidths.forEach((width, index) => {
@@ -56,31 +56,31 @@ const addBannerImage = (workbook, tab) => {
 
 const addTitle = (tab, establishmentName) => {
   addText(tab, 'D2:J2', establishmentName, { size: 26, bold: true });
-  addText(tab, 'D3:J3', 'Summary', { size: 24, bold: true });
+  addText(tab, 'D3:J3', 'Summary', { size: 24, bold: true }, { alignment: alignments.bottomLeft });
 
   addText(
     tab,
     'Y3:AB3',
     formatDateTime(new Date(), 'DD MMMM YYYY, HH:mm'),
     { size: 13, bold: true },
-    { alignment: alignments.rightMiddle },
+    { alignment: alignments.bottomRight },
   );
 
-  setColourForRange(tab, 'A2:AN3', { backgroundColour: newBackgroundColours.lightGrey });
+  setColourForRange(tab, 'A2:AN4', { backgroundColour: newBackgroundColours.lightGrey });
 };
 
 const drawColouredArea = (tab) => {
-  setColourForRange(tab, 'B5:N27', { backgroundColour: newBackgroundColours.lightGrey });
-  setColourForRange(tab, 'P5:AB27', { backgroundColour: newBackgroundColours.lightGrey });
+  setColourForRange(tab, 'B6:N28', { backgroundColour: newBackgroundColours.lightGrey });
+  setColourForRange(tab, 'P6:AB28', { backgroundColour: newBackgroundColours.lightGrey });
 
-  const whiteAreas = ['C6:E18', 'G6:I18', 'K6:M18', 'G20:I25', 'Q6:S15', 'U6:W15', 'Y6:AA21'];
-  const totals = ['D7:D8', 'H7:H8', 'L7:L8'];
-  const expiredOrMissing = ['D10:D11', 'H10:H11', 'L10:L11', 'H23:H24'];
-  const expiringSoon = ['D13:D14', 'H13:H14', 'L13:L14'];
-  const upToDate = ['D16:D17', 'H16:H17', 'L16:L17'];
+  const whiteAreas = ['C7:E19', 'G7:I19', 'K7:M19', 'G21:I26', 'Q7:S16', 'U7:W16', 'Y7:AA22'];
+  const totals = ['D8:D9', 'H8:H9', 'L8:L9'];
+  const expiredOrMissing = ['D11:D12', 'H11:H12', 'L11:L12', 'H24:H25'];
+  const expiringSoon = ['D14:D15', 'H14:H15', 'L14:L15'];
+  const upToDate = ['D17:D18', 'H17:H18', 'L17:L18'];
 
-  const whiteTextOnBlue = ['R7:R8', 'R10:R11', 'R13:R14', 'V7:V8', 'V10:V11', 'V13:V14', 'Z7:Z8'];
-  const darkBlueTextOnLightBlue = ['Z10:Z11', 'Z13:Z14', 'Z16:Z17', 'Z19:Z20'];
+  const whiteTextOnBlue = ['R8:R9', 'R11:R12', 'R14:R15', 'V8:V9', 'V11:V12', 'V14:V15', 'Z8:Z9'];
+  const darkBlueTextOnLightBlue = ['Z11:Z12', 'Z14:Z15', 'Z17:Z18', 'Z20:Z21'];
 
   const colourBoxes = [
     whiteAreas.map((range) => ({ range, backgroundColour: newBackgroundColours.white })),
@@ -114,58 +114,58 @@ const addtrainingBreakdownTotals = (tab, trainingBreakdownTotals) => {
   const totals = trainingBreakdownTotals;
   const longTexts = [
     {
-      range: 'D4:L4',
+      range: 'D5:L5',
       value: 'All staff (could include staff flagged as long-term absent)',
       size: 18,
-      alignment: alignments.centerMiddle,
+      alignment: alignments.middleCenter,
     },
-    { range: 'H20:H22', value: MissingRecordsExplanationText, alignment: alignments.leftMiddleWrapText },
+    { range: 'H21:H23', value: MissingRecordsExplanationText, alignment: alignments.middleLeftWrapText },
   ];
 
   const columnHeadings = [
-    { range: 'D5', value: 'All training records' },
-    { range: 'H5', value: 'Mandatory training records' },
-    { range: 'L5', value: 'Non-mandatory training records' },
+    { range: 'D6', value: 'All training records' },
+    { range: 'H6', value: 'Mandatory training records' },
+    { range: 'L6', value: 'Non-mandatory training records' },
   ].map((cell) => ({ ...cell, size: 14 }));
 
   const cellLabels = [
-    { range: 'D7', value: 'Total' },
-    { range: 'D10', value: 'Expired' },
-    { range: 'D13', value: 'Expiring soon' },
-    { range: 'D16', value: 'Up-to-date' },
+    { range: 'D8', value: 'Total' },
+    { range: 'D11', value: 'Expired' },
+    { range: 'D14', value: 'Expiring soon' },
+    { range: 'D17', value: 'Up-to-date' },
 
-    { range: 'H7', value: 'Total' },
-    { range: 'H10', value: 'Expired' },
-    { range: 'H13', value: 'Expiring soon' },
-    { range: 'H16', value: 'Up-to-date' },
+    { range: 'H8', value: 'Total' },
+    { range: 'H11', value: 'Expired' },
+    { range: 'H14', value: 'Expiring soon' },
+    { range: 'H17', value: 'Up-to-date' },
 
-    { range: 'L7', value: 'Total' },
-    { range: 'L10', value: 'Expired' },
-    { range: 'L13', value: 'Expiring soon' },
-    { range: 'L16', value: 'Up-to-date' },
+    { range: 'L8', value: 'Total' },
+    { range: 'L11', value: 'Expired' },
+    { range: 'L14', value: 'Expiring soon' },
+    { range: 'L17', value: 'Up-to-date' },
 
-    { range: 'H23', value: 'Missing records' },
-  ].map((cell) => ({ ...cell, alignment: alignments.centerBottom }));
+    { range: 'H24', value: 'Missing records' },
+  ].map((cell) => ({ ...cell, alignment: alignments.bottomCenter }));
 
   const mandatoryTrainingCells = buildMandatoryTrainingCells(totals);
 
   const numbers = [
-    { range: 'D8', value: totals.trainingCount },
-    { range: 'D11', value: totals.expiredTrainingCount },
-    { range: 'D14', value: totals.expiringTrainingCount },
-    { range: 'D17', value: totals.upToDateTrainingCount },
+    { range: 'D9', value: totals.trainingCount },
+    { range: 'D12', value: totals.expiredTrainingCount },
+    { range: 'D15', value: totals.expiringTrainingCount },
+    { range: 'D18', value: totals.upToDateTrainingCount },
 
-    { range: 'L8', value: totals.nonMandatoryTrainingCount },
-    { range: 'L11', value: totals.expiredNonMandatoryTrainingCount },
-    { range: 'L14', value: totals.expiringNonMandatoryTrainingCount },
-    { range: 'L17', value: totals.upToDateNonMandatoryTrainingCount },
+    { range: 'L9', value: totals.nonMandatoryTrainingCount },
+    { range: 'L12', value: totals.expiredNonMandatoryTrainingCount },
+    { range: 'L15', value: totals.expiringNonMandatoryTrainingCount },
+    { range: 'L18', value: totals.upToDateNonMandatoryTrainingCount },
   ].map((cell) => ({ ...cell, size: 30 }));
 
   const cellData = columnHeadings.concat(longTexts, cellLabels, mandatoryTrainingCells, numbers);
 
   cellData.forEach(({ range, value, size, alignment }) => {
     const font = { size: size ?? 12, bold: true };
-    const textAlignment = alignment ? { alignment } : { alignment: alignments.centerMiddle };
+    const textAlignment = alignment ? { alignment } : { alignment: alignments.middleCenter };
     addText(tab, range, value, font, textAlignment);
   });
 };
@@ -173,21 +173,21 @@ const addtrainingBreakdownTotals = (tab, trainingBreakdownTotals) => {
 const buildMandatoryTrainingCells = (totals) => {
   const workplaceHasNoMandatoryTraining = totals.mandatoryTrainingCount + totals.missingMandatoryTrainingCount === 0;
 
-  const showTotalCount = { range: 'H8', value: totals.mandatoryTrainingCount, size: 30 };
+  const showTotalCount = { range: 'H9', value: totals.mandatoryTrainingCount, size: 30 };
   const showSpecialMessage = {
-    range: 'H8',
+    range: 'H9',
     value: noMandatoryTrainingMessage,
     size: 14,
-    alignment: alignments.centerMiddleWrapText,
+    alignment: alignments.middleCenterWrapText,
   };
 
   const totalCell = workplaceHasNoMandatoryTraining ? showSpecialMessage : showTotalCount;
 
   const otherCells = [
-    { range: 'H11', value: totals.expiredMandatoryTrainingCount },
-    { range: 'H14', value: totals.expiringMandatoryTrainingCount },
-    { range: 'H17', value: totals.upToDateMandatoryTrainingCount },
-    { range: 'H24', value: totals.missingMandatoryTrainingCount },
+    { range: 'H12', value: totals.expiredMandatoryTrainingCount },
+    { range: 'H15', value: totals.expiringMandatoryTrainingCount },
+    { range: 'H18', value: totals.upToDateMandatoryTrainingCount },
+    { range: 'H25', value: totals.missingMandatoryTrainingCount },
   ].map((cell) => {
     if (workplaceHasNoMandatoryTraining) {
       return { ...cell, value: '-', size: 30 };
@@ -207,57 +207,57 @@ const addCareCertAndQualificationLevels = (tab, careCertAndQualificationLevels) 
 
   const sectionHeading = [
     {
-      range: 'P4:AA4',
+      range: 'P5:AA5',
       value: sectionHeadingText,
       size: 18,
-      alignment: alignments.centerMiddle,
+      alignment: alignments.middleCenter,
     },
   ];
   const longTexts = [
-    { range: 'Q16:W17', value: careCertExplanationText, size: 12, alignment: alignments.leftMiddleWrapText },
-    { range: 'Q19:W20', value: careCertNotesText, size: 12, alignment: alignments.topLeftWrapText },
+    { range: 'Q17:W20', value: careCertExplanationText, size: 12, alignment: alignments.middleLeftWrapText },
+    { range: 'Q21:W22', value: careCertNotesText, size: 12, alignment: alignments.topLeftWrapText },
   ];
 
   const columnHeadings = [
-    { range: 'R5', value: 'Care Certificates' },
-    { range: 'V5', value: 'L2 Adult Social Care Certificates' },
-    { range: 'Z5', value: 'Social care qualification levels' },
+    { range: 'R6', value: 'Care Certificates' },
+    { range: 'V6', value: 'L2 Adult Social Care Certificates' },
+    { range: 'Z6', value: 'Social care qualification levels' },
   ].map((cell) => ({ ...cell, size: 14 }));
 
   const cellLabels = [
-    { range: 'R7', value: 'Completed' },
-    { range: 'R10', value: 'Started or partially completed' },
-    { range: 'R13', value: 'Not started' },
+    { range: 'R8', value: 'Completed' },
+    { range: 'R11', value: 'Started or partially completed' },
+    { range: 'R14', value: 'Not started' },
 
-    { range: 'V7', value: 'Completed' },
-    { range: 'V10', value: 'Started' },
-    { range: 'V13', value: 'Not started' },
+    { range: 'V8', value: 'Completed' },
+    { range: 'V11', value: 'Started' },
+    { range: 'V14', value: 'Not started' },
 
-    { range: 'Z7', value: 'Level 2 or higher' },
-    { range: 'Z10', value: 'Level 2' },
-    { range: 'Z13', value: 'Level 3' },
-    { range: 'Z16', value: 'Level 4' },
-    { range: 'Z19', value: 'Level 5 or above' },
-  ].map((cell) => ({ ...cell, alignment: alignments.centerBottom }));
+    { range: 'Z8', value: 'Level 2 or higher' },
+    { range: 'Z11', value: 'Level 2' },
+    { range: 'Z14', value: 'Level 3' },
+    { range: 'Z17', value: 'Level 4' },
+    { range: 'Z20', value: 'Level 5 or above' },
+  ].map((cell) => ({ ...cell, alignment: alignments.bottomCenter }));
 
   const numbers = [
-    { range: 'R8', value: data?.careCertificate?.[WorkerCareCertificate.YesCompleted] },
-    { range: 'R11', value: data?.careCertificate?.[WorkerCareCertificate.YesInProgress] },
-    { range: 'R14', value: data?.careCertificate?.[WorkerCareCertificate.No] },
-    { range: 'V8', value: data?.level2CareCertificate?.[WorkerLevel2CareCertificate.YesCompleted] },
-    { range: 'V11', value: data?.level2CareCertificate?.[WorkerLevel2CareCertificate.YesStarted] },
-    { range: 'V14', value: data?.level2CareCertificate?.[WorkerLevel2CareCertificate.No] },
+    { range: 'R9', value: data?.careCertificate?.[WorkerCareCertificate.YesCompleted] },
+    { range: 'R12', value: data?.careCertificate?.[WorkerCareCertificate.YesInProgress] },
+    { range: 'R15', value: data?.careCertificate?.[WorkerCareCertificate.No] },
+    { range: 'V9', value: data?.level2CareCertificate?.[WorkerLevel2CareCertificate.YesCompleted] },
+    { range: 'V12', value: data?.level2CareCertificate?.[WorkerLevel2CareCertificate.YesStarted] },
+    { range: 'V15', value: data?.level2CareCertificate?.[WorkerLevel2CareCertificate.No] },
   ].map((cell) => {
     const cellValue = cell.value ?? defaultValue;
     return { ...cell, value: cellValue, size: 30 };
   });
 
   const percentages = [
-    { range: 'Z8', value: data?.socialCareQualificationLevel?.['Level 2 or above'] },
-    { range: 'Z11', value: data?.socialCareQualificationLevel?.['Level 2'] },
-    { range: 'Z14', value: data?.socialCareQualificationLevel?.['Level 3'] },
-    { range: 'Z17', value: data?.socialCareQualificationLevel?.['Level 4'] },
-    { range: 'Z20', value: data?.socialCareQualificationLevel?.['Level 5 or above'] },
+    { range: 'Z9', value: data?.socialCareQualificationLevel?.['Level 2 or above'] },
+    { range: 'Z12', value: data?.socialCareQualificationLevel?.['Level 2'] },
+    { range: 'Z15', value: data?.socialCareQualificationLevel?.['Level 3'] },
+    { range: 'Z18', value: data?.socialCareQualificationLevel?.['Level 4'] },
+    { range: 'Z21', value: data?.socialCareQualificationLevel?.['Level 5 or above'] },
   ].map((cell) => {
     const cellValue = cell.value ?? defaultValue;
     return { ...cell, value: cellValue, size: 30 };
@@ -267,7 +267,7 @@ const addCareCertAndQualificationLevels = (tab, careCertAndQualificationLevels) 
 
   cellData.forEach(({ range, value, size, alignment }) => {
     const font = { size: size ?? 12, bold: true };
-    const textAlignment = alignment ? { alignment } : { alignment: alignments.centerMiddle };
+    const textAlignment = alignment ? { alignment } : { alignment: alignments.middleCenter };
     addText(tab, range, value, font, textAlignment);
   });
 

@@ -9,6 +9,7 @@ const {
   addText,
   setColourForRange,
   applyStyleToRange,
+  alignments,
 } = require('../../../utils/excelUtils');
 const { formatDateTime } = require('../../../utils/dateUtils');
 
@@ -25,15 +26,15 @@ const generateIntroTab = async (workbook, establishment) => {
   addBannerImage(workbook, introTab);
   addHeadingsToIntroTab(introTab, establishment);
 
-  addText(introTab, 'B5:H9', introductionText, { size: 12 });
-  introTab.getCell('B5').alignment = { wrapText: true, vertical: 'top' };
+  addText(introTab, 'B6:H10', introductionText, { size: 12 });
+  introTab.getCell('B6').alignment = { wrapText: true, vertical: 'top' };
 
   addLinksToOtherTabs(introTab);
 };
 
 const setCellSizeAndFormats = (tab) => {
-  const columnWidths = [8, Array(5).fill(12.5), 14.5, 6.3].flat();
-  const rowHeights = [Array(4).fill(48), Array(4).fill(24), 33, 37, Array(9).fill(31)].flat();
+  const columnWidths = [8, Array(5).fill(12.5), 14, 8, 8].flat();
+  const rowHeights = [Array(2).fill(45), 33, 12, 45, Array(4).fill(28), 33, 37, Array(9).fill(31)].flat();
 
   columnWidths.forEach((width, index) => {
     const column = tab.getColumn(index + 1);
@@ -44,8 +45,8 @@ const setCellSizeAndFormats = (tab) => {
     tab.getRow(index + 1).height = height;
   });
 
-  setColourForRange(tab, 'A2:Z3', { backgroundColour: newBackgroundColours.lightGrey });
-  setColourForRange(tab, 'A10:H18', { backgroundColour: newBackgroundColours.lightGrey });
+  setColourForRange(tab, 'A2:Z4', { backgroundColour: newBackgroundColours.lightGrey });
+  setColourForRange(tab, 'A11:I19', { backgroundColour: newBackgroundColours.lightGrey });
 };
 
 const addBannerImage = (workbook, introTab) => {
@@ -60,9 +61,21 @@ const addHeadingsToIntroTab = (introTab, establishment) => {
   addText(introTab, 'B2:H2', establishment.NameValue, { size: 26, bold: true });
   setWorkplaceNameTextWrap(introTab, establishment);
 
-  addText(introTab, 'B3:F3', 'Training and qualifications report', { size: 24, bold: true });
-  addText(introTab, 'G3:H3', formatDateTime(new Date(), 'DD MMMM YYYY, HH:mm'), { size: 13, bold: true });
-  addText(introTab, 'B4:H4', 'Introduction: how you can use this report', { size: 18, bold: true });
+  addText(
+    introTab,
+    'B3:F3',
+    'Training and qualifications report',
+    { size: 24, bold: true },
+    { alignment: alignments.bottomLeft },
+  );
+  addText(
+    introTab,
+    'G3:I3',
+    formatDateTime(new Date(), 'DD MMMM YYYY, HH:mm'),
+    { size: 13, bold: true },
+    { alignment: alignments.bottomRight },
+  );
+  addText(introTab, 'B5:H5', 'Introduction: how you can use this report', { size: 18, bold: true });
 };
 
 const setWorkplaceNameTextWrap = (introTab, establishment) => {
@@ -89,13 +102,13 @@ const addLinksToOtherTabs = (introTab) => {
     { text: 'Qualification record details', hyperlink: "#'Qualification record details'!A1" },
   ];
 
-  addHeading(introTab, 'B10', 'H10', 'Menu', newTextColours.black, 18);
+  addHeading(introTab, 'B11', 'I11', 'Menu', newTextColours.black, 18);
 
   links.forEach((link, index) => {
-    const rowNumber = 11 + index;
-    addLink(introTab, `B${rowNumber}:G${rowNumber}`, link, { size: 16 });
+    const rowNumber = 12 + index;
+    addLink(introTab, `B${rowNumber}:H${rowNumber}`, link, { size: 16 });
 
-    applyStyleToRange(introTab, `B${rowNumber}:G${rowNumber}`, { border: borderStyles.lightGreyBorderTopAndBottom });
+    applyStyleToRange(introTab, `B${rowNumber}:H${rowNumber}`, { border: borderStyles.lightGreyBorderTopAndBottom });
   });
 };
 

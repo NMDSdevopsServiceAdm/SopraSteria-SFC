@@ -3,7 +3,8 @@ const {
   addText,
   setColourForRange,
   setBasicTableStyle,
-  autoFitColumnWidthByTextLength,
+  forEachCellInRange,
+  autoAdjustWrapTextAndRowHeight,
 } = require('../../../utils/excelUtils');
 
 const lodash = require('lodash');
@@ -13,13 +14,13 @@ const generateCareCertificateTab = async (workbook, careCertificateStatus, isPar
   const careCertificateTab = workbook.addWorksheet('Care Certificates', { views: [{ showGridLines: false }] });
 
   const columnsToDisplay = [
-    ...(isParent ? [{ columnName: 'Workplace', field: 'establishmentName' }] : []),
+    ...(isParent ? [{ columnName: 'Workplace', field: 'establishmentName', width: 33 }] : []),
 
-    { columnName: 'Name or ID number', field: 'workerId' },
+    { columnName: 'Name or ID number', field: 'workerId', width: 30 },
 
-    { columnName: 'Main job role', field: 'jobRole' },
-    { columnName: 'Care Certificate', field: 'careCertificate' },
-    { columnName: 'L2 Adult Social Care Certificate', field: 'l2CareCertificate' },
+    { columnName: 'Main job role', field: 'jobRole', width: 30 },
+    { columnName: 'Care Certificate', field: 'careCertificate', width: 35 },
+    { columnName: 'L2 Adult Social Care Certificate', field: 'l2CareCertificate', width: 35 },
   ];
 
   addTitle(careCertificateTab);
@@ -28,7 +29,7 @@ const generateCareCertificateTab = async (workbook, careCertificateStatus, isPar
 
   addCareCertificateTable(careCertificateTab, sortedData, columnsToDisplay);
 
-  setHeightsAndWidths(careCertificateTab);
+  setHeightsAndWidths(careCertificateTab, columnsToDisplay);
   addFootNote(careCertificateTab);
 };
 
@@ -66,19 +67,15 @@ const addCareCertificateTable = (tab, sortedData, columnsToDisplay) => {
   setFreezePane(tab);
 };
 
-const setHeightsAndWidths = (tab) => {
-  const columnWidths = [22, 22, 28, 28];
+const setHeightsAndWidths = (tab, columnsToDisplay) => {
+  const columnWidths = [8, ...columnsToDisplay.map((column) => column.width)];
 
   columnWidths.forEach((width, index) => {
-    const column = tab.getColumn(index + 2);
+    const column = tab.getColumn(index + 1);
     column.width = width;
   });
 
-  [2, 3, 4, 5].forEach((column) => {
-    autoFitColumnWidthByTextLength(tab, column, 12);
-  });
-
-  const rowHeights = [48, 18, 35, 30];
+  const rowHeights = [45, 18, 35, 30];
 
   rowHeights.forEach((height, index) => {
     tab.getRow(index + 1).height = height;
@@ -87,6 +84,20 @@ const setHeightsAndWidths = (tab) => {
   for (let i = 4; i <= tab.lastRow.number; i++) {
     tab.getRow(i).height = 22;
   }
+
+  autoAdjustWrapTextForColumns(tab);
+};
+
+const autoAdjustWrapTextForColumns = (tab) => {
+  const top = HeaderRowNumber + 1;
+  const bottom = tab.lastRow.number;
+
+  const autoAdjustRange = `B${top}:D${bottom}`;
+
+  forEachCellInRange(tab, autoAdjustRange, (cell) => {
+    const columnWidth = tab.getColumn(cell.col).width;
+    autoAdjustWrapTextAndRowHeight(tab, cell, columnWidth);
+  });
 };
 
 const addFootNote = (tab) => {

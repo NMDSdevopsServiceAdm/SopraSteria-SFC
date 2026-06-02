@@ -7,8 +7,9 @@ const {
   setBasicTableStyle,
   tableHeaderCellStyle,
   applyStyleToRange,
-  autoFitColumnWidthByTextLength,
   colourSchemeForTrainingExpiry,
+  forEachCellInRange,
+  autoAdjustWrapTextAndRowHeight,
 } = require('../../../utils/excelUtils');
 
 const colCache = require('exceljs/lib/utils/col-cache');
@@ -122,18 +123,14 @@ const addTotalRow = (tab, sortedData, columnsToDisplay) => {
 };
 
 const setHeightsAndWidths = (tab) => {
-  const columnWidths = [7, 33, 18, 18, 18, 18, 18, 18];
+  const columnWidths = [8, 33, 18, 18, 18, 18, 18, 18];
 
   columnWidths.forEach((width, index) => {
     const column = tab.getColumn(index + 1);
     column.width = width;
   });
 
-  [2, 3, 4, 5].forEach((column) => {
-    autoFitColumnWidthByTextLength(tab, column, 12);
-  });
-
-  const rowHeights = [48, 18, 22, 44];
+  const rowHeights = [45, 18, 22, 38];
 
   rowHeights.forEach((height, index) => {
     const row = tab.getRow(index + 1);
@@ -144,6 +141,20 @@ const setHeightsAndWidths = (tab) => {
     const row = tab.getRow(i);
     row.height = 22;
   }
+
+  autoAdjustWrapTextForCategoryNameAndWorkplaceColumn(tab);
+};
+
+const autoAdjustWrapTextForCategoryNameAndWorkplaceColumn = (tab) => {
+  const top = HeaderRowNumber + 1;
+  const bottom = tab.lastRow.number;
+
+  const autoAdjustRange = `B${top}:C${bottom}`;
+
+  forEachCellInRange(tab, autoAdjustRange, (cell) => {
+    const columnWidth = tab.getColumn(cell.col).width;
+    autoAdjustWrapTextAndRowHeight(tab, cell, columnWidth);
+  });
 };
 
 const setAlignmentForColumns = (tab) => {

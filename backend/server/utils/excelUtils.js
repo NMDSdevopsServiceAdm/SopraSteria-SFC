@@ -28,15 +28,17 @@ const textBoxAlignment = { vertical: 'middle', horizontal: 'left', wrapText: tru
 exports.textBoxAlignment = textBoxAlignment;
 
 const alignments = {
-  leftMiddle: { vertical: 'middle', horizontal: 'left' },
-  centerMiddle: { vertical: 'middle', horizontal: 'center' },
-  centerBottom: { vertical: 'bottom', horizontal: 'center' },
+  middleLeft: { vertical: 'middle', horizontal: 'left' },
+  middleCenter: { vertical: 'middle', horizontal: 'center' },
+  bottomCenter: { vertical: 'bottom', horizontal: 'center' },
   topLeft: { vertical: 'top', horizontal: 'left' },
-  rightMiddle: { vertical: 'middle', horizontal: 'right' },
+  bottomLeft: { vertical: 'bottom', horizontal: 'left' },
+  bottomRight: { vertical: 'bottom', horizontal: 'right' },
+  middleRight: { vertical: 'middle', horizontal: 'right' },
 
-  centerMiddleWrapText: { vertical: 'middle', horizontal: 'center', wrapText: true },
+  middleCenterWrapText: { vertical: 'middle', horizontal: 'center', wrapText: true },
   topLeftWrapText: { vertical: 'top', horizontal: 'left', wrapText: true },
-  leftMiddleWrapText: { vertical: 'middle', horizontal: 'left', wrapText: true },
+  middleLeftWrapText: { vertical: 'middle', horizontal: 'left', wrapText: true },
 };
 
 exports.alignments = alignments;
@@ -194,7 +196,7 @@ const basicStyleForParentSummaryTable = {
 const getCellStyleForParentSummary = (columnName) => {
   switch (columnName) {
     case 'Workplace': {
-      return { font: { bold: false }, alignment: alignments.leftMiddle };
+      return { font: { bold: false }, alignment: alignments.middleLeft };
     }
     case 'Expired':
     case 'Missing records': {
@@ -599,20 +601,28 @@ exports.autoAdjustWrapTextAndRowHeight = (tab, cell, columnWidth = 35, defaultHe
     return;
   }
 
+  applyStyleToCell(cell, { alignment: { wrapText: true } });
+
+  const row = tab.getRow(cell.row);
+
+  if (lodash.isNil(row.height)) {
+    return;
+  }
+
   const textInCell = cell.value;
 
-  const numberOfLinesNeeded = countNumberOfLinesInDefaultFont(textInCell, columnWidth);
+  const numberOfLinesNeeded = countNumberOfLinesInCalibriFont(textInCell, columnWidth);
+
   if (numberOfLinesNeeded <= 1) {
     return;
   }
 
-  applyStyleToCell(cell, { alignment: { wrapText: true } });
+  if (numberOfLinesNeeded === 2) {
+    row.height = Math.max(row.height, defaultHeight * 2 - 10);
+    return;
+  }
 
-  const heightAdjustFormula = (x, defaultHeight) => Math.ceil((34.5 * x - 2.5 * x * x - 25) * (defaultHeight / 22));
-  const adjustedHeight = heightAdjustFormula(numberOfLinesNeeded, defaultHeight);
-
-  const row = tab.getRow(cell.row);
-  row.height = Math.max(row.height ?? 0, adjustedHeight);
+  row.height = undefined; // to trigger excel's internal auto fit adjustment
 };
 
 const charPixelWidth = {
@@ -693,34 +703,54 @@ const getTextWidthInDefaultFont = (text) => {
     .sum()
     .value();
 };
+exports.getTextWidthInDefaultFont = getTextWidthInDefaultFont;
 
-const countNumberOfLinesInDefaultFont = (text, columnWidth = 35) => {
+const countNumberOfLinesInCalibriFont = (text, columnWidth = 35) => {
   const words = text?.split(/[ -]/);
   if (!words?.length) {
     return 1;
   }
 
-  const columnWidthInPixels = 5.8 * columnWidth;
+  const columnWidthInPixels = 5.46 * columnWidth;
   const whitespaceWidth = charPixelWidth[' '];
 
-  const allWordsWidths = words.map(getTextWidthInDefaultFont);
+  const allWordsWidths = words.map(getTextWidthInDefaultFont).flatMap((wordWidth) => {
+    if (wordWidth <= columnWidthInPixels) {
+      return wordWidth;
+    }
+
+    const linesTaked = Math.floor(wordWidth / columnWidthInPixels);
+    const remainingWidth = wordWidth - columnWidthInPixels * linesTaked;
+    return Array(linesTaked).fill(columnWidthInPixels).concat([remainingWidth]);
+  });
 
   let lineNumbers = 1;
   let currentLineWidth = allWordsWidths[0];
 
   allWordsWidths.slice(1).forEach((nextWord) => {
     currentLineWidth += nextWord + whitespaceWidth;
-    const canFitSingleLine = currentLineWidth <= columnWidthInPixels;
+
+    const canFitSingleLine = currentLineWidth < columnWidthInPixels;
     if (!canFitSingleLine) {
       lineNumbers += 1;
       currentLineWidth = nextWord;
     }
   });
 
+  const lastLineFullness = currentLineWidth / columnWidthInPixels;
+
+  // special adjustments to handle borderline cases
+  if (lastLineFullness > 0.97 && lineNumbers === 1) {
+    return 2;
+  }
+  if (lastLineFullness > 0.9 && lineNumbers === 2) {
+    return 3;
+  }
+
   return lineNumbers;
 };
 
-exports.countNumberOfLinesInCalibriFont = countNumberOfLinesInDefaultFont;
+exports.countNumberOfLinesInCalibriFont = countNumberOfLinesInCalibriFont;
 
 const drawColourBoxWithBorder = (tab, range, { backgroundColour = null, textColour = null }) => {
   const { top, left, bottom, right } = colCache.decode(range);

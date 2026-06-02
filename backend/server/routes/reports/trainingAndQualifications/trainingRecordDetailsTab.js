@@ -133,14 +133,14 @@ const setDateAndNumberFormats = (tab) => {
 };
 
 const setHeightsAndWidths = (tab, columnsToDisplay) => {
-  const columnWidths = [9, ...columnsToDisplay.map((column) => column.width)];
+  const columnWidths = [8, ...columnsToDisplay.map((column) => column.width)];
 
   columnWidths.forEach((width, index) => {
     const column = tab.getColumn(index + 1);
     column.width = width;
   });
 
-  const rowHeights = [48, 18, 36];
+  const rowHeights = [45, 18, 36];
 
   rowHeights.forEach((height, index) => {
     const row = tab.getRow(index + 1);
@@ -152,10 +152,34 @@ const setHeightsAndWidths = (tab, columnsToDisplay) => {
     row.height = 22;
   }
 
-  const trainingNameColumnNumber = tab.getRow(HeaderRowNumber).values.indexOf('Training or course name');
-  const autoAdjustRange = colCache.encode(HeaderRowNumber + 1, 2, tab.lastRow.number, trainingNameColumnNumber);
+  const headerRowValues = tab.getRow(HeaderRowNumber).values;
+
+  const firstColumnInTable = 2;
+  const trainingNameColumnNumber = headerRowValues.indexOf('Training or course name');
+
+  const providerTypeColumnNumber = headerRowValues.indexOf('In-house or external');
+  const deliveryMethodColumnNumber = headerRowValues.indexOf('Delivery method');
+
+  const autoAdjustRange = colCache.encode(
+    HeaderRowNumber + 1,
+    firstColumnInTable,
+    tab.lastRow.number,
+    trainingNameColumnNumber,
+  );
 
   forEachCellInRange(tab, autoAdjustRange, (cell) => {
+    const columnWidth = tab.getColumn(cell.col).width;
+    autoAdjustWrapTextAndRowHeight(tab, cell, columnWidth);
+  });
+
+  const autoAdjustRangeSecond = colCache.encode(
+    HeaderRowNumber + 1,
+    providerTypeColumnNumber,
+    tab.lastRow.number,
+    deliveryMethodColumnNumber,
+  );
+
+  forEachCellInRange(tab, autoAdjustRangeSecond, (cell) => {
     const columnWidth = tab.getColumn(cell.col).width;
     autoAdjustWrapTextAndRowHeight(tab, cell, columnWidth);
   });

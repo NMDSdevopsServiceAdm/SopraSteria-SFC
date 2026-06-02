@@ -10,8 +10,8 @@ const {
   setBasicTableStyle,
   conditionalColoursForTrainingExpiry,
   forEachCellInRange,
-  autoFitColumnWidthByTextLength,
   defaultDateFormat,
+  autoAdjustWrapTextAndRowHeight,
 } = require('../../../utils/excelUtils');
 
 const columnNameAndDataFields = [
@@ -128,18 +128,14 @@ const setDateFormatForExpiryDateColumn = (tab) => {
 };
 
 const setHeightsAndWidths = (tab, columnsToDisplay) => {
-  const columnWidths = [7, ...columnsToDisplay.map((column) => column.width)];
+  const columnWidths = [8, ...columnsToDisplay.map((column) => column.width)];
 
   columnWidths.forEach((width, index) => {
     const column = tab.getColumn(index + 1);
     column.width = width;
   });
 
-  [2, 3, 4, 5].forEach((column) => {
-    autoFitColumnWidthByTextLength(tab, column, 12);
-  });
-
-  const rowHeights = [48, 18, 22, 36];
+  const rowHeights = [45, 18, 22, 36];
 
   rowHeights.forEach((height, index) => {
     const row = tab.getRow(index + 1);
@@ -150,10 +146,24 @@ const setHeightsAndWidths = (tab, columnsToDisplay) => {
     const row = tab.getRow(i);
     row.height = 22;
   }
+
+  autoAdjustWrapTextForColumns(tab);
 };
 
 const setFreezePane = (tab) => {
   tab.views = [{ state: 'frozen', ySplit: 4, activeCell: 'B5' }, { showGridLines: false }];
+};
+
+const autoAdjustWrapTextForColumns = (tab) => {
+  const top = HeaderRowNumber + 1;
+  const bottom = tab.lastRow.number;
+
+  const autoAdjustRange = `B${top}:E${bottom}`;
+
+  forEachCellInRange(tab, autoAdjustRange, (cell) => {
+    const columnWidth = tab.getColumn(cell.col).width;
+    autoAdjustWrapTextAndRowHeight(tab, cell, columnWidth);
+  });
 };
 
 module.exports = { generateExpiredTrainingTab };
