@@ -119,7 +119,7 @@ const addtrainingBreakdownTotals = (tab, trainingBreakdownTotals) => {
       size: 18,
       alignment: alignments.middleCenter,
     },
-    { range: 'H20:H22', value: MissingRecordsExplanationText, alignment: alignments.leftMiddleWrapText },
+    { range: 'H21:H23', value: MissingRecordsExplanationText, alignment: alignments.middleLeftWrapText },
   ];
 
   const columnHeadings = [
