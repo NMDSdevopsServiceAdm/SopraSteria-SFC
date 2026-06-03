@@ -54,6 +54,11 @@
             <span *ngIf="updatedDate" class="govuk-!-margin-left-2" data-testid="lastUpdatedDate"
               >Last update, {{ updatedDate | date: 'd MMMM y' }}
             </span>
+            <ng-container *ngIf="tab === 'home' && lastLoggedInFromLogin">
+              <span data-testid="separator">|</span>
+
+              <span class="govuk-!-margin-left-2"> Last sign in, {{ lastLoggedInFromLogin | date: 'd MMMM y' }} </span>
+            </ng-container>
           </p>
         </div>
         <div

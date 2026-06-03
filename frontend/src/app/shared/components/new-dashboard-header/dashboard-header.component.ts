@@ -46,6 +46,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
   public isParentSubsidiaryView: boolean;
   public user: UserDetails;
   public isAdmin: boolean;
+  public lastLoggedInFromLogin: string;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -60,6 +61,10 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     this.isParent = this.workplace.isParent;
 
     this.setIsParentSubsidiaryView();
+
+    this.userService.loggedInUser$.subscribe((user) => {
+      this.lastLoggedInFromLogin = user?.lastLoggedInFromLogin;
+    });
 
     if (this.workplace) {
       this.setSubsidiaryCount();
