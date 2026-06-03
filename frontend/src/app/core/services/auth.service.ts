@@ -9,11 +9,11 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import isNull from 'lodash/isNull';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, tap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 import { EstablishmentService } from './establishment.service';
 import { PermissionsService } from './permissions/permissions.service';
 import { UserService } from './user.service';
-import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -90,19 +90,22 @@ export class AuthService {
 
   public authenticate(username: string, password: string) {
     this.featureFlagsService.configCatClient.forceRefreshAsync();
-    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/login/`, { username, password }, { observe: 'response' }).pipe(
-      tap(
-        (response) => {
-          this.token = response.headers.get('authorization');
-          Sentry.configureScope((scope) => {
-            scope.setUser({
-              id: response.body.uid,
+    return this.http
+      .post<any>(`${environment.appRunnerEndpoint}/api/login/`, { username, password }, { observe: 'response' })
+      .pipe(
+        tap(
+          (response) => {
+            this.token = response.headers.get('authorization');
+            this.userService.setLastLoggedIn(response.body.lastLoggedIn);
+            Sentry.configureScope((scope) => {
+              scope.setUser({
+                id: response.body.uid,
+              });
             });
-          });
-        },
-        (error) => console.error(error),
-      ),
-    );
+          },
+          (error) => console.error(error),
+        ),
+      );
   }
 
   public refreshToken() {
