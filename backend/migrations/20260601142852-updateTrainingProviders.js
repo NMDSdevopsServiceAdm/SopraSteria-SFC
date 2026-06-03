@@ -5,7 +5,7 @@ const table = { tableName: 'TrainingProvider', schema: 'cqc' };
 const providerToRename = {
   ID: 31,
   BulkUploadCode: 31,
-  NewName: 'Tend Training',
+  NewName: 'Tend Training (was Impact Futures Training Limited)',
   OldName: 'Impact Futures Training Limited',
 };
 
