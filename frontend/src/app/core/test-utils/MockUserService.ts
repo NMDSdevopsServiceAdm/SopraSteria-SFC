@@ -139,6 +139,7 @@ export class MockUserService extends UserService {
       role: this.role,
       securityQuestion: 'Not relevant',
       securityQuestionAnswer: 'Not relevant',
+      lastLoggedInFromLogin: '2026-06-01T12:34:56.000Z',
     };
   }
 
