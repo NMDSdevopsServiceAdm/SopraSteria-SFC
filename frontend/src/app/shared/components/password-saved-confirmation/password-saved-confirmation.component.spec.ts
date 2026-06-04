@@ -6,7 +6,7 @@ import { SharedModule } from '@shared/shared.module';
 import { Router, RouterModule } from '@angular/router';
 import userEvent from '@testing-library/user-event';
 
-fdescribe('PasswordSavedConfirmationComponent', () => {
+describe('PasswordSavedConfirmationComponent', () => {
   async function setup() {
     const setupTools = await render(PasswordSavedConfirmationComponent, {
       imports: [SharedModule, RouterModule],
