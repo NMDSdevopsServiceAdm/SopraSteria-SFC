@@ -61,7 +61,7 @@ function convertMainServiceToCQC(mainService) {
     { asc: 'Care home services without nursing', cqc: ['Residential homes', 'Care home service without nursing'] },
     {
       asc: 'Community based services for people who misuse substances',
-      cqc: ['Rehabilitation (substance abuse)'],
+      cqc: ['Rehabilitation (substance abuse)', 'Community services - Substance abuse'],
     },
     { asc: 'Community based services for people with a learning disability', cqc: ['Supported living'] },
     { asc: 'Community based services for people with mental health needs', cqc: ['Residential homes'] },
