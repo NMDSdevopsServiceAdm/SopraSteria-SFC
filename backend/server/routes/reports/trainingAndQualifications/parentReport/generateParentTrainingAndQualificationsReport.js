@@ -63,9 +63,8 @@ const generateParentTrainingAndQualificationsReport = async (req, res) => {
 
     await generateExpiredTrainingTab(workbook, allTrainingRecordsAndMissingTrainings, true);
     await generateTrainingRecordDetailsTab(workbook, allTrainingRecordsAndMissingTrainings, true);
-
-    await generateQualificationRecordDetailsTab(workbook, establishment.id, true);
     await generateCareCertificateTab(workbook, careCertificateStatus, true);
+    await generateQualificationRecordDetailsTab(workbook, establishment.id, true);
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader(
