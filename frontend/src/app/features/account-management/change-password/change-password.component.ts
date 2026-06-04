@@ -32,8 +32,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
 
   public onResetPasswordSuccess(): void {
     this.submitted = true;
-    this.authService.logoutWithoutRouting();
-    this.router.navigate(['/password-saved']);
+    this.authService.logoutAndNavigateToPage(['/password-saved']);
   }
 
   ngOnDestroy() {
