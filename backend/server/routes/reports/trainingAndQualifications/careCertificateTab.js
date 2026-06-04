@@ -14,7 +14,7 @@ const generateCareCertificateTab = async (workbook, careCertificateStatus, isPar
   const careCertificateTab = workbook.addWorksheet('Care Certificates', { views: [{ showGridLines: false }] });
 
   const columnsToDisplay = [
-    ...(isParent ? [{ columnName: 'Workplace', field: 'establishmentName', width: 33 }] : []),
+    ...(isParent ? [{ columnName: 'Workplace', field: 'workplaceName', width: 33 }] : []),
 
     { columnName: 'Name or ID number', field: 'workerId', width: 30 },
 
