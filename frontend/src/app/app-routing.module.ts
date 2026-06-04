@@ -67,11 +67,7 @@ const routes: Routes = [
     component: ProblemWithTheServiceComponent,
     data: { title: 'Problem with the Service' },
   },
-  {
-    path: 'password-saved',
-    component: PasswordSavedConfirmationComponent,
-    data: { title: 'Password saved' },
-  },
+
   {
     path: '',
     loadChildren: () => import('@features/public/public.module').then((m) => m.PublicModule),
@@ -138,6 +134,11 @@ const routes: Routes = [
         path: 'username-found',
         component: UsernameFoundComponent,
         data: { title: 'Username Found' },
+      },
+      {
+        path: 'password-saved',
+        component: PasswordSavedConfirmationComponent,
+        data: { title: 'Password saved' },
       },
     ],
   },
