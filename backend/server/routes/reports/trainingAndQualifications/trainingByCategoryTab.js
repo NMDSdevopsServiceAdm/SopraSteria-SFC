@@ -38,7 +38,7 @@ const generateTrainingByCategoryTab = async (workbook, trainingByCategoryBreakdo
 
   const sortedData = lodash.sortBy(trainingByCategoryBreakdowns, ['workplaceName', 'trainingCategory']);
 
-  addTrainingByCategoryTable(trainingByCategoryTab, sortedData, columnsToDisplay);
+  addTrainingByCategoryTable(trainingByCategoryTab, sortedData, columnsToDisplay, isParent);
   setBoldStyleForHeaderRow(trainingByCategoryTab);
   setHeightsAndWidths(trainingByCategoryTab);
 
@@ -55,11 +55,11 @@ const addTopTableHeader = (tab, columnsToDisplay) => {
   const lastColumnLetter = colCache.n2l(1 + columnsToDisplay.length);
 
   const topHeaderRange = `B3:${lastColumnLetter}3`;
-  addText(tab, topHeaderRange, 'Training', { size: 16, bold: true });
+  addText(tab, topHeaderRange, 'Mandatory and non-mandatory training', { size: 16, bold: true });
   applyStyleToRange(tab, topHeaderRange, tableHeaderCellStyle);
 };
 
-const addTrainingByCategoryTable = (tab, sortedData, columnsToDisplay) => {
+const addTrainingByCategoryTable = (tab, sortedData, columnsToDisplay, isParent) => {
   const dataRows = sortedData.filter((row) => row.trainingCategory !== 'Total');
 
   const tableRows = dataRows.map((trainingData) => {
@@ -80,7 +80,7 @@ const addTrainingByCategoryTable = (tab, sortedData, columnsToDisplay) => {
 
   trainingTable.commit();
 
-  addTotalRow(tab, sortedData, columnsToDisplay);
+  addTotalRow(tab, sortedData, columnsToDisplay, isParent);
 
   setBasicTableStyle(tab, tableRange, {
     hasTotalRow: false,
@@ -95,12 +95,22 @@ const addTrainingByCategoryTable = (tab, sortedData, columnsToDisplay) => {
   setFreezePane(tab);
 };
 
-const addTotalRow = (tab, sortedData, columnsToDisplay) => {
+const addTotalRow = (tab, sortedData, columnsToDisplay, isParent) => {
   const totalsRow = sortedData.find((row) => row.trainingCategory === 'Total');
 
   if (!totalsRow) return;
 
-  const totalRowValues = [...columnsToDisplay.map(({ field }) => totalsRow[field] ?? '-')];
+  const totalRowValues = columnsToDisplay.map(({ field }) => {
+    if (field === 'trainingCategory') {
+      return isParent ? '' : 'Total';
+    }
+
+    if (isParent && field === 'workplaceName') {
+      return 'Total';
+    }
+
+    return totalsRow[field] ?? '-';
+  });
 
   const rowIndex = tab.lastRow.number + 1;
 
@@ -110,13 +120,6 @@ const addTotalRow = (tab, sortedData, columnsToDisplay) => {
     cell.value = value;
 
     const style = lodash.cloneDeep(tableHeaderCellStyle);
-
-    if (index === 0) {
-      style.alignment = {
-        ...style.alignment,
-        horizontal: 'left',
-      };
-    }
 
     cell.style = style;
   });
@@ -161,7 +164,7 @@ const setAlignmentForColumns = (tab) => {
   const headerValues = tab.getRow(HeaderRowNumber).values;
 
   headerValues.forEach((header, index) => {
-    if (header === 'Training category' || !header) {
+    if (header === 'Training category' || header === 'Workplace' || !header) {
       return;
     }
 
