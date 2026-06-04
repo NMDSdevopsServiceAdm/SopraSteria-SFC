@@ -36,6 +36,7 @@ const isAuthorised = (req, res, next) => {
           uid: Object.prototype.hasOwnProperty.call(claim, 'EstablishmentUID') ? claim.EstablishmentUID : null,
         };
         req.establishmentId = claim.EstablishmentId;
+        req.tokenIssuedAt = claim.iat;
 
         Sentry.setUser({
           username: req.username,
