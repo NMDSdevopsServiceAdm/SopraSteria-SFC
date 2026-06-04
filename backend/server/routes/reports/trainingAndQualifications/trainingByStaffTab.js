@@ -200,13 +200,23 @@ const addThickBorders = (tab, lastRowNumber) => {
 const setStyleForWorkerNamesColumn = (tab, lastRowNumber) => {
   const headerRow = tab.getRow(HeaderRowNumber);
 
-  const workerColumnNum = headerRow.values.indexOf('Name or ID number');
-  const workerColumnRange = colCache.encode(HeaderRowNumber, workerColumnNum, lastRowNumber, workerColumnNum);
+  ['Workplace', 'Name or ID number'].forEach((columnName) => {
+    const columnNum = headerRow.values.indexOf(columnName);
 
-  applyStyleToRange(tab, workerColumnRange, { alignment: { horizontal: 'left' }, font: { bold: false } });
+    if (columnNum === -1) {
+      return;
+    }
 
-  tab.getCell(HeaderRowNumber, workerColumnNum).font.bold = true;
-  tab.getCell(lastRowNumber, workerColumnNum).font.bold = true;
+    const columnRange = colCache.encode(HeaderRowNumber, columnNum, lastRowNumber, columnNum);
+
+    applyStyleToRange(tab, columnRange, {
+      alignment: { horizontal: 'left' },
+      font: { bold: false },
+    });
+
+    tab.getCell(HeaderRowNumber, columnNum).font.bold = true;
+    tab.getCell(lastRowNumber, columnNum).font.bold = true;
+  });
 };
 
 const addFootNote = (tab) => {
