@@ -111,14 +111,14 @@ export class AuthService {
       .pipe(tap((response) => (this.token = response.headers.get('authorization'))));
   }
 
-  public logout(): void {
+  public frontendLogout(): void {
     this.setPreviousUser();
     this.unauthenticate();
     this.router.navigate(['/logged-out']);
   }
 
   public logoutByUser(): void {
-    this.http.post<any>(`${environment.appRunnerEndpoint}/api/logout`, {}).subscribe(
+    this.logoutUserFromServer().subscribe(
       (data) => {
         this.logoutWithSurvey(data.showSurvey);
       },
@@ -126,6 +126,18 @@ export class AuthService {
         this.logoutWithSurvey(false);
       },
     );
+  }
+
+  private logoutUserFromServer(): Observable<any> {
+    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/logout`, {});
+  }
+
+  public logoutAndNavigateToPage(url: string[]): void {
+    this.logoutUserFromServer().subscribe(() => {
+      this.setPreviousUser();
+      this.unauthenticate();
+      this.router.navigate(url);
+    });
   }
 
   private logoutWithSurvey(showSurvey: boolean): void {
@@ -142,7 +154,7 @@ export class AuthService {
     }
   }
 
-  public logoutWithoutRouting(): void {
+  public frontendLogoutWithoutRouting(): void {
     this.unauthenticate();
   }
 

@@ -7,10 +7,14 @@ import { UserService } from '@core/services/user.service';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard  {
+export class AuthGuard {
   private jwt = new JwtHelperService();
 
-  constructor(private router: Router, private authService: AuthService, private userService: UserService) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private userService: UserService,
+  ) {}
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree {
     return this.checkLogin(state);
@@ -23,19 +27,19 @@ export class AuthGuard  {
   private checkLogin(state: RouterStateSnapshot): boolean | UrlTree {
     if (this.authService.token) {
       if (this.jwt.isTokenExpired(this.authService.token)) {
-        this.authService.logout();
+        this.authService.frontendLogout();
         return this.router.createUrlTree(['/logged-out']);
       }
     }
 
     if (!this.authService.token) {
-      this.authService.logoutWithoutRouting();
+      this.authService.frontendLogoutWithoutRouting();
       return this.router.createUrlTree(['/login']);
     }
 
     if (!this.authService.isAuthenticated()) {
       this.authService.storeRedirectLocation();
-      this.authService.logoutWithoutRouting();
+      this.authService.frontendLogoutWithoutRouting();
       return this.router.createUrlTree(['/logged-out']);
     }
 

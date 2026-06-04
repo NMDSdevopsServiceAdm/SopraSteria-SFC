@@ -66,7 +66,7 @@ export class MockAuthService extends AuthService {
     // do nothing.
   }
 
-  public logoutWithoutRouting(): void {
+  public frontendLogoutWithoutRouting(): void {
     // do nothing.
   }
 

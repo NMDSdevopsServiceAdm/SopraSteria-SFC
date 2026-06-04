@@ -8,10 +8,10 @@ import { UserService } from '@core/services/user.service';
 import { interval, Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-header',
-    templateUrl: './header.component.html',
-    styleUrls: ['./header.component.scss'],
-    standalone: false
+  selector: 'app-header',
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.scss'],
+  standalone: false,
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   @Input() showNotificationsLink: boolean;
@@ -119,7 +119,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     event.preventDefault();
     this.idleService.clear();
     if (this.isAdminUser()) {
-      this.authService.logout();
+      this.authService.frontendLogout();
     } else {
       this.authService.logoutByUser();
     }
