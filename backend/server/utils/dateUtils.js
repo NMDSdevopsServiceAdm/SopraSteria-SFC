@@ -19,4 +19,24 @@ const calculateTrainingExpiryDate = (completionDate, validityPeriodInMonth) => {
   return parsedCompletionDate.subtract(1, 'day').add(validityPeriodInMonth, 'month').format('YYYY-MM-DD');
 };
 
-module.exports = { calculateTrainingExpiryDate };
+const correctSequelizeDateWithoutTimezone = (rawDateValue) => {
+  if (!rawDateValue) {
+    return;
+  }
+
+  const utcDate = new Date(
+    Date.UTC(
+      rawDateValue.getFullYear(),
+      rawDateValue.getMonth(),
+      rawDateValue.getDate(),
+      rawDateValue.getHours(),
+      rawDateValue.getMinutes(),
+      rawDateValue.getSeconds(),
+      rawDateValue.getMilliseconds(),
+    ),
+  );
+
+  return utcDate;
+};
+
+module.exports = { calculateTrainingExpiryDate, correctSequelizeDateWithoutTimezone };
