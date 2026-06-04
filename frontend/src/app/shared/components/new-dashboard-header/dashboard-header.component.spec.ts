@@ -201,7 +201,7 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should show last sign in date for non-admin users', async () => {
-      const { getByText, component } = await setup({
+      const { getByText } = await setup({
         tab: 'home',
         isAdmin: false,
         isParentSubsidiaryView: false,
