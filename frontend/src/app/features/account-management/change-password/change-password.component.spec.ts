@@ -15,7 +15,7 @@ import { AccountManagementModule } from '../account-management.module';
 import { PasswordResetService } from '@core/services/password-reset.service';
 import { of, throwError } from 'rxjs';
 
-fdescribe('PasswordSavedConfirmationComponent', () => {
+describe('PasswordSavedConfirmationComponent', () => {
   async function setup() {
     const setupTools = await render(ChangePasswordComponent, {
       imports: [SharedModule, RouterModule, AccountManagementModule],
