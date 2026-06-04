@@ -201,12 +201,25 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should show last sign in date for non-admin users', async () => {
-      const { getByText } = await setup({
+      const { getByText, component } = await setup({
+        tab: 'home',
+        isAdmin: false,
+        isParentSubsidiaryView: false,
+      });
+
+      expect(getByText('Last sign in, 1 June 2026')).toBeTruthy();
+    });
+
+    it('should NOT show last sign in date when accessed via parent subsidiary view', async () => {
+      const { queryByText, component, fixture } = await setup({
         tab: 'home',
         isAdmin: false,
       });
 
-      expect(getByText('Last sign in, 1 June 2026')).toBeTruthy();
+      component.isParentSubsidiaryView = true;
+      fixture.detectChanges();
+
+      expect(queryByText(/Last sign in/)).toBeNull();
     });
   });
 
