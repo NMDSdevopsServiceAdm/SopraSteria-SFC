@@ -34,7 +34,7 @@ const isAuthorised = async (req, res, next) => {
 
   try {
     if (!token) {
-      throw new HttpError(401, 'Requires authorisation');
+      throw new HttpError('Requires authorisation', 401);
     }
 
     const claim = await verifyToken(token, Token_Secret);
@@ -72,7 +72,6 @@ const isAuthorised = async (req, res, next) => {
       role: req.role,
     });
 
-    // next();
     await validateTokenIssueTimeAgainstLastLogout(req, res, next);
   } catch (error) {
     if (error instanceof HttpError) {
