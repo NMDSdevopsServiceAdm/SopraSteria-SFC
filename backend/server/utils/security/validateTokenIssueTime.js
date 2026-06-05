@@ -23,6 +23,7 @@ const validateTokenIssueTimeAgainstLastLogout = async function (req, res, next) 
   const userLastLogoutTime = await cacheUserLogoutTime.getUserLastLogoutTime(req.username);
   if (!userLastLogoutTime) {
     next();
+    return;
   }
 
   const tokenIssuedBeforeLogout = tokenIssuedTime < userLastLogoutTime;
