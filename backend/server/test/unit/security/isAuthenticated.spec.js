@@ -16,7 +16,7 @@ const {
   parentNoWriteAccess,
 } = require('../../../utils/security/isAuthenticated');
 
-describe('isAuthenticated', () => {
+describe.only('isAuthenticated', () => {
   describe('getTokenSecret', () => {
     it('returns the default secret in the config', () => {
       const secret = getTokenSecret();
@@ -535,7 +535,7 @@ describe('isAuthenticated', () => {
         },
       });
 
-      expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true;
+      (expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true);
       expect(next.calledOnce).to.be.true;
     });
 
@@ -588,7 +588,7 @@ describe('isAuthenticated', () => {
         },
       });
 
-      expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true;
+      (expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true);
       expect(next.calledOnce).to.be.true;
     });
 
@@ -640,7 +640,7 @@ describe('isAuthenticated', () => {
         },
       });
 
-      expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true;
+      (expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true);
       expect(next.calledOnce).to.be.true;
     });
 
@@ -749,7 +749,7 @@ describe('isAuthenticated', () => {
 
       await authorisedEstablishmentPermissionCheck(req, res, next, true);
 
-      expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true;
+      (expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true);
       expect(next.calledOnce).to.be.true;
     });
   });
@@ -1144,5 +1144,9 @@ describe('isAuthenticated', () => {
       const result = parentNoWriteAccess(req);
       expect(result).to.be.false;
     });
+  });
+
+  describe('isAuthorised', () => {
+    it('should');
   });
 });
