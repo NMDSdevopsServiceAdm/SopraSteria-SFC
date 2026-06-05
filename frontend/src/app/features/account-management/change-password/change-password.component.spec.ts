@@ -44,13 +44,13 @@ describe('PasswordSavedConfirmationComponent', () => {
     const passwordResetService = injector.inject(PasswordResetService);
 
     const authService = injector.inject(AuthService);
-    const logoutSpy = spyOn(authService, 'logoutAndNavigateToPage');
+    const logoutSpy = spyOn(authService, 'frontendLogoutWithoutRouting');
 
     return {
       ...setupTools,
       component,
-      routerSpy,
       passwordResetService,
+      routerSpy,
       logoutSpy,
     };
   }
@@ -61,7 +61,7 @@ describe('PasswordSavedConfirmationComponent', () => {
   });
 
   it('should log the user out and redirect to confirmation page on success', async () => {
-    const { fixture, getByLabelText, getByText, passwordResetService, logoutSpy } = await setup();
+    const { fixture, getByLabelText, getByText, passwordResetService, logoutSpy, routerSpy } = await setup();
 
     const changePasswordSpy = spyOn(passwordResetService, 'changePassword').and.returnValue(of(null));
 
@@ -75,11 +75,12 @@ describe('PasswordSavedConfirmationComponent', () => {
 
     await fixture.whenStable();
 
-    expect(logoutSpy).toHaveBeenCalledWith(['/password-saved']);
+    expect(routerSpy).toHaveBeenCalledWith(['/password-saved']);
+    expect(logoutSpy).toHaveBeenCalled();
   });
 
   it('should not log the user out if password change request failed', async () => {
-    const { fixture, getByLabelText, getByText, passwordResetService, logoutSpy } = await setup();
+    const { fixture, getByLabelText, getByText, passwordResetService, logoutSpy, routerSpy } = await setup();
 
     const changePasswordSpy = spyOn(passwordResetService, 'changePassword').and.returnValue(throwError('some error'));
 
@@ -93,6 +94,7 @@ describe('PasswordSavedConfirmationComponent', () => {
 
     await fixture.whenStable();
 
+    expect(routerSpy).not.toHaveBeenCalled();
     expect(logoutSpy).not.toHaveBeenCalled();
   });
 });
