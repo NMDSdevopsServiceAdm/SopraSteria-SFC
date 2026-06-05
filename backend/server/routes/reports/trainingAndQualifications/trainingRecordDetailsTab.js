@@ -147,11 +147,6 @@ const setHeightsAndWidths = (tab, columnsToDisplay) => {
     row.height = height;
   });
 
-  for (let i = HeaderRowNumber + 1; i <= tab.lastRow.number; i++) {
-    const row = tab.getRow(i);
-    row.height = 22;
-  }
-
   const headerRowValues = tab.getRow(HeaderRowNumber).values;
 
   const firstColumnInTable = 2;
@@ -168,8 +163,7 @@ const setHeightsAndWidths = (tab, columnsToDisplay) => {
   );
 
   forEachCellInRange(tab, autoAdjustRange, (cell) => {
-    const columnWidth = tab.getColumn(cell.col).width;
-    autoAdjustWrapTextAndRowHeight(tab, cell, columnWidth);
+    autoAdjustWrapTextAndRowHeight(tab, cell);
   });
 
   const autoAdjustRangeSecond = colCache.encode(
@@ -180,8 +174,7 @@ const setHeightsAndWidths = (tab, columnsToDisplay) => {
   );
 
   forEachCellInRange(tab, autoAdjustRangeSecond, (cell) => {
-    const columnWidth = tab.getColumn(cell.col).width;
-    autoAdjustWrapTextAndRowHeight(tab, cell, columnWidth);
+    autoAdjustWrapTextAndRowHeight(tab, cell);
   });
 };
 

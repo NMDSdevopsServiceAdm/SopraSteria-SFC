@@ -108,17 +108,11 @@ const setHeightsAndWidths = (tab, columnsToDisplay) => {
     row.height = height;
   });
 
-  for (let i = HeaderRowNumber + 1; i <= tab.lastRow.number; i++) {
-    const row = tab.getRow(i);
-    row.height = 22;
-  }
-
   const qualificationNameColumnNumber = tab.getRow(HeaderRowNumber).values.indexOf('Qualification name');
   const autoAdjustRange = colCache.encode(HeaderRowNumber + 1, 2, tab.lastRow.number, qualificationNameColumnNumber);
 
   forEachCellInRange(tab, autoAdjustRange, (cell) => {
-    const columnWidth = tab.getColumn(cell.col).width;
-    autoAdjustWrapTextAndRowHeight(tab, cell, columnWidth);
+    autoAdjustWrapTextAndRowHeight(tab, cell);
   });
 };
 
