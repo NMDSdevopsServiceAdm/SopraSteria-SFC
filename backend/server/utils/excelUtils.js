@@ -596,161 +596,16 @@ const rangeOfNumber = (startNumber, endNumber) => {
 
 exports.rangeOfNumber = rangeOfNumber;
 
-exports.autoAdjustWrapTextAndRowHeight = (tab, cell, columnWidth = 35, defaultHeight = 22) => {
+exports.autoAdjustWrapTextAndRowHeight = (tab, cell) => {
   if (cell.type !== excelJS.ValueType.String || !cell.value?.length) {
     return;
   }
 
   applyStyleToCell(cell, { alignment: { wrapText: true } });
-
   const row = tab.getRow(cell.row);
-
-  if (lodash.isNil(row.height)) {
-    return;
-  }
-
-  const textInCell = cell.value;
-
-  const numberOfLinesNeeded = countNumberOfLinesInCalibriFont(textInCell, columnWidth);
-
-  if (numberOfLinesNeeded <= 1) {
-    return;
-  }
-
-  if (numberOfLinesNeeded === 2) {
-    row.height = Math.max(row.height, defaultHeight * 2 - 10);
-    return;
-  }
 
   row.height = undefined; // to trigger excel's internal auto fit adjustment
 };
-
-const charPixelWidth = {
-  0: 6.08,
-  1: 6.08,
-  2: 6.08,
-  3: 6.08,
-  4: 6.08,
-  5: 6.08,
-  6: 6.08,
-  7: 6.08,
-  8: 6.08,
-  9: 6.08,
-  a: 5.75,
-  b: 6.3,
-  c: 5.07,
-  d: 6.3,
-  e: 5.97,
-  f: 3.66,
-  g: 5.65,
-  h: 6.3,
-  i: 2.75,
-  j: 2.87,
-  k: 5.46,
-  l: 2.75,
-  m: 9.59,
-  n: 6.3,
-  o: 6.33,
-  p: 6.3,
-  q: 6.3,
-  r: 4.18,
-  s: 4.69,
-  t: 4.02,
-  u: 6.3,
-  v: 5.42,
-  w: 8.58,
-  x: 5.2,
-  y: 5.43,
-  z: 4.74,
-  A: 6.94,
-  B: 6.53,
-  C: 6.4,
-  D: 7.38,
-  E: 5.86,
-  F: 5.51,
-  G: 7.57,
-  H: 7.48,
-  I: 3.02,
-  J: 3.83,
-  K: 6.23,
-  L: 5.04,
-  M: 10.26,
-  N: 7.75,
-  O: 7.95,
-  P: 6.2,
-  Q: 8.07,
-  R: 6.52,
-  S: 5.51,
-  T: 5.85,
-  U: 7.7,
-  V: 6.81,
-  W: 10.68,
-  X: 6.23,
-  Y: 5.85,
-  Z: 5.62,
-  '(': 3.64,
-  ')': 3.64,
-  ',': 2.99,
-  "'": 2.65,
-  ' ': 2.71,
-  ':': 3.21,
-};
-
-const getTextWidthInDefaultFont = (text) => {
-  return lodash
-    .chain(text.split(''))
-    .map((char) => charPixelWidth[char] ?? 7)
-    .sum()
-    .value();
-};
-exports.getTextWidthInDefaultFont = getTextWidthInDefaultFont;
-
-const countNumberOfLinesInCalibriFont = (text, columnWidth = 35) => {
-  const words = text?.split(/[ -]/);
-  if (!words?.length) {
-    return 1;
-  }
-
-  const columnWidthInPixels = 5.46 * columnWidth;
-  const whitespaceWidth = charPixelWidth[' '];
-
-  const allWordsWidths = words.map(getTextWidthInDefaultFont).flatMap((wordWidth) => {
-    if (wordWidth <= columnWidthInPixels) {
-      return wordWidth;
-    }
-
-    const linesTaked = Math.floor(wordWidth / columnWidthInPixels);
-    const remainingWidth = wordWidth - columnWidthInPixels * linesTaked;
-    return Array(linesTaked).fill(columnWidthInPixels).concat([remainingWidth]);
-  });
-
-  let lineNumbers = 1;
-  let currentLineWidth = allWordsWidths[0];
-
-  allWordsWidths.slice(1).forEach((nextWord) => {
-    currentLineWidth += nextWord + whitespaceWidth;
-
-    const canFitSingleLine = currentLineWidth < columnWidthInPixels;
-    if (!canFitSingleLine) {
-      lineNumbers += 1;
-      currentLineWidth = nextWord;
-    }
-  });
-
-  const lastLineFullness = currentLineWidth / columnWidthInPixels;
-
-  // special adjustments to handle borderline cases
-  if (lastLineFullness > 0.97 && lineNumbers === 1) {
-    return 2;
-  }
-  if (lastLineFullness > 0.9 && lineNumbers === 2) {
-    return 3;
-  }
-
-  return lineNumbers;
-};
-
-exports.countNumberOfLinesInCalibriFont = countNumberOfLinesInCalibriFont;
 
 const drawColourBoxWithBorder = (tab, range, { backgroundColour = null, textColour = null }) => {
   const { top, left, bottom, right } = colCache.decode(range);

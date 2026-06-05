@@ -248,11 +248,6 @@ const setHeightsAndWidths = (tab, columnsToDisplay) => {
     row.height = height;
   });
 
-  for (let i = 5; i <= tab.lastRow.number; i++) {
-    const row = tab.getRow(i);
-    row.height = 22;
-  }
-
   autoAdjustWrapTextForColumns(tab);
 };
 
@@ -267,8 +262,7 @@ const autoAdjustWrapTextForColumns = (tab) => {
   const autoAdjustRange = `B${top}:C${bottom}`;
 
   forEachCellInRange(tab, autoAdjustRange, (cell) => {
-    const columnWidth = tab.getColumn(cell.col).width;
-    autoAdjustWrapTextAndRowHeight(tab, cell, columnWidth);
+    autoAdjustWrapTextAndRowHeight(tab, cell);
   });
 };
 
