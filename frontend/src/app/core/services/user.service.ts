@@ -27,7 +27,9 @@ export class UserService {
   private _agreedUpdatedTermsStatus: boolean = null;
   private _lastLoggedInFromLogin: string | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    this._lastLoggedInFromLogin = localStorage.getItem('lastLogin');
+  }
 
   public get loggedInUser$(): Observable<UserDetails> {
     return this._loggedInUser$.asObservable();
@@ -123,6 +125,10 @@ export class UserService {
 
   public setLastLoggedIn(lastLoggedIn: string | null) {
     this._lastLoggedInFromLogin = lastLoggedIn;
+
+    if (lastLoggedIn) {
+      localStorage.setItem('lastLogin', lastLoggedIn);
+    }
   }
   /*
    * GET /api/user/establishment/:establishmentUID
