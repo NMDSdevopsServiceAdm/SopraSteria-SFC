@@ -132,14 +132,6 @@ export class AuthService {
     return this.http.post<any>(`${environment.appRunnerEndpoint}/api/logout`, {});
   }
 
-  public logoutAndNavigateToPage(url: string[]): void {
-    this.logoutUserFromServer().subscribe(() => {
-      this.setPreviousUser();
-      this.unauthenticate();
-      this.router.navigate(url);
-    });
-  }
-
   private logoutWithSurvey(showSurvey: boolean): void {
     const uid = this.userService.loggedInUser.uid;
     const wid = this.establishmentService.establishmentId;
