@@ -136,45 +136,33 @@ describe('trainingAndQualificationsUtils', () => {
   describe('convertWorkersWithCareCertificateStatus', () => {
     it('should convert care certificate workers correctly', () => {
       const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse);
-
       expect(result).to.deep.equal([
         {
           workerId: 'Bob Ross',
-
+          workplaceName: 'mock care home 1',
           jobRole: 'Care Worker',
-
           careCertificate: 'Not started',
-
           l2CareCertificate: 'Not started',
         },
-
         {
           workerId: 'Mike Mill',
-
+          workplaceName: 'mock care home 1',
           jobRole: 'Care Coordinator',
-
           careCertificate: 'Yes, in progress or partially completed',
-
           l2CareCertificate: 'Yes, completed',
         },
-
         {
           workerId: 'Bill Bailey',
-
+          workplaceName: 'mock care home 2',
           jobRole: 'Care Worker',
-
           careCertificate: 'Yes, completed',
-
           l2CareCertificate: '-',
         },
-
         {
           workerId: 'Jenny Jones',
-
+          workplaceName: 'mock care home 2',
           jobRole: 'Care Worker',
-
           careCertificate: 'Not started',
-
           l2CareCertificate: 'Yes, started',
         },
       ]);
@@ -184,7 +172,7 @@ describe('trainingAndQualificationsUtils', () => {
       const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse, true);
 
       expect(result[0]).to.deep.equal({
-        establishmentName: 'mock care home 1',
+        workplaceName: 'mock care home 1',
 
         workerId: 'Bob Ross',
 
@@ -509,8 +497,8 @@ describe('trainingAndQualificationsUtils', () => {
 
       expect(result).to.deep.include({
         trainingCategory: 'Activity provision/Well-being',
+        workplaceName: 'AAPNES East Area Business Support',
         mandatory: 'Yes',
-
         total: 3,
         expired: 0,
         expiringSoon: 0,
@@ -520,6 +508,7 @@ describe('trainingAndQualificationsUtils', () => {
 
       expect(result).to.deep.include({
         trainingCategory: 'Diabetes',
+        workplaceName: 'AAPNES East Area Business Support',
         mandatory: 'Yes',
 
         total: 2,
@@ -531,6 +520,7 @@ describe('trainingAndQualificationsUtils', () => {
 
       expect(result).to.deep.include({
         trainingCategory: 'Dementia care',
+        workplaceName: 'AAPNES East Area Business Support',
         mandatory: 'No',
 
         total: 1,
@@ -542,6 +532,7 @@ describe('trainingAndQualificationsUtils', () => {
 
       expect(result).to.deep.include({
         trainingCategory: 'Emergency Aid awareness',
+        workplaceName: 'AAPNES East Area Business Support',
         mandatory: 'No',
 
         total: 1,
@@ -553,8 +544,8 @@ describe('trainingAndQualificationsUtils', () => {
 
       expect(result[result.length - 1]).to.deep.equal({
         trainingCategory: 'Total',
+        workplaceName: '',
         mandatory: '-',
-
         total: 7,
         expired: 1,
         expiringSoon: 1,
