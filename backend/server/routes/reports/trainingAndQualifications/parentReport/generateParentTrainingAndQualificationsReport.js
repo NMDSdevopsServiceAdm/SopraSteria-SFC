@@ -56,7 +56,7 @@ const generateParentTrainingAndQualificationsReport = async (req, res) => {
     const establishmentWithTrainingRecords = convertTrainingForEstablishments(rawEstablishmentWithTrainingRecords);
     const allTrainingRecordsAndMissingTrainings = listAllExistingAndMissingTrainings(establishmentWithTrainingRecords);
 
-    const trainingByCategoryBreakdowns = buildTrainingCategorySummary(establishmentWithTrainingRecords);
+    const trainingByCategoryBreakdowns = buildTrainingCategorySummary(establishmentWithTrainingRecords, true);
 
     await generateTrainingByStaffTab(workbook, workerTrainingBreakdowns, true);
     await generateTrainingByCategoryTab(workbook, trainingByCategoryBreakdowns, true);

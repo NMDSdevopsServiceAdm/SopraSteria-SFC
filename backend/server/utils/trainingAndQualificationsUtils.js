@@ -10,7 +10,7 @@ const createEmptySummaryRow = () => ({
   missing: 0,
 });
 
-const buildTrainingCategorySummary = (establishmentsWithTrainingRecords) => {
+const buildTrainingCategorySummary = (establishmentsWithTrainingRecords, isParent) => {
   const allTrainingRecords = listAllExistingAndMissingTrainings(establishmentsWithTrainingRecords);
 
   const categoryMap = {};
@@ -25,9 +25,10 @@ const buildTrainingCategorySummary = (establishmentsWithTrainingRecords) => {
   allTrainingRecords.forEach((training) => {
     const categoryName = training.category;
     const workplaceName = training.workplaceName;
+    const key = isParent ? `${training.category}|${training.workplaceName}` : training.category;
 
-    if (!categoryMap[categoryName]) {
-      categoryMap[categoryName] = {
+    if (!categoryMap[key]) {
+      categoryMap[key] = {
         trainingCategory: categoryName,
         workplaceName: workplaceName,
         mandatory: training.isMandatory,
@@ -36,7 +37,7 @@ const buildTrainingCategorySummary = (establishmentsWithTrainingRecords) => {
       };
     }
 
-    const category = categoryMap[categoryName];
+    const category = categoryMap[key];
 
     category.total++;
 
@@ -60,7 +61,8 @@ const buildTrainingCategorySummary = (establishmentsWithTrainingRecords) => {
       return acc;
     },
     {
-      trainingCategory: 'Total',
+      trainingCategory: isParent ? '' : 'Total',
+      workplaceName: isParent ? 'Total' : '',
       mandatory: '-',
       ...createEmptySummaryRow(),
     },
@@ -110,7 +112,7 @@ const formatCareCertificateValue = (value) => {
 
 exports.convertEachWorkerTrainingBreakdown = convertEachWorkerTrainingBreakdown;
 
-const convertWorkerWithCareCertificateStatus = (worker, establishmentName, isParent) => {
+const convertWorkerWithCareCertificateStatus = (worker, establishmentName) => {
   return {
     workerId: numberCheck(worker.NameOrIdValue),
 
@@ -123,7 +125,7 @@ const convertWorkerWithCareCertificateStatus = (worker, establishmentName, isPar
   };
 };
 
-exports.convertWorkersWithCareCertificateStatus = (establishments, isParent) => {
+exports.convertWorkersWithCareCertificateStatus = (establishments) => {
   const workerHasDataForCareCertOrL2CareCert = (worker) =>
     Boolean(worker?.CareCertificateValue || worker?.Level2CareCertificateValue);
 
@@ -131,7 +133,7 @@ exports.convertWorkersWithCareCertificateStatus = (establishments, isParent) => 
     const establishmentName = establishment.NameValue;
 
     return establishment.workers.filter(workerHasDataForCareCertOrL2CareCert).map((worker) => {
-      return convertWorkerWithCareCertificateStatus(worker, establishmentName, isParent);
+      return convertWorkerWithCareCertificateStatus(worker, establishmentName);
     });
   });
 };
