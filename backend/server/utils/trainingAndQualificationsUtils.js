@@ -13,8 +13,6 @@ const createEmptySummaryRow = () => ({
 const buildTrainingCategorySummary = (establishmentsWithTrainingRecords) => {
   const allTrainingRecords = listAllExistingAndMissingTrainings(establishmentsWithTrainingRecords);
 
-  console.log(allTrainingRecords);
-
   const categoryMap = {};
 
   const statusFieldMap = {
@@ -31,6 +29,7 @@ const buildTrainingCategorySummary = (establishmentsWithTrainingRecords) => {
     if (!categoryMap[categoryName]) {
       categoryMap[categoryName] = {
         trainingCategory: categoryName,
+        workplaceName: workplaceName,
         mandatory: training.isMandatory,
 
         ...createEmptySummaryRow(),
@@ -115,8 +114,7 @@ const convertWorkerWithCareCertificateStatus = (worker, establishmentName, isPar
   return {
     workerId: numberCheck(worker.NameOrIdValue),
 
-    ...(isParent && { establishmentName }),
-
+    workplaceName: establishmentName,
     jobRole: worker.mainJob.title,
 
     careCertificate: formatCareCertificateValue(worker.CareCertificateValue),
@@ -126,7 +124,6 @@ const convertWorkerWithCareCertificateStatus = (worker, establishmentName, isPar
 };
 
 exports.convertWorkersWithCareCertificateStatus = (establishments, isParent) => {
-  console.log('helooo' + isParent);
   const workerHasDataForCareCertOrL2CareCert = (worker) =>
     Boolean(worker?.CareCertificateValue || worker?.Level2CareCertificateValue);
 
