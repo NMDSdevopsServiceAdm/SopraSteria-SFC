@@ -60,8 +60,9 @@ const addTopTableHeader = (tab, columnsToDisplay) => {
 };
 
 const addTrainingByCategoryTable = (tab, sortedData, columnsToDisplay, isParent) => {
-  const dataRows = sortedData.filter((row) => row.trainingCategory !== 'Total');
-
+  const dataRows = sortedData.filter((row) => {
+    return !(row.trainingCategory === 'Total' || row.workplaceName === 'Total');
+  });
   const tableRows = dataRows.map((trainingData) => {
     return columnsToDisplay.map(({ field }) => trainingData[field] ?? '-');
   });
@@ -96,7 +97,9 @@ const addTrainingByCategoryTable = (tab, sortedData, columnsToDisplay, isParent)
 };
 
 const addTotalRow = (tab, sortedData, columnsToDisplay, isParent) => {
-  const totalsRow = sortedData.find((row) => row.trainingCategory === 'Total');
+  const totalsRow = sortedData.find((row) =>
+    isParent ? row.workplaceName === 'Total' : row.trainingCategory === 'Total',
+  );
 
   if (!totalsRow) return;
 
@@ -120,6 +123,15 @@ const addTotalRow = (tab, sortedData, columnsToDisplay, isParent) => {
     cell.value = value;
 
     const style = lodash.cloneDeep(tableHeaderCellStyle);
+
+    const field = columnsToDisplay[index].field;
+
+    if ((!isParent && field === 'trainingCategory') || (isParent && field === 'workplaceName')) {
+      style.alignment = {
+        ...style.alignment,
+        horizontal: 'left',
+      };
+    }
 
     cell.style = style;
   });
