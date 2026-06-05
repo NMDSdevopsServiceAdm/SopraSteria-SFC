@@ -6,6 +6,7 @@
           <th class="govuk-table__header" scope="col">Full name</th>
           <th class="govuk-table__header" scope="col">Username</th>
           <th class="govuk-table__header" scope="col">Last updated</th>
+          <th class="govuk-table__header" scope="col">Last sign in</th>
           <th class="govuk-table__header" scope="col">Permissions</th>
           <th class="govuk-table__header" scope="col">Status</th>
         </tr>
@@ -36,6 +37,9 @@
             </td>
             <td class="govuk-table__cell">
               {{ user.updated | date: 'd MMM y' }}
+            </td>
+            <td class="govuk-table__cell">
+              {{ user.lastLoggedIn ? (user.lastLoggedIn | date: 'd MMM y') : '-' }}
             </td>
             <td class="govuk-table__cell">
               {{ getUserType(user) }}
