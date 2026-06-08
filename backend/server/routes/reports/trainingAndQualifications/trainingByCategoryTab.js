@@ -36,7 +36,7 @@ const generateTrainingByCategoryTab = async (workbook, trainingByCategoryBreakdo
   addTitle(trainingByCategoryTab);
   addTopTableHeader(trainingByCategoryTab, columnsToDisplay);
 
-  const sortedData = lodash.sortBy(trainingByCategoryBreakdowns, ['workplaceName', 'trainingCategory']);
+  const sortedData = lodash.sortBy(trainingByCategoryBreakdowns, ['trainingCategory']);
 
   addTrainingByCategoryTable(trainingByCategoryTab, sortedData, columnsToDisplay, isParent);
   setBoldStyleForHeaderRow(trainingByCategoryTab);
