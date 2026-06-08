@@ -10,6 +10,7 @@ export interface UserDetails {
   isPrimary?: boolean;
   jobTitle: string;
   lastLoggedIn?: string;
+  lastLoggedInFromLogin?: string;
   agreedUpdatedTerms?: boolean;
   migratedUser?: boolean;
   migratedUserFirstLogon?: boolean;

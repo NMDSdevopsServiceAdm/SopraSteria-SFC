@@ -8,6 +8,7 @@ import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
@@ -21,7 +22,6 @@ import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 
 import { NewDashboardHeaderComponent } from './dashboard-header.component';
-import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 
 const MockWindow = {
   dataLayer: {
@@ -198,6 +198,28 @@ describe('NewDashboardHeaderComponent', () => {
       const { queryByTestId } = await setup(override);
 
       expect(queryByTestId('workplace-address')).toBeFalsy();
+    });
+
+    it('should show last sign in date for non-admin users', async () => {
+      const { getByText } = await setup({
+        tab: 'home',
+        isAdmin: false,
+        isParentSubsidiaryView: false,
+      });
+
+      expect(getByText('Last sign in, 1 June 2026')).toBeTruthy();
+    });
+
+    it('should NOT show last sign in date when accessed via parent subsidiary view', async () => {
+      const { queryByText, component, fixture } = await setup({
+        tab: 'home',
+        isAdmin: false,
+      });
+
+      component.isParentSubsidiaryView = true;
+      fixture.detectChanges();
+
+      expect(queryByText(/Last sign in/)).toBeNull();
     });
   });
 

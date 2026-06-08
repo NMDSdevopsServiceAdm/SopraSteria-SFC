@@ -25,8 +25,11 @@ export class UserService {
   public agreedUpdatedTerms$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public users$: Observable<Array<UserDetails>> = this._users$.asObservable();
   private _agreedUpdatedTermsStatus: boolean = null;
+  private _lastLoggedInFromLogin: string | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    this._lastLoggedInFromLogin = localStorage.getItem('lastLogin');
+  }
 
   public get loggedInUser$(): Observable<UserDetails> {
     return this._loggedInUser$.asObservable();
@@ -49,9 +52,15 @@ export class UserService {
   }
 
   public getLoggedInUser(): Observable<UserDetails> {
-    return this.http
-      .get<UserDetails>(`${environment.appRunnerEndpoint}/api/user/me`)
-      .pipe(tap((user) => (this.loggedInUser = user)));
+    return this.http.get<UserDetails>(`${environment.appRunnerEndpoint}/api/user/me`).pipe(
+      tap((user) => {
+        const mappedUser: UserDetails = {
+          ...user,
+          lastLoggedInFromLogin: this._lastLoggedInFromLogin,
+        };
+        this.loggedInUser = mappedUser;
+      }),
+    );
   }
 
   public get returnUrl() {
@@ -114,6 +123,13 @@ export class UserService {
     this._agreedUpdatedTermsStatus = null;
   }
 
+  public setLastLoggedIn(lastLoggedIn: string | null) {
+    this._lastLoggedInFromLogin = lastLoggedIn;
+
+    if (lastLoggedIn) {
+      localStorage.setItem('lastLogin', lastLoggedIn);
+    }
+  }
   /*
    * GET /api/user/establishment/:establishmentUID
    */
