@@ -21,16 +21,16 @@ const generateTrainingByCategoryTab = async (workbook, trainingByCategoryBreakdo
   const trainingByCategoryTab = workbook.addWorksheet('Training by category', { views: [{ showGridLines: false }] });
 
   const columnsToDisplay = [
-    { columnName: 'Training category', field: 'trainingCategory' },
+    { columnName: 'Training category', field: 'trainingCategory', width: 30 },
 
-    ...(isParent ? [{ columnName: 'Workplace', field: 'workplaceName' }] : []),
+    ...(isParent ? [{ columnName: 'Workplace', field: 'workplaceName', width: 30 }] : []),
 
-    { columnName: 'Mandatory', field: 'mandatory' },
-    { columnName: 'Total', field: 'total' },
-    { columnName: 'Expired', field: 'expired' },
-    { columnName: 'Expiring soon', field: 'expiringSoon' },
-    { columnName: 'Up-to-date', field: 'upToDate' },
-    { columnName: 'Missing', field: 'missing' },
+    { columnName: 'Mandatory', field: 'mandatory', width: 18 },
+    { columnName: 'Total', field: 'total', width: 18 },
+    { columnName: 'Expired', field: 'expired', width: 18 },
+    { columnName: 'Expiring soon', field: 'expiringSoon', width: 18 },
+    { columnName: 'Up-to-date', field: 'upToDate', width: 18 },
+    { columnName: 'Missing', field: 'missing', width: 18 },
   ];
 
   addTitle(trainingByCategoryTab);
@@ -40,7 +40,7 @@ const generateTrainingByCategoryTab = async (workbook, trainingByCategoryBreakdo
 
   addTrainingByCategoryTable(trainingByCategoryTab, sortedData, columnsToDisplay, isParent);
   setBoldStyleForHeaderRow(trainingByCategoryTab);
-  setHeightsAndWidths(trainingByCategoryTab);
+  setHeightsAndWidths(trainingByCategoryTab, columnsToDisplay);
 
   addFootNote(trainingByCategoryTab);
 };
@@ -137,8 +137,8 @@ const addTotalRow = (tab, sortedData, columnsToDisplay, isParent) => {
   });
 };
 
-const setHeightsAndWidths = (tab) => {
-  const columnWidths = [8, 33, 18, 18, 18, 18, 18, 18];
+const setHeightsAndWidths = (tab, columnsToDisplay) => {
+  const columnWidths = [8, ...columnsToDisplay.map((column) => column.width)];
 
   columnWidths.forEach((width, index) => {
     const column = tab.getColumn(index + 1);
