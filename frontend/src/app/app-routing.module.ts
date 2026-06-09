@@ -49,6 +49,7 @@ import { ResetPasswordComponent } from '@features/reset-password/reset-password.
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
 import { SubsidiaryRouterService } from '@shared/services/subsidiary-router-service';
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
+import { PasswordSavedConfirmationComponent } from '@shared/components/password-saved-confirmation/password-saved-confirmation.component';
 
 const routes: Routes = [
   {
@@ -66,6 +67,7 @@ const routes: Routes = [
     component: ProblemWithTheServiceComponent,
     data: { title: 'Problem with the Service' },
   },
+
   {
     path: '',
     loadChildren: () => import('@features/public/public.module').then((m) => m.PublicModule),
@@ -132,6 +134,11 @@ const routes: Routes = [
         path: 'username-found',
         component: UsernameFoundComponent,
         data: { title: 'Username Found' },
+      },
+      {
+        path: 'password-saved',
+        component: PasswordSavedConfirmationComponent,
+        data: { title: 'Password saved' },
       },
     ],
   },
