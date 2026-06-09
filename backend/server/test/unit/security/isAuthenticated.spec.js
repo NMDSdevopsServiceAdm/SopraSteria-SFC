@@ -536,7 +536,7 @@ describe('isAuthenticated', () => {
         },
       });
 
-      (expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true);
+      expect(res.statusCode).to.equal(200);
       expect(next.calledOnce).to.be.true;
     });
 
@@ -589,7 +589,7 @@ describe('isAuthenticated', () => {
         },
       });
 
-      (expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true);
+      expect(res.statusCode).to.equal(200);
       expect(next.calledOnce).to.be.true;
     });
 
@@ -641,7 +641,7 @@ describe('isAuthenticated', () => {
         },
       });
 
-      (expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true);
+      expect(res.statusCode).to.equal(200);
       expect(next.calledOnce).to.be.true;
     });
 
@@ -750,7 +750,7 @@ describe('isAuthenticated', () => {
 
       await authorisedEstablishmentPermissionCheck(req, res, next, true);
 
-      (expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true);
+      expect(res.statusCode).to.equal(200);
       expect(next.calledOnce).to.be.true;
     });
   });
