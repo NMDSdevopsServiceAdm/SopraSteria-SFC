@@ -6,7 +6,7 @@ const generateJWT = require('../../../utils/security/generateJWT');
 
 const { refreshToken } = require('../../../routes/login')._controllers;
 
-describe.only('login', () => {
+describe('login', () => {
   afterEach(() => {
     sinon.restore();
   });

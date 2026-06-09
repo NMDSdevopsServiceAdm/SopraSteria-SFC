@@ -15,7 +15,7 @@ describe('validate token issue time', () => {
     sinon.restore();
   });
 
-  describe.only('validateTokenIssueTimeAgainstPasswordChange', () => {
+  describe('validateTokenIssueTimeAgainstPasswordChange', () => {
     it('should pass if the token in request is issued later than the most recent password change', async () => {
       const mockPasswordChangeTime = new Date(1780582609 * 1000);
       const mockTokenIssueTime = 1780582609 + 10;
@@ -71,7 +71,7 @@ describe('validate token issue time', () => {
     });
   });
 
-  describe.only('validateTokenIssueTimeAgainstLastLogout', () => {
+  describe('validateTokenIssueTimeAgainstLastLogout', () => {
     it('should pass if the token is issued after the last logout time', async () => {
       const mockLogoutTime = 1780582609;
       const mockTokenIssueTime = mockLogoutTime + 10;
