@@ -17,7 +17,7 @@ const {
 } = require('../../../utils/security/isAuthenticated');
 const cacheUserLogoutTime = require('../../../utils/cacheUserLogoutTime');
 
-describe.only('isAuthenticated', () => {
+describe('isAuthenticated', () => {
   describe('getTokenSecret', () => {
     it('returns the default secret in the config', () => {
       const secret = getTokenSecret();

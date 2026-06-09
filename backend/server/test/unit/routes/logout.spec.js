@@ -4,7 +4,7 @@ const models = require('../../../models');
 const cacheUserLogoutTime = require('../../../utils/cacheUserLogoutTime');
 const logout = require('../../../routes/logout').logout;
 
-describe.only('logout', () => {
+describe('logout', () => {
   afterEach(() => {
     sinon.restore();
   });
