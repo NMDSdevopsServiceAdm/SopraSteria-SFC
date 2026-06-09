@@ -5,6 +5,10 @@ const cacheUserLogoutTime = require('../../../utils/cacheUserLogoutTime');
 const logout = require('../../../routes/logout').logout;
 
 describe('logout', () => {
+  beforeEach(() => {
+    sinon.stub(cacheUserLogoutTime, 'cacheUserLogoutTime');
+  });
+
   afterEach(() => {
     sinon.restore();
   });
@@ -64,8 +68,6 @@ describe('logout', () => {
     sinon.stub(models.userAudit, 'create').returns();
     sinon.stub(models.userAudit, 'countLogouts').returns(1);
     sinon.stub(models.satisfactionSurvey, 'countSubmissions').returns(0);
-
-    sinon.stub(cacheUserLogoutTime, 'cacheUserLogoutTime');
 
     await logout('username');
 
