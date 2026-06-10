@@ -5,15 +5,31 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationSurveyService } from '@core/services/registration-survey.service';
 import { UserService } from '@core/services/user.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockUserService } from '@core/test-utils/MockUserService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { RegistrationSurveyModule } from '../registration-survey.module';
 import { ParticipationComponent } from './participation.component';
+import { of } from 'rxjs';
 
 describe('ParticipationComponent', () => {
-  async function setup() {
+  const mockUser = {
+    uid: 'mocked-uid',
+    email: 'test@developer.com',
+    fullname: 'John Smith',
+    jobTitle: 'Developer',
+    phone: '01234567890',
+    role: 'Edit',
+    securityQuestion: 'Not relevant',
+    securityQuestionAnswer: 'Not relevant',
+    lastLoggedInFromLogin: '2026-06-01T12:34:56.000Z',
+  };
+
+  async function setup(overrides = { registrationSurveyCompleted: true }) {
+    const updateUserFlagSpy = jasmine.createSpy().and.returnValue(of(null));
+    const registrationSurveyCompleted = overrides?.registrationSurveyCompleted ?? true;
+    const loggedInUser = { ...mockUser, registrationSurveyCompleted };
+
     const setupTools = await render(ParticipationComponent, {
       imports: [SharedModule, RegistrationSurveyModule],
       providers: [
@@ -24,7 +40,7 @@ describe('ParticipationComponent', () => {
         },
         {
           provide: UserService,
-          useClass: MockUserService,
+          useValue: { loggedInUser, updateUserFlag: updateUserFlagSpy },
           deps: [HttpClient],
         },
         {
@@ -37,7 +53,7 @@ describe('ParticipationComponent', () => {
     });
 
     const component = setupTools.fixture.componentInstance;
-    return { ...setupTools, component };
+    return { ...setupTools, component, updateUserFlagSpy };
   }
 
   it('should create', async () => {
@@ -74,5 +90,17 @@ describe('ParticipationComponent', () => {
 
     const nextPage = component.nextPage;
     expect(nextPage.url).toEqual(['/dashboard']);
+  });
+
+  it('should call to backend and set the registrationSurveyCompleted flag to true', async () => {
+    const { updateUserFlagSpy } = await setup({ registrationSurveyCompleted: false });
+
+    expect(updateUserFlagSpy).toHaveBeenCalledOnceWith(mockUser.uid, { registrationSurveyCompleted: true });
+  });
+
+  it('should not call update flag if registrationSurveyCompleted flag is already true', async () => {
+    const { updateUserFlagSpy } = await setup({ registrationSurveyCompleted: true });
+
+    expect(updateUserFlagSpy).not.toHaveBeenCalled;
   });
 });
