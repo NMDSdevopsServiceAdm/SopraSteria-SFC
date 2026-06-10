@@ -93,8 +93,6 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   }
 
   public async onClick(event: Event, fragment: string, route: string[], skipTabSwitch: boolean = false): Promise<void> {
-    console.log('fragment:', fragment);
-    console.log('selectedTab before:', this.tabsService.selectedTab);
     event.preventDefault();
     if (this.payAndPensionWorkplaceQuestionsLinkDisplaying && fragment == 'workplace') {
       this.payAndPensionService.setInPayAndPensionsMiniFlow(true);
