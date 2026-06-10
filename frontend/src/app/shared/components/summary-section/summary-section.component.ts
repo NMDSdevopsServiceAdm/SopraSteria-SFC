@@ -93,6 +93,8 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   }
 
   public async onClick(event: Event, fragment: string, route: string[], skipTabSwitch: boolean = false): Promise<void> {
+    console.log('fragment:', fragment);
+    console.log('selectedTab before:', this.tabsService.selectedTab);
     event.preventDefault();
     if (this.payAndPensionWorkplaceQuestionsLinkDisplaying && fragment == 'workplace') {
       this.payAndPensionService.setInPayAndPensionsMiniFlow(true);
@@ -247,33 +249,13 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   }
 
   public getTrainingAndQualsSummary(): void {
-    if (this.trainingCounts?.staffMissingMandatoryTraining) {
+    const hasTrainingAlert =
+      this.trainingCounts?.staffMissingMandatoryTraining ||
+      this.trainingCounts?.totalExpiredTraining ||
+      this.trainingCounts?.totalExpiringTraining;
+    if (hasTrainingAlert) {
       this.sections[2].redFlag = true;
-      this.sections[2].message = `${this.trainingCounts.staffMissingMandatoryTraining} staff ${
-        this.trainingCounts.staffMissingMandatoryTraining > 1 ? 'are' : 'is'
-      } missing mandatory training`;
-      this.sections[2].route = [
-        '/workplace',
-        this.workplace.uid,
-        'training-and-qualifications',
-        'missing-mandatory-training',
-      ];
-    } else if (this.trainingCounts?.totalExpiredTraining) {
-      this.sections[2].redFlag = true;
-      this.sections[2].message = `${this.trainingCounts.totalExpiredTraining} training record${
-        this.trainingCounts.totalExpiredTraining > 1 ? 's have' : ' has'
-      } expired`;
-      this.sections[2].route = ['/workplace', this.workplace.uid, 'training-and-qualifications', 'expired-training'];
-    } else if (this.trainingCounts?.totalExpiringTraining) {
-      this.sections[2].message = `${this.trainingCounts.totalExpiringTraining} training record${
-        this.trainingCounts.totalExpiringTraining > 1 ? 's expire' : ' expires'
-      } soon`;
-      this.sections[2].route = [
-        '/workplace',
-        this.workplace.uid,
-        'training-and-qualifications',
-        'expires-soon-training',
-      ];
+      this.sections[2].message = 'You need to check your training records';
     } else if (this.trainingCounts?.totalRecords === 0 && this.trainingCounts?.totalTraining == 0) {
       this.sections[2].link = false;
       this.sections[2].message = 'Manage your staff training and qualifications';
