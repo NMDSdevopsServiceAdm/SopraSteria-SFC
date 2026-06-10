@@ -5,8 +5,10 @@ import { provideRouter, Router, RouterModule } from '@angular/router';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { TabsService } from '@core/services/tabs.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
 import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
@@ -16,8 +18,6 @@ import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
-import { PayAndPensionService } from '@core/services/pay-and-pension.service';
-import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
 
 describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
@@ -1428,7 +1428,7 @@ describe('Summary section', () => {
         const tAndQRow = getByTestId('training-and-qualifications-row');
         expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
         expect(within(tAndQRow).getByTestId('red-flag')).toBeTruthy();
-        expect(within(tAndQRow).getByText('2 staff are missing mandatory training')).toBeTruthy();
+        expect(within(tAndQRow).getByText('You need to check your training records')).toBeTruthy();
       });
 
       it('should show when mandatory training is missing for a single user', async () => {
@@ -1443,7 +1443,7 @@ describe('Summary section', () => {
         const tAndQRow = getByTestId('training-and-qualifications-row');
         expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
         expect(within(tAndQRow).getByTestId('red-flag')).toBeTruthy();
-        expect(within(tAndQRow).getByText('1 staff is missing mandatory training')).toBeTruthy();
+        expect(within(tAndQRow).getByText('You need to check your training records')).toBeTruthy();
       });
 
       it('should not show when mandatory training is not missing', async () => {
@@ -1458,8 +1458,7 @@ describe('Summary section', () => {
         const tAndQRow = getByTestId('training-and-qualifications-row');
         expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
         expect(within(tAndQRow).queryByTestId('red-flag')).toBeFalsy();
-        expect(within(tAndQRow).queryByText('0 staff are missing mandatory training')).toBeFalsy();
-        expect(within(tAndQRow).queryByText('0 staff is missing mandatory training')).toBeFalsy();
+        expect(within(tAndQRow).queryByText('You need to check your training records')).toBeFalsy();
       });
     });
 
@@ -1476,7 +1475,7 @@ describe('Summary section', () => {
         const tAndQRow = getByTestId('training-and-qualifications-row');
         expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
         expect(within(tAndQRow).getByTestId('red-flag')).toBeTruthy();
-        expect(within(tAndQRow).getByText('2 training records have expired')).toBeTruthy();
+        expect(within(tAndQRow).getByText('You need to check your training records')).toBeTruthy();
       });
 
       it('should show when training is expired for a single user', async () => {
@@ -1491,7 +1490,7 @@ describe('Summary section', () => {
         const tAndQRow = getByTestId('training-and-qualifications-row');
         expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
         expect(within(tAndQRow).getByTestId('red-flag')).toBeTruthy();
-        expect(within(tAndQRow).getByText('1 training record has expired')).toBeTruthy();
+        expect(within(tAndQRow).getByText('You need to check your training records')).toBeTruthy();
       });
 
       it('should not show when training is not expired', async () => {
@@ -1506,8 +1505,7 @@ describe('Summary section', () => {
         const tAndQRow = getByTestId('training-and-qualifications-row');
         expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
         expect(within(tAndQRow).queryByTestId('red-flag')).toBeFalsy();
-        expect(within(tAndQRow).queryByText('0 training record has expired')).toBeFalsy();
-        expect(within(tAndQRow).queryByText('0 training records have expired')).toBeFalsy();
+        expect(within(tAndQRow).queryByText('You need to check your training records')).toBeFalsy();
       });
     });
 
@@ -1522,9 +1520,9 @@ describe('Summary section', () => {
         };
         const { getByTestId } = await setup(overrides);
         const tAndQRow = getByTestId('training-and-qualifications-row');
-        expect(within(tAndQRow).getByTestId('orange-flag')).toBeTruthy();
-        expect(within(tAndQRow).queryByTestId('red-flag')).toBeFalsy();
-        expect(within(tAndQRow).getByText('2 training records expire soon')).toBeTruthy();
+        expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
+        expect(within(tAndQRow).queryByTestId('red-flag')).toBeTruthy();
+        expect(within(tAndQRow).getByText('You need to check your training records')).toBeTruthy();
       });
 
       it('should show when training is expiring for a single user', async () => {
@@ -1537,9 +1535,9 @@ describe('Summary section', () => {
         };
         const { getByTestId } = await setup(overrides);
         const tAndQRow = getByTestId('training-and-qualifications-row');
-        expect(within(tAndQRow).getByTestId('orange-flag')).toBeTruthy();
-        expect(within(tAndQRow).queryByTestId('red-flag')).toBeFalsy();
-        expect(within(tAndQRow).getByText('1 training record expires soon')).toBeTruthy();
+        expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
+        expect(within(tAndQRow).queryByTestId('red-flag')).toBeTruthy();
+        expect(within(tAndQRow).getByText('You need to check your training records')).toBeTruthy();
       });
 
       it('should not show when training is not expiring', async () => {
@@ -1554,8 +1552,7 @@ describe('Summary section', () => {
         const tAndQRow = getByTestId('training-and-qualifications-row');
         expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
         expect(within(tAndQRow).queryByTestId('red-flag')).toBeFalsy();
-        expect(within(tAndQRow).queryByText('0 training record expires soon')).toBeFalsy();
-        expect(within(tAndQRow).queryByText('0 training records expire soon')).toBeFalsy();
+        expect(within(tAndQRow).queryByText('You need to check your training records')).toBeFalsy();
       });
     });
 
