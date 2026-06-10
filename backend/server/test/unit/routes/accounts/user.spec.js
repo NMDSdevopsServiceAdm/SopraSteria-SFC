@@ -13,6 +13,7 @@ const {
   updateNormalUser,
   updateAdminUser,
   updateTrainingCoursesMessageViewedQuantity,
+  updateUserFlags,
 } = require('../../../../routes/accounts/user');
 const User = require('../../../../models/classes/user').User;
 const models = require('../../../../models');
@@ -638,6 +639,75 @@ describe('user.js', () => {
 
       expect(res.statusCode).to.equal(500);
       expect(res._getData()).to.deep.equal({ message: 'Failed to update training courses message viewed quantity' });
+    });
+  });
+
+  describe('updateUserFlags', () => {
+    let req;
+    let res;
+
+    const mockUserUid = 'mock-user-uid';
+    const mockReqBody = { registrationSurveyCompleted: true };
+
+    const defaultReq = {
+      method: 'PUT',
+      url: `/api/api/user/flag/${mockUserUid}`,
+      establishmentId: 123,
+      establishment: { id: 123 },
+      body: mockReqBody,
+      params: { userUid: mockUserUid },
+      user: { id: mockUserUid },
+    };
+
+    beforeEach(() => {
+      req = httpMocks.createRequest(defaultReq);
+      res = httpMocks.createResponse();
+    });
+
+    it('should respond with 200 and update the flags for user', async () => {
+      sinon.stub(models.user, 'updateFlags').resolves(null);
+
+      await updateUserFlags(req, res);
+
+      expect(res.statusCode).to.equal(200);
+      expect(res._getData()).to.deep.equal({ message: 'User flags updated' });
+      expect(models.user.updateFlags).to.have.been.calledWith(mockUserUid, mockReqBody);
+    });
+
+    it('should respond with 400 if the request body contain any unexpected fields', async () => {
+      sinon.stub(models.user, 'updateFlags').resolves(null);
+      sinon.stub(console, 'error');
+
+      const req = httpMocks.createRequest({ ...defaultReq, body: { role: 'Admin' } });
+
+      await updateUserFlags(req, res);
+
+      expect(res.statusCode).to.equal(400);
+      expect(res._getData()).to.deep.equal({ message: 'Bad request' });
+      expect(models.user.updateFlags).not.to.have.been.called;
+    });
+
+    it('should respond with 403 if the user uid in request auth token does not match the user uid in params', async () => {
+      sinon.stub(models.user, 'updateFlags').resolves(null);
+      sinon.stub(console, 'error');
+
+      const req = httpMocks.createRequest({ ...defaultReq, params: { userUid: 'uuid-of-some-other-user' } });
+
+      await updateUserFlags(req, res);
+
+      expect(res.statusCode).to.equal(403);
+      expect(res._getData()).to.deep.equal({ message: 'Not allowed to update this user' });
+      expect(models.user.updateFlags).not.to.have.been.called;
+    });
+
+    it('should respond with 500 if any other error occurs', async () => {
+      sinon.stub(models.user, 'updateFlags').rejects('some database error');
+      sinon.stub(console, 'error');
+
+      await updateUserFlags(req, res);
+
+      expect(res.statusCode).to.equal(500);
+      expect(res._getData()).to.deep.equal({ message: 'Failed to update user flag' });
     });
   });
 });

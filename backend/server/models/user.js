@@ -1,6 +1,6 @@
 /* jshint indent: 2 */
 const { Op } = require('sequelize');
-const { padEnd } = require('lodash');
+const lodash = require('lodash');
 const { sanitise } = require('../utils/db');
 const { UserAccountStatus } = require('../data/constants');
 
@@ -499,7 +499,7 @@ module.exports = function (sequelize, DataTypes) {
       return null;
     }
 
-    const workplaceIdWithTrailingSpace = padEnd(workplaceId ?? '', 8, ' ');
+    const workplaceIdWithTrailingSpace = lodash.padEnd(workplaceId ?? '', 8, ' ');
     const establishmentWhereClause = workplaceId
       ? { NmdsID: [workplaceId, workplaceIdWithTrailingSpace] }
       : { postcode: postcode };
@@ -546,6 +546,23 @@ module.exports = function (sequelize, DataTypes) {
     }
 
     return userFound;
+  };
+
+  User.updateFlags = async function (userUid, updates) {
+    const fieldsAllowedToChange = [
+      'registrationSurveyCompleted',
+      'lastViewedVacanciesAndTurnoverMessage',
+      'trainingCoursesMessageViewedQuantity',
+      'userResearchInviteResponseValue',
+    ];
+
+    const allowedUpdates = lodash.pick(updates, fieldsAllowedToChange);
+
+    return this.update(allowedUpdates, {
+      where: {
+        uid: userUid,
+      },
+    });
   };
 
   User.setDateForLastViewedVacanciesAndTurnoverMessage = async function (userUid) {
