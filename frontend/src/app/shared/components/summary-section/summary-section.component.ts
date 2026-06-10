@@ -248,12 +248,14 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   }
 
   public getTrainingAndQualsSummary(): void {
-    const hasTrainingAlert =
-      this.trainingCounts?.staffMissingMandatoryTraining ||
-      this.trainingCounts?.totalExpiredTraining ||
-      this.trainingCounts?.totalExpiringTraining;
-    if (hasTrainingAlert) {
+    const hasMissingMandatory = this.trainingCounts?.staffMissingMandatoryTraining;
+    const hasExpired = this.trainingCounts?.totalExpiredTraining;
+    const hasExpiringSoon = this.trainingCounts?.totalExpiringTraining;
+
+    if (hasMissingMandatory || hasExpired) {
       this.sections[2].redFlag = true;
+      this.sections[2].message = 'You need to check your training records';
+    } else if (hasExpiringSoon) {
       this.sections[2].message = 'You need to check your training records';
     } else if (this.trainingCounts?.totalRecords === 0 && this.trainingCounts?.totalTraining == 0) {
       this.sections[2].link = false;
