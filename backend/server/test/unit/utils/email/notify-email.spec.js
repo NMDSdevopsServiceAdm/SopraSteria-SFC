@@ -45,7 +45,7 @@ describe.only('gov notify send email', () => {
           resetUuid: mockUuid,
         },
         reference: sinon.match(/localhost-password-reset-.*/),
-        emailReplyToId: DEFAULT_DUMMY_ID,
+        emailReplyToId: 'mock-reply-to-id',
       });
     });
 
@@ -88,7 +88,7 @@ describe.only('gov notify send email', () => {
           addUserUuid: mockUuid,
         },
         reference: sinon.match(/localhost-add-user-.*/),
-        emailReplyToId: DEFAULT_DUMMY_ID,
+        emailReplyToId: 'mock-reply-to-id',
       });
     });
 
