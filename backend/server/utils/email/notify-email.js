@@ -1,5 +1,6 @@
 const config = require('../../config/config');
 const { v4: uuidv4 } = require('uuid');
+const { getToday } = require('../dateUtils');
 
 const GovNotifyClient = require('notifications-node-client').NotifyClient;
 
@@ -8,6 +9,11 @@ const DEFAULT_DUMMY_ID = '80d54020-c420-46f1-866d-b8cc3196809d';
 const EmailTypes = {
   passwordReset: { type: 'passwordReset', templateIdKey: 'notify.templates.resetPassword', slug: 'password-reset' },
   addUser: { type: 'addUser', templateIdKey: 'notify.templates.addUser', slug: 'add-user' },
+  updateUserDetails: {
+    type: 'updateUserDetails',
+    templateIdKey: 'notify.templates.updateUserDetails',
+    slug: 'update-user-details',
+  },
 };
 
 const loadConfigs = (emailType) => {
@@ -62,4 +68,10 @@ const sendAddUser = async (emailAddress, name, addUserUuid) => {
   return sendEmailToUser(EmailTypes.addUser, emailAddress, personalisation);
 };
 
-module.exports = { sendPasswordReset, sendAddUser };
+const sendUpdateUserDetails = async (emailAddress, name) => {
+  const date = getToday('d MMMM YYYY');
+  const personalisation = { name, date };
+  return sendEmailToUser(EmailTypes.updateUserDetails, emailAddress, personalisation);
+};
+
+module.exports = { sendPasswordReset, sendAddUser, sendUpdateUserDetails };

@@ -28,4 +28,9 @@ const formatDateTime = (date, formatString) => {
   return dayjs(date).tz(timezone).format(formatString);
 };
 
-module.exports = { calculateTrainingExpiryDate, formatDateTime };
+const getToday = (format = 'YYYY-MM-DD') => {
+  const now = dayjs();
+  return now.format(format);
+};
+
+module.exports = { calculateTrainingExpiryDate, getToday, formatDateTime };
