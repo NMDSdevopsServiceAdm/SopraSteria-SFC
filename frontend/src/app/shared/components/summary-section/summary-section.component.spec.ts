@@ -1520,8 +1520,8 @@ describe('Summary section', () => {
         };
         const { getByTestId } = await setup(overrides);
         const tAndQRow = getByTestId('training-and-qualifications-row');
-        expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
-        expect(within(tAndQRow).queryByTestId('red-flag')).toBeTruthy();
+        expect(within(tAndQRow).queryByTestId('orange-flag')).toBeTruthy();
+        expect(within(tAndQRow).queryByTestId('red-flag')).toBeFalsy();
         expect(within(tAndQRow).getByText('You need to check your training records')).toBeTruthy();
       });
 
@@ -1535,8 +1535,8 @@ describe('Summary section', () => {
         };
         const { getByTestId } = await setup(overrides);
         const tAndQRow = getByTestId('training-and-qualifications-row');
-        expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
-        expect(within(tAndQRow).queryByTestId('red-flag')).toBeTruthy();
+        expect(within(tAndQRow).queryByTestId('orange-flag')).toBeTruthy();
+        expect(within(tAndQRow).queryByTestId('red-flag')).toBeFalsy();
         expect(within(tAndQRow).getByText('You need to check your training records')).toBeTruthy();
       });
 
