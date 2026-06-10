@@ -21,6 +21,7 @@ const { authLimiter } = require('../../utils/middleware/rateLimiting');
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
 const notifications = require('../../data/notifications');
+const HttpError = require('../../utils/errors/httpError');
 
 const normalUserRoles = ['None', 'Read', 'Edit'];
 const adminUserRoles = ['Admin', 'AdminManager'];
@@ -974,6 +975,38 @@ const updateTrainingCoursesMessageViewedQuantity = async (req, res) => {
   }
 };
 
+const updateUserFlags = async (req, res) => {
+  const fieldsAllowedToChange = [
+    'registrationSurveyCompleted',
+    'lastViewedVacanciesAndTurnoverMessage',
+    'trainingCoursesMessageViewedQuantity',
+    'userResearchInviteResponseValue',
+  ];
+  try {
+    const userUid = req.params?.userUid;
+    const userUidFromToken = req?.user?.id;
+
+    if (userUid !== userUidFromToken) {
+      throw new HttpError('Not allowed to update this user', 403);
+    }
+
+    const changeNotAllowed = Object.keys(req.body).some((key) => !fieldsAllowedToChange.includes(key));
+    if (changeNotAllowed) {
+      throw new HttpError('Bad request', 400);
+    }
+
+    await models.user.updateFlags(userUid, req.body);
+    return res.status(200).send({ message: 'User flags updated' });
+  } catch (error) {
+    console.error('Error during update user flag: ', error);
+
+    if (error instanceof HttpError) {
+      return res.status(error.statusCode).send({ message: error.message });
+    }
+    return res.status(500).send({ message: 'Failed to update user flag' });
+  }
+};
+
 router.route('/').get(return200);
 
 // Admin only endpoints
@@ -1011,12 +1044,15 @@ router.route('/my/establishments').get(Authorization.isAuthorised, listEstablish
 
 router.use('/my/notifications', Authorization.isAuthorised);
 router.route('/my/notifications').get(listNotifications);
+
 router
   .route('/update-last-viewed-vacancies-and-turnover-message/:userUid')
   .post(Authorization.isAuthorised, updateLastViewedVacanciesAndTurnoverMessage);
 router
   .route('/update-training-courses-message-viewed-quantity/:userUid')
   .post(Authorization.isAuthorised, updateTrainingCoursesMessageViewedQuantity);
+router.route('/flag/:userUid').put(Authorization.isAuthorised, updateUserFlags);
+
 router.use('/swap/establishment/:id', authLimiter);
 router.route('/swap/establishment/:id').post(Authorization.isAdmin, swapEstablishment);
 
@@ -1031,3 +1067,4 @@ module.exports.updateNormalUser = updateNormalUser;
 module.exports.updateLastViewedVacanciesAndTurnoverMessage = updateLastViewedVacanciesAndTurnoverMessage;
 module.exports.updateTrainingCoursesMessageViewedQuantity = updateTrainingCoursesMessageViewedQuantity;
 module.exports.addUser = addUser;
+module.exports.updateUserFlags = updateUserFlags;
