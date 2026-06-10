@@ -19,4 +19,9 @@ const calculateTrainingExpiryDate = (completionDate, validityPeriodInMonth) => {
   return parsedCompletionDate.subtract(1, 'day').add(validityPeriodInMonth, 'month').format('YYYY-MM-DD');
 };
 
-module.exports = { calculateTrainingExpiryDate };
+const getToday = (format = 'YYYY-MM-DD') => {
+  const now = dayjs();
+  return now.format(format);
+};
+
+module.exports = { calculateTrainingExpiryDate, getToday };

@@ -3,11 +3,10 @@ const sinon = require('sinon');
 const GovNotifyClient = require('notifications-node-client').NotifyClient;
 
 const config = require('../../../../config/config');
-const { sendPasswordReset, sendAddUser } = require('../../../../utils/email/notify-email');
+const { sendPasswordReset, sendAddUser, sendUpdateUserDetails } = require('../../../../utils/email/notify-email');
 
 describe.only('gov notify send email', () => {
   const defaultConfig = config.getProperties();
-  const DEFAULT_DUMMY_ID = '80d54020-c420-46f1-866d-b8cc3196809d';
 
   const mockConfig = {
     'notify.replyTo': 'mock-reply-to-id',
@@ -15,6 +14,7 @@ describe.only('gov notify send email', () => {
     env: 'localhost',
     'notify.templates.resetPassword': 'template-id-for-resetPassword',
     'notify.templates.addUser': 'template-id-for-addUser',
+    'notify.templates.updateUserDetails': 'template-id-for-update-user-details',
   };
 
   const stubConfig = (overrides) => {
@@ -113,6 +113,60 @@ describe.only('gov notify send email', () => {
       stubConfig({ 'notify.templates.addUser': defaultConfig.notify.templates.addUser });
 
       await sendAddUser(mockEmailAddress, mockName, mockUuid);
+      expect(sendEmailSpy).not.to.have.been.called;
+    });
+  });
+
+  describe('sendUpdateUserDetails', () => {
+    const mockToday = new Date('2026-06-03T12:34:56.000Z');
+    let clock;
+
+    before(() => {
+      clock = sinon.useFakeTimers(mockToday);
+    });
+
+    after(() => {
+      clock.restore();
+    });
+
+    it('should call sendEmail with the expected parameters', async () => {
+      const sendEmailSpy = sinon.stub(GovNotifyClient.prototype, 'sendEmail');
+      stubConfig();
+
+      await sendUpdateUserDetails(mockEmailAddress, mockName);
+      expect(sendEmailSpy).to.have.been.called;
+
+      expect(sendEmailSpy).to.have.been.calledWith('template-id-for-update-user-details', mockEmailAddress, {
+        personalisation: {
+          name: mockName,
+          date: '3 June 2026',
+        },
+        reference: sinon.match(/localhost-update-user-details-.*/),
+        emailReplyToId: 'mock-reply-to-id',
+      });
+    });
+
+    it('should not call sendEmail if API key is not available', async () => {
+      const sendEmailSpy = sinon.stub(GovNotifyClient.prototype, 'sendEmail');
+      stubConfig({ 'notify.key': defaultConfig.notify.key });
+
+      await sendUpdateUserDetails(mockEmailAddress, mockName);
+      expect(sendEmailSpy).not.to.have.been.called;
+    });
+
+    it('should not call sendEmail if ReplyToId is not available', async () => {
+      const sendEmailSpy = sinon.stub(GovNotifyClient.prototype, 'sendEmail');
+      stubConfig({ 'notify.replyTo': defaultConfig.notify.replyTo });
+
+      await sendUpdateUserDetails(mockEmailAddress, mockName);
+      expect(sendEmailSpy).not.to.have.been.called;
+    });
+
+    it('should not call sendEmail if template id is not available', async () => {
+      const sendEmailSpy = sinon.stub(GovNotifyClient.prototype, 'sendEmail');
+      stubConfig({ 'notify.templates.updateUserDetails': defaultConfig.notify.templates.updateUserDetails });
+
+      await sendUpdateUserDetails(mockEmailAddress, mockName);
       expect(sendEmailSpy).not.to.have.been.called;
     });
   });
