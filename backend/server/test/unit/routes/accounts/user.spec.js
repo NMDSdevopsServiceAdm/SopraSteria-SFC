@@ -20,7 +20,7 @@ const models = require('../../../../models');
 const GovNotifySendEmail = require('../../../../utils/email/notify-email');
 const { UserExceptions } = require('../../../../models/classes/user');
 
-describe.only('user.js', () => {
+describe('user.js', () => {
   let req;
   let res;
 

@@ -55,6 +55,7 @@ const sendEmailToUser = async (emailType, emailAddress, personalisation) => {
     console.log(`${emailType.type} - Successfully sent (requested) email`);
   } catch (err) {
     console.error(`${emailType.type} - FAILED to send (request) email:`, err);
+    console.error('Error message from GovNotify API:', err?.response?.data?.errors);
   }
 };
 
@@ -69,7 +70,7 @@ const sendAddUser = async (emailAddress, name, addUserUuid) => {
 };
 
 const sendUpdateUserDetails = async (emailAddress, name) => {
-  const date = getToday('d MMMM YYYY');
+  const date = getToday('D MMMM YYYY');
   const personalisation = { name, date };
   return sendEmailToUser(EmailTypes.updateUserDetails, emailAddress, personalisation);
 };
