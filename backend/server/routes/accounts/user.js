@@ -376,7 +376,7 @@ const changePassword = async (req, res) => {
       include: [
         {
           model: models.user,
-          attributes: ['id', 'FullNameValue'],
+          attributes: ['id', 'FullNameValue', 'EmailValue'],
         },
       ],
     });
@@ -407,6 +407,12 @@ const changePassword = async (req, res) => {
             };
             await models.userAudit.create(auditEvent, { transaction: t });
           });
+
+          const userEmail = login?.user?.EmailValue;
+          const userFullname = login?.user?.FullNameValue;
+          if (userEmail && userFullname) {
+            await GovNotifySendEmail.sendUpdateUserDetails(userEmail, userFullname);
+          }
 
           return res.status(200).send(`Changed password for ${login.user.FullNameValue}`);
         } else {
@@ -1100,3 +1106,4 @@ module.exports.updateLastViewedVacanciesAndTurnoverMessage = updateLastViewedVac
 module.exports.updateTrainingCoursesMessageViewedQuantity = updateTrainingCoursesMessageViewedQuantity;
 module.exports.addUser = addUser;
 module.exports.updateUserFlags = updateUserFlags;
+module.exports.changePassword = changePassword;
