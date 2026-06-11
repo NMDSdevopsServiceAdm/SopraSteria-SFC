@@ -549,20 +549,33 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   User.updateFlags = async function (userUid, updates) {
-    const fieldsAllowedToChange = [
+    const userTableFlags = [
       'registrationSurveyCompleted',
       'lastViewedVacanciesAndTurnoverMessage',
       'trainingCoursesMessageViewedQuantity',
       'userResearchInviteResponseValue',
     ];
+    const loginTableFlags = ['agreedUpdatedTerms'];
 
-    const allowedUpdates = lodash.pick(updates, fieldsAllowedToChange);
+    const userTableUpdates = lodash.pick(updates, userTableFlags);
+    const loginTableUpdates = lodash.pick(updates, loginTableFlags);
 
-    return this.update(allowedUpdates, {
+    const userFound = await this.findOne({
       where: {
         uid: userUid,
       },
     });
+
+    if (!userFound) {
+      return;
+    }
+
+    await userFound.update(userTableUpdates);
+
+    if (!lodash.isEmpty(loginTableUpdates)) {
+      const userLogin = await userFound.getLogin();
+      await userLogin?.update(loginTableUpdates);
+    }
   };
 
   User.setDateForLastViewedVacanciesAndTurnoverMessage = async function (userUid) {
