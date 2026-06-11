@@ -5,7 +5,7 @@ const GovNotifyClient = require('notifications-node-client').NotifyClient;
 const config = require('../../../../config/config');
 const { sendPasswordReset, sendAddUser, sendUpdateUserDetails } = require('../../../../utils/email/notify-email');
 
-describe.only('gov notify send email', () => {
+describe('gov notify send email', () => {
   const defaultConfig = config.getProperties();
 
   const mockConfig = {
@@ -23,6 +23,7 @@ describe.only('gov notify send email', () => {
       return config[key] ?? '';
     });
   };
+
   afterEach(() => {
     sinon.restore();
   });
@@ -118,7 +119,7 @@ describe.only('gov notify send email', () => {
   });
 
   describe('sendUpdateUserDetails', () => {
-    const mockToday = new Date('2026-06-03T12:34:56.000Z');
+    const mockToday = new Date('2026-07-03T12:34:56.000Z');
     let clock;
 
     before(() => {
@@ -139,7 +140,7 @@ describe.only('gov notify send email', () => {
       expect(sendEmailSpy).to.have.been.calledWith('template-id-for-update-user-details', mockEmailAddress, {
         personalisation: {
           name: mockName,
-          date: '3 June 2026',
+          date: '3 July 2026',
         },
         reference: sinon.match(/localhost-update-user-details-.*/),
         emailReplyToId: 'mock-reply-to-id',
