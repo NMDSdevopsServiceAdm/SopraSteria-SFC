@@ -14,6 +14,7 @@ const {
   updateAdminUser,
   updateTrainingCoursesMessageViewedQuantity,
   updateUserFlags,
+  changePassword,
 } = require('../../../../routes/accounts/user');
 const User = require('../../../../models/classes/user').User;
 const models = require('../../../../models');
@@ -752,6 +753,73 @@ describe('user.js', () => {
 
       expect(res.statusCode).to.equal(500);
       expect(res._getData()).to.deep.equal({ message: 'Failed to update user flag' });
+    });
+  });
+
+  describe('changePassword', () => {
+    const mockUserUid = 'mock-uid';
+    const mockUsername = 'test-user';
+    const mockUserFullname = 'Jane Smith';
+    const mockUserEmail = 'test@example.com';
+
+    const defaultReq = {
+      method: 'PUT',
+      url: '/api/user/changePassword',
+      body: { currentPassword: 'mockCurrentPassword1234!', newPassword: 'mockNewPassword1234!' },
+      params: { userUid: mockUserUid },
+      user: { id: mockUserUid },
+      username: mockUsername,
+    };
+
+    let comparePasswordCallbackPromise;
+
+    const comparePasswordFailed = (passw, err, tribalHashValidated, cb) => {
+      comparePasswordCallbackPromise = cb('password not matching', false, false);
+    };
+
+    const comparePasswordSuccessful = (passw, err, tribalHashValidated, cb) => {
+      comparePasswordCallbackPromise = cb(null, true, false);
+    };
+
+    const mockLoginObject = {
+      username: mockUsername,
+      user: { id: 123, FullNameValue: mockUserFullname, EmailValue: mockUserEmail },
+      comparePassword: comparePasswordSuccessful,
+      update: () => {},
+    };
+
+    it('should trigger send email (sendUpdateUserDetails) on successful change', async () => {
+      sinon.stub(models.login, 'findOne').resolves(mockLoginObject);
+      sinon.stub(models.sequelize, 'transaction').callsFake((dbOperations) => dbOperations());
+      sinon.stub(GovNotifySendEmail, 'sendUpdateUserDetails').returns({});
+      sinon.stub(models.userAudit, 'create').resolves({});
+
+      const req = httpMocks.createRequest(defaultReq);
+      const res = httpMocks.createResponse();
+
+      await changePassword(req, res);
+      await comparePasswordCallbackPromise;
+
+      expect(res.statusCode).to.equal(200);
+
+      expect(GovNotifySendEmail.sendUpdateUserDetails).to.have.been.calledOnceWith(mockUserEmail, mockUserFullname);
+    });
+
+    it('should not trigger send email (sendUpdateUserDetails) on failed change', async () => {
+      sinon.stub(models.login, 'findOne').resolves({ ...mockLoginObject, comparePassword: comparePasswordFailed });
+      sinon.stub(models.sequelize, 'transaction').callsFake((dbOperations) => dbOperations());
+      sinon.stub(GovNotifySendEmail, 'sendUpdateUserDetails').returns({});
+      sinon.stub(models.userAudit, 'create').resolves({});
+
+      const req = httpMocks.createRequest(defaultReq);
+      const res = httpMocks.createResponse();
+
+      await changePassword(req, res);
+      await comparePasswordCallbackPromise;
+
+      expect(res.statusCode).to.equal(403);
+
+      expect(GovNotifySendEmail.sendUpdateUserDetails).not.to.have.been.called;
     });
   });
 });
