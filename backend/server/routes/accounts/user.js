@@ -17,6 +17,7 @@ const { hasPermission } = require('../../utils/security/hasPermission');
 const config = require('../../config/config');
 const loginResponse = require('../../utils/login/response');
 const { authLimiter } = require('../../utils/middleware/rateLimiting');
+const GovNotifySendEmail = require('../../utils/email/notify-email');
 
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
@@ -135,7 +136,36 @@ const updateNormalUser = async (req, res) => {
     return res.status(401).send();
   }
 
-  return updateUser(req, res);
+  let callbackAfterUpdate = () => {};
+
+  const userChangingTheirOwnDetails = req?.user?.id === req?.params?.userId;
+  if (userChangingTheirOwnDetails) {
+    callbackAfterUpdate = await sendEmailAfterUpdate(req);
+  }
+
+  return updateUser(req, res).then(() => {
+    if (res.statusCode === 200) {
+      return callbackAfterUpdate();
+    }
+  });
+};
+
+const sendEmailAfterUpdate = async (req) => {
+  try {
+    const user = await models.user.findOne({
+      attributes: ['EmailValue', 'FullNameValue', 'uid'],
+      where: { uid: req?.params?.userId },
+      raw: true,
+    });
+
+    const userEmail = user?.EmailValue;
+    const userFullname = user?.FullNameValue;
+    const callbackAfterUpdate = () => GovNotifySendEmail.sendUpdateUserDetails(userEmail, userFullname);
+    return callbackAfterUpdate;
+  } catch (err) {
+    console.error('Error occur during preparation to send notification email on update user details', err);
+    return () => {};
+  }
 };
 
 // updates a user with given uid or username
@@ -976,12 +1006,14 @@ const updateTrainingCoursesMessageViewedQuantity = async (req, res) => {
 };
 
 const updateUserFlags = async (req, res) => {
-  const fieldsAllowedToChange = [
+  const fieldsAllowed = [
     'registrationSurveyCompleted',
     'lastViewedVacanciesAndTurnoverMessage',
     'trainingCoursesMessageViewedQuantity',
     'userResearchInviteResponseValue',
+    'agreedUpdatedTerms',
   ];
+
   try {
     const userUid = req.params?.userUid;
     const userUidFromToken = req?.user?.id;
@@ -990,7 +1022,7 @@ const updateUserFlags = async (req, res) => {
       throw new HttpError('Not allowed to update this user', 403);
     }
 
-    const changeNotAllowed = Object.keys(req.body).some((key) => !fieldsAllowedToChange.includes(key));
+    const changeNotAllowed = Object.keys(req.body).some((key) => !fieldsAllowed.includes(key));
     if (changeNotAllowed) {
       throw new HttpError('Bad request', 400);
     }

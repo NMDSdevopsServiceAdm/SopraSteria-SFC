@@ -17,8 +17,10 @@ const {
 } = require('../../../../routes/accounts/user');
 const User = require('../../../../models/classes/user').User;
 const models = require('../../../../models');
+const GovNotifySendEmail = require('../../../../utils/email/notify-email');
+const { UserExceptions } = require('../../../../models/classes/user');
 
-describe('user.js', () => {
+describe.only('user.js', () => {
   let req;
   let res;
 
@@ -422,12 +424,14 @@ describe('user.js', () => {
 
     const restoredNormalUser = { ...restoredAdmin, ...normalUser };
 
+    const mockUserUid = 'mock-user-id';
     const defaultReq = {
       establishmentId: 123,
       establishment: { id: 123 },
       role: 'Edit',
       body: normalUser,
-      params: { userId: 'mock-user-id' },
+      params: { userId: mockUserUid },
+      user: { id: mockUserUid },
       get() {
         return 'localhost';
       },
@@ -439,6 +443,11 @@ describe('user.js', () => {
         sinon.stub(User.prototype, 'load').returns(true);
         sinon.stub(User.prototype, 'save').returns();
         sinon.stub(User.prototype, 'toJSON').returns({});
+        sinon.stub(GovNotifySendEmail, 'sendUpdateUserDetails').returns({});
+        sinon.stub(models.user, 'findOne').resolves({
+          FullNameValue: normalUser.fullname,
+          EmailValue: normalUser.email,
+        });
       });
 
       it('should return a status of 200 and a success message when successfully updating a user', async () => {
@@ -473,6 +482,41 @@ describe('user.js', () => {
           expect(res.statusCode).to.equal(401);
           expect(User.prototype.save).not.to.have.been.called;
         });
+      });
+
+      it('should send a email to notify user when they change their own user details', async () => {
+        const req = { ...defaultReq };
+        const res = httpMocks.createResponse();
+
+        await updateNormalUser(req, res);
+
+        expect(res.statusCode).to.equal(200);
+        expect(GovNotifySendEmail.sendUpdateUserDetails).to.have.been.calledWith(normalUser.email, normalUser.fullname);
+      });
+
+      it('should not send the email if error occured in the update', async () => {
+        User.prototype.save.restore();
+        sinon.stub(User.prototype, 'save').rejects(new UserExceptions.UserSaveException());
+
+        const req = { ...defaultReq, user: { id: mockUserUid } };
+        const res = httpMocks.createResponse();
+
+        await updateNormalUser(req, res);
+
+        expect(res.statusCode).to.equal(500);
+        expect(GovNotifySendEmail.sendUpdateUserDetails).not.to.have.been.called;
+      });
+
+      it('should not send the email when an admin / primary user change the detail of other user', async () => {
+        const primaryUserUid = 'mock-primary-user-uid';
+
+        const req = { ...defaultReq, user: { id: primaryUserUid } };
+        const res = httpMocks.createResponse();
+
+        await updateNormalUser(req, res);
+
+        expect(res.statusCode).to.equal(200);
+        expect(GovNotifySendEmail.sendUpdateUserDetails).not.to.have.been.called;
       });
     });
 
