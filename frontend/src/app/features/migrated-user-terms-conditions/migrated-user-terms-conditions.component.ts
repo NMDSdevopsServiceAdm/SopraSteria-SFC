@@ -9,10 +9,10 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 
 @Component({
-    selector: 'app-migrated-user-terms-conditions',
-    templateUrl: './migrated-user-terms-conditions.component.html',
-    styles: [],
-    standalone: false
+  selector: 'app-migrated-user-terms-conditions',
+  templateUrl: './migrated-user-terms-conditions.component.html',
+  styles: [],
+  standalone: false,
 })
 export class MigratedUserTermsConditionsComponent implements OnInit {
   public formErrorsMap: ErrorDetails[];
@@ -84,21 +84,18 @@ export class MigratedUserTermsConditionsComponent implements OnInit {
   }
 
   private continue(): void {
+    const userUid = this.userService.loggedInUser.uid!;
+
     this.userService.agreedUpdatedTerms = true;
     this.userService.loggedInUser.agreedUpdatedTerms = true;
-    this.userService
-      .updateUserDetails(
-        this.establishmentService.primaryWorkplace.uid,
-        this.userService.loggedInUser.uid,
-        this.userService.loggedInUser,
-      )
-      .subscribe(
-        (data) => {
-          this.router.navigate(['/dashboard']);
-        },
-        (error: HttpErrorResponse) => {
-          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-        },
-      );
+
+    this.userService.updateUserFlag(userUid, { agreedUpdatedTerms: true }).subscribe(
+      (_data) => {
+        this.router.navigate(['/dashboard']);
+      },
+      (error: HttpErrorResponse) => {
+        this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+      },
+    );
   }
 }
