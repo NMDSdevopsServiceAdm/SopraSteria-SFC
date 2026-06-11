@@ -14,7 +14,7 @@ const generateCareCertificateTab = async (workbook, careCertificateStatus, isPar
   const careCertificateTab = workbook.addWorksheet('Care Certificates', { views: [{ showGridLines: false }] });
 
   const columnsToDisplay = [
-    ...(isParent ? [{ columnName: 'Workplace', field: 'establishmentName', width: 33 }] : []),
+    ...(isParent ? [{ columnName: 'Workplace', field: 'workplaceName', width: 33 }] : []),
 
     { columnName: 'Name or ID number', field: 'workerId', width: 30 },
 
@@ -75,15 +75,11 @@ const setHeightsAndWidths = (tab, columnsToDisplay) => {
     column.width = width;
   });
 
-  const rowHeights = [45, 18, 35, 30];
+  const rowHeights = [45, 18, 35];
 
   rowHeights.forEach((height, index) => {
     tab.getRow(index + 1).height = height;
   });
-
-  for (let i = 4; i <= tab.lastRow.number; i++) {
-    tab.getRow(i).height = 22;
-  }
 
   autoAdjustWrapTextForColumns(tab);
 };
@@ -95,8 +91,7 @@ const autoAdjustWrapTextForColumns = (tab) => {
   const autoAdjustRange = `B${top}:D${bottom}`;
 
   forEachCellInRange(tab, autoAdjustRange, (cell) => {
-    const columnWidth = tab.getColumn(cell.col).width;
-    autoAdjustWrapTextAndRowHeight(tab, cell, columnWidth);
+    autoAdjustWrapTextAndRowHeight(tab, cell);
   });
 };
 

@@ -200,13 +200,23 @@ const addThickBorders = (tab, lastRowNumber) => {
 const setStyleForWorkerNamesColumn = (tab, lastRowNumber) => {
   const headerRow = tab.getRow(HeaderRowNumber);
 
-  const workerColumnNum = headerRow.values.indexOf('Name or ID number');
-  const workerColumnRange = colCache.encode(HeaderRowNumber, workerColumnNum, lastRowNumber, workerColumnNum);
+  ['Workplace', 'Name or ID number'].forEach((columnName) => {
+    const columnNum = headerRow.values.indexOf(columnName);
 
-  applyStyleToRange(tab, workerColumnRange, { alignment: { horizontal: 'left' }, font: { bold: false } });
+    if (columnNum === -1) {
+      return;
+    }
 
-  tab.getCell(HeaderRowNumber, workerColumnNum).font.bold = true;
-  tab.getCell(lastRowNumber, workerColumnNum).font.bold = true;
+    const columnRange = colCache.encode(HeaderRowNumber, columnNum, lastRowNumber, columnNum);
+
+    applyStyleToRange(tab, columnRange, {
+      alignment: { horizontal: 'left' },
+      font: { bold: false },
+    });
+
+    tab.getCell(HeaderRowNumber, columnNum).font.bold = true;
+    tab.getCell(lastRowNumber, columnNum).font.bold = true;
+  });
 };
 
 const addFootNote = (tab) => {
@@ -238,11 +248,6 @@ const setHeightsAndWidths = (tab, columnsToDisplay) => {
     row.height = height;
   });
 
-  for (let i = 5; i <= tab.lastRow.number; i++) {
-    const row = tab.getRow(i);
-    row.height = 22;
-  }
-
   autoAdjustWrapTextForColumns(tab);
 };
 
@@ -257,8 +262,7 @@ const autoAdjustWrapTextForColumns = (tab) => {
   const autoAdjustRange = `B${top}:C${bottom}`;
 
   forEachCellInRange(tab, autoAdjustRange, (cell) => {
-    const columnWidth = tab.getColumn(cell.col).width;
-    autoAdjustWrapTextAndRowHeight(tab, cell, columnWidth);
+    autoAdjustWrapTextAndRowHeight(tab, cell);
   });
 };
 

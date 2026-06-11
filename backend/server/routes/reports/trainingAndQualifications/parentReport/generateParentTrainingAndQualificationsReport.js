@@ -12,12 +12,15 @@ const models = require('../../../../models');
 const { generateIntroTab } = require('../introTab');
 const { generateTrainingRecordDetailsTab } = require('../trainingRecordDetailsTab');
 const { generateExpiredTrainingTab } = require('../expiredTrainingTab');
+const { generateTrainingByStaffTab } = require('../trainingByStaffTab');
+const { generateTrainingByCategoryTab } = require('../trainingByCategoryTab');
 const {
   convertTrainingForEstablishments,
   listAllExistingAndMissingTrainings,
   convertWorkersWithCareCertificateStatus,
   buildWorkerTrainingBreakdown,
   buildWorkplaceSummaryData,
+  buildTrainingCategorySummary,
 } = require('../../../../utils/trainingAndQualificationsUtils');
 const { generateQualificationRecordDetailsTab } = require('../qualificationRecordDetailsTab');
 const { getRawDataForTrainingAndQualificationsReport } = require('../getRawData');
@@ -53,11 +56,15 @@ const generateParentTrainingAndQualificationsReport = async (req, res) => {
     const establishmentWithTrainingRecords = convertTrainingForEstablishments(rawEstablishmentWithTrainingRecords);
     const allTrainingRecordsAndMissingTrainings = listAllExistingAndMissingTrainings(establishmentWithTrainingRecords);
 
+    const trainingByCategoryBreakdowns = buildTrainingCategorySummary(establishmentWithTrainingRecords, true);
+
+    await generateTrainingByStaffTab(workbook, workerTrainingBreakdowns, true);
+    await generateTrainingByCategoryTab(workbook, trainingByCategoryBreakdowns, true);
+
     await generateExpiredTrainingTab(workbook, allTrainingRecordsAndMissingTrainings, true);
     await generateTrainingRecordDetailsTab(workbook, allTrainingRecordsAndMissingTrainings, true);
-
+    await generateCareCertificateTab(workbook, careCertificateStatus, true);
     await generateQualificationRecordDetailsTab(workbook, establishment.id, true);
-    await generateCareCertificateTab(workbook, establishment.id, true);
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader(

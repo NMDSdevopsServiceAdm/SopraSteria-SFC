@@ -21,26 +21,26 @@ const generateTrainingByCategoryTab = async (workbook, trainingByCategoryBreakdo
   const trainingByCategoryTab = workbook.addWorksheet('Training by category', { views: [{ showGridLines: false }] });
 
   const columnsToDisplay = [
-    { columnName: 'Training category', field: 'trainingCategory' },
+    { columnName: 'Training category', field: 'trainingCategory', width: 30 },
 
-    ...(isParent ? [{ columnName: 'Workplace', field: 'workplaceName' }] : []),
+    ...(isParent ? [{ columnName: 'Workplace', field: 'workplaceName', width: 30 }] : []),
 
-    { columnName: 'Mandatory', field: 'mandatory' },
-    { columnName: 'Total', field: 'total' },
-    { columnName: 'Expired', field: 'expired' },
-    { columnName: 'Expiring soon', field: 'expiringSoon' },
-    { columnName: 'Up-to-date', field: 'upToDate' },
-    { columnName: 'Missing', field: 'missing' },
+    { columnName: 'Mandatory', field: 'mandatory', width: 18 },
+    { columnName: 'Total', field: 'total', width: 18 },
+    { columnName: 'Expired', field: 'expired', width: 18 },
+    { columnName: 'Expiring soon', field: 'expiringSoon', width: 18 },
+    { columnName: 'Up-to-date', field: 'upToDate', width: 18 },
+    { columnName: 'Missing', field: 'missing', width: 18 },
   ];
 
   addTitle(trainingByCategoryTab);
   addTopTableHeader(trainingByCategoryTab, columnsToDisplay);
 
-  const sortedData = lodash.sortBy(trainingByCategoryBreakdowns, ['workplaceName', 'trainingCategory']);
+  const sortedData = lodash.sortBy(trainingByCategoryBreakdowns, ['trainingCategory']);
 
-  addTrainingByCategoryTable(trainingByCategoryTab, sortedData, columnsToDisplay);
+  addTrainingByCategoryTable(trainingByCategoryTab, sortedData, columnsToDisplay, isParent);
   setBoldStyleForHeaderRow(trainingByCategoryTab);
-  setHeightsAndWidths(trainingByCategoryTab);
+  setHeightsAndWidths(trainingByCategoryTab, columnsToDisplay);
 
   addFootNote(trainingByCategoryTab);
 };
@@ -55,13 +55,14 @@ const addTopTableHeader = (tab, columnsToDisplay) => {
   const lastColumnLetter = colCache.n2l(1 + columnsToDisplay.length);
 
   const topHeaderRange = `B3:${lastColumnLetter}3`;
-  addText(tab, topHeaderRange, 'Training', { size: 16, bold: true });
+  addText(tab, topHeaderRange, 'Mandatory and non-mandatory training', { size: 16, bold: true });
   applyStyleToRange(tab, topHeaderRange, tableHeaderCellStyle);
 };
 
-const addTrainingByCategoryTable = (tab, sortedData, columnsToDisplay) => {
-  const dataRows = sortedData.filter((row) => row.trainingCategory !== 'Total');
-
+const addTrainingByCategoryTable = (tab, sortedData, columnsToDisplay, isParent) => {
+  const dataRows = sortedData.filter((row) => {
+    return !(row.trainingCategory === 'Total' || row.workplaceName === 'Total');
+  });
   const tableRows = dataRows.map((trainingData) => {
     return columnsToDisplay.map(({ field }) => trainingData[field] ?? '-');
   });
@@ -80,7 +81,7 @@ const addTrainingByCategoryTable = (tab, sortedData, columnsToDisplay) => {
 
   trainingTable.commit();
 
-  addTotalRow(tab, sortedData, columnsToDisplay);
+  addTotalRow(tab, sortedData, columnsToDisplay, isParent);
 
   setBasicTableStyle(tab, tableRange, {
     hasTotalRow: false,
@@ -95,12 +96,24 @@ const addTrainingByCategoryTable = (tab, sortedData, columnsToDisplay) => {
   setFreezePane(tab);
 };
 
-const addTotalRow = (tab, sortedData, columnsToDisplay) => {
-  const totalsRow = sortedData.find((row) => row.trainingCategory === 'Total');
+const addTotalRow = (tab, sortedData, columnsToDisplay, isParent) => {
+  const totalsRow = sortedData.find((row) =>
+    isParent ? row.workplaceName === 'Total' : row.trainingCategory === 'Total',
+  );
 
   if (!totalsRow) return;
 
-  const totalRowValues = [...columnsToDisplay.map(({ field }) => totalsRow[field] ?? '-')];
+  const totalRowValues = columnsToDisplay.map(({ field }) => {
+    if (field === 'trainingCategory') {
+      return isParent ? '' : 'Total';
+    }
+
+    if (isParent && field === 'workplaceName') {
+      return 'Total';
+    }
+
+    return totalsRow[field] ?? '-';
+  });
 
   const rowIndex = tab.lastRow.number + 1;
 
@@ -111,7 +124,9 @@ const addTotalRow = (tab, sortedData, columnsToDisplay) => {
 
     const style = lodash.cloneDeep(tableHeaderCellStyle);
 
-    if (index === 0) {
+    const field = columnsToDisplay[index].field;
+
+    if ((!isParent && field === 'trainingCategory') || (isParent && field === 'workplaceName')) {
       style.alignment = {
         ...style.alignment,
         horizontal: 'left',
@@ -122,8 +137,8 @@ const addTotalRow = (tab, sortedData, columnsToDisplay) => {
   });
 };
 
-const setHeightsAndWidths = (tab) => {
-  const columnWidths = [8, 33, 18, 18, 18, 18, 18, 18];
+const setHeightsAndWidths = (tab, columnsToDisplay) => {
+  const columnWidths = [8, ...columnsToDisplay.map((column) => column.width)];
 
   columnWidths.forEach((width, index) => {
     const column = tab.getColumn(index + 1);
@@ -137,11 +152,6 @@ const setHeightsAndWidths = (tab) => {
     row.height = height;
   });
 
-  for (let i = 5; i <= tab.lastRow.number; i++) {
-    const row = tab.getRow(i);
-    row.height = 22;
-  }
-
   autoAdjustWrapTextForCategoryNameAndWorkplaceColumn(tab);
 };
 
@@ -152,8 +162,7 @@ const autoAdjustWrapTextForCategoryNameAndWorkplaceColumn = (tab) => {
   const autoAdjustRange = `B${top}:C${bottom}`;
 
   forEachCellInRange(tab, autoAdjustRange, (cell) => {
-    const columnWidth = tab.getColumn(cell.col).width;
-    autoAdjustWrapTextAndRowHeight(tab, cell, columnWidth);
+    autoAdjustWrapTextAndRowHeight(tab, cell);
   });
 };
 
@@ -161,7 +170,7 @@ const setAlignmentForColumns = (tab) => {
   const headerValues = tab.getRow(HeaderRowNumber).values;
 
   headerValues.forEach((header, index) => {
-    if (header === 'Training category' || !header) {
+    if (header === 'Training category' || header === 'Workplace' || !header) {
       return;
     }
 

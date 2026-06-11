@@ -68,11 +68,6 @@ const setHeightAndWidths = (tab) => {
     const row = tab.getRow(index + 1);
     row.height = height;
   });
-
-  for (let i = GrandTotalRowNumber; i <= tab.lastRow.number; i++) {
-    const row = tab.getRow(i);
-    row.height = 22;
-  }
 };
 
 const addSummaryTable = (tab, summaryTabData) => {
@@ -179,8 +174,7 @@ const autoAdjustWrapTextForWorkplaceColumn = (tab) => {
   const autoAdjustRange = `B${top}:B${bottom}`;
 
   forEachCellInRange(tab, autoAdjustRange, (cell) => {
-    const columnWidth = tab.getColumn(cell.col).width;
-    autoAdjustWrapTextAndRowHeight(tab, cell, columnWidth);
+    autoAdjustWrapTextAndRowHeight(tab, cell);
   });
 };
 

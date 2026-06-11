@@ -55,7 +55,7 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
       rawData.rawEstablishmentWithTrainingRecords,
     );
     const allTrainingRecordsAndMissingTrainings = listAllExistingAndMissingTrainings(establishmentWithTrainingRecords);
-    const trainingByCategoryBreakdowns = buildTrainingCategorySummary(establishmentWithTrainingRecords);
+    const trainingByCategoryBreakdowns = buildTrainingCategorySummary(establishmentWithTrainingRecords, false);
 
     await generateTrainingByCategoryTab(workbook, trainingByCategoryBreakdowns);
     await generateExpiredTrainingTab(workbook, allTrainingRecordsAndMissingTrainings);
