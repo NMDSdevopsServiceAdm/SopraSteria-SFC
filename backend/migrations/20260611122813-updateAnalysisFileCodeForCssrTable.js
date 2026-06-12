@@ -152,34 +152,41 @@ const analysisFileCodeForCssr = [
   { AnalysisFileCode: 906, Cssr: 'Isles of Scilly' },
   { AnalysisFileCode: 908, Cssr: 'Bath and North East Somerset' },
   { AnalysisFileCode: 909, Cssr: 'Bristol' },
-
   { AnalysisFileCode: 998, Cssr: 'Cheshire East' },
   { AnalysisFileCode: 999, Cssr: 'Cheshire West & Chester' },
+
+  { AnalysisFileCode: 996, Cssr: 'Bedford' },
+  { AnalysisFileCode: 997, Cssr: 'Central Bedfordshire' },
+  { AnalysisFileCode: 912, Cssr: 'Devon' },
+  { AnalysisFileCode: 910, Cssr: 'North Somerset' },
+  { AnalysisFileCode: 913, Cssr: 'Plymouth' },
+  { AnalysisFileCode: 911, Cssr: 'South Gloucestershire' },
+  { AnalysisFileCode: 914, Cssr: 'Torbay' },
 ];
 
 module.exports = {
   async up(queryInterface) {
     const caseStatement = analysisFileCodeForCssr
-      .map(({ AnalysisFileCode, Category }) => `WHEN '${Category.replace(/'/g, "''")}' THEN ${AnalysisFileCode}`)
+      .map(({ AnalysisFileCode, Cssr }) => `WHEN '${Cssr.replace(/'/g, "''")}' THEN ${AnalysisFileCode}`)
       .join('\n');
 
     return queryInterface.sequelize.query(`
-      UPDATE cqc."analysisFileCodeForCssr"
-      SET "AnalysisFileCode" = CASE "Category"
-        ${caseStatement}
-      END
-      WHERE "Category" IN (
-        ${analysisFileCodeForCssr.map(({ Category }) => `'${Category.replace(/'/g, "''")}'`).join(', ')}
-      );
-    `);
+  UPDATE cqc."Cssr"
+  SET "AnalysisFileCode" = CASE "CssR"
+    ${caseStatement}
+  END
+  WHERE "CssR" IN (
+    ${analysisFileCodeForCssr.map(({ Cssr }) => `'${Cssr.replace(/'/g, "''")}'`).join(', ')}
+  );
+`);
   },
 
   async down(queryInterface) {
     return queryInterface.sequelize.query(`
-      UPDATE cqc."analysisFileCodeForCssr"
+      UPDATE cqc."Cssr"
       SET "AnalysisFileCode" = NULL
-      WHERE "Category" IN (
-        ${analysisFileCodeForCssr.map(({ Category }) => `'${Category.replace(/'/g, "''")}'`).join(', ')}
+      WHERE "CssR" IN (
+        ${analysisFileCodeForCssr.map(({ Cssr }) => `'${Cssr.replace(/'/g, "''")}'`).join(', ')}
       );
     `);
   },
