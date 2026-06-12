@@ -45,21 +45,21 @@ describe('MigratedUserTermsConditionsComponent', () => {
 
   it('should set the user flag "agreedUpdatedTerms" to true when user ticked and click continue', async () => {
     const { getByRole, getByLabelText, userService } = await setup();
-    const updateUserFlagSpy = spyOn(userService, 'updateUserFlag').and.returnValue(of({}));
+    const updateUserFlagsSpy = spyOn(userService, 'updateUserFlags').and.returnValue(of({}));
 
     userEvent.click(getByLabelText('I agree to updated the terms and conditions of this service'));
     userEvent.click(getByRole('button', { name: 'Continue' }));
 
-    expect(updateUserFlagSpy).toHaveBeenCalledWith('mocked-uid', { agreedUpdatedTerms: true });
+    expect(updateUserFlagsSpy).toHaveBeenCalledWith('mocked-uid', { agreedUpdatedTerms: true });
   });
 
   it('should show an error if user did not ticked the box', async () => {
     const { getByRole, getByText, userService } = await setup();
-    const updateUserFlagSpy = spyOn(userService, 'updateUserFlag').and.returnValue(of({}));
+    const updateUserFlagsSpy = spyOn(userService, 'updateUserFlags').and.returnValue(of({}));
 
     userEvent.click(getByRole('button', { name: 'Continue' }));
     expect(getByText('There is a problem')).toBeTruthy();
 
-    expect(updateUserFlagSpy).not.toHaveBeenCalled();
+    expect(updateUserFlagsSpy).not.toHaveBeenCalled();
   });
 });

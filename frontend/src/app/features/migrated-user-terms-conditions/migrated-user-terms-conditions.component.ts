@@ -89,7 +89,7 @@ export class MigratedUserTermsConditionsComponent implements OnInit {
     this.userService.agreedUpdatedTerms = true;
     this.userService.loggedInUser.agreedUpdatedTerms = true;
 
-    this.userService.updateUserFlag(userUid, { agreedUpdatedTerms: true }).subscribe(
+    this.userService.updateUserFlags(userUid, { agreedUpdatedTerms: true }).subscribe(
       (_data) => {
         this.router.navigate(['/dashboard']);
       },

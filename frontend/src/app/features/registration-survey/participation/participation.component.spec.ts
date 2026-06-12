@@ -26,7 +26,7 @@ describe('ParticipationComponent', () => {
   };
 
   async function setup(overrides = { registrationSurveyCompleted: true }) {
-    const updateUserFlagSpy = jasmine.createSpy().and.returnValue(of(null));
+    const updateUserFlagsSpy = jasmine.createSpy().and.returnValue(of(null));
     const registrationSurveyCompleted = overrides?.registrationSurveyCompleted ?? true;
     const loggedInUser = { ...mockUser, registrationSurveyCompleted };
 
@@ -40,7 +40,7 @@ describe('ParticipationComponent', () => {
         },
         {
           provide: UserService,
-          useValue: { loggedInUser, updateUserFlag: updateUserFlagSpy },
+          useValue: { loggedInUser, updateUserFlags: updateUserFlagsSpy },
           deps: [HttpClient],
         },
         {
@@ -53,7 +53,7 @@ describe('ParticipationComponent', () => {
     });
 
     const component = setupTools.fixture.componentInstance;
-    return { ...setupTools, component, updateUserFlagSpy };
+    return { ...setupTools, component, updateUserFlagsSpy };
   }
 
   it('should create', async () => {
@@ -93,14 +93,14 @@ describe('ParticipationComponent', () => {
   });
 
   it('should call to backend and set the registrationSurveyCompleted flag to true', async () => {
-    const { updateUserFlagSpy } = await setup({ registrationSurveyCompleted: false });
+    const { updateUserFlagsSpy } = await setup({ registrationSurveyCompleted: false });
 
-    expect(updateUserFlagSpy).toHaveBeenCalledOnceWith(mockUser.uid, { registrationSurveyCompleted: true });
+    expect(updateUserFlagsSpy).toHaveBeenCalledOnceWith(mockUser.uid, { registrationSurveyCompleted: true });
   });
 
   it('should not call update flag if registrationSurveyCompleted flag is already true', async () => {
-    const { updateUserFlagSpy } = await setup({ registrationSurveyCompleted: true });
+    const { updateUserFlagsSpy } = await setup({ registrationSurveyCompleted: true });
 
-    expect(updateUserFlagSpy).not.toHaveBeenCalled;
+    expect(updateUserFlagsSpy).not.toHaveBeenCalled;
   });
 });
