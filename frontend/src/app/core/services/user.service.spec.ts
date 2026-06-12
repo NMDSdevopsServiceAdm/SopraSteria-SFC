@@ -56,11 +56,11 @@ describe('UserService', () => {
     });
   });
 
-  describe('updateUserFlag', () => {
+  describe('updateUserFlags', () => {
     it('should call the endpoint to update flags for user', () => {
       const userUid = 'mock-userId';
 
-      service.updateUserFlag(userUid, { registrationSurveyCompleted: true }).subscribe();
+      service.updateUserFlags(userUid, { registrationSurveyCompleted: true }).subscribe();
 
       const req = http.expectOne(`${environment.appRunnerEndpoint}/api/user/flag/${userUid}`);
       expect(req.request.body).toEqual({ registrationSurveyCompleted: true });

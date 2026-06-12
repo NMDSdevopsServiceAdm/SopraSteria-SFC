@@ -51,7 +51,7 @@ export class ParticipationComponent implements OnInit, OnDestroy {
     const userUid = this.userService.loggedInUser.uid!;
     const updates = { registrationSurveyCompleted: true };
 
-    this.subscriptions.add(this.userService.updateUserFlag(userUid, updates).subscribe());
+    this.subscriptions.add(this.userService.updateUserFlags(userUid, updates).subscribe());
   }
 
   public onSubmit() {
