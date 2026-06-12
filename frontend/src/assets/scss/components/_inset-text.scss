@@ -1,3 +1,5 @@
+$blue-tint-80: #d2e2f1;
+
 .govuk-inset-text {
   &.todo {
     border-color: govuk-colour('orange');
@@ -17,6 +19,11 @@
   &.pending {
     border-color: govuk-colour('blue');
     background-color: rgba(govuk-colour('blue'), 0.15);
+  }
+
+  &.update {
+    border-color: govuk-colour('blue');
+    background-color: $blue-tint-80;
   }
 
   &.thin-border {

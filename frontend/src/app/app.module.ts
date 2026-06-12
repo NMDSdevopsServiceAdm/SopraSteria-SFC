@@ -101,6 +101,7 @@ import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } f
 import { SortByService } from '@core/services/sort-by.service';
 import { TrainingCoursesLoginMessage } from '@features/login/training-courses-login-message/training-courses-login-message.component';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
+import { UpdateBannerComponent } from '@shared/components/update-banner/update-banner.component';
 
 @NgModule({
   declarations: [
@@ -158,6 +159,7 @@ import { PayAndPensionService } from '@core/services/pay-and-pension.service';
     RouterModule,
     BenchmarksModule,
     DataAreaTabModule,
+    UpdateBannerComponent,
   ],
   providers: [
     AuthGuard,
