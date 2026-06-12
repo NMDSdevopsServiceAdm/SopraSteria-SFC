@@ -1016,7 +1016,6 @@ const updateUserFlags = async (req, res) => {
     'registrationSurveyCompleted',
     'lastViewedVacanciesAndTurnoverMessage',
     'trainingCoursesMessageViewedQuantity',
-    'userResearchInviteResponseValue',
     'agreedUpdatedTerms',
   ];
 

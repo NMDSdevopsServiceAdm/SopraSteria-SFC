@@ -553,7 +553,6 @@ module.exports = function (sequelize, DataTypes) {
       'registrationSurveyCompleted',
       'lastViewedVacanciesAndTurnoverMessage',
       'trainingCoursesMessageViewedQuantity',
-      'userResearchInviteResponseValue',
     ];
     const loginTableFlags = ['agreedUpdatedTerms'];
 
