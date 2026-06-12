@@ -32,7 +32,7 @@ module.exports = {
           'AnalysisFileCode',
           {
             type: Sequelize.DataTypes.INTEGER,
-            unique: true,
+            unique: false,
           },
           { transaction },
         ),
