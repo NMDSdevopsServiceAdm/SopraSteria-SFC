@@ -24,10 +24,11 @@ jwt:
     login: 10
 
 notify:
-  replyTo: '73711295-a4da-4303-9127-65be2a409681'
+  replyTo: '44e98371-2e44-4c6b-ad76-235136be0f8a'
   templates:
     resetPassword: 'f2c43610-9ec9-4271-b9b1-dd55569b191c'
     addUser: 'e581eea2-4206-4c90-8594-4357960e3e74'
+    updateUserDetails: '41a071f7-8f69-456f-9bf0-2bc9fb444cac'
 
 bulkupload:
   region: eu-west-2
