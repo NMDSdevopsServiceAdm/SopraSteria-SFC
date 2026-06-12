@@ -17,10 +17,12 @@ const { hasPermission } = require('../../utils/security/hasPermission');
 const config = require('../../config/config');
 const loginResponse = require('../../utils/login/response');
 const { authLimiter } = require('../../utils/middleware/rateLimiting');
+const GovNotifySendEmail = require('../../utils/email/notify-email');
 
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
 const notifications = require('../../data/notifications');
+const HttpError = require('../../utils/errors/httpError');
 
 const normalUserRoles = ['None', 'Read', 'Edit'];
 const adminUserRoles = ['Admin', 'AdminManager'];
@@ -134,7 +136,36 @@ const updateNormalUser = async (req, res) => {
     return res.status(401).send();
   }
 
-  return updateUser(req, res);
+  let callbackAfterUpdate = () => {};
+
+  const userChangingTheirOwnDetails = req?.user?.id === req?.params?.userId;
+  if (userChangingTheirOwnDetails) {
+    callbackAfterUpdate = await sendEmailAfterUpdate(req);
+  }
+
+  return updateUser(req, res).then(() => {
+    if (res.statusCode === 200) {
+      return callbackAfterUpdate();
+    }
+  });
+};
+
+const sendEmailAfterUpdate = async (req) => {
+  try {
+    const user = await models.user.findOne({
+      attributes: ['EmailValue', 'FullNameValue', 'uid'],
+      where: { uid: req?.params?.userId },
+      raw: true,
+    });
+
+    const userEmail = user?.EmailValue;
+    const userFullname = user?.FullNameValue;
+    const callbackAfterUpdate = () => GovNotifySendEmail.sendUpdateUserDetails(userEmail, userFullname);
+    return callbackAfterUpdate;
+  } catch (err) {
+    console.error('Error occur during preparation to send notification email on update user details', err);
+    return () => {};
+  }
 };
 
 // updates a user with given uid or username
@@ -345,7 +376,7 @@ const changePassword = async (req, res) => {
       include: [
         {
           model: models.user,
-          attributes: ['id', 'FullNameValue'],
+          attributes: ['id', 'FullNameValue', 'EmailValue'],
         },
       ],
     });
@@ -376,6 +407,12 @@ const changePassword = async (req, res) => {
             };
             await models.userAudit.create(auditEvent, { transaction: t });
           });
+
+          const userEmail = login?.user?.EmailValue;
+          const userFullname = login?.user?.FullNameValue;
+          if (userEmail && userFullname) {
+            await GovNotifySendEmail.sendUpdateUserDetails(userEmail, userFullname);
+          }
 
           return res.status(200).send(`Changed password for ${login.user.FullNameValue}`);
         } else {
@@ -974,6 +1011,39 @@ const updateTrainingCoursesMessageViewedQuantity = async (req, res) => {
   }
 };
 
+const updateUserFlags = async (req, res) => {
+  const fieldsAllowed = [
+    'registrationSurveyCompleted',
+    'lastViewedVacanciesAndTurnoverMessage',
+    'trainingCoursesMessageViewedQuantity',
+    'agreedUpdatedTerms',
+  ];
+
+  try {
+    const userUid = req.params?.userUid;
+    const userUidFromToken = req?.user?.id;
+
+    if (userUid !== userUidFromToken) {
+      throw new HttpError('Not allowed to update this user', 403);
+    }
+
+    const changeNotAllowed = Object.keys(req.body).some((key) => !fieldsAllowed.includes(key));
+    if (changeNotAllowed) {
+      throw new HttpError('Bad request', 400);
+    }
+
+    await models.user.updateFlags(userUid, req.body);
+    return res.status(200).send({ message: 'User flags updated' });
+  } catch (error) {
+    console.error('Error during update user flag: ', error);
+
+    if (error instanceof HttpError) {
+      return res.status(error.statusCode).send({ message: error.message });
+    }
+    return res.status(500).send({ message: 'Failed to update user flag' });
+  }
+};
+
 router.route('/').get(return200);
 
 // Admin only endpoints
@@ -1011,12 +1081,15 @@ router.route('/my/establishments').get(Authorization.isAuthorised, listEstablish
 
 router.use('/my/notifications', Authorization.isAuthorised);
 router.route('/my/notifications').get(listNotifications);
+
 router
   .route('/update-last-viewed-vacancies-and-turnover-message/:userUid')
   .post(Authorization.isAuthorised, updateLastViewedVacanciesAndTurnoverMessage);
 router
   .route('/update-training-courses-message-viewed-quantity/:userUid')
   .post(Authorization.isAuthorised, updateTrainingCoursesMessageViewedQuantity);
+router.route('/flag/:userUid').put(Authorization.isAuthorised, updateUserFlags);
+
 router.use('/swap/establishment/:id', authLimiter);
 router.route('/swap/establishment/:id').post(Authorization.isAdmin, swapEstablishment);
 
@@ -1031,3 +1104,5 @@ module.exports.updateNormalUser = updateNormalUser;
 module.exports.updateLastViewedVacanciesAndTurnoverMessage = updateLastViewedVacanciesAndTurnoverMessage;
 module.exports.updateTrainingCoursesMessageViewedQuantity = updateTrainingCoursesMessageViewedQuantity;
 module.exports.addUser = addUser;
+module.exports.updateUserFlags = updateUserFlags;
+module.exports.changePassword = changePassword;

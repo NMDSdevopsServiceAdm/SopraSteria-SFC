@@ -13,9 +13,13 @@ const {
   updateNormalUser,
   updateAdminUser,
   updateTrainingCoursesMessageViewedQuantity,
+  updateUserFlags,
+  changePassword,
 } = require('../../../../routes/accounts/user');
 const User = require('../../../../models/classes/user').User;
 const models = require('../../../../models');
+const GovNotifySendEmail = require('../../../../utils/email/notify-email');
+const { UserExceptions } = require('../../../../models/classes/user');
 
 describe('user.js', () => {
   let req;
@@ -421,12 +425,14 @@ describe('user.js', () => {
 
     const restoredNormalUser = { ...restoredAdmin, ...normalUser };
 
+    const mockUserUid = 'mock-user-id';
     const defaultReq = {
       establishmentId: 123,
       establishment: { id: 123 },
       role: 'Edit',
       body: normalUser,
-      params: { userId: 'mock-user-id' },
+      params: { userId: mockUserUid },
+      user: { id: mockUserUid },
       get() {
         return 'localhost';
       },
@@ -438,6 +444,11 @@ describe('user.js', () => {
         sinon.stub(User.prototype, 'load').returns(true);
         sinon.stub(User.prototype, 'save').returns();
         sinon.stub(User.prototype, 'toJSON').returns({});
+        sinon.stub(GovNotifySendEmail, 'sendUpdateUserDetails').returns({});
+        sinon.stub(models.user, 'findOne').resolves({
+          FullNameValue: normalUser.fullname,
+          EmailValue: normalUser.email,
+        });
       });
 
       it('should return a status of 200 and a success message when successfully updating a user', async () => {
@@ -472,6 +483,41 @@ describe('user.js', () => {
           expect(res.statusCode).to.equal(401);
           expect(User.prototype.save).not.to.have.been.called;
         });
+      });
+
+      it('should send a email to notify user when they change their own user details', async () => {
+        const req = { ...defaultReq };
+        const res = httpMocks.createResponse();
+
+        await updateNormalUser(req, res);
+
+        expect(res.statusCode).to.equal(200);
+        expect(GovNotifySendEmail.sendUpdateUserDetails).to.have.been.calledWith(normalUser.email, normalUser.fullname);
+      });
+
+      it('should not send the email if error occured in the update', async () => {
+        User.prototype.save.restore();
+        sinon.stub(User.prototype, 'save').rejects(new UserExceptions.UserSaveException());
+
+        const req = { ...defaultReq, user: { id: mockUserUid } };
+        const res = httpMocks.createResponse();
+
+        await updateNormalUser(req, res);
+
+        expect(res.statusCode).to.equal(500);
+        expect(GovNotifySendEmail.sendUpdateUserDetails).not.to.have.been.called;
+      });
+
+      it('should not send the email when an admin / primary user change the detail of other user', async () => {
+        const primaryUserUid = 'mock-primary-user-uid';
+
+        const req = { ...defaultReq, user: { id: primaryUserUid } };
+        const res = httpMocks.createResponse();
+
+        await updateNormalUser(req, res);
+
+        expect(res.statusCode).to.equal(200);
+        expect(GovNotifySendEmail.sendUpdateUserDetails).not.to.have.been.called;
       });
     });
 
@@ -638,6 +684,142 @@ describe('user.js', () => {
 
       expect(res.statusCode).to.equal(500);
       expect(res._getData()).to.deep.equal({ message: 'Failed to update training courses message viewed quantity' });
+    });
+  });
+
+  describe('updateUserFlags', () => {
+    let req;
+    let res;
+
+    const mockUserUid = 'mock-user-uid';
+    const mockReqBody = { registrationSurveyCompleted: true };
+
+    const defaultReq = {
+      method: 'PUT',
+      url: `/api/api/user/flag/${mockUserUid}`,
+      establishmentId: 123,
+      establishment: { id: 123 },
+      body: mockReqBody,
+      params: { userUid: mockUserUid },
+      user: { id: mockUserUid },
+    };
+
+    beforeEach(() => {
+      req = httpMocks.createRequest(defaultReq);
+      res = httpMocks.createResponse();
+    });
+
+    it('should respond with 200 and update the flags for user', async () => {
+      sinon.stub(models.user, 'updateFlags').resolves(null);
+
+      await updateUserFlags(req, res);
+
+      expect(res.statusCode).to.equal(200);
+      expect(res._getData()).to.deep.equal({ message: 'User flags updated' });
+      expect(models.user.updateFlags).to.have.been.calledWith(mockUserUid, mockReqBody);
+    });
+
+    it('should respond with 400 if the request body contain any unexpected fields', async () => {
+      sinon.stub(models.user, 'updateFlags').resolves(null);
+      sinon.stub(console, 'error');
+
+      const req = httpMocks.createRequest({ ...defaultReq, body: { role: 'Admin' } });
+
+      await updateUserFlags(req, res);
+
+      expect(res.statusCode).to.equal(400);
+      expect(res._getData()).to.deep.equal({ message: 'Bad request' });
+      expect(models.user.updateFlags).not.to.have.been.called;
+    });
+
+    it('should respond with 403 if the user uid in request auth token does not match the user uid in params', async () => {
+      sinon.stub(models.user, 'updateFlags').resolves(null);
+      sinon.stub(console, 'error');
+
+      const req = httpMocks.createRequest({ ...defaultReq, params: { userUid: 'uuid-of-some-other-user' } });
+
+      await updateUserFlags(req, res);
+
+      expect(res.statusCode).to.equal(403);
+      expect(res._getData()).to.deep.equal({ message: 'Not allowed to update this user' });
+      expect(models.user.updateFlags).not.to.have.been.called;
+    });
+
+    it('should respond with 500 if any other error occurs', async () => {
+      sinon.stub(models.user, 'updateFlags').rejects('some database error');
+      sinon.stub(console, 'error');
+
+      await updateUserFlags(req, res);
+
+      expect(res.statusCode).to.equal(500);
+      expect(res._getData()).to.deep.equal({ message: 'Failed to update user flag' });
+    });
+  });
+
+  describe('changePassword', () => {
+    const mockUserUid = 'mock-uid';
+    const mockUsername = 'test-user';
+    const mockUserFullname = 'Jane Smith';
+    const mockUserEmail = 'test@example.com';
+
+    const defaultReq = {
+      method: 'PUT',
+      url: '/api/user/changePassword',
+      body: { currentPassword: 'mockCurrentPassword1234!', newPassword: 'mockNewPassword1234!' },
+      params: { userUid: mockUserUid },
+      user: { id: mockUserUid },
+      username: mockUsername,
+    };
+
+    let comparePasswordCallbackPromise;
+
+    const comparePasswordFailed = (passw, err, tribalHashValidated, cb) => {
+      comparePasswordCallbackPromise = cb('password not matching', false, false);
+    };
+
+    const comparePasswordSuccessful = (passw, err, tribalHashValidated, cb) => {
+      comparePasswordCallbackPromise = cb(null, true, false);
+    };
+
+    const mockLoginObject = {
+      username: mockUsername,
+      user: { id: 123, FullNameValue: mockUserFullname, EmailValue: mockUserEmail },
+      comparePassword: comparePasswordSuccessful,
+      update: () => {},
+    };
+
+    it('should trigger send email (sendUpdateUserDetails) on successful change', async () => {
+      sinon.stub(models.login, 'findOne').resolves(mockLoginObject);
+      sinon.stub(models.sequelize, 'transaction').callsFake((dbOperations) => dbOperations());
+      sinon.stub(GovNotifySendEmail, 'sendUpdateUserDetails').returns({});
+      sinon.stub(models.userAudit, 'create').resolves({});
+
+      const req = httpMocks.createRequest(defaultReq);
+      const res = httpMocks.createResponse();
+
+      await changePassword(req, res);
+      await comparePasswordCallbackPromise;
+
+      expect(res.statusCode).to.equal(200);
+
+      expect(GovNotifySendEmail.sendUpdateUserDetails).to.have.been.calledOnceWith(mockUserEmail, mockUserFullname);
+    });
+
+    it('should not trigger send email (sendUpdateUserDetails) on failed change', async () => {
+      sinon.stub(models.login, 'findOne').resolves({ ...mockLoginObject, comparePassword: comparePasswordFailed });
+      sinon.stub(models.sequelize, 'transaction').callsFake((dbOperations) => dbOperations());
+      sinon.stub(GovNotifySendEmail, 'sendUpdateUserDetails').returns({});
+      sinon.stub(models.userAudit, 'create').resolves({});
+
+      const req = httpMocks.createRequest(defaultReq);
+      const res = httpMocks.createResponse();
+
+      await changePassword(req, res);
+      await comparePasswordCallbackPromise;
+
+      expect(res.statusCode).to.equal(403);
+
+      expect(GovNotifySendEmail.sendUpdateUserDetails).not.to.have.been.called;
     });
   });
 });

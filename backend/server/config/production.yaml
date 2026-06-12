@@ -32,6 +32,7 @@ notify:
   templates:
     resetPassword: 'fd430f0d-6609-400a-b171-cf124453ec1c'
     addUser: 'f20e9cbe-920d-4b1f-b05d-bac1ca8d5b54'
+    updateUserDetails: '41a071f7-8f69-456f-9bf0-2bc9fb444cac'
 
 bulkupload:
   region: eu-west-2
