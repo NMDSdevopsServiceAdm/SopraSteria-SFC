@@ -1,5 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
@@ -7,6 +6,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
 import { Roles } from '@core/model/roles.enum';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
+import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { ArticlesService } from '@core/services/articles.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -21,6 +21,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
+import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
 import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -31,8 +32,6 @@ import { of } from 'rxjs';
 import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { ParentHomeTabComponent } from './parent-home-tab.component';
-import { workerBuilder } from '@core/test-utils/MockWorkerService';
-import { Worker } from '@core/model/worker.model';
 
 describe('ParentHomeTabComponent', () => {
   const articleList = MockArticlesService.articleListFactory();
@@ -95,7 +94,9 @@ describe('ParentHomeTabComponent', () => {
         },
         { provide: ArticlesService, useClass: MockArticlesService },
         { provide: WindowToken, useValue: MockWindow },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
       componentProperties: {
         workplace: overrides?.establishment ?? Establishment,
@@ -416,7 +417,7 @@ describe('ParentHomeTabComponent', () => {
         };
         const { getByText, tabsServiceSpy } = await setup(overrides);
 
-        const link = getByText('Add more details to your workplace');
+        const link = getByText('Finish adding your workplace data');
         fireEvent.click(link);
 
         expect(link).toBeTruthy();
@@ -433,7 +434,7 @@ describe('ParentHomeTabComponent', () => {
         component.canViewEstablishment = true;
         fixture.detectChanges();
 
-        expect(getByText('You need to check your CQC details')).toBeTruthy();
+        expect(getByText('Your workplace details do not match your CQC details')).toBeTruthy();
       });
     });
 

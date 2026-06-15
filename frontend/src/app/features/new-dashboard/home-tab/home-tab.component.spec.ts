@@ -1,12 +1,13 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
+import { CancelOwnerShip } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
+import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -20,8 +21,12 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
+import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
-import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import { NewDashboardHeaderComponent } from '@shared/components/new-dashboard-header/dashboard-header.component';
+import {
+  OwnershipChangeMessageDialogComponent,
+} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -29,11 +34,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
-import { NewDashboardHeaderComponent } from '@shared/components/new-dashboard-header/dashboard-header.component';
 import { NewHomeTabComponent } from './home-tab.component';
-import { workerBuilder } from '@core/test-utils/MockWorkerService';
-import { Worker } from '@core/model/worker.model';
-import { CancelOwnerShip } from '@core/model/establishment.model';
 
 describe('NewHomeTabComponent', () => {
   const setup = async (overrides: any = {}) => {
@@ -689,7 +690,7 @@ describe('NewHomeTabComponent', () => {
         };
         const { getByText, tabsServiceSpy } = await setup(overrides);
 
-        const link = getByText('Add more details to your workplace');
+        const link = getByText('Finish adding your workplace data');
 
         expect(link).toBeTruthy();
         fireEvent.click(link);
@@ -704,7 +705,7 @@ describe('NewHomeTabComponent', () => {
         };
         const { getByText } = await setup(overrides);
 
-        expect(getByText('You need to check your CQC details')).toBeTruthy();
+        expect(getByText('Your workplace details do not match your CQC details')).toBeTruthy();
       });
     });
 
