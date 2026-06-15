@@ -13,9 +13,9 @@ fdescribe('UpdateBannerComponent', () => {
     const bannerContent = 'New question about pay and pension';
     const linkText = 'Answer questions';
     const linkClickedSpy = jasmine.createSpy();
-    const routerLink = ['workplace', 'mock-uid', 'pensions'];
+    const linkTo = ['workplace', 'mock-uid', 'pensions'];
 
-    const template = `<app-update-banner [linkText]="linkText" [routerLink]="routerLink" (linkClicked)="linkClickedSpy()">${bannerContent}</app-update-banner>`;
+    const template = `<app-update-banner [linkText]="linkText" [linkTo]="linkTo" (linkClicked)="linkClickedSpy()">${bannerContent}</app-update-banner>`;
 
     const setupTools = await render(template, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -23,7 +23,7 @@ fdescribe('UpdateBannerComponent', () => {
       componentProperties: {
         linkText,
         linkClickedSpy,
-        routerLink,
+        linkTo,
       },
     });
 
