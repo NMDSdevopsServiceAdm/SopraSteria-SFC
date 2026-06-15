@@ -96,10 +96,22 @@ Cypress.Commands.add('resetWorkplaceCWPAnswers', (establishmentID) => {
   cy.task('multipleDbQueries', dbQueries);
 });
 
+Cypress.Commands.add('setWorkplaceCWPAwarenessQuestionViewed', (establishmentID) => {
+  const queryString = `UPDATE cqc."Establishment"
+      SET "CWPAwarenessQuestionViewed" = true
+      WHERE "EstablishmentID" = $1;`;
+
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
 Cypress.Commands.add('resetWorkplaceDHAAnswers', (establishmentID) => {
   const queryStrings = [
     `UPDATE cqc."Establishment"
-      SET "StaffDoDelegatedHealthcareActivitiesValue" = null,
+      SET
+          "CWPAwarenessQuestionViewed" = true,
+          "StaffDoDelegatedHealthcareActivitiesValue" = null,
           "StaffWhatKindDelegatedHealthcareActivitiesValue" = null
       WHERE "EstablishmentID" = $1;`,
 
@@ -111,6 +123,28 @@ Cypress.Commands.add('resetWorkplaceDHAAnswers', (establishmentID) => {
      WHERE "EstablishmentID" = $1;`,
   ];
   const parameters = [establishmentID];
+
+  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+
+  cy.task('multipleDbQueries', dbQueries);
+});
+
+Cypress.Commands.add('setWorkplaceDHAAnswers', (establishmentID, answers = {}) => {
+  const staffDoDelegatedHealthcareActivities = answers?.staffDoDelegatedHealthcareActivities ?? null;
+  const staffWhatKindDelegatedHealthcareActivities = answers?.staffWhatKindDelegatedHealthcareActivities ?? null;
+
+  const queryStrings = [
+    `UPDATE cqc."Establishment"
+      SET
+          "StaffDoDelegatedHealthcareActivitiesValue" = $2,
+          "StaffWhatKindDelegatedHealthcareActivitiesValue" = $3
+      WHERE "EstablishmentID" = $1;`,
+  ];
+  const parameters = [
+    establishmentID,
+    staffDoDelegatedHealthcareActivities,
+    staffWhatKindDelegatedHealthcareActivities,
+  ];
 
   const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
 
