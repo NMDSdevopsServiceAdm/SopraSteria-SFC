@@ -354,9 +354,10 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     this.setupUpdateBannerForCWPAwareness();
     this.setupUpdateBannerForCWPWorkerQuestion();
     this.setupUpdateBannerForStaffDoDHA();
+    this.setupUpdateBannerForDHAWorkerQuestion();
   }
 
-  public setupUpdateBannerForPayAndPension() {
+  private setupUpdateBannerForPayAndPension() {
     if (this.updateBanner()) {
       return;
     }
@@ -380,7 +381,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  public setupUpdateBannerForCWPAwareness() {
+  private setupUpdateBannerForCWPAwareness() {
     if (this.updateBanner()) {
       return;
     }
@@ -402,7 +403,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  public setupUpdateBannerForCWPWorkerQuestion() {
+  private setupUpdateBannerForCWPWorkerQuestion() {
     if (this.updateBanner()) {
       return;
     }
@@ -416,7 +417,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  public setupUpdateBannerForStaffDoDHA() {
+  private setupUpdateBannerForStaffDoDHA() {
     if (this.updateBanner()) {
       return;
     }
@@ -439,10 +440,30 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  private setReturnToHomeTab() {
-    if (this.setReturn) {
-      this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'home' });
+  private setupUpdateBannerForDHAWorkerQuestion() {
+    if (this.updateBanner()) {
+      return;
     }
+
+    const showBanner =
+      this.workplace.staffDoDelegatedHealthcareActivities !== 'No' &&
+      this.workplace.mainService.canDoDelegatedHealthcareActivities &&
+      this.noOfWorkersWithDelegatedHealthcareUnanswered > 0 &&
+      this.canEditWorker;
+
+    if (showBanner) {
+      this.updateBanner.set({
+        content: 'Who carries out delegated healthcare activities?',
+        linkTo: ['/workplace', this.workplace.uid, 'staff-record', 'who-carry-out-delegated-healthcare-activities'],
+        onLinkClicked: () => {
+          this.setReturnToHomeTab();
+        },
+      });
+    }
+  }
+
+  private setReturnToHomeTab() {
+    this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'home' });
   }
 
   ngOnDestroy(): void {
