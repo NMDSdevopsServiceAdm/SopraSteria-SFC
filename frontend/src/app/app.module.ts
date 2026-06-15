@@ -159,7 +159,6 @@ import { UpdateBannerComponent } from '@shared/components/update-banner/update-b
     RouterModule,
     BenchmarksModule,
     DataAreaTabModule,
-    UpdateBannerComponent,
   ],
   providers: [
     AuthGuard,
