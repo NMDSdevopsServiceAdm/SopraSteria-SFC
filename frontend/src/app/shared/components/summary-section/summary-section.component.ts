@@ -1,7 +1,8 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, signal, Signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
+import { UpdateBannerProps } from '@core/model/update-banner.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
@@ -34,6 +35,8 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   @Input() noOfWorkersWithDelegatedHealthcareUnanswered: number;
   @Input() workplacesNeedAttention: boolean;
   @Input() showCheckCqcDetails: boolean;
+
+  public updateBanner: WritableSignal<UpdateBannerProps | null> = signal(null);
 
   public sections: Section[] = [
     {
@@ -90,6 +93,8 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     this.getTrainingAndQualsSummary();
     this.isParent = this.workplace?.isParent;
     this.getOtherWorkplacesSummaryMessage();
+
+    this.setupUpdateBanner();
   }
 
   public async onClick(event: Event, fragment: string, route: string[], skipTabSwitch: boolean = false): Promise<void> {
@@ -342,6 +347,78 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     event.preventDefault();
     localStorage.setItem('yourOtherWorkplacesSortValue', yourOtherWorkplacesSortValue);
     this.router.navigate(['/workplace', 'view-all-workplaces']);
+  }
+
+  public setupUpdateBanner() {
+    this.setupUpdateBannerForPayAndPension();
+    this.setupUpdateBannerForCWPAwareness();
+    this.setupUpdateBannerForCWPWorkerQuestion();
+  }
+
+  public setupUpdateBannerForPayAndPension() {
+    if (this.updateBanner()) {
+      return;
+    }
+
+    const { mainService, payAndPensionsMiniFlowViewed } = this.workplace;
+    const showBanner =
+      this.payAndPensionService.showSleepInsQuestions(mainService.payAndPensionsGroup!) &&
+      !payAndPensionsMiniFlowViewed &&
+      this.canEditEstablishment;
+
+    if (showBanner) {
+      this.updateBanner.set({
+        content: 'New questions about pay and pension',
+        linkTo: this.establishmentService.buildPathForWorkplaceSummary(this.workplace.uid, 'pensions'),
+        onLinkClicked: () => {
+          this.payAndPensionService.setInPayAndPensionsMiniFlow(true);
+          this.setPayAndPensionsMiniFlowViewed();
+          this.setReturnToHomeTab();
+        },
+      });
+    }
+  }
+
+  public setupUpdateBannerForCWPAwareness() {
+    if (this.updateBanner()) {
+      return;
+    }
+
+    const { CWPAwarenessQuestionViewed, careWorkforcePathwayWorkplaceAwareness } = this.workplace;
+
+    if (!CWPAwarenessQuestionViewed && !careWorkforcePathwayWorkplaceAwareness && this.canEditEstablishment) {
+      this.updateBanner.set({
+        content: 'How aware of the care workforce pathway is your workplace?',
+        linkTo: this.establishmentService.buildPathForWorkplaceSummary(
+          this.workplace.uid,
+          'care-workforce-pathway-awareness',
+        ),
+        onLinkClicked: () => {
+          this.setCwpAwarenessQuestionViewed();
+          this.setReturnToHomeTab();
+        },
+      });
+    }
+  }
+
+  public setupUpdateBannerForCWPWorkerQuestion() {
+    if (this.updateBanner()) {
+      return;
+    }
+    const showBanner = this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0 && this.canEditWorker;
+
+    if (showBanner) {
+      this.updateBanner.set({
+        content: 'Where are your staff on the care workforce pathway?',
+        linkTo: ['/workplace', this.workplace.uid, 'staff-record', 'care-workforce-pathway-workers-summary'],
+      });
+    }
+  }
+
+  private setReturnToHomeTab() {
+    if (this.setReturn) {
+      this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'home' });
+    }
   }
 
   ngOnDestroy(): void {
