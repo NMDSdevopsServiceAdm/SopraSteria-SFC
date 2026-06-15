@@ -353,6 +353,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     this.setupUpdateBannerForPayAndPension();
     this.setupUpdateBannerForCWPAwareness();
     this.setupUpdateBannerForCWPWorkerQuestion();
+    this.setupUpdateBannerForStaffDoDHA();
   }
 
   public setupUpdateBannerForPayAndPension() {
@@ -368,7 +369,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
     if (showBanner) {
       this.updateBanner.set({
-        content: 'New questions about pay and pension',
+        content: 'New questions about pay and pensions',
         linkTo: this.establishmentService.buildPathForWorkplaceSummary(this.workplace.uid, 'pensions'),
         onLinkClicked: () => {
           this.payAndPensionService.setInPayAndPensionsMiniFlow(true);
@@ -411,6 +412,29 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.updateBanner.set({
         content: 'Where are your staff on the care workforce pathway?',
         linkTo: ['/workplace', this.workplace.uid, 'staff-record', 'care-workforce-pathway-workers-summary'],
+      });
+    }
+  }
+
+  public setupUpdateBannerForStaffDoDHA() {
+    if (this.updateBanner()) {
+      return;
+    }
+    const showBanner =
+      !this.workplace.staffDoDelegatedHealthcareActivities &&
+      this.workplace.mainService.canDoDelegatedHealthcareActivities &&
+      this.canEditEstablishment;
+
+    if (showBanner) {
+      this.updateBanner.set({
+        content: 'Do your staff carry out delegated healthcare activities?',
+        linkTo: this.establishmentService.buildPathForWorkplaceSummary(
+          this.workplace.uid,
+          'staff-do-delegated-healthcare-activities',
+        ),
+        onLinkClicked: () => {
+          this.setReturnToHomeTab();
+        },
       });
     }
   }

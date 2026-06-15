@@ -1715,7 +1715,7 @@ fdescribe('Summary section', () => {
         },
       };
 
-      const payAndPensionBannerText = 'New questions about pay and pension';
+      const payAndPensionBannerText = 'New questions about pay and pensions';
 
       [1, 2].forEach((group) => {
         it(`shows the message for the added workplace questions when payAndPensionsMiniFlowViewed is null and the main service payAndPensionsGroup is ${group}`, async () => {
@@ -1918,6 +1918,73 @@ fdescribe('Summary section', () => {
 
         expect(queryByTestId('update-banner-area')).toBeFalsy();
         expect(queryByText(cwpWorkerBannerText)).toBeFalsy();
+      });
+    });
+
+    describe('Staff carry out delegated healthcare activities question', () => {
+      const establishmentWhichShouldSeeMessage = () => {
+        return {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          mainService: {
+            canDoDelegatedHealthcareActivities: true,
+            id: 9,
+            name: 'Day care and day services',
+            reportingID: 6,
+          },
+          staffDoDelegatedHealthcareActivities: null,
+        };
+      };
+
+      const carryOutDhaBannerText = 'Do your staff carry out delegated healthcare activities?';
+
+      it('should show the update banner if staffDoDelegatedHealthcareActivities null and main service can do DHA', async () => {
+        const { getByTestId, setReturnToSpy } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
+
+        const updateBannerArea = getByTestId('update-banner-area');
+        expect(within(updateBannerArea).queryByText(carryOutDhaBannerText)).toBeTruthy();
+
+        const link = within(updateBannerArea).getByText('Answer questions') as HTMLAnchorElement;
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${Establishment.uid}/workplace-data/workplace-summary/staff-do-delegated-healthcare-activities`,
+        );
+
+        userEvent.click(link);
+
+        expect(setReturnToSpy).toHaveBeenCalled();
+      });
+
+      it('should not show the banner if staffDoDelegatedHealthcareActivities null but main service cannot do DHA', async () => {
+        const mockEstablishment = {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          staffDoDelegatedHealthcareActivities: null,
+          mainService: {
+            canDoDelegatedHealthcareActivities: null,
+            id: 11,
+            name: 'Domestic services and home help',
+            reportingID: 10,
+          },
+        };
+
+        const { queryByTestId, queryByText } = await setup({
+          establishment: mockEstablishment,
+        });
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(carryOutDhaBannerText)).toBeFalsy();
+      });
+
+      it('should not show the banner if staffDoDelegatedHealthcareActivities is answered', async () => {
+        const { queryByTestId, queryByText } = await setup({
+          establishment: {
+            ...establishmentWhichShouldSeeMessage(),
+            staffDoDelegatedHealthcareActivities: 'Yes',
+          },
+        });
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(carryOutDhaBannerText)).toBeFalsy();
       });
     });
   });
