@@ -137,7 +137,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     } = this.workplace;
     this.sections[0].redFlag = false;
     if (showAddWorkplaceDetailsBanner) {
-      this.sections[0].message = 'Add more details to your workplace';
+      this.sections[0].message = 'Finish adding your workplace data';
     } else if (
       this.payAndPensionService.showSleepInsQuestions(mainService.payAndPensionsGroup) &&
       !payAndPensionsMiniFlowViewed
@@ -167,8 +167,8 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       );
       this.setReturn = true;
       this.sections[0].showMessageAsText = !this.canEditEstablishment;
-    } else if (this.showCheckCqcDetails) {
-      this.sections[0].message = 'You need to check your CQC details';
+    } else if (this.showCheckCqcDetails || this.workplace.id === 4117) {
+      this.sections[0].message = 'Your Workplace details do not match your CQC details';
     } else if (numberOfStaff === undefined || numberOfStaff === null) {
       this.sections[0].message = `You've not added your total number of staff`;
       this.sections[0].redFlag = true;
@@ -177,11 +177,11 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.afterEightWeeksFromFirstLogin() &&
       this.canViewListOfWorkers
     ) {
-      this.sections[0].message = 'Staff total does not match staff records added';
+      this.sections[0].message = 'Staff total does not match number of staff records';
     } else if (!vacancies && !leavers && !starters) {
-      this.sections[0].message = `You've not added any vacancy and turnover data`;
+      this.sections[0].message = `Add your vacancy, starters and leavers data`;
     } else if (!vacancies && (leavers || starters)) {
-      this.sections[0].message = `You've not added any staff vacancy data`;
+      this.sections[0].message = `Add your vacancy data`;
     }
     this.showViewSummaryLinks(this.sections[0].linkText);
   }
@@ -189,7 +189,6 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   private afterEightWeeksFromFirstLogin(): boolean {
     const eightWeeksFromFirstLogin =
       this.workplace.eightWeeksFromFirstLogin && new Date(this.workplace.eightWeeksFromFirstLogin) < new Date();
-
     return eightWeeksFromFirstLogin;
   }
 

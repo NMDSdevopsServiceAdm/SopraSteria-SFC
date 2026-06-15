@@ -5,8 +5,10 @@ import { provideRouter, Router, RouterModule } from '@angular/router';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { TabsService } from '@core/services/tabs.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
 import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
@@ -16,8 +18,6 @@ import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
-import { PayAndPensionService } from '@core/services/pay-and-pension.service';
-import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
 
 describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
@@ -191,7 +191,7 @@ describe('Summary section', () => {
       const { getByTestId } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText('Add more details to your workplace')).toBeTruthy();
+      expect(within(workplaceRow).getByText('Finish adding your workplace data')).toBeTruthy();
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
     });
 
@@ -611,7 +611,7 @@ describe('Summary section', () => {
 
       const { getByText, routerSpy } = await setup(overrides);
 
-      const workplaceDetailsMessage = getByText('Add more details to your workplace');
+      const workplaceDetailsMessage = getByText('Finish adding your workplace data');
       fireEvent.click(workplaceDetailsMessage);
 
       expect(routerSpy).toHaveBeenCalledWith(['subsidiary', Establishment.uid, 'workplace']);
@@ -625,7 +625,7 @@ describe('Summary section', () => {
       const { getByTestId } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText('You need to check your CQC details')).toBeTruthy();
+      expect(within(workplaceRow).getByText('Your Workplace details do not match your CQC details')).toBeTruthy();
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
     });
 
@@ -672,7 +672,7 @@ describe('Summary section', () => {
       const { getByTestId } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText('Staff total does not match staff records added')).toBeTruthy();
+      expect(within(workplaceRow).getByText('Staff total does not match number of staff records')).toBeTruthy();
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
     });
 
@@ -688,7 +688,7 @@ describe('Summary section', () => {
       const { getByTestId } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).queryByText('Staff total does not match staff records added')).toBeFalsy();
+      expect(within(workplaceRow).queryByText('Staff total does not match number of staff records')).toBeFalsy();
       expect(within(workplaceRow).queryByTestId('orange-flag')).toBeFalsy();
     });
 
@@ -704,7 +704,7 @@ describe('Summary section', () => {
       const { getByTestId } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).queryByText('Staff total does not match staff records added')).toBeFalsy();
+      expect(within(workplaceRow).queryByText('Staff total does not match number of staff records')).toBeFalsy();
       expect(within(workplaceRow).queryByTestId('orange-flag')).toBeFalsy();
     });
 
@@ -724,7 +724,7 @@ describe('Summary section', () => {
       const { getByTestId } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).queryByText('Staff total does not match staff records added')).toBeFalsy();
+      expect(within(workplaceRow).queryByText('Staff total does not match number of staff records')).toBeFalsy();
     });
 
     it('should show a warning saying that vacancy and turnover data has not been added if they have not been added', async () => {
@@ -738,7 +738,7 @@ describe('Summary section', () => {
       const { getByTestId } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText(`You've not added any vacancy and turnover data`)).toBeTruthy();
+      expect(within(workplaceRow).getByText(`Add your vacancy, starters and leavers data`)).toBeTruthy();
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
     });
 
@@ -753,7 +753,7 @@ describe('Summary section', () => {
       const { getByTestId } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText(`You've not added any staff vacancy data`)).toBeTruthy();
+      expect(within(workplaceRow).getByText(`Add your vacancy data`)).toBeTruthy();
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
     });
 
@@ -768,7 +768,7 @@ describe('Summary section', () => {
       const { getByTestId } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText(`You've not added any staff vacancy data`)).toBeTruthy();
+      expect(within(workplaceRow).getByText(`Add your vacancy data`)).toBeTruthy();
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
     });
 
@@ -783,7 +783,7 @@ describe('Summary section', () => {
       const { getByTestId } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText(`You've not added any staff vacancy data`)).toBeTruthy();
+      expect(within(workplaceRow).getByText(`Add your vacancy data`)).toBeTruthy();
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
     });
   });
