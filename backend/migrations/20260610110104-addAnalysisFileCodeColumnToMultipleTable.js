@@ -29,10 +29,10 @@ module.exports = {
         ),
         queryInterface.addColumn(
           cssrTable,
-          'AnalysisFileCode',
+          'LocalAuthorityId',
           {
             type: Sequelize.DataTypes.INTEGER,
-            unique: false,
+            unique: true,
           },
           { transaction },
         ),
@@ -45,7 +45,7 @@ module.exports = {
       return Promise.all([
         queryInterface.removeColumn(servicesTable, 'AnalysisFileCode', { transaction }),
         queryInterface.removeColumn(trainingCategoriesTable, 'AnalysisFileCode', { transaction }),
-        queryInterface.removeColumn(cssrTable, 'AnalysisFileCode', { transaction }),
+        queryInterface.removeColumn(cssrTable, 'LocalAuthorityId', { transaction }),
       ]);
     });
   },
