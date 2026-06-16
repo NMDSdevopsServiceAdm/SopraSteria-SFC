@@ -22,6 +22,21 @@ const buildTrainingCategorySummary = (establishmentsWithTrainingRecords, isParen
     Missing: 'missing',
   };
 
+  const trainingGrouped = Object.values(
+    lodash.groupBy(allTrainingRecords, (training) => training.category + training.workplaceName + training.isMandatory),
+  );
+  const rows = trainingGrouped.map((trainings) => {
+    const trainingCategory = trainings[0].category;
+    const workplaceName = trainings[0].workplaceName;
+    const mandatory = trainings[0].isMandatory;
+    const row = createEmptySummaryRow();
+    const total = trainings.length;
+    const statusCounts = lodash.countBy(trainings, 'status');
+    const mappedStatusCounts = lodash.mapKeys(statusCounts, (_value, key) => statusFieldMap[key]);
+
+    return { ...row, trainingCategory, workplaceName, mandatory, total, ...mappedStatusCounts };
+  });
+
   allTrainingRecords.forEach((training) => {
     const categoryName = training.category;
     const workplaceName = training.workplaceName;
@@ -48,8 +63,6 @@ const buildTrainingCategorySummary = (establishmentsWithTrainingRecords, isParen
     }
   });
 
-  const rows = Object.values(categoryMap);
-
   const totals = rows.reduce(
     (acc, row) => {
       acc.total += row.total;
@@ -70,7 +83,6 @@ const buildTrainingCategorySummary = (establishmentsWithTrainingRecords, isParen
 
   return [...rows, totals];
 };
-
 const convertEachWorkerTrainingBreakdown = (worker) => {
   const expiredTrainingCount = parseInt(worker.get('expiredTrainingCount'));
   const expiredMandatoryTrainingCount = parseInt(worker.get('expiredMandatoryTrainingCount'));
