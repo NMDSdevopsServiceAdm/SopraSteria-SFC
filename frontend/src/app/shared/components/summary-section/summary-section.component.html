@@ -2,7 +2,7 @@
   @let props = updateBanner()!;
   @let linkText = props.linkText ?? 'Answer questions';
 
-  <div class="govuk-width-container govuk-!-margin-top-0" data-testid="update-banner-area">
+  <div class="govuk-width-container govuk-!-margin-top-4" data-testid="update-banner-area">
     <app-update-banner [linkText]="linkText" [linkTo]="props.linkTo" (linkClicked)="props.onLinkClicked?.()"
       >{{ props.content }}
     </app-update-banner>
