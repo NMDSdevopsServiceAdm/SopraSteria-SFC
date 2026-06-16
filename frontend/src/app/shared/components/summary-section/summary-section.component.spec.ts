@@ -1201,6 +1201,21 @@ describe('Summary section', () => {
           expect(queryByTestId('update-banner-area')).toBeFalsy();
           expect(queryByText(payAndPensionBannerText)).toBeFalsy();
         });
+
+        it('should not show the banner if user does not have permission to edit workplace', async () => {
+          const establishment = {
+            ...setupEstablishment,
+            mainService: {
+              payAndPensionsGroup: group,
+            },
+            payAndPensionsMiniFlowViewed: null,
+          };
+
+          const { queryByTestId, queryByText } = await setup({ establishment, canEditEstablishment: false });
+
+          expect(queryByTestId('update-banner-area')).toBeFalsy();
+          expect(queryByText(payAndPensionBannerText)).toBeFalsy();
+        });
       });
 
       it('should not show the banner when pay and pension group is 3', async () => {
@@ -1305,7 +1320,7 @@ describe('Summary section', () => {
         expect(queryByText(cwpAwarenessBannerText)).toBeFalsy();
       });
 
-      it('should not show the banner if user has no edit permission for establishment', async () => {
+      it('should not show the banner if user does not have permission to  edit establishment', async () => {
         const { queryByTestId, queryByText } = await setup({
           canEditEstablishment: false,
           establishment: establishmentWhichShouldSeeMessage(),
@@ -1337,21 +1352,20 @@ describe('Summary section', () => {
         await fixture.whenStable();
       });
 
-      it('should not show the banner if there are staff without an answer but no edit permission for workers', async () => {
+      it('should not show the banner if all workers are answered', async () => {
         const overrides = {
-          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
-          canEditWorker: false,
+          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 0,
         };
         const { queryByTestId, queryByText } = await setup(overrides);
 
         expect(queryByTestId('update-banner-area')).toBeFalsy();
-        // TODO: uncomment this after removed CWP from summary panel
-        // expect(queryByText(cwpWorkerBannerText)).toBeFalsy();
+        expect(queryByText(cwpWorkerBannerText)).toBeFalsy();
       });
 
-      it('should not show the banner if there are no staff without an answer', async () => {
+      it('should not show the banner if user does not have permission to edit workers', async () => {
         const overrides = {
-          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 0,
+          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
+          canEditWorker: false,
         };
         const { queryByTestId, queryByText } = await setup(overrides);
 
@@ -1425,6 +1439,16 @@ describe('Summary section', () => {
         expect(queryByTestId('update-banner-area')).toBeFalsy();
         expect(queryByText(carryOutDhaBannerText)).toBeFalsy();
       });
+
+      it('should not show the banner if user does not have permission to edit establishment', async () => {
+        const { queryByTestId, queryByText } = await setup({
+          establishment: establishmentWhichShouldSeeMessage(),
+          canEditEstablishment: false,
+        });
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(carryOutDhaBannerText)).toBeFalsy();
+      });
     });
 
     describe('Who carries out delegated healthcare activities', () => {
@@ -1464,7 +1488,7 @@ describe('Summary section', () => {
         expect(setReturnToSpy).toHaveBeenCalled();
       });
 
-      it('should not show the banner if user do not have edit permission for establishment', async () => {
+      it('should not show the banner if user do not have permission to edit worker', async () => {
         const { queryByTestId, queryByText } = await setup({
           noOfWorkersWithDelegatedHealthcareUnanswered: 3,
           canEditWorker: false,
@@ -1472,9 +1496,7 @@ describe('Summary section', () => {
         });
 
         expect(queryByTestId('update-banner-area')).toBeFalsy();
-
-        // TODO: uncomment this
-        // expect(queryByText(dhaWorkerBannerText)).toBeFalsy();
+        expect(queryByText(dhaWorkerBannerText)).toBeFalsy();
       });
 
       it('should not show the banner if staffDoDelegatedHealthcareActivities null but main service cannot do DHA and   noOfWorkersWithDelegatedHealthcareUnanswered is 0', async () => {
