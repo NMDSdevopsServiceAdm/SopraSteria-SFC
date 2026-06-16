@@ -201,7 +201,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
     const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
     if (!this.workerCount) {
-      this.sections[1].message = 'You can start to add your staff records now';
+      this.sections[1].message = 'Start adding your staff records';
     } else if (this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0) {
       this.sections[1].message = 'Where are your staff on the care workforce pathway?';
       this.sections[1].skipTabSwitch = true;
@@ -227,7 +227,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       ];
       this.sections[1].showMessageAsText = !this.canEditWorker;
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
-      this.sections[1].message = 'Staff records added does not match staff total';
+      this.sections[1].message = 'Number of staff records does not match total staff';
     } else if (this.noOfWorkersWhoRequireInternationalRecruitment > 0) {
       this.showInternationalRecruitmentMessage();
     } else if (
@@ -237,7 +237,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     ) {
       this.sections[1].message = 'No staff records added in the last 12 months';
     } else if (this.workersNotCompleted?.length > 0 && this.getStaffCreatedDate()) {
-      this.sections[1].message = 'Some records only have mandatory data added';
+      this.sections[1].message = 'Add more details to your staff records';
       if (this.isParentSubsidiaryView) {
         this.sections[1].route = ['/staff-basic-records', this.workplace.uid];
       } else {
