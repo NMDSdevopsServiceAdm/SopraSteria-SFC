@@ -3,12 +3,12 @@
     <img class="asc-update-banner__image" src="/assets/images/update.svg" alt="update" data-testid="update-image" />
     <ng-content></ng-content>
     @if (linkText) {
-      <a class="asc-update-banner__link govuk-link" href="#" [routerLink]="linkTo" (click)="handleLinkClick($event)">
-        {{ linkText }}
-        @if (linkAriaDescription) {
-          <span class="govuk-visually-hidden">{{ linkAriaDescription }}</span>
-        }
-      </a>
+    <a class="asc-update-banner__link govuk-link" href="#" [routerLink]="linkTo" (click)="handleLinkClick($event)">
+      {{ linkText }}
+      @if (linkAriaDescription) {
+      <span class="govuk-visually-hidden">{{ linkAriaDescription }}</span>
+      }
+    </a>
     }
   </div>
 </app-inset-text>

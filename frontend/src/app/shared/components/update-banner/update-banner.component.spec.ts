@@ -1,5 +1,3 @@
-import lodash from 'lodash';
-
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
@@ -8,6 +6,7 @@ import { provideRouter, Router, RouterModule } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import lodash from 'lodash';
 
 import { UpdateBannerComponent } from './update-banner.component';
 
