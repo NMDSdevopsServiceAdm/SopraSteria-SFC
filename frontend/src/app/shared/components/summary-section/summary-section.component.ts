@@ -131,47 +131,11 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   };
 
   public getWorkplaceSummaryMessage(): void {
-    const {
-      showAddWorkplaceDetailsBanner,
-      numberOfStaff,
-      vacancies,
-      starters,
-      leavers,
-      mainService,
-      payAndPensionsMiniFlowViewed,
-    } = this.workplace;
+    const { showAddWorkplaceDetailsBanner, numberOfStaff, vacancies, starters, leavers } = this.workplace;
     this.sections[0].redFlag = false;
+
     if (showAddWorkplaceDetailsBanner) {
       this.sections[0].message = 'Finish adding your workplace data';
-    } else if (
-      this.payAndPensionService.showSleepInsQuestions(mainService.payAndPensionsGroup) &&
-      !payAndPensionsMiniFlowViewed
-    ) {
-      this.sections[0].message = "We've added some Workplace questions";
-      this.sections[0].skipTabSwitch = true;
-      this.sections[0].route = this.establishmentService.buildPathForWorkplaceSummary(this.workplace.uid, 'pensions');
-      this.setReturn = true;
-      this.payAndPensionWorkplaceQuestionsLinkDisplaying = true;
-    } else if (!this.workplace.CWPAwarenessQuestionViewed && !this.workplace.careWorkforcePathwayWorkplaceAwareness) {
-      this.sections[0].message = 'How aware of the CWP is your workplace?';
-      this.sections[0].route = this.establishmentService.buildPathForWorkplaceSummary(
-        this.workplace.uid,
-        'care-workforce-pathway-awareness',
-      );
-      this.careWorkforcePathwayLinkDisplaying = true;
-      this.setReturn = true;
-      this.sections[0].showMessageAsText = !this.canEditEstablishment;
-    } else if (
-      !this.workplace.staffDoDelegatedHealthcareActivities &&
-      this.workplace.mainService.canDoDelegatedHealthcareActivities
-    ) {
-      this.sections[0].message = 'Do your staff carry out delegated healthcare activities?';
-      this.sections[0].route = this.establishmentService.buildPathForWorkplaceSummary(
-        this.workplace.uid,
-        'staff-do-delegated-healthcare-activities',
-      );
-      this.setReturn = true;
-      this.sections[0].showMessageAsText = !this.canEditEstablishment;
     } else if (this.showCheckCqcDetails) {
       this.sections[0].message = 'Your workplace details do not match your CQC details';
     } else if (numberOfStaff === undefined || numberOfStaff === null) {
@@ -206,30 +170,6 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
     if (!this.workerCount) {
       this.sections[1].message = 'You can start to add your staff records now';
-    } else if (this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0) {
-      this.sections[1].message = 'Where are your staff on the care workforce pathway?';
-      this.sections[1].skipTabSwitch = true;
-      this.sections[1].route = [
-        '/workplace',
-        this.workplace.uid,
-        'staff-record',
-        'care-workforce-pathway-workers-summary',
-      ];
-      this.sections[1].showMessageAsText = !this.canEditWorker;
-    } else if (
-      this.workplace.staffDoDelegatedHealthcareActivities !== 'No' &&
-      this.workplace.mainService.canDoDelegatedHealthcareActivities &&
-      this.noOfWorkersWithDelegatedHealthcareUnanswered > 0
-    ) {
-      this.sections[1].message = 'Who carries out delegated healthcare activities?';
-      this.sections[1].skipTabSwitch = true;
-      this.sections[1].route = [
-        '/workplace',
-        this.workplace.uid,
-        'staff-record',
-        'who-carry-out-delegated-healthcare-activities',
-      ];
-      this.sections[1].showMessageAsText = !this.canEditWorker;
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[1].message = 'Staff records added does not match staff total';
     } else if (this.noOfWorkersWhoRequireInternationalRecruitment > 0) {
@@ -350,21 +290,21 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   }
 
   public setupUpdateBanner() {
-    this.setupUpdateBannerForPayAndPension();
-    this.setupUpdateBannerForCWPAwareness();
+    this.setupUpdateBannerForPayAndPensionWorkplaceQuestions();
+    this.setupUpdateBannerForCWPWorkplaceAwareness();
     this.setupUpdateBannerForCWPWorkerQuestion();
-    this.setupUpdateBannerForStaffDoDHA();
+    this.setupUpdateBannerForDHAWorkplaceQuestion();
     this.setupUpdateBannerForDHAWorkerQuestion();
   }
 
-  private setupUpdateBannerForPayAndPension() {
+  private setupUpdateBannerForPayAndPensionWorkplaceQuestions() {
     if (this.updateBanner()) {
       return;
     }
 
     const { mainService, payAndPensionsMiniFlowViewed } = this.workplace;
     const showBanner =
-      this.payAndPensionService.showSleepInsQuestions(mainService.payAndPensionsGroup!) &&
+      this.payAndPensionService.showSleepInsQuestions(mainService.payAndPensionsGroup) &&
       !payAndPensionsMiniFlowViewed &&
       this.canEditEstablishment;
 
@@ -381,7 +321,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  private setupUpdateBannerForCWPAwareness() {
+  private setupUpdateBannerForCWPWorkplaceAwareness() {
     if (this.updateBanner()) {
       return;
     }
@@ -417,7 +357,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  private setupUpdateBannerForStaffDoDHA() {
+  private setupUpdateBannerForDHAWorkplaceQuestion() {
     if (this.updateBanner()) {
       return;
     }
