@@ -168,7 +168,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.setReturn = true;
       this.sections[0].showMessageAsText = !this.canEditEstablishment;
     } else if (this.showCheckCqcDetails) {
-      this.sections[0].message = 'Your Workplace details do not match your CQC details';
+      this.sections[0].message = 'Your workplace details do not match your CQC details';
     } else if (numberOfStaff === undefined || numberOfStaff === null) {
       this.sections[0].message = `You've not added your total number of staff`;
       this.sections[0].redFlag = true;

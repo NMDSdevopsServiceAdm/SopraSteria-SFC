@@ -625,7 +625,7 @@ describe('Summary section', () => {
       const { getByTestId } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText('Your Workplace details do not match your CQC details')).toBeTruthy();
+      expect(within(workplaceRow).getByText('Your workplace details do not match your CQC details')).toBeTruthy();
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
     });
 
