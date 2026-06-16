@@ -1,14 +1,16 @@
-<app-inset-text [color]="'update'">
+<app-inset-text [color]="'update'" [removeTopMargin]="true" [removeBottomMargin]="false">
   <div class="asc-update-banner__content">
     <img class="asc-update-banner__image" src="/assets/images/update.svg" alt="update" data-testid="update-image" />
     <ng-content></ng-content>
-    <a
-      class="asc-update-banner__link govuk-link govuk-link--no-visited-state"
-      href="#"
-      [routerLink]="linkTo"
-      (click)="handleLinkClick($event)"
-    >
-      {{ linkText }}
-    </a>
+    @if (linkText) {
+      <a
+        class="asc-update-banner__link govuk-link govuk-link--no-visited-state"
+        href="#"
+        [routerLink]="linkTo"
+        (click)="handleLinkClick($event)"
+      >
+        {{ linkText }}
+      </a>
+    }
   </div>
 </app-inset-text>

@@ -1,17 +1,20 @@
-import { UpdateBannerComponent } from './update-banner.component';
-import { render } from '@testing-library/angular';
-import { SharedModule } from '@shared/shared.module';
-import { ReactiveFormsModule } from '@angular/forms';
-import userEvent from '@testing-library/user-event';
+import lodash from 'lodash';
+
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideRouter, Router, RouterModule } from '@angular/router';
 import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { provideRouter, Router, RouterModule } from '@angular/router';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
-fdescribe('UpdateBannerComponent', () => {
-  const setup = async () => {
+import { UpdateBannerComponent } from './update-banner.component';
+
+describe('UpdateBannerComponent', () => {
+  const setup = async (overrides = {}) => {
     const bannerContent = 'New question about pay and pension';
-    const linkText = 'Answer questions';
+    const linkText = lodash.get(overrides, 'linkText', 'Answer questions');
     const linkClickedSpy = jasmine.createSpy();
     const linkTo = ['workplace', 'mock-uid', 'pensions'];
 
@@ -47,7 +50,7 @@ fdescribe('UpdateBannerComponent', () => {
     expect(getByRole('link', { name: 'Answer questions' })).toBeTruthy();
   });
 
-  it('should emit an event on link click', async () => {
+  it('should emit an event to linkClicked output on link click', async () => {
     const { getByText, linkClickedSpy } = await setup();
 
     userEvent.click(getByText('Answer questions'));
@@ -63,5 +66,12 @@ fdescribe('UpdateBannerComponent', () => {
 
     const destination = navigateByUrlSpy.calls.mostRecent().args[0];
     expect(destination.toString()).toEqual('/workplace/mock-uid/pensions');
+  });
+
+  it('should not show the link if link text is missing', async () => {
+    const { getByText, queryByRole } = await setup({ linkText: null });
+
+    expect(getByText('New question about pay and pension')).toBeTruthy();
+    expect(queryByRole('link')).toBeFalsy();
   });
 });
