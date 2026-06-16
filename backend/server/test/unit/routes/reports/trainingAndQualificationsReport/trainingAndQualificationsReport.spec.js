@@ -18,6 +18,7 @@ describe('generateTrainingAndQualificationsReport', () => {
           name: 'Test',
           workers: [],
           get: () => {},
+          countMandatoryTraining: () => 0,
         },
       ],
     });

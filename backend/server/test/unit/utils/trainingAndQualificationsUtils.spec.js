@@ -1,18 +1,36 @@
 const expect = require('chai').expect;
+const dayjs = require('dayjs');
+const lodash = require('lodash');
+
 const {
   getTrainingTotals,
-  convertQualificationsForEstablishments,
   convertWorkersWithCareCertificateStatus,
   convertTrainingForEstablishments,
   getTrainingRecordStatus,
   numberCheck,
+  listMissingMandatoryTrainings,
+  listAllExistingAndMissingTrainings,
+  buildTrainingCategorySummary,
+  convertAndFlattenQualificationsForEstablishments,
+  getTotalForCareQualifications,
+  getPercentagesForSocialCareQualificationLevels,
+  buildWorkplaceSummaryData,
 } = require('../../../utils/trainingAndQualificationsUtils');
 const {
   mockWorkerTrainingBreakdowns,
   mockEstablishmentsQualificationsResponse,
   mockEstablishmentsCareCertificateResponse,
   mockEstablishmentsTrainingResponse,
+  mockWorkerTrainingRecords,
+  totalCountsForMockWorkplaceA,
+  careCertAndQualificationLevelsForWorkplaceA,
+  secondMockWorkerTrainingBreakdowns,
+  totalCountsForMockWorkplaceB,
+  careCertAndQualificationLevelsForWorkplaceB,
+  grandTotalCountsForMockWorkplaceAAndB,
+  grandTotalCareCertAndQualificationLevelsForWorkplaceAAndB,
 } = require('../mockdata/trainingAndQualifications');
+const { WorkerSocialCareQualificationLevel } = require('../../../../reference/databaseEnumTypes');
 
 describe('trainingAndQualificationsUtils', () => {
   describe('getTrainingTotals', () => {
@@ -55,127 +73,135 @@ describe('trainingAndQualificationsUtils', () => {
     });
   });
 
-  describe('convertQualificationsForEstablishments', () => {
-    describe('First establishment', async () => {
-      it('should return the workplace name for the first establishment', () => {
-        const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
+  describe('convertAndFlattenQualificationsForEstablishments', () => {
+    it('should return a list of qualification records', () => {
+      const result = convertAndFlattenQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
 
-        expect(result[0].name).to.deep.equal('Workplace Name');
+      expect(result[0]).to.deep.equal({
+        workplaceName: 'Workplace Name',
+        workerName: 'Bob Ross',
+        jobRole: 'Activities worker or co-ordinator',
+        qualificationType: 'NVQ',
+        qualificationName: 'Care NVQ',
+        qualificationLevel: 3,
+        yearAchieved: 2020,
+        certificateUploaded: 'Yes',
       });
 
-      it('should return the converted qualification for the first worker', () => {
-        const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-        expect(result[0].qualifications[0]).to.deep.equal({
-          workerName: 'Bob Ross',
-          jobRole: 'Activities worker or co-ordinator',
-          qualificationType: 'NVQ',
-          qualificationName: 'Care NVQ',
-          qualificationLevel: '3',
-          yearAchieved: 2020,
-        });
+      expect(result[1]).to.deep.equal({
+        workplaceName: 'Workplace Name',
+        workerName: 'Martin Mill',
+        jobRole: 'Care Giver',
+        qualificationType: 'Award',
+        qualificationName: 'Good Name Award',
+        qualificationLevel: 2,
+        yearAchieved: 2018,
+        certificateUploaded: 'No',
       });
 
-      it('should return the converted qualification for the second worker when first has only one qualification', () => {
-        const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-        expect(result[0].qualifications[1]).to.deep.equal({
-          workerName: 'Martin Mill',
-          jobRole: 'Care Giver',
-          qualificationType: 'Award',
-          qualificationName: 'Good Name Award',
-          qualificationLevel: '2',
-          yearAchieved: 2018,
-        });
+      expect(result[1]).to.deep.equal({
+        workplaceName: 'Workplace Name',
+        workerName: 'Martin Mill',
+        jobRole: 'Care Giver',
+        qualificationType: 'Award',
+        qualificationName: 'Good Name Award',
+        qualificationLevel: 2,
+        yearAchieved: 2018,
+        certificateUploaded: 'No',
+      });
+
+      expect(result[2]).to.deep.equal({
+        workplaceName: 'Subsidiary Workplace Name',
+        workerName: 'Roly Poly',
+        jobRole: 'Roll Connoisseur',
+        qualificationType: 'Degree',
+        qualificationName: 'Rolling',
+        qualificationLevel: 6,
+        yearAchieved: 2020,
+        certificateUploaded: 'Yes',
       });
     });
 
-    describe('Second establishment', async () => {
-      it('should return the workplace name for the second establishment', () => {
-        const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
+    it('should convert establishment name to number type if it is digit only', () => {
+      const mockData = lodash.cloneDeep(mockEstablishmentsQualificationsResponse);
+      mockData[0].NameValue = '80';
 
-        expect(result[1].name).to.deep.equal('Subsidiary Workplace Name');
-      });
+      const result = convertAndFlattenQualificationsForEstablishments(mockData);
 
-      it('should return the first converted qualification for the first worker', () => {
-        const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-        expect(result[1].qualifications[0]).to.deep.equal({
-          workerName: 'Roly Poly',
-          jobRole: 'Roll Connoisseur',
-          qualificationType: 'Degree',
-          qualificationName: 'Rolling',
-          qualificationLevel: '6',
-          yearAchieved: 2020,
-        });
-      });
-
-      it('should return the second converted qualification for the first worker when more than qualification', () => {
-        const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-        expect(result[1].qualifications[1]).to.deep.equal({
-          workerName: 'Roly Poly',
-          jobRole: 'Roll Connoisseur',
-          qualificationType: 'Degree',
-          qualificationName: 'Rolling Masters',
-          qualificationLevel: '7',
-          yearAchieved: 2021,
-        });
-      });
+      expect(typeof result[0].workplaceName).to.deep.equal('number');
+      expect(result[0].workplaceName).to.deep.equal(80);
     });
   });
 
   describe('convertWorkersWithCareCertificateStatus', () => {
-    describe('First establishment', async () => {
-      it('should return the workplace name for the first establishment', () => {
-        const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse);
-
-        expect(result[0].establishmentName).to.deep.equal('Care Home 1');
-      });
-
-      it('should return the converted worker care certificate status object for first worker in the first establishment', () => {
-        const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse);
-        expect(result[0].workers[0]).to.deep.equal({
+    it('should convert care certificate workers correctly', () => {
+      const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse);
+      expect(result).to.deep.equal([
+        {
           workerId: 'Bob Ross',
+          workplaceName: 'mock care home 1',
           jobRole: 'Care Worker',
-          status: 'No',
-        });
-      });
-
-      it('should return the converted worker care certificate status object for second worker in the first establishment', () => {
-        const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse);
-        expect(result[0].workers[1]).to.deep.equal({
+          careCertificate: 'Not started',
+          l2CareCertificate: 'Not started',
+        },
+        {
           workerId: 'Mike Mill',
+          workplaceName: 'mock care home 1',
           jobRole: 'Care Coordinator',
-          status: 'Yes, in progress or partially completed',
-        });
+          careCertificate: 'Yes, in progress or partially completed',
+          l2CareCertificate: 'Yes, completed',
+        },
+        {
+          workerId: 'Bill Bailey',
+          workplaceName: 'mock care home 2',
+          jobRole: 'Care Worker',
+          careCertificate: 'Yes, completed',
+          l2CareCertificate: '-',
+        },
+        {
+          workerId: 'Jenny Jones',
+          workplaceName: 'mock care home 2',
+          jobRole: 'Care Worker',
+          careCertificate: 'Not started',
+          l2CareCertificate: 'Yes, started',
+        },
+      ]);
+    });
+
+    it('should include establishment name when isParent is true', () => {
+      const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse, true);
+
+      expect(result[0]).to.deep.equal({
+        workplaceName: 'mock care home 1',
+
+        workerId: 'Bob Ross',
+
+        jobRole: 'Care Worker',
+
+        careCertificate: 'Not started',
+
+        l2CareCertificate: 'Not started',
       });
     });
 
-    describe('Second establishment', async () => {
-      it('should return the workplace name for the second establishment', () => {
-        const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse);
+    it('should skip the workers who has no data for both careCertificate and l2CareCertificate', () => {
+      const mockData = lodash.cloneDeep(mockEstablishmentsCareCertificateResponse);
+      mockData[0].workers[0].CareCertificateValue = null;
+      mockData[0].workers[0].Level2CareCertificateValue = null;
 
-        expect(result[1].establishmentName).to.deep.equal('Care Home 2');
-      });
+      const result = convertWorkersWithCareCertificateStatus(mockData);
 
-      it('should return the converted worker care certificate status object for first worker in the second establishment', () => {
-        const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse);
-        expect(result[1].workers[0]).to.deep.equal({
-          workerId: 'Bill Bailey',
-          jobRole: 'Care Worker',
-          status: 'Yes, completed',
-        });
-      });
-
-      it('should return the converted worker care certificate status object for second worker in the second establishment', () => {
-        const result = convertWorkersWithCareCertificateStatus(mockEstablishmentsCareCertificateResponse);
-        expect(result[1].workers[1]).to.deep.equal({
-          workerId: 'Jenny Jones',
-          jobRole: 'Care Worker',
-          status: 'No',
-        });
-      });
+      expect(result.length).to.equal(3);
+      expect(result[0].workerId).to.deep.equal(mockData[0].workers[1].NameOrIdValue);
     });
   });
 
   describe('convertTrainingForEstablishments', () => {
+    const today = dayjs().format('YYYY-MM-DD');
+    const yesterday = dayjs().subtract(1, 'days').format('YYYY-MM-DD');
+    const after90Days = dayjs().add(90, 'days').format('YYYY-MM-DD');
+    const after89Days = dayjs().add(89, 'days').format('YYYY-MM-DD');
+
     describe('First establishment', async () => {
       it('should return array with first establishment name', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
@@ -202,6 +228,7 @@ describe('trainingAndQualificationsUtils', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
 
         expect(typeof result[0].name).to.deep.equal('number');
+        expect(result[0].name).to.deep.equal(80);
       });
 
       it('should return worker details formatted as expected for first worker', () => {
@@ -210,97 +237,100 @@ describe('trainingAndQualificationsUtils', () => {
 
         expect(firstWorker.workerId).to.equal('New staff record');
         expect(firstWorker.jobRole).to.equal('Activities worker or co-ordinator');
-        expect(firstWorker.longTermAbsence).to.equal('');
+        expect(firstWorker.isInLongTermAbsence).to.equal('No');
         expect(firstWorker.mandatoryTraining).to.deep.equal(['Communication skills']);
       });
 
       it('should return first training record formatted as expected for first worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
         const firstWorkerFirstTrainingRecord = result[0].workerRecords[0].trainingRecords[0];
-        const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
 
         expect(firstWorkerFirstTrainingRecord).to.deep.equal({
           category: 'Dementia care',
           categoryFK: 10,
           trainingName: 'Great',
-          expiryDate: new Date(expiryDate.setDate(expiryDate.getDate() - 1)),
+          expiryDate: new Date(yesterday),
           status: 'Expired',
           dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
           accredited: 'No',
+
+          isMandatory: 'No',
+          deliveredBy: 'External provider',
+          howWasItDelivered: 'Face to face',
+          trainingCertificateUploaded: 'Yes',
+          trainingProviderName: 'Care skill training',
+          validityPeriodInMonth: 24,
         });
       });
 
       it('should return second training record formatted as expected for first worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
-        const firstWorkerFirstTrainingRecord = result[0].workerRecords[0].trainingRecords[1];
-        const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
+        const firstWorkerSecondTrainingRecord = result[0].workerRecords[0].trainingRecords[1];
 
-        expect(firstWorkerFirstTrainingRecord).to.deep.equal({
+        expect(firstWorkerSecondTrainingRecord).to.deep.equal({
           category: 'Old age care',
           categoryFK: 5,
           trainingName: 'Old age care training',
-          expiryDate: new Date(expiryDate.setDate(expiryDate.getDate() + 90)),
+          expiryDate: new Date(after90Days),
           status: 'Up-to-date',
           dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
           accredited: 'Yes',
+
+          isMandatory: 'No',
+          deliveredBy: 'In-house staff',
+          howWasItDelivered: 'Face to face',
+          trainingCertificateUploaded: 'No',
+          trainingProviderName: null,
+          validityPeriodInMonth: 12,
         });
       });
 
       it('should return worker details formatted as expected for second worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
-        const firstWorker = result[0].workerRecords[1];
+        const secondWorker = result[0].workerRecords[1];
 
-        expect(firstWorker.workerId).to.equal('Another staff record');
-        expect(firstWorker.jobRole).to.equal('Care giver');
-        expect(firstWorker.longTermAbsence).to.equal('Yes');
-        expect(firstWorker.mandatoryTraining).to.deep.equal(['Learning']);
+        expect(secondWorker.workerId).to.equal('Another staff record');
+        expect(secondWorker.jobRole).to.equal('Care giver');
+        expect(secondWorker.isInLongTermAbsence).to.equal('Yes');
+        expect(secondWorker.mandatoryTraining).to.deep.equal(['Learning']);
       });
 
       it('should return first training record formatted as expected for second worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
-        const firstWorkerFirstTrainingRecord = result[0].workerRecords[1].trainingRecords[0];
-        const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
+        const secondWorkerFirstTrainingRecord = result[0].workerRecords[1].trainingRecords[0];
 
-        expect(firstWorkerFirstTrainingRecord).to.deep.equal({
+        expect(secondWorkerFirstTrainingRecord).to.deep.equal({
           category: 'Learning',
           categoryFK: 10,
           trainingName: 'Test Training',
-          expiryDate: new Date(expiryDate.setDate(expiryDate.getDate() + 89)),
+          expiryDate: new Date(after89Days),
           status: 'Expiring soon',
           dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
           accredited: 'No',
+
+          isMandatory: 'Yes',
+          validityPeriodInMonth: null,
+          trainingCertificateUploaded: 'No',
+          deliveredBy: 'External provider',
+          trainingProviderName: null,
+          howWasItDelivered: 'E-learning',
         });
       });
-    });
 
-    describe('convertQualificationsForEstablishments', () => {
-      describe('First establishment', async () => {
-        it('should return array with first establishment name', () => {
-          const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
+      it('should add an "missingMandatoryTrainings" field to each worker', () => {
+        const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
+        const firstWorker = result[0].workerRecords[0];
+        const secondWorker = result[0].workerRecords[1];
 
-          expect(result[0].name).to.equal('Workplace Name');
-        });
+        expect(firstWorker.missingMandatoryTrainings).to.deep.equal([
+          {
+            category: 'Communication skills',
+            status: 'Missing',
+            isMandatory: 'Yes',
+          },
+        ]);
 
-        it('should return a string if number in string', () => {
-          mockEstablishmentsQualificationsResponse[0].NameValue = '80abc';
-          const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-
-          expect(result[0].name).to.equal('80abc');
-        });
-
-        it('should return a string if number in string with letters', () => {
-          mockEstablishmentsQualificationsResponse[0].NameValue = '80abc';
-          const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-
-          expect(typeof result[0].name).to.deep.equal('string');
-        });
-
-        it('should return a number if only number in string', () => {
-          mockEstablishmentsQualificationsResponse[0].NameValue = '80';
-          const result = convertQualificationsForEstablishments(mockEstablishmentsQualificationsResponse);
-
-          expect(typeof result[0].name).to.deep.equal('number');
-        });
+        expect(secondWorker.missingMandatoryTrainings).to.deep.equal([]);
       });
     });
 
@@ -317,23 +347,29 @@ describe('trainingAndQualificationsUtils', () => {
 
         expect(firstWorker.workerId).to.equal('Test staff record');
         expect(firstWorker.jobRole).to.equal('Activities worker and care');
-        expect(firstWorker.longTermAbsence).to.equal('');
+        expect(firstWorker.isInLongTermAbsence).to.equal('No');
         expect(firstWorker.mandatoryTraining).to.deep.equal(['Autism']);
       });
 
       it('should return first training record formatted as expected for first worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
         const firstWorkerFirstTrainingRecord = result[1].workerRecords[0].trainingRecords[0];
-        const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
 
         expect(firstWorkerFirstTrainingRecord).to.deep.equal({
           category: 'Dementia care',
           categoryFK: 3,
           trainingName: 'Helen',
-          expiryDate: new Date(expiryDate.setDate(expiryDate.getDate())),
+          expiryDate: new Date(today),
           status: 'Expiring soon',
           dateCompleted: new Date('2014-01-01T00:00:00.000Z'),
           accredited: 'No',
+
+          isMandatory: 'No',
+          validityPeriodInMonth: 60,
+          trainingCertificateUploaded: 'Yes',
+          deliveredBy: 'External provider',
+          trainingProviderName: 'Care skill academy',
+          howWasItDelivered: 'Face to face',
         });
       });
     });
@@ -396,6 +432,322 @@ describe('trainingAndQualificationsUtils', () => {
     it('should return "Up-to-date" when expiry date has not been passed in', () => {
       const result = getTrainingRecordStatus('', '60');
       expect(result).to.deep.equal('Up-to-date');
+    });
+  });
+
+  describe('listMissingMandatoryTrainings', () => {
+    const mockData = mockEstablishmentsTrainingResponse[0].workers;
+
+    it('should return an empty array if worker does not have mandatory training records missing', () => {
+      const expected = [];
+      const actual = listMissingMandatoryTrainings(mockData[1]);
+      expect(actual).to.deep.equal(expected);
+    });
+
+    it('should return a list of mandatory training records that the worker is missing', () => {
+      const expected = [
+        {
+          category: 'Communication skills',
+          status: 'Missing',
+          isMandatory: 'Yes',
+        },
+      ];
+      const actual = listMissingMandatoryTrainings(mockData[0]);
+      expect(actual).to.deep.equal(expected);
+    });
+  });
+
+  describe('listAllExistingAndMissingTrainings', () => {
+    it('should extract all training records and missing mandatory trainings from the workplaces, and return as one single array', () => {
+      const trainingRecords = listAllExistingAndMissingTrainings(mockWorkerTrainingRecords);
+
+      expect(trainingRecords.length).to.equal(7);
+
+      expect(trainingRecords[0]).to.deep.include(mockWorkerTrainingRecords[0].workerRecords[0].trainingRecords[0]);
+      expect(trainingRecords[1]).to.deep.include(mockWorkerTrainingRecords[0].workerRecords[0].trainingRecords[1]);
+
+      expect(trainingRecords[2]).to.deep.include(mockWorkerTrainingRecords[0].workerRecords[1].trainingRecords[0]);
+      expect(trainingRecords[3]).to.deep.include(mockWorkerTrainingRecords[0].workerRecords[1].trainingRecords[1]);
+      expect(trainingRecords[4]).to.deep.include(
+        mockWorkerTrainingRecords[0].workerRecords[1].missingMandatoryTrainings[0],
+      );
+
+      expect(trainingRecords[5]).to.deep.include(
+        mockWorkerTrainingRecords[0].workerRecords[2].missingMandatoryTrainings[0],
+      );
+      expect(trainingRecords[6]).to.deep.include(
+        mockWorkerTrainingRecords[0].workerRecords[2].missingMandatoryTrainings[1],
+      );
+    });
+
+    it('should add workplace and worker data to the training', () => {
+      const trainingRecords = listAllExistingAndMissingTrainings(mockWorkerTrainingRecords);
+      const allworkerNames = mockWorkerTrainingRecords[0].workerRecords.map((worker) => worker.workerId);
+
+      trainingRecords.forEach((record) => {
+        expect(record.workplaceName).to.equal(mockWorkerTrainingRecords[0].name);
+        expect(allworkerNames).to.include(record.workerNameOrId);
+      });
+    });
+  });
+
+  describe('buildTrainingCategorySummary', () => {
+    it('should build a summary grouped by training category with totals', () => {
+      const result = buildTrainingCategorySummary(mockWorkerTrainingRecords);
+
+      expect(result).to.deep.include({
+        trainingCategory: 'Activity provision/Well-being',
+        workplaceName: 'AAPNES East Area Business Support',
+        mandatory: 'Yes',
+        total: 3,
+        expired: 0,
+        expiringSoon: 0,
+        upToDate: 1,
+        missing: 2,
+      });
+
+      expect(result).to.deep.include({
+        trainingCategory: 'Diabetes',
+        workplaceName: 'AAPNES East Area Business Support',
+        mandatory: 'Yes',
+
+        total: 2,
+        expired: 1,
+        expiringSoon: 0,
+        upToDate: 0,
+        missing: 1,
+      });
+
+      expect(result).to.deep.include({
+        trainingCategory: 'Dementia care',
+        workplaceName: 'AAPNES East Area Business Support',
+        mandatory: 'No',
+
+        total: 1,
+        expired: 0,
+        expiringSoon: 1,
+        upToDate: 0,
+        missing: 0,
+      });
+
+      expect(result).to.deep.include({
+        trainingCategory: 'Emergency Aid awareness',
+        workplaceName: 'AAPNES East Area Business Support',
+        mandatory: 'No',
+
+        total: 1,
+        expired: 0,
+        expiringSoon: 0,
+        upToDate: 1,
+        missing: 0,
+      });
+
+      expect(result[result.length - 1]).to.deep.equal({
+        trainingCategory: 'Total',
+        workplaceName: '',
+        mandatory: '-',
+        total: 7,
+        expired: 1,
+        expiringSoon: 1,
+        upToDate: 2,
+        missing: 3,
+      });
+    });
+  });
+
+  describe('getTotalForCareQualifications', () => {
+    it('should calculate the totals numbers of an establishment related to care qualifications', () => {
+      const mockRawData = mockEstablishmentsCareCertificateResponse[0];
+      const expected = careCertAndQualificationLevelsForWorkplaceA;
+
+      const result = getTotalForCareQualifications(mockRawData);
+
+      expect(result).to.deep.equal(expected);
+    });
+
+    it('should not include worker that is not a care providing role', () => {
+      const mockRawData = lodash.cloneDeep(mockEstablishmentsCareCertificateResponse[0]);
+      mockRawData.workers[0].mainJob.isCareProvidingRole = false;
+
+      const expected = {
+        workplaceId: 1234,
+        workplaceName: 'mock care home 1',
+        careProvidingStaffsCount: 1,
+
+        careCertificate: {
+          'Yes, in progress or partially completed': 1,
+        },
+        level2CareCertificate: {
+          'Yes, completed': 1,
+        },
+        socialCareQualificationLevel: {
+          'Level 8 or above': 1.0,
+          'Level 2 or above': 1.0,
+          'Level 5 or above': 1.0,
+        },
+      };
+
+      const result = getTotalForCareQualifications(mockRawData);
+
+      expect(result).to.deep.equal(expected);
+    });
+  });
+
+  describe('getPercentagesForSocialCareQualificationLevels', () => {
+    it('should return an empty object if no worker was given', () => {
+      const mockWorkers = [];
+
+      const result = getPercentagesForSocialCareQualificationLevels(mockWorkers);
+      expect(result).to.deep.equal({});
+    });
+
+    it('should return percentages as 0 if no worker has SocialCareQualification', () => {
+      const mockWorkers = [{}, {}];
+
+      const result = getPercentagesForSocialCareQualificationLevels(mockWorkers);
+      expect(result).to.deep.equal({
+        'Level 2 or above': 0.0,
+        'Level 5 or above': 0.0,
+      });
+    });
+
+    it('should calculate the social care qualification level percentages for the given workers', () => {
+      const mockWorkers = [
+        {
+          socialCareQualification: {
+            level: 'Level 1',
+          },
+        },
+        {
+          socialCareQualification: {
+            level: 'Level 2',
+          },
+        },
+        {
+          socialCareQualification: {
+            level: 'Level 3',
+          },
+        },
+      ];
+
+      const result = getPercentagesForSocialCareQualificationLevels(mockWorkers);
+      expect(result).to.deep.equal({
+        'Level 1': 0.3333,
+        'Level 2': 0.3333,
+        'Level 3': 0.3333,
+        'Level 2 or above': 0.6667,
+        'Level 5 or above': 0.0,
+      });
+    });
+
+    it('should correctly handle "Entry level", "Level 8 or above" and "Don\'t know"', () => {
+      const mockWorkers = Object.values(WorkerSocialCareQualificationLevel).map((level) => ({
+        socialCareQualification: {
+          level,
+        },
+      }));
+
+      const result = getPercentagesForSocialCareQualificationLevels(mockWorkers);
+      expect(result).to.deep.equal({
+        'Entry level': 0.1,
+        'Level 1': 0.1,
+        'Level 2': 0.1,
+        'Level 3': 0.1,
+        'Level 4': 0.1,
+        'Level 5': 0.1,
+        'Level 6': 0.1,
+        'Level 7': 0.1,
+        'Level 8 or above': 0.1,
+        "Don't know": 0.1,
+
+        'Level 2 or above': 0.7,
+        'Level 5 or above': 0.4,
+      });
+    });
+  });
+
+  describe('buildWorkplaceSummaryData', () => {
+    const rawEstablishmentCareCertificateStatus = mockEstablishmentsCareCertificateResponse;
+    const workerTrainingBreakdowns = mockWorkerTrainingBreakdowns;
+
+    it('should build workplace summary data from rawEstablishmentCareCertificateStatus and workerTrainingBreakdowns', () => {
+      const result = buildWorkplaceSummaryData(workerTrainingBreakdowns, [rawEstablishmentCareCertificateStatus[0]]);
+      const expectedWorkplacesData = [
+        {
+          workplaceId: '1234',
+          workplaceName: 'mock care home 1',
+          trainingBreakdownTotals: totalCountsForMockWorkplaceA,
+          careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceA,
+        },
+      ];
+
+      expect(result.workplacesData).to.deep.equal(expectedWorkplacesData);
+    });
+
+    it('should put a dummy object for trainingBreakdownTotals if a child workplace does not have any training record', () => {
+      const result = buildWorkplaceSummaryData([], [rawEstablishmentCareCertificateStatus[0]]);
+      const expected = {
+        workplaceId: '1234',
+        workplaceName: 'mock care home 1',
+        careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceA,
+      };
+
+      expect(result.workplacesData[0]).to.deep.include(expected);
+
+      const trainingBreakdownTotalsInResult = result.workplacesData[0].trainingBreakdownTotals;
+      expect(trainingBreakdownTotalsInResult.trainingCount).to.equal(null);
+      expect(trainingBreakdownTotalsInResult.mandatoryTrainingCount).to.equal(null);
+      expect(trainingBreakdownTotalsInResult.nonMandatoryTrainingCount).to.equal(null);
+    });
+
+    const combinedWorkerTrainingBreakdowns = [...workerTrainingBreakdowns, ...secondMockWorkerTrainingBreakdowns];
+
+    it('should process the data of multiple workplaces correctly (for parent summary)', () => {
+      const result = buildWorkplaceSummaryData(combinedWorkerTrainingBreakdowns, rawEstablishmentCareCertificateStatus);
+
+      expect(result.workplacesData.length).to.equal(2);
+
+      const expectedWorkplaceA = {
+        workplaceId: '1234',
+        workplaceName: 'mock care home 1',
+        trainingBreakdownTotals: totalCountsForMockWorkplaceA,
+        careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceA,
+      };
+
+      expect(result.workplacesData[0]).to.deep.equal(expectedWorkplaceA);
+
+      const expectedWorkplaceB = {
+        workplaceId: '2345',
+        workplaceName: 'mock care home 2',
+        trainingBreakdownTotals: totalCountsForMockWorkplaceB,
+        careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceB,
+      };
+
+      expect(result.workplacesData[1]).to.deep.equal(expectedWorkplaceB);
+    });
+
+    it('should calculate the total training counts of workplaces', () => {
+      const result = buildWorkplaceSummaryData(combinedWorkerTrainingBreakdowns, rawEstablishmentCareCertificateStatus);
+
+      expect(result.total).to.deep.equal({
+        trainingBreakdownTotals: grandTotalCountsForMockWorkplaceAAndB,
+        careCertAndQualificationLevels: grandTotalCareCertAndQualificationLevelsForWorkplaceAAndB,
+      });
+    });
+
+    it('should calculate the totals correctly when there are no care providing workers in workplaces', () => {
+      const mockRawDataWithNoCareProvidingWorker = lodash.cloneDeep(rawEstablishmentCareCertificateStatus);
+      mockRawDataWithNoCareProvidingWorker.forEach((workplace) => {
+        workplace.workers.forEach((worker) => {
+          worker.mainJob.isCareProvidingRole = false;
+        });
+      });
+
+      const result = buildWorkplaceSummaryData(combinedWorkerTrainingBreakdowns, mockRawDataWithNoCareProvidingWorker);
+      expect(result.total).to.deep.equal({
+        trainingBreakdownTotals: grandTotalCountsForMockWorkplaceAAndB,
+        careCertAndQualificationLevels: { careProvidingStaffsCount: 0 },
+      });
     });
   });
 });

@@ -1,12 +1,109 @@
-const convertWorkerTrainingBreakdown = (worker) => {
+const dayjs = require('dayjs');
+const lodash = require('lodash');
+const { WorkerSocialCareQualificationLevel } = require('../../reference/databaseEnumTypes');
+
+const createEmptySummaryRow = () => ({
+  total: 0,
+  expired: 0,
+  expiringSoon: 0,
+  upToDate: 0,
+  missing: 0,
+});
+
+const buildTrainingCategorySummary = (establishmentsWithTrainingRecords, isParent) => {
+  const allTrainingRecords = listAllExistingAndMissingTrainings(establishmentsWithTrainingRecords);
+
+  const categoryMap = {};
+
+  const statusFieldMap = {
+    Expired: 'expired',
+    'Expiring soon': 'expiringSoon',
+    'Up-to-date': 'upToDate',
+    Missing: 'missing',
+  };
+
+  const trainingGrouped = Object.values(
+    lodash.groupBy(allTrainingRecords, (training) => training.category + training.workplaceName + training.isMandatory),
+  );
+  const rows = trainingGrouped.map((trainings) => {
+    const trainingCategory = trainings[0].category;
+    const workplaceName = trainings[0].workplaceName;
+    const mandatory = trainings[0].isMandatory;
+    const row = createEmptySummaryRow();
+    const total = trainings.length;
+    const statusCounts = lodash.countBy(trainings, 'status');
+    const mappedStatusCounts = lodash.mapKeys(statusCounts, (_value, key) => statusFieldMap[key]);
+
+    return { ...row, trainingCategory, workplaceName, mandatory, total, ...mappedStatusCounts };
+  });
+
+  allTrainingRecords.forEach((training) => {
+    const categoryName = training.category;
+    const workplaceName = training.workplaceName;
+    const key = isParent ? `${training.category}|${training.workplaceName}` : training.category;
+
+    if (!categoryMap[key]) {
+      categoryMap[key] = {
+        trainingCategory: categoryName,
+        workplaceName: workplaceName,
+        mandatory: training.isMandatory,
+
+        ...createEmptySummaryRow(),
+      };
+    }
+
+    const category = categoryMap[key];
+
+    category.total++;
+
+    const field = statusFieldMap[training.status];
+
+    if (field) {
+      category[field]++;
+    }
+  });
+
+  const totals = rows.reduce(
+    (acc, row) => {
+      acc.total += row.total;
+      acc.expired += row.expired;
+      acc.expiringSoon += row.expiringSoon;
+      acc.upToDate += row.upToDate;
+      acc.missing += row.missing;
+
+      return acc;
+    },
+    {
+      trainingCategory: isParent ? '' : 'Total',
+      workplaceName: isParent ? 'Total' : '',
+      mandatory: '-',
+      ...createEmptySummaryRow(),
+    },
+  );
+
+  return [...rows, totals];
+};
+const convertEachWorkerTrainingBreakdown = (worker) => {
   const expiredTrainingCount = parseInt(worker.get('expiredTrainingCount'));
   const expiredMandatoryTrainingCount = parseInt(worker.get('expiredMandatoryTrainingCount'));
+
   const expiringTrainingCount = parseInt(worker.get('expiringTrainingCount'));
   const expiringMandatoryTrainingCount = parseInt(worker.get('expiringMandatoryTrainingCount'));
+
+  const trainingCount = parseInt(worker.get('trainingCount'));
+  const mandatoryTrainingCount = parseInt(worker.get('mandatoryTrainingCount'));
+  const nonMandatoryTrainingCount = trainingCount - mandatoryTrainingCount;
+
+  const upToDateMandatoryTrainingCount =
+    mandatoryTrainingCount - expiredMandatoryTrainingCount - expiringMandatoryTrainingCount;
+  const upToDateTrainingCount = trainingCount - expiringTrainingCount - expiredTrainingCount;
+  const upToDateNonMandatoryTrainingCount = upToDateTrainingCount - upToDateMandatoryTrainingCount;
 
   return {
     name: numberCheck(worker.get('NameOrIdValue')),
     trainingCount: parseInt(worker.get('trainingCount')),
+    mandatoryTrainingCount,
+    nonMandatoryTrainingCount,
     qualificationCount: parseInt(worker.get('qualificationCount')),
     expiredTrainingCount,
     expiredMandatoryTrainingCount,
@@ -15,60 +112,95 @@ const convertWorkerTrainingBreakdown = (worker) => {
     expiringMandatoryTrainingCount,
     expiringNonMandatoryTrainingCount: expiringTrainingCount - expiringMandatoryTrainingCount,
     missingMandatoryTrainingCount: parseInt(worker.get('missingMandatoryTrainingCount')),
-    mandatoryTrainingCount: parseInt(worker.get('mandatoryTrainingCount')),
+    upToDateTrainingCount,
+    upToDateMandatoryTrainingCount,
+    upToDateNonMandatoryTrainingCount,
   };
 };
 
-const convertWorkerWithCareCertificateStatus = (worker) => {
+const formatCareCertificateValue = (value) => {
+  return value === 'No' ? 'Not started' : value || '-';
+};
+
+exports.convertEachWorkerTrainingBreakdown = convertEachWorkerTrainingBreakdown;
+
+const convertWorkerWithCareCertificateStatus = (worker, establishmentName) => {
   return {
-    workerId: numberCheck(worker.get('NameOrIdValue')),
+    workerId: numberCheck(worker.NameOrIdValue),
+
+    workplaceName: establishmentName,
     jobRole: worker.mainJob.title,
-    status: worker.get('CareCertificateValue') ? worker.get('CareCertificateValue') : '',
+
+    careCertificate: formatCareCertificateValue(worker.CareCertificateValue),
+
+    l2CareCertificate: formatCareCertificateValue(worker.Level2CareCertificateValue),
   };
 };
 
 exports.convertWorkersWithCareCertificateStatus = (establishments) => {
-  return establishments.map((establishment) => {
-    return {
-      establishmentName: establishment.get('NameValue'),
-      workers: establishment.workers.map((worker) => {
-        return convertWorkerWithCareCertificateStatus(worker);
-      }),
-    };
+  const workerHasDataForCareCertOrL2CareCert = (worker) =>
+    Boolean(worker?.CareCertificateValue || worker?.Level2CareCertificateValue);
+
+  return establishments.flatMap((establishment) => {
+    const establishmentName = establishment.NameValue;
+
+    return establishment.workers.filter(workerHasDataForCareCertOrL2CareCert).map((worker) => {
+      return convertWorkerWithCareCertificateStatus(worker, establishmentName);
+    });
   });
 };
 
 exports.convertWorkerTrainingBreakdowns = (rawWorkerTrainingBreakdowns) => {
   return rawWorkerTrainingBreakdowns.map((trainingBreakdown) => {
-    return convertWorkerTrainingBreakdown(trainingBreakdown);
+    return convertEachWorkerTrainingBreakdown(trainingBreakdown);
   });
 };
 
 const convertWorkerTrainingRecords = (workers, expiresSoonAlertDate) => {
   return workers.map((worker) => {
+    const mandatoryTrainingCategories = worker?.get('mandatoryTrainingCategories') ?? [];
+
     return {
-      workerId: numberCheck(worker.get('NameOrIdValue')),
+      workerId: numberCheck(worker.NameOrIdValue),
       jobRole: worker.mainJob.title,
-      longTermAbsence: worker.get('LongTermAbsence') ? worker.get('LongTermAbsence') : '',
-      mandatoryTraining: worker.get('mandatoryTrainingCategories') ? worker.get('mandatoryTrainingCategories') : [],
-      trainingRecords: convertIndividualWorkerTrainingRecords(worker.workerTraining, expiresSoonAlertDate),
+      isInLongTermAbsence: worker.LongTermAbsence ? 'Yes' : 'No',
+      mandatoryTraining: mandatoryTrainingCategories,
+      missingMandatoryTrainings: listMissingMandatoryTrainings(worker),
+      trainingRecords: convertIndividualWorkerTrainingRecords(
+        worker.workerTraining,
+        expiresSoonAlertDate,
+        mandatoryTrainingCategories,
+      ),
     };
   });
 };
 
-const convertIndividualWorkerTrainingRecords = (workerTraining, expiresSoonAlertDate) => {
+const convertIndividualWorkerTrainingRecords = (
+  workerTraining,
+  expiresSoonAlertDate,
+  mandatoryTrainingCategories = [],
+) => {
   return workerTraining.map((trainingRecord) => {
-    const expiryDate = trainingRecord.get('Expires') ? new Date(trainingRecord.get('Expires')) : '';
-    const dateCompleted = trainingRecord.get('Completed') ? new Date(trainingRecord.get('Completed')) : '';
+    const expiryDate = trainingRecord.expires ? new Date(trainingRecord.expires) : null;
+    const dateCompleted = trainingRecord.completed ? new Date(trainingRecord.completed) : null;
+    const isMandatory = mandatoryTrainingCategories.includes(trainingRecord.category.category) ? 'Yes' : 'No';
+    const trainingCertificateUploaded = trainingRecord.trainingCertificatesCount > 0 ? 'Yes' : 'No';
 
     return {
-      category: trainingRecord.get('category').category,
-      categoryFK: trainingRecord.get('CategoryFK'),
-      trainingName: trainingRecord.get('Title') ? trainingRecord.get('Title') : '',
+      category: trainingRecord.category.category,
+      categoryFK: trainingRecord.categoryFk,
+      trainingName: trainingRecord.title,
       expiryDate,
       status: getTrainingRecordStatus(expiryDate, expiresSoonAlertDate),
       dateCompleted,
-      accredited: trainingRecord.get('Accredited') ? trainingRecord.get('Accredited') : '',
+      accredited: trainingRecord.accredited,
+
+      isMandatory,
+      validityPeriodInMonth: trainingRecord.validityPeriodInMonth,
+      trainingCertificateUploaded,
+      deliveredBy: trainingRecord.deliveredBy,
+      trainingProviderName: trainingRecord.trainingProviderName,
+      howWasItDelivered: trainingRecord.howWasItDelivered,
     };
   });
 };
@@ -78,14 +210,13 @@ const getTrainingRecordStatus = (expiryDate, expiresSoonAlertDate) => {
     return 'Up-to-date';
   }
 
-  const currentDate = new Date(new Date().setHours(0, 0, 0, 0));
-  const expiringSoonDate = new Date(new Date().setHours(0, 0, 0, 0));
-  expiringSoonDate.setDate(currentDate.getDate() + parseInt(expiresSoonAlertDate));
+  const currentDate = dayjs();
+  const expiringSoonDate = dayjs().add(parseInt(expiresSoonAlertDate), 'days');
 
-  if (expiryDate < currentDate) {
+  if (dayjs(expiryDate).isBefore(currentDate, 'day')) {
     return 'Expired';
   }
-  if (expiryDate < expiringSoonDate) {
+  if (dayjs(expiryDate).isBefore(expiringSoonDate, 'day')) {
     return 'Expiring soon';
   }
   return 'Up-to-date';
@@ -93,40 +224,41 @@ const getTrainingRecordStatus = (expiryDate, expiresSoonAlertDate) => {
 
 exports.convertTrainingForEstablishments = (rawEstablishments) => {
   return rawEstablishments.map((establishment) => {
-    const workplaceNameAsNumber = /^\d+$/.test(establishment.NameValue);
     return {
-      name: workplaceNameAsNumber ? parseInt(workplaceNameAsNumber) : establishment.NameValue,
-      workerRecords: convertWorkerTrainingRecords(establishment.workers, establishment.get('ExpiresSoonAlertDate')),
+      name: numberCheck(establishment.NameValue),
+      workerRecords: convertWorkerTrainingRecords(establishment.workers, establishment.expiresSoonAlertDate),
     };
   });
 };
 
 const convertIndividualWorkerQualifications = (worker) => {
   return worker.qualifications.map((qualification) => {
+    const qualificationLevel = numberCheck(qualification.qualification.level);
+    const certificateUploaded = qualification.qualificationCertificatesCount > 0 ? 'Yes' : 'No';
+
     return {
-      workerName: numberCheck(worker.get('NameOrIdValue')),
+      workerName: numberCheck(worker.NameOrIdValue),
       jobRole: worker.mainJob.title,
       qualificationType: qualification.qualification.group,
       qualificationName: qualification.qualification.title,
-      qualificationLevel: qualification.qualification.level,
-      yearAchieved: qualification.get('Year'),
+      qualificationLevel,
+      yearAchieved: qualification.year,
+      certificateUploaded,
     };
   });
 };
 
-const convertWorkerQualifications = (rawWorkerQualifications) => {
-  return rawWorkerQualifications.workers.reduce((convertedWorkerQualifications, worker) => {
-    return convertedWorkerQualifications.concat(convertIndividualWorkerQualifications(worker));
-  }, []);
-};
+exports.convertAndFlattenQualificationsForEstablishments = (rawEstablishments) => {
+  const allQualificationRecords = rawEstablishments.flatMap((workplace) => {
+    const convertedQualifications = workplace.workers.flatMap(convertIndividualWorkerQualifications);
 
-exports.convertQualificationsForEstablishments = (rawEstablishments) => {
-  return rawEstablishments.map((establishment) => {
-    return {
-      name: numberCheck(establishment.NameValue),
-      qualifications: convertWorkerQualifications(establishment),
-    };
+    return convertedQualifications.map((qualificationRecord) => ({
+      ...qualificationRecord,
+      workplaceName: numberCheck(workplace.NameValue),
+    }));
   });
+
+  return allQualificationRecords;
 };
 
 const numberCheck = (value) => {
@@ -210,3 +342,222 @@ exports.getTotalsForAllWorkplaces = (establishments) => {
 
 exports.numberCheck = numberCheck;
 exports.getTrainingRecordStatus = getTrainingRecordStatus;
+
+exports.buildWorkerTrainingBreakdown = async (rawEstablishmentTrainingBreakdowns) => {
+  const establishmentMandatoryTrainingCounts = await Promise.all(
+    rawEstablishmentTrainingBreakdowns.rows.map((establishment) => establishment.countMandatoryTraining()),
+  );
+  const eachEstablishmentHasMandatoryTraining = establishmentMandatoryTrainingCounts.map((count) => count > 0);
+
+  const workerTrainingBreakdownsWithWorkplaceInfo = rawEstablishmentTrainingBreakdowns.rows.flatMap(
+    (establishment, index) => {
+      const workerBreakdowns = establishment.workers.map(convertEachWorkerTrainingBreakdown);
+      return workerBreakdowns.map((workerBreakDown) => ({
+        ...workerBreakDown,
+        workplaceId: establishment.id,
+        workplaceName: establishment.NameValue,
+        workplaceHasMandatoryTraining: eachEstablishmentHasMandatoryTraining[index],
+      }));
+    },
+  );
+
+  return workerTrainingBreakdownsWithWorkplaceInfo;
+};
+
+const listMissingMandatoryTrainings = (workerWithTrainingRecords) => {
+  const categoryNames = workerWithTrainingRecords?.get('mandatoryTrainingCategories') ?? [];
+  const trainingRecords = workerWithTrainingRecords?.workerTraining ?? [];
+
+  const missingCategories = categoryNames.filter(
+    (categoryName) => !trainingRecords.some((record) => record?.category?.category === categoryName),
+  );
+
+  return missingCategories.map((categoryName) => ({ category: categoryName, status: 'Missing', isMandatory: 'Yes' }));
+};
+
+exports.listMissingMandatoryTrainings = listMissingMandatoryTrainings;
+
+const listAllExistingAndMissingTrainings = (establishmentsWithTrainingRecords) => {
+  return establishmentsWithTrainingRecords.flatMap((establishment) => {
+    return establishment.workerRecords.flatMap((worker) => {
+      const existingRecords = worker.trainingRecords;
+      const missingMandatoryTrainings = worker.missingMandatoryTrainings;
+      return [...existingRecords, ...missingMandatoryTrainings].map((training) => {
+        return {
+          ...training,
+          workplaceName: establishment.name,
+          workerNameOrId: worker.workerId,
+          mainJobRole: worker.jobRole,
+          isInLongTermAbsence: worker.isInLongTermAbsence,
+        };
+      });
+    });
+  });
+};
+
+exports.listAllExistingAndMissingTrainings = listAllExistingAndMissingTrainings;
+exports.buildTrainingCategorySummary = buildTrainingCategorySummary;
+
+const getTotalForCareQualifications = (establishmentWithCareCertificateData) => {
+  const workplaceInfo = {
+    workplaceId: establishmentWithCareCertificateData.id,
+    workplaceName: establishmentWithCareCertificateData.NameValue,
+  };
+
+  const calculationResults = calculateTotalForCareQualificationsFromWorkers(
+    establishmentWithCareCertificateData.workers,
+  );
+
+  return {
+    ...workplaceInfo,
+    ...calculationResults,
+  };
+};
+
+const calculateTotalForCareQualificationsFromWorkers = (workers) => {
+  const careProvidingWorkers = workers.filter((worker) => worker?.mainJob?.isCareProvidingRole);
+
+  if (!careProvidingWorkers?.length) {
+    return {
+      careProvidingStaffsCount: 0,
+    };
+  }
+
+  const careCertificateCounts = lodash.countBy(careProvidingWorkers, 'CareCertificateValue');
+  const level2CareCertificateCounts = lodash.countBy(careProvidingWorkers, 'Level2CareCertificateValue');
+  const socialCareQualificationPercentages = getPercentagesForSocialCareQualificationLevels(careProvidingWorkers);
+
+  return {
+    careProvidingStaffsCount: careProvidingWorkers.length,
+    careCertificate: careCertificateCounts,
+    level2CareCertificate: level2CareCertificateCounts,
+    socialCareQualificationLevel: socialCareQualificationPercentages,
+  };
+};
+
+const levelFiveOrAbove = [
+  WorkerSocialCareQualificationLevel.Level5,
+  WorkerSocialCareQualificationLevel.Level6,
+  WorkerSocialCareQualificationLevel.Level7,
+  WorkerSocialCareQualificationLevel.Level8OrAbove,
+];
+
+const levelTwoToFour = [
+  WorkerSocialCareQualificationLevel.Level2,
+  WorkerSocialCareQualificationLevel.Level3,
+  WorkerSocialCareQualificationLevel.Level4,
+];
+
+const getPercentagesForSocialCareQualificationLevels = (workers) => {
+  const workerCounts = workers?.length;
+
+  if (!workerCounts) {
+    return {};
+  }
+
+  const socialCareQualificationCounts = lodash
+    .chain(workers)
+    .countBy('socialCareQualification.level')
+    .omit('undefined')
+    .value();
+
+  const socialCareLevel5OrAboveCount = lodash
+    .chain(socialCareQualificationCounts)
+    .at(levelFiveOrAbove)
+    .filter(lodash.isNumber)
+    .sum()
+    .value();
+
+  const socialCareLevel2To4Count = lodash
+    .chain(socialCareQualificationCounts)
+    .at(levelTwoToFour)
+    .filter(lodash.isNumber)
+    .sum()
+    .value();
+
+  const socialCareLevel2OrAboveCount = socialCareLevel2To4Count + socialCareLevel5OrAboveCount;
+
+  socialCareQualificationCounts['Level 2 or above'] = socialCareLevel2OrAboveCount;
+  socialCareQualificationCounts['Level 5 or above'] = socialCareLevel5OrAboveCount;
+
+  const percentages = lodash.mapValues(
+    socialCareQualificationCounts,
+    (count) => Math.round((count * 10000) / workerCounts) / 10000,
+  );
+
+  return percentages;
+};
+
+exports.getTotalForCareQualifications = getTotalForCareQualifications;
+exports.getPercentagesForSocialCareQualificationLevels = getPercentagesForSocialCareQualificationLevels;
+
+const calculateTotalsForWorkerTrainingBreakdowns = (workerTrainingBreakdowns) => {
+  if (!workerTrainingBreakdowns?.length) {
+    return {};
+  }
+
+  const fieldNames = Object.keys(workerTrainingBreakdowns[0]);
+  const numericFields = fieldNames.filter((field) => field.endsWith('Count'));
+  const result = {};
+
+  numericFields.forEach((field) => {
+    const countsForAllWorkersOfThisField = lodash.map(workerTrainingBreakdowns, field);
+    const total = lodash.sum(countsForAllWorkersOfThisField);
+    result[field] = total;
+  });
+
+  return result;
+};
+
+exports.buildWorkplaceSummaryData = (workerTrainingBreakdowns, rawEstablishmentCareCertificateStatus) => {
+  const trainingBreakdownsTotalsForEachWorkplace = lodash
+    .chain(workerTrainingBreakdowns)
+    .groupBy('workplaceId')
+    .mapValues(calculateTotalsForWorkerTrainingBreakdowns)
+    .value();
+
+  const careCertAndQualificationLevelsForEachWorkplace = Object.fromEntries(
+    rawEstablishmentCareCertificateStatus.map(getTotalForCareQualifications).map((data) => [data.workplaceId, data]),
+  );
+
+  const workplaceIdsFromTrainingBreakdown = Object.keys(trainingBreakdownsTotalsForEachWorkplace);
+  const workplaceIdsFromCareCerts = Object.keys(careCertAndQualificationLevelsForEachWorkplace);
+
+  const combinedIds = lodash.union(workplaceIdsFromTrainingBreakdown, workplaceIdsFromCareCerts);
+
+  const allNulls = new Proxy(
+    {},
+    {
+      get: () => null,
+    },
+  );
+
+  const workplacesData = combinedIds.map((workplaceId) => {
+    const workplaceName =
+      trainingBreakdownsTotalsForEachWorkplace[workplaceId]?.workplaceName ??
+      careCertAndQualificationLevelsForEachWorkplace[workplaceId]?.workplaceName;
+
+    return {
+      workplaceId,
+      workplaceName,
+      trainingBreakdownTotals: trainingBreakdownsTotalsForEachWorkplace[workplaceId] ?? allNulls,
+      careCertAndQualificationLevels: careCertAndQualificationLevelsForEachWorkplace[workplaceId] ?? allNulls,
+    };
+  });
+
+  const grandTotalsForTrainings = calculateTotalsForWorkerTrainingBreakdowns(
+    Object.values(trainingBreakdownsTotalsForEachWorkplace),
+  );
+  const workersFromAllWorkplaces = rawEstablishmentCareCertificateStatus.flatMap(
+    (workplace) => workplace?.workers ?? [],
+  );
+
+  const grandTotalsForCareCertAndQuals = calculateTotalForCareQualificationsFromWorkers(workersFromAllWorkplaces);
+
+  const total = {
+    trainingBreakdownTotals: grandTotalsForTrainings,
+    careCertAndQualificationLevels: grandTotalsForCareCertAndQuals,
+  };
+
+  return { total, workplacesData };
+};

@@ -59,12 +59,30 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         field: 'updatedby',
       },
+      qualificationCertificatesCount: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          const qualificationCertificates = this.get('qualificationCertificates');
+          if (!Array.isArray(qualificationCertificates)) {
+            return undefined;
+          }
+          return qualificationCertificates.length;
+        },
+      },
     },
     {
       tableName: 'WorkerQualifications',
       schema: 'cqc',
       createdAt: false,
       updatedAt: false,
+
+      scopes: {
+        withCertificateData: {
+          include: [
+            { model: sequelize.models.qualificationCertificates, as: 'qualificationCertificates', attributes: ['id'] },
+          ],
+        },
+      },
     },
   );
 
