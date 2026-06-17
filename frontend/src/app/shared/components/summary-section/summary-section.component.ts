@@ -151,7 +151,10 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.sections[0].message = `Add your vacancy, starters and leavers data`;
     } else if (!vacancies && (leavers || starters)) {
       this.sections[0].message = `Add your vacancy data`;
+    } else if (vacancies && !(leavers && starters)) {
+      this.sections[0].message = `Add your starters and leavers data`;
     }
+
     this.showViewSummaryLinks(this.sections[0].linkText);
   }
 
