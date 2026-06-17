@@ -2586,8 +2586,8 @@ module.exports = function (sequelize, DataTypes) {
     CASE
       -- Number of staff is null
       WHEN "NumberOfStaffValue" IS NULL THEN true
-      -- No vacancy data
-      WHEN "VacanciesValue" IS NULL THEN true
+      -- missing Vacancy / Starters / Leavers data
+      WHEN "VacanciesValue" IS NULL OR "StartersValue" IS NULL OR "LeaversValue" IS NULL THEN true
       -- Add workplace details banner showing
       WHEN "ShowAddWorkplaceDetailsBanner" = true THEN true
       -- CWP awareness flag showing

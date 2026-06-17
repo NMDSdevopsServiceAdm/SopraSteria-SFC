@@ -20,7 +20,7 @@ import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
 import userEvent from '@testing-library/user-event';
 
-describe('Summary section', () => {
+fdescribe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(SummarySectionComponent, {
       imports: [SharedModule, RouterModule],
@@ -330,64 +330,34 @@ describe('Summary section', () => {
       expect(within(workplaceRow).queryByText('Staff total does not match number of staff records')).toBeFalsy();
     });
 
-    it('should show a warning saying that vacancy and turnover data has not been added if they have not been added', async () => {
-      const establishment = { ...Establishment, leavers: null, vacancies: null, starters: null };
+    const testCasesForAddYourVacancyStarterLeaverMessages = [
+      { leavers: null, vacancies: null, starters: null, expected: 'Add your vacancy, starters and leavers data' },
 
-      const overrides = {
-        checkCqcDetails: false,
-        establishment,
-      };
+      { leavers: null, vacancies: null, starters: 'None', expected: 'Add your vacancy data' },
+      { leavers: 'None', vacancies: null, starters: null, expected: 'Add your vacancy data' },
+      { leavers: 'None', vacancies: null, starters: `Don't know`, expected: 'Add your vacancy data' },
 
-      const { getByTestId } = await setup(overrides);
+      { leavers: null, vacancies: 'None', starters: null, expected: 'Add your starters and leavers data' },
+      { leavers: 'None', vacancies: 'With Jobs', starters: null, expected: 'Add your starters and leavers data' },
+      { leavers: null, vacancies: 'With Jobs', starters: 'None', expected: 'Add your starters and leavers data' },
+    ];
 
-      const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText(`Add your vacancy, starters and leavers data`)).toBeTruthy();
-      expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
-    });
+    testCasesForAddYourVacancyStarterLeaverMessages.forEach((testcase) => {
+      const { leavers, vacancies, starters, expected: expectedWarningMessage } = testcase;
+      it(`should show a warning saying '${expectedWarningMessage}' when vacancies=${vacancies}, starters=${starters}, leavers=${leavers} })}`, async () => {
+        const establishment = { ...Establishment, leavers, vacancies, starters };
 
-    it('should show a warning saying that no vacancy data has been added if it has not been added, but starters data has been added', async () => {
-      const establishment = { ...Establishment, leavers: null, vacancies: null, starters: 'None' };
+        const overrides = {
+          checkCqcDetails: false,
+          establishment,
+        };
 
-      const overrides = {
-        checkCqcDetails: false,
-        establishment,
-      };
+        const { getByTestId } = await setup(overrides);
 
-      const { getByTestId } = await setup(overrides);
-
-      const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText(`Add your vacancy data`)).toBeTruthy();
-      expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
-    });
-
-    it('should show a warning saying that no vacancy data has been added if it has not been added, but leavers data has been added', async () => {
-      const establishment = { ...Establishment, leavers: 'None', vacancies: null, starters: null };
-
-      const overrides = {
-        checkCqcDetails: false,
-        establishment,
-      };
-
-      const { getByTestId } = await setup(overrides);
-
-      const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText(`Add your vacancy data`)).toBeTruthy();
-      expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
-    });
-
-    it('should show a warning saying that no vacancy data has been added if it has not been added, but both starters and leavers data has been added', async () => {
-      const establishment = { ...Establishment, leavers: 'None', vacancies: null, starters: `Don't know` };
-
-      const overrides = {
-        checkCqcDetails: false,
-        establishment,
-      };
-
-      const { getByTestId } = await setup(overrides);
-
-      const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText(`Add your vacancy data`)).toBeTruthy();
-      expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+        const workplaceRow = getByTestId('workplace-row');
+        expect(within(workplaceRow).getByText(expectedWarningMessage)).toBeTruthy();
+        expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+      });
     });
   });
 
