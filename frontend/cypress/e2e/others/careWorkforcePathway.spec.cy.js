@@ -19,8 +19,6 @@ describe('Care workforce pathway journey', { tags: '@others' }, () => {
     cy.archiveAllWorkersInWorkplace(establishmentID);
   });
 
-  afterEach(() => {});
-
   describe('answer Care Workforce Pathway workplace awareness and usage from homepage panel', () => {
     beforeEach(() => {
       cy.resetWorkplaceCWPAnswers(establishmentID);
