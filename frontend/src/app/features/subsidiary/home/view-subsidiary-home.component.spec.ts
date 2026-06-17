@@ -1,7 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
-import { of } from 'rxjs';
-
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed, TestBed } from '@angular/core/testing';
@@ -29,6 +26,7 @@ import { SummarySectionComponent } from '@shared/components/summary-section/summ
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { ViewSubsidiaryHomeComponent } from './view-subsidiary-home.component';
@@ -107,7 +105,9 @@ describe('ViewSubsidiaryHomeComponent', () => {
           useClass: MockEstablishmentService,
         },
         { provide: WindowToken, useValue: MockWindow },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
       componentProperties: {
         subsidiaryWorkplace: establishment,
@@ -351,7 +351,7 @@ describe('ViewSubsidiaryHomeComponent', () => {
           establishment,
         });
 
-        const link = getByText('Add more details to your workplace');
+        const link = getByText('Finish adding your workplace data');
 
         expect(link).toBeTruthy();
         fireEvent.click(link);
