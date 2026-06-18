@@ -89,6 +89,8 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getWorkplaceSummaryMessage();
+    this.showViewSummaryLinks(this.sections[0].linkText);
+
     this.getStaffCreatedDate();
     this.getStaffSummaryMessage();
     this.getTrainingAndQualsSummary();
@@ -146,38 +148,49 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
     if (showAddWorkplaceDetailsBanner) {
       this.sections[0].message = 'Finish adding your workplace data';
-    } else if (this.showCheckCqcDetails) {
+      return;
+    }
+    if (this.showCheckCqcDetails) {
       this.sections[0].message = 'Your workplace details do not match your CQC details';
-    } else if (numberOfStaff === undefined || numberOfStaff === null) {
-      this.sections[0].message = `You've not added your total number of staff`;
-      this.sections[0].redFlag = true;
-    } else if (
-      numberOfStaff !== this.workerCount &&
-      this.afterEightWeeksFromFirstLogin() &&
-      this.canViewListOfWorkers
-    ) {
-      this.sections[0].message = 'Staff total does not match number of staff records';
-    } else if (!vacancies && !leavers && !starters) {
-      this.sections[0].message = `Add your vacancy, starters and leavers data`;
-    } else if (!vacancies) {
-      this.sections[0].message = `Add your vacancy data`;
-    } else if (!leavers || !starters) {
-      this.sections[0].message = `Add your starters and leavers data`;
-    } else {
-      const vacanciesOverOneYear = DateUtil.isMoreThanOneYearAgo(vacanciesSavedAt);
-      const startersOverOneYear = DateUtil.isMoreThanOneYearAgo(startersSavedAt);
-      const leaversOverOneYear = DateUtil.isMoreThanOneYearAgo(leaversSavedAt);
-
-      if (vacanciesOverOneYear && startersOverOneYear && leaversOverOneYear) {
-        this.sections[0].message = `Update your starter, leaver and vacancy data`;
-      } else if (vacanciesOverOneYear) {
-        this.sections[0].message = `Update your staff vacancy data`;
-      } else if (startersOverOneYear || leaversOverOneYear) {
-        this.sections[0].message = `Update your starters and leavers data`;
-      }
+      return;
     }
 
-    this.showViewSummaryLinks(this.sections[0].linkText);
+    if (numberOfStaff === undefined || numberOfStaff === null) {
+      this.sections[0].message = `You've not added your total number of staff`;
+      this.sections[0].redFlag = true;
+      return;
+    }
+
+    if (numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin() && this.canViewListOfWorkers) {
+      this.sections[0].message = 'Staff total does not match number of staff records';
+      return;
+    }
+
+    if (!vacancies && !leavers && !starters) {
+      this.sections[0].message = `Add your vacancy, starters and leavers data`;
+      return;
+    } else if (!vacancies) {
+      this.sections[0].message = `Add your vacancy data`;
+      return;
+    } else if (!leavers || !starters) {
+      this.sections[0].message = `Add your starters and leavers data`;
+      return;
+    }
+
+    const vacanciesOverOneYear = DateUtil.isMoreThanOneYearAgo(vacanciesSavedAt);
+    const startersOverOneYear = DateUtil.isMoreThanOneYearAgo(startersSavedAt);
+    const leaversOverOneYear = DateUtil.isMoreThanOneYearAgo(leaversSavedAt);
+
+    if (vacanciesOverOneYear && startersOverOneYear && leaversOverOneYear) {
+      this.sections[0].message = `Update your starter, leaver and vacancy data`;
+      return;
+    } else if (vacanciesOverOneYear) {
+      this.sections[0].message = `Update your staff vacancy data`;
+      return;
+    } else if (startersOverOneYear || leaversOverOneYear) {
+      this.sections[0].message = `Update your starters and leavers data`;
+      return;
+    }
   }
 
   private afterEightWeeksFromFirstLogin(): boolean {
