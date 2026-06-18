@@ -359,6 +359,41 @@ fdescribe('Summary section', () => {
         expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
       });
     });
+
+    describe('Update your starter, leaver and vacancy data', () => {
+      const mockTimeNow = '2026-05-14';
+      const moreThanOneYearAgo = '2025-05-13T00:00:00.000Z';
+
+      beforeEach(() => {
+        jasmine.clock().install();
+        jasmine.clock().mockDate(new Date(mockTimeNow));
+      });
+      afterEach(() => {
+        jasmine.clock().uninstall();
+      });
+
+      it('should show a warning saying "Update your starter, leaver and vacancy data" if all of them are over 12 months old', async () => {
+        const mockEstablishment = { ...Establishment, leavers: 'None', vacancies: 'None', starters: 'None' };
+
+        const overrides = {
+          checkCqcDetails: false,
+          establishment: {
+            ...mockEstablishment,
+            vacanciesSavedAt: moreThanOneYearAgo,
+            startersSavedAt: moreThanOneYearAgo,
+            leaversSavedAt: moreThanOneYearAgo,
+          },
+        };
+
+        const expectedWarningMessage = 'Update your starter, leaver and vacancy data';
+
+        const { getByTestId } = await setup(overrides);
+
+        const workplaceRow = getByTestId('workplace-row');
+        expect(within(workplaceRow).getByText(expectedWarningMessage)).toBeTruthy();
+        expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+      });
+    });
   });
 
   describe('staff record summary section', () => {

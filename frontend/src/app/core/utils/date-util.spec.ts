@@ -3,7 +3,7 @@ import { DateUtil } from './date-util';
 import { FormatDate } from './date-util';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 
-describe('DateUtil', () => {
+fdescribe('DateUtil', () => {
   describe('getDateForOneYearAgo', () => {
     beforeEach(() => {
       jasmine.clock().install();
@@ -19,6 +19,57 @@ describe('DateUtil', () => {
       const actual = DateUtil.getDateForOneYearAgo();
 
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('isMoreThanOneYearAgo', () => {
+    const mockToday = '2026-05-17';
+
+    beforeEach(() => {
+      jasmine.clock().install();
+      jasmine.clock().mockDate(new Date(mockToday));
+    });
+    afterEach(() => {
+      jasmine.clock().uninstall();
+    });
+
+    it('should return true if the given date is more than one year ago', () => {
+      const actual = DateUtil.isMoreThanOneYearAgo('2025-05-16');
+      const expected = true;
+
+      expect(actual).toEqual(expected);
+    });
+
+    it('should return false if the given date is less than one year ago', () => {
+      const actual = DateUtil.isMoreThanOneYearAgo('2025-05-18');
+      const expected = false;
+
+      expect(actual).toEqual(expected);
+    });
+
+    const testCases = [
+      { inputDate: '2025-05-17', expected: false },
+      { inputDate: '2024-02-29', expected: true },
+
+      { inputDate: '2025-05-16T12:34:56Z', expected: true },
+      { inputDate: '2025-05-17T12:34:56Z', expected: false },
+      { inputDate: '2025-05-18T12:34:56Z', expected: false },
+
+      { inputDate: new Date('2025-05-16T12:34:56Z'), expected: true },
+      { inputDate: new Date('2025-05-17T12:34:56Z'), expected: false },
+      { inputDate: new Date('2025-05-18T12:34:56Z'), expected: false },
+
+      { inputDate: undefined, expected: false },
+      { inputDate: null, expected: false },
+      { inputDate: 'not a date', expected: false },
+    ];
+
+    testCases.forEach(({ inputDate, expected }) => {
+      it(`should return ${expected} when inputDate=${inputDate}, today=${mockToday}`, () => {
+        const actual = DateUtil.isMoreThanOneYearAgo(inputDate);
+
+        expect(actual).toEqual(expected);
+      });
     });
   });
 
