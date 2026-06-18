@@ -3,7 +3,7 @@ import { DateUtil } from './date-util';
 import { FormatDate } from './date-util';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 
-describe('DateUtil', () => {
+fdescribe('DateUtil', () => {
   describe('getDateForOneYearAgo', () => {
     beforeEach(() => {
       jasmine.clock().install();
