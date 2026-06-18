@@ -2612,6 +2612,7 @@ module.exports = function (sequelize, DataTypes) {
         WHERE w."EstablishmentFK" = "EstablishmentID"
         AND w."Archived" = false
       ) THEN true
+
       -- No workers created in last 12 months
       WHEN (
         'now'::timestamp >= ("created" + '12 months'::interval) AND
@@ -2622,6 +2623,13 @@ module.exports = function (sequelize, DataTypes) {
           WHERE w."EstablishmentFK" = "EstablishmentID"
           AND w."Archived" = false
         )
+      ) THEN true
+
+       -- Vacancy / Starter / Leaver last update older than 12 month ago
+      WHEN (
+        'now'::timestamp > "VacanciesSavedAt" + '12 months'::interval OR
+        'now'::timestamp > "StartersSavedAt" + '12 months'::interval OR
+        'now'::timestamp > "LeaversSavedAt" + '12 months'::interval
       ) THEN true
 
       WHEN (
