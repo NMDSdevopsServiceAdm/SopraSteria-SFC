@@ -363,6 +363,7 @@ fdescribe('Summary section', () => {
     describe('Update your starter, leaver and vacancy data', () => {
       const mockTimeNow = '2026-05-14';
       const moreThanOneYearAgo = '2025-05-13T00:00:00.000Z';
+      const lessThanOneYearAgo = '2025-12-23T00:00:00.000Z';
 
       beforeEach(() => {
         jasmine.clock().install();
@@ -372,27 +373,76 @@ fdescribe('Summary section', () => {
         jasmine.clock().uninstall();
       });
 
-      it('should show a warning saying "Update your starter, leaver and vacancy data" if all of them are over 12 months old', async () => {
-        const mockEstablishment = { ...Establishment, leavers: 'None', vacancies: 'None', starters: 'None' };
+      const mockEstablishment = { ...Establishment, leavers: 'None', vacancies: 'None', starters: 'None' };
 
-        const overrides = {
-          checkCqcDetails: false,
-          establishment: {
-            ...mockEstablishment,
-            vacanciesSavedAt: moreThanOneYearAgo,
-            startersSavedAt: moreThanOneYearAgo,
-            leaversSavedAt: moreThanOneYearAgo,
-          },
-        };
+      const testCasesForUpdateYourVacancyStarterLeaverMessages = [
+        {
+          vacanciesSavedAt: moreThanOneYearAgo,
+          startersSavedAt: moreThanOneYearAgo,
+          leaversSavedAt: moreThanOneYearAgo,
+          expected: 'Update your starter, leaver and vacancy data',
+        },
+        {
+          vacanciesSavedAt: moreThanOneYearAgo,
+          startersSavedAt: moreThanOneYearAgo,
+          leaversSavedAt: lessThanOneYearAgo,
+          expected: 'Update your staff vacancy data',
+        },
+        {
+          vacanciesSavedAt: moreThanOneYearAgo,
+          startersSavedAt: lessThanOneYearAgo,
+          leaversSavedAt: moreThanOneYearAgo,
+          expected: 'Update your staff vacancy data',
+        },
+        {
+          vacanciesSavedAt: lessThanOneYearAgo,
+          startersSavedAt: moreThanOneYearAgo,
+          leaversSavedAt: moreThanOneYearAgo,
+          expected: 'Update your starters and leavers data',
+        },
+        {
+          vacanciesSavedAt: moreThanOneYearAgo,
+          startersSavedAt: lessThanOneYearAgo,
+          leaversSavedAt: lessThanOneYearAgo,
+          expected: 'Update your staff vacancy data',
+        },
 
-        const expectedWarningMessage = 'Update your starter, leaver and vacancy data';
+        {
+          vacanciesSavedAt: lessThanOneYearAgo,
+          startersSavedAt: lessThanOneYearAgo,
+          leaversSavedAt: moreThanOneYearAgo,
+          expected: 'Update your starters and leavers data',
+        },
+        {
+          vacanciesSavedAt: lessThanOneYearAgo,
+          startersSavedAt: moreThanOneYearAgo,
+          leaversSavedAt: lessThanOneYearAgo,
+          expected: 'Update your starters and leavers data',
+        },
+      ];
 
-        const { getByTestId } = await setup(overrides);
+      testCasesForUpdateYourVacancyStarterLeaverMessages.forEach(
+        ({ vacanciesSavedAt, startersSavedAt, leaversSavedAt, expected: expectedWarningMessage }) => {
+          const caseName = JSON.stringify({ vacanciesSavedAt, startersSavedAt, leaversSavedAt });
+          it(`should show a warning saying ${expectedWarningMessage} if ${caseName}`, async () => {
+            const overrides = {
+              checkCqcDetails: false,
+              establishment: {
+                ...mockEstablishment,
+                vacanciesSavedAt,
+                startersSavedAt,
+                leaversSavedAt,
+              },
+            };
 
-        const workplaceRow = getByTestId('workplace-row');
-        expect(within(workplaceRow).getByText(expectedWarningMessage)).toBeTruthy();
-        expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
-      });
+            const { getByTestId } = await setup(overrides);
+
+            const workplaceRow = getByTestId('workplace-row');
+            expect(within(workplaceRow).getByText(expectedWarningMessage)).toBeTruthy();
+            expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+          });
+        },
+      );
     });
   });
 
@@ -490,7 +540,7 @@ fdescribe('Summary section', () => {
 
       const staffRecordsRow = getByTestId('staff-records-row');
       expect(within(staffRecordsRow).getByText('You can start to add your staff records now')).toBeTruthy();
-      expect(getByTestId('orange-flag')).toBeTruthy();
+      expect(within(staffRecordsRow).getByTestId('orange-flag')).toBeTruthy();
     });
 
     it('should navigate to sub staff records page when clicking on start to add your staff message in sub view', async () => {
