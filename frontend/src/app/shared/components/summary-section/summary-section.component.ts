@@ -8,7 +8,10 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { TabsService } from '@core/services/tabs.service';
 import { DateUtil } from '@core/utils/date-util';
+<<<<<<< HEAD
 import { FormatUtil } from '@core/utils/format-util';
+=======
+>>>>>>> 0e1fff84c (implement VLS updated date flags)
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
@@ -179,7 +182,28 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
     if (numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin() && this.canViewListOfWorkers) {
       this.sections[0].message = 'Staff total does not match number of staff records';
+<<<<<<< HEAD
       return;
+=======
+    } else if (!vacancies && !leavers && !starters) {
+      this.sections[0].message = `Add your vacancy, starters and leavers data`;
+    } else if (!vacancies) {
+      this.sections[0].message = `Add your vacancy data`;
+    } else if (!leavers || !starters) {
+      this.sections[0].message = `Add your starters and leavers data`;
+    } else {
+      const vacanciesOverOneYear = DateUtil.isMoreThanOneYearAgo(vacanciesSavedAt);
+      const startersOverOneYear = DateUtil.isMoreThanOneYearAgo(startersSavedAt);
+      const leaversOverOneYear = DateUtil.isMoreThanOneYearAgo(leaversSavedAt);
+
+      if (vacanciesOverOneYear && startersOverOneYear && leaversOverOneYear) {
+        this.sections[0].message = `Update your starter, leaver and vacancy data`;
+      } else if (vacanciesOverOneYear) {
+        this.sections[0].message = `Update your staff vacancy data`;
+      } else if (startersOverOneYear || leaversOverOneYear) {
+        this.sections[0].message = `Update your starters and leavers data`;
+      }
+>>>>>>> 0e1fff84c (implement VLS updated date flags)
     }
 
     const notAllTurnoverDataAnswered = [vacancies, leavers, starters].some((value) => !value);
