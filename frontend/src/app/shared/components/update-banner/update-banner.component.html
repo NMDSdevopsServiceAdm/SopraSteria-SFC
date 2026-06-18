@@ -13,6 +13,9 @@
 =======
       <a class="asc-update-banner__link govuk-link" href="#" [routerLink]="linkTo" (click)="handleLinkClick($event)">
         {{ linkText }}
+        @if (linkAriaDescription) {
+          <span class="govuk-visually-hidden">{{ linkAriaDescription }}</span>
+        }
       </a>
 >>>>>>> 87528cf03 (change "Answer questions" link to support visited state)
     }
