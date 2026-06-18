@@ -10,6 +10,7 @@ import { UrlTree } from '@angular/router';
 export class UpdateBannerComponent {
   @Input() linkText: string;
   @Input() linkTo: UrlTree | string | string[];
+  @Input() linkAriaDescription: string | null = null;
   @Output() linkClicked = new EventEmitter();
 
   public handleLinkClick(event: Event) {
