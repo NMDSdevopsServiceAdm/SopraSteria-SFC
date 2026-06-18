@@ -131,7 +131,16 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   };
 
   public getWorkplaceSummaryMessage(): void {
-    const { showAddWorkplaceDetailsBanner, numberOfStaff, vacancies, starters, leavers } = this.workplace;
+    const {
+      showAddWorkplaceDetailsBanner,
+      numberOfStaff,
+      vacancies,
+      starters,
+      leavers,
+      vacanciesSavedAt,
+      startersSavedAt,
+      leaversSavedAt,
+    } = this.workplace;
     this.sections[0].redFlag = false;
 
     if (showAddWorkplaceDetailsBanner) {
@@ -224,6 +233,17 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     const workerLatestCreatedDate = new Date(Math.max(...this.workersCreatedDate));
     const afterWorkerCreated = dayjs(workerLatestCreatedDate).add(12, 'M');
     return afterWorkerCreated;
+  }
+
+  checkVacanciesStartersLeaversLastSavedDates() {
+    const { vacanciesSavedAt, startersSavedAt, leaversSavedAt } = this.workplace;
+    const today = dayjs();
+
+    const vacanciesOverOneYear = dayjs(vacanciesSavedAt).add(12, 'M').isBefore(today, 'day');
+    const startersOverOneYear = dayjs(startersSavedAt).add(12, 'M').isBefore(today, 'day');
+    const leaversOverOneYear = dayjs(leaversSavedAt).add(12, 'M').isBefore(today, 'day');
+
+    return { vacanciesOverOneYear, startersOverOneYear, leaversOverOneYear };
   }
 
   private showInternationalRecruitmentMessage(): void {
