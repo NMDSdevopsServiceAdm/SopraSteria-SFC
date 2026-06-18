@@ -311,6 +311,8 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     if (showBanner) {
       this.updateBanner.set({
         content: 'New questions about pay and pensions',
+        linkText: 'Answer questions',
+        linkAriaDescription: ' about pay and pensions',
         linkTo: this.establishmentService.buildPathForWorkplaceSummary(this.workplace.uid, 'pensions'),
         onLinkClicked: () => {
           this.payAndPensionService.setInPayAndPensionsMiniFlow(true);
@@ -331,6 +333,8 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     if (!CWPAwarenessQuestionViewed && !careWorkforcePathwayWorkplaceAwareness && this.canEditEstablishment) {
       this.updateBanner.set({
         content: 'How aware of the care workforce pathway is your workplace?',
+        linkText: 'Answer questions',
+        linkAriaDescription: ' about How aware of the care workforce pathway is your workplace',
         linkTo: this.establishmentService.buildPathForWorkplaceSummary(
           this.workplace.uid,
           'care-workforce-pathway-awareness',
@@ -352,6 +356,8 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     if (showBanner) {
       this.updateBanner.set({
         content: 'Where are your staff on the care workforce pathway?',
+        linkText: 'Answer questions',
+        linkAriaDescription: ' about Where are your staff on the care workforce pathway',
         linkTo: ['/workplace', this.workplace.uid, 'staff-record', 'care-workforce-pathway-workers-summary'],
       });
     }
@@ -373,6 +379,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
           this.workplace.uid,
           'staff-do-delegated-healthcare-activities',
         ),
+        linkAriaDescription: ' about Do your staff carry out delegated healthcare activities?',
         onLinkClicked: () => {
           this.setReturnToHomeTab();
         },
@@ -395,6 +402,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.updateBanner.set({
         content: 'Who carries out delegated healthcare activities?',
         linkTo: ['/workplace', this.workplace.uid, 'staff-record', 'who-carry-out-delegated-healthcare-activities'],
+        linkAriaDescription: ' about Who carries out delegated healthcare activities?',
         onLinkClicked: () => {
           this.setReturnToHomeTab();
         },
