@@ -2,6 +2,7 @@
 
 const servicesTable = { tableName: 'services', schema: 'cqc' };
 const trainingCategoriesTable = { tableName: 'TrainingCategories', schema: 'cqc' };
+const jobTable = { tableName: 'Job', schema: 'cqc' };
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -26,6 +27,15 @@ module.exports = {
           },
           { transaction },
         ),
+        queryInterface.addColumn(
+          jobTable,
+          'AnalysisFileCode',
+          {
+            type: Sequelize.DataTypes.INTEGER,
+            unique: true,
+          },
+          { transaction },
+        ),
       ]);
     });
   },
@@ -35,6 +45,7 @@ module.exports = {
       return Promise.all([
         queryInterface.removeColumn(servicesTable, 'AnalysisFileCode', { transaction }),
         queryInterface.removeColumn(trainingCategoriesTable, 'AnalysisFileCode', { transaction }),
+        queryInterface.removeColumn(jobTable, 'AnalysisFileCode', { transaction }),
       ]);
     });
   },
