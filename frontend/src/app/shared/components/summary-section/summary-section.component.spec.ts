@@ -1,3 +1,6 @@
+import dayjs from 'dayjs';
+import { of } from 'rxjs';
+
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
@@ -13,14 +16,12 @@ import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
-import dayjs from 'dayjs';
-import { of } from 'rxjs';
+import userEvent from '@testing-library/user-event';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
-import userEvent from '@testing-library/user-event';
 
-fdescribe('Summary section', () => {
+describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(SummarySectionComponent, {
       imports: [SharedModule, RouterModule],
@@ -331,15 +332,15 @@ fdescribe('Summary section', () => {
     });
 
     const testCasesForAddYourVacancyStarterLeaverMessages = [
-      { leavers: null, vacancies: null, starters: null, expected: 'Add your vacancy, starters and leavers data' },
+      { vacancies: null, starters: null, leavers: null, expected: 'Add your vacancy, starters and leavers data' },
 
-      { leavers: null, vacancies: null, starters: 'None', expected: 'Add your vacancy data' },
-      { leavers: 'None', vacancies: null, starters: null, expected: 'Add your vacancy data' },
-      { leavers: 'None', vacancies: null, starters: `Don't know`, expected: 'Add your vacancy data' },
+      { vacancies: null, starters: null, leavers: 'None', expected: 'Add your vacancy and starters data' },
+      { vacancies: null, starters: 'None', leavers: null, expected: 'Add your vacancy and leavers data' },
+      { vacancies: 'None', starters: null, leavers: null, expected: 'Add your starters and leavers data' },
 
-      { leavers: null, vacancies: 'None', starters: null, expected: 'Add your starters and leavers data' },
-      { leavers: 'None', vacancies: 'With Jobs', starters: null, expected: 'Add your starters and leavers data' },
-      { leavers: null, vacancies: 'With Jobs', starters: 'None', expected: 'Add your starters and leavers data' },
+      { vacancies: null, starters: `Don't know`, leavers: 'None', expected: 'Add your vacancy data' },
+      { vacancies: 'With Jobs', starters: null, leavers: 'None', expected: 'Add your starters data' },
+      { vacancies: 'With Jobs', starters: 'None', leavers: null, expected: 'Add your leavers data' },
     ];
 
     testCasesForAddYourVacancyStarterLeaverMessages.forEach((testcase) => {
@@ -380,19 +381,19 @@ fdescribe('Summary section', () => {
           vacanciesSavedAt: moreThanOneYearAgo,
           startersSavedAt: moreThanOneYearAgo,
           leaversSavedAt: moreThanOneYearAgo,
-          expected: 'Update your starter, leaver and vacancy data',
+          expected: 'Update your staff vacancy, starters and leavers data',
         },
         {
           vacanciesSavedAt: moreThanOneYearAgo,
           startersSavedAt: moreThanOneYearAgo,
           leaversSavedAt: lessThanOneYearAgo,
-          expected: 'Update your staff vacancy data',
+          expected: 'Update your staff vacancy and starters data',
         },
         {
           vacanciesSavedAt: moreThanOneYearAgo,
           startersSavedAt: lessThanOneYearAgo,
           leaversSavedAt: moreThanOneYearAgo,
-          expected: 'Update your staff vacancy data',
+          expected: 'Update your staff vacancy and leavers data',
         },
         {
           vacanciesSavedAt: lessThanOneYearAgo,
@@ -406,18 +407,17 @@ fdescribe('Summary section', () => {
           leaversSavedAt: lessThanOneYearAgo,
           expected: 'Update your staff vacancy data',
         },
-
-        {
-          vacanciesSavedAt: lessThanOneYearAgo,
-          startersSavedAt: lessThanOneYearAgo,
-          leaversSavedAt: moreThanOneYearAgo,
-          expected: 'Update your starters and leavers data',
-        },
         {
           vacanciesSavedAt: lessThanOneYearAgo,
           startersSavedAt: moreThanOneYearAgo,
           leaversSavedAt: lessThanOneYearAgo,
-          expected: 'Update your starters and leavers data',
+          expected: 'Update your starters data',
+        },
+        {
+          vacanciesSavedAt: lessThanOneYearAgo,
+          startersSavedAt: lessThanOneYearAgo,
+          leaversSavedAt: moreThanOneYearAgo,
+          expected: 'Update your leavers data',
         },
       ];
 

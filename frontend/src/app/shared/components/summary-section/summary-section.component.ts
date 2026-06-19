@@ -8,6 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { TabsService } from '@core/services/tabs.service';
 import { DateUtil } from '@core/utils/date-util';
+import { FormatUtil } from '@core/utils/format-util';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
@@ -166,14 +167,14 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (!vacancies && !leavers && !starters) {
-      this.sections[0].message = `Add your vacancy, starters and leavers data`;
-      return;
-    } else if (!vacancies) {
-      this.sections[0].message = `Add your vacancy data`;
-      return;
-    } else if (!leavers || !starters) {
-      this.sections[0].message = `Add your starters and leavers data`;
+    const notAllTurnoverDataAnswered = [vacancies, leavers, starters].some((value) => !value);
+    if (notAllTurnoverDataAnswered) {
+      const missingOnes = Object.entries({ vacancy: vacancies, starters, leavers })
+        .filter(([_key, value]) => !value)
+        .map(([key, _value]) => key);
+
+      const message = `Add your ${FormatUtil.joinNouns(missingOnes)} data`;
+      this.sections[0].message = message;
       return;
     }
 
@@ -181,14 +182,19 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     const startersOverOneYear = DateUtil.isMoreThanOneYearAgo(startersSavedAt);
     const leaversOverOneYear = DateUtil.isMoreThanOneYearAgo(leaversSavedAt);
 
-    if (vacanciesOverOneYear && startersOverOneYear && leaversOverOneYear) {
-      this.sections[0].message = `Update your starter, leaver and vacancy data`;
-      return;
-    } else if (vacanciesOverOneYear) {
-      this.sections[0].message = `Update your staff vacancy data`;
-      return;
-    } else if (startersOverOneYear || leaversOverOneYear) {
-      this.sections[0].message = `Update your starters and leavers data`;
+    const someDataOutdated = [vacanciesOverOneYear, startersOverOneYear, leaversOverOneYear].some((x) => x);
+
+    if (someDataOutdated) {
+      const outdatedOnes = [
+        ['staff vacancy', vacanciesOverOneYear],
+        ['starters', startersOverOneYear],
+        ['leavers', leaversOverOneYear],
+      ]
+        .filter(([_key, outdated]) => outdated)
+        .map(([key, _outdated]) => key) as string[];
+
+      const message = `Update your ${FormatUtil.joinNouns(outdatedOnes)} data`;
+      this.sections[0].message = message;
       return;
     }
   }
