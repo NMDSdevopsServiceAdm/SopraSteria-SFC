@@ -32,4 +32,14 @@ export class FormatUtil {
       })
       .join(' ');
   }
+
+  public static joinNouns(inputArray: string[]): string {
+    if (!(inputArray?.length > 0)) {
+      return '';
+    }
+
+    const lastTwo = inputArray.slice(-2).join(' and ');
+    const otherItems = inputArray.slice(0, -2);
+    return [...otherItems, lastTwo].join(', ');
+  }
 }

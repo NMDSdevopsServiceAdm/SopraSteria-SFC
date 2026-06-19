@@ -95,4 +95,22 @@ describe('FormatUtil', () => {
       });
     });
   });
+
+  describe('joinNouns', () => {
+    const testCases = [
+      { inputArray: null, expected: '' },
+      { inputArray: [], expected: '' },
+      { inputArray: ['vacancy'], expected: 'vacancy' },
+      { inputArray: ['vacancy', 'starters'], expected: 'vacancy and starters' },
+      { inputArray: ['vacancy', 'leavers'], expected: 'vacancy and leavers' },
+      { inputArray: ['vacancy', 'starters', 'leavers'], expected: 'vacancy, starters and leavers' },
+    ];
+
+    testCases.forEach(({ inputArray, expected }) => {
+      it(`should return ${expected} when inputArray is ${JSON.stringify(inputArray)}`, () => {
+        const actual = FormatUtil.joinNouns(inputArray);
+        expect(actual).toEqual(expected);
+      });
+    });
+  });
 });
