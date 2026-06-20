@@ -39,7 +39,7 @@
               {{ user.updated | date: 'd MMM y' }}
             </td>
             <td class="govuk-table__cell">
-              {{ user.lastLoggedIn ? (user.lastLoggedIn | date: 'd MMM y') : '-' }}
+              {{ getUserLastLogin(user) ? (getUserLastLogin(user) | date: 'd MMM y') : '-' }}
             </td>
             <td class="govuk-table__cell">
               {{ getUserType(user) }}
