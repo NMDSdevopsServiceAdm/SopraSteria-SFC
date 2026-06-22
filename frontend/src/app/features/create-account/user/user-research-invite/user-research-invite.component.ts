@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, computed } from '@angular/core';
 import { BackLinkService } from '@core/services/backLink.service';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,23 +9,19 @@ import { UserResearchInviteDirective } from '@shared/directives/user/user-resear
 
 @Component({
   selector: 'app-user-research-invite',
-  templateUrl: './user-research-invite.component.html',
+  templateUrl: './../../../../shared/directives/user/user-research-invite.directive.html',
   standalone: false,
 })
 export class UserResearchInviteComponent extends UserResearchInviteDirective {
-  public detailsTitle: string = 'Why take part in our user research sessions?';
-  public detailsTextOne: string =
-    'The feedback you give us in online user research sessions allows us ' +
-    'to improve the service and provide the sector with more useful tools.';
-  public detailsTextTwo: string = 'Sessions last about an hour and are arranged for a time that suits you.';
   public form: UntypedFormGroup;
   public submitted = false;
-  public insideFlow: boolean;
   public confirmPagePath: string = 'registration/confirm-details';
   public userResearchInviteResponse: InviteResponse;
   public workplaceSections: string[];
   public userAccountSections: string[];
-  public userResearchInviteResponseOptions = Object.keys(InviteResponse);
+
+  public insideFlow = false;
+  public showProgressBar = false;
 
   constructor(
     protected backLinkService: BackLinkService,
@@ -37,14 +33,15 @@ export class UserResearchInviteComponent extends UserResearchInviteDirective {
     super(backLinkService, formBuilder, router, route);
   }
 
-  ngOnInit(): void {
-    this.setBackLink();
-    this.setupForm();
-    this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
-    this.userResearchInviteResponse = this.registrationService.userResearchInviteResponse$.value;
-    this.preFillForm();
+  init(): void {
     this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
     this.userAccountSections = ProgressBarUtil.userProgressBarSections();
+    this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
+    this.showProgressBar = this.insideFlow;
+  }
+
+  protected loadUserResearchInviteResponse(): void {
+    this.userResearchInviteResponse = this.registrationService.userResearchInviteResponse$.value;
   }
 
   public onSubmit(): void {
@@ -57,23 +54,5 @@ export class UserResearchInviteComponent extends UserResearchInviteDirective {
     }
 
     this.router.navigate(['registration/confirm-details']);
-  }
-
-  private setBackLink(): void {
-    this.backLinkService.showBackLink();
-  }
-
-  private setupForm(): void {
-    this.form = this.formBuilder.group({
-      inviteResponse: [null, { updateOn: 'submit' }],
-    });
-  }
-
-  private preFillForm(): void {
-    if (this.userResearchInviteResponse === null) {
-      return;
-    }
-
-    this.form.patchValue({ inviteResponse: this.userResearchInviteResponse });
   }
 }

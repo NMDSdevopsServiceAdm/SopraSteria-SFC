@@ -1,11 +1,24 @@
 import { AfterViewInit, Directive, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { InviteResponse } from '@core/model/userDetails.model';
 import { BackLinkService } from '@core/services/backLink.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 @Directive()
 export class UserResearchInviteDirective implements OnInit, OnDestroy, AfterViewInit {
+  public detailsTitle: string = 'Why take part in our user research sessions?';
+  public detailsTextOne: string =
+    'The feedback you give us in online user research sessions allows us ' +
+    'to improve the service and provide the sector with more useful tools.';
+  public detailsTextTwo: string = 'Sessions last about an hour and are arranged for a time that suits you.';
+  public userResearchInviteResponseOptions = Object.keys(InviteResponse);
+
+  public form: UntypedFormGroup;
+  public submitted = false;
+  public insideFlow: boolean;
+  public confirmPagePath: string = '';
+  public userResearchInviteResponse: InviteResponse;
+
   constructor(
     protected backLinkService: BackLinkService,
     protected formBuilder: UntypedFormBuilder,
@@ -13,7 +26,36 @@ export class UserResearchInviteDirective implements OnInit, OnDestroy, AfterView
     protected route: ActivatedRoute,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.setBackLink();
+    this.setupForm();
+    this.loadUserResearchInviteResponse();
+    // this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
+    // this.userResearchInviteResponse = this.registrationService.userResearchInviteResponse$.value;
+    this.prefillForm();
+    this.init();
+  }
+
+  protected init(): void {}
+  protected loadUserResearchInviteResponse(): void {}
+
+  protected setBackLink(): void {
+    this.backLinkService.showBackLink();
+  }
+
+  protected setupForm(): void {
+    this.form = this.formBuilder.group({
+      inviteResponse: [null, { updateOn: 'submit' }],
+    });
+  }
+
+  protected prefillForm(): void {
+    if (this.userResearchInviteResponse === null) {
+      return;
+    }
+
+    this.form.patchValue({ inviteResponse: this.userResearchInviteResponse });
+  }
 
   ngAfterViewInit(): void {}
 

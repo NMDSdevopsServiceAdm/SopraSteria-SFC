@@ -78,8 +78,7 @@ fdescribe('UserResearchInviteComponent', () => {
   });
 
   it(`displays a Back link`, async () => {
-    const { component, showBackLinkSpy } = await setup();
-    // component.ngOnInit();
+    const { showBackLinkSpy } = await setup();
     expect(showBackLinkSpy).toHaveBeenCalled();
   });
 
