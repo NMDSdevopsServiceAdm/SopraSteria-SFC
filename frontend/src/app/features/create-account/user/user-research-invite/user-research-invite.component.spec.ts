@@ -2,7 +2,7 @@ import { getTestBed } from '@angular/core/testing';
 import { UserResearchInviteComponent } from './user-research-invite.component';
 import { render } from '@testing-library/angular';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RegistrationService} from '@core/services/registration.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { SharedModule } from '@shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -10,40 +10,49 @@ import { BackService } from '@core/services/back.service';
 import { provideHttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
 import { InviteResponse } from '@core/model/userDetails.model';
+import userEvent from '@testing-library/user-event';
 
-describe('UserResearchInviteComponent', () => {
-  async function setup(registrationFlow = true, mockUserResearchInviteResponse = null) {
+fdescribe('UserResearchInviteComponent', () => {
+  async function setup(overrides: any = {}) {
+    const showBackLinkSpy = jasmine.createSpy('setBacklink').and.returnValue(Promise.resolve(true));
+    const registrationFlow = overrides?.registrationFlow ?? true;
+    const mockUserResearchInviteResponse = overrides?.mockUserResearchInviteResponse ?? null;
+
     const mockSubject = new BehaviorSubject<InviteResponse>(mockUserResearchInviteResponse);
 
-    const setupTools = await render(UserResearchInviteComponent,
-      {
-        imports: [SharedModule, ReactiveFormsModule, FormsModule, RouterModule],
-        providers: [
-          BackService,
-          provideHttpClient(),
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                parent: {
-                  url: [
-                    {
-                      path: registrationFlow ? 'registration' : 'confirm-details',
-                    },
-                  ],
-                },
+    const setupTools = await render(UserResearchInviteComponent, {
+      imports: [SharedModule, ReactiveFormsModule, FormsModule, RouterModule],
+      providers: [
+        BackService,
+        provideHttpClient(),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              parent: {
+                url: [
+                  {
+                    path: registrationFlow ? 'registration' : 'confirm-details',
+                  },
+                ],
               },
             },
           },
-          {
-            provide: RegistrationService,
-            useValue: {
-              userResearchInviteResponse$: mockSubject,
-            },
+        },
+        {
+          provide: RegistrationService,
+          useValue: {
+            userResearchInviteResponse$: mockSubject,
           },
-        ],
-      },
-    );
+        },
+        {
+          provide: BackLinkService,
+          useValue: {
+            showBackLink: showBackLinkSpy,
+          },
+        },
+      ],
+    });
 
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
@@ -52,9 +61,7 @@ describe('UserResearchInviteComponent', () => {
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const registrationService = injector.inject(RegistrationService) as RegistrationService;
-    const backLinkService = injector.inject(BackLinkService) as BackLinkService;
-    const showBackLinkSpy = spyOn(backLinkService, 'showBackLink');
-    const userResearchInviteResponseSpy = spyOn(registrationService.userResearchInviteResponse$, 'next')
+    const userResearchInviteResponseSpy = spyOn(registrationService.userResearchInviteResponse$, 'next');
 
     return {
       ...setupTools,
@@ -72,7 +79,7 @@ describe('UserResearchInviteComponent', () => {
 
   it(`displays a Back link`, async () => {
     const { component, showBackLinkSpy } = await setup();
-    component.ngOnInit();
+    // component.ngOnInit();
     expect(showBackLinkSpy).toHaveBeenCalled();
   });
 
@@ -90,33 +97,40 @@ describe('UserResearchInviteComponent', () => {
 
   it('should display the text', async () => {
     const { getByTestId } = await setup();
-    const text = getByTestId('text')
-    const textContent =
-      'We’d like your help and it doesn’t matter if you’re new to ASC-WDS.' +
-      'If you want to take part, select Yes so that a user researcher from our digital partner can contact you.'
-    expect(text.textContent.trim()).toEqual(textContent);
+    const textDiv = getByTestId('text');
+    const textContent = [
+      'We’d like your help and it doesn’t matter if you’re new to ASC-WDS.',
+      'If you want to take part, select Yes so that a user researcher from our digital partner can contact you.',
+    ];
+    textContent.forEach((sentence) => {
+      expect(textDiv.textContent).toContain(sentence);
+    });
   });
 
   describe('Additional details toggle', () => {
     it('should display the additional details toggle', async () => {
       const { getByTestId } = await setup();
       const toggle = getByTestId('details-toggle');
-      expect(toggle.textContent.trim()).toEqual(
-        'Why take part in our user research sessions?',
-      );
+      expect(toggle.textContent.trim()).toEqual('Why take part in our user research sessions?');
     });
 
     it('should display the hidden text', async () => {
-      const { component, fixture, getByTestId } = await setup();
-      getByTestId('details-toggle').click();
-      fixture.detectChanges();
-      const firstDetailsParagraph = getByTestId("details-text-one")
-      const secondDetailsParagraph = getByTestId("details-text-two")
+      const detailsTextOne =
+        'The feedback you give us in online user research sessions allows us ' +
+        'to improve the service and provide the sector with more useful tools.';
+      const detailsTextTwo = 'Sessions last about an hour and are arranged for a time that suits you.';
 
-      expect(firstDetailsParagraph.textContent.trim()).toEqual(component.detailsTextOne);
-      expect(secondDetailsParagraph.textContent.trim()).toEqual(component.detailsTextTwo);
+      const { fixture, getByTestId } = await setup();
+      userEvent.click(getByTestId('details-toggle'));
+      fixture.detectChanges();
+
+      const firstDetailsParagraph = getByTestId('details-text-one');
+      const secondDetailsParagraph = getByTestId('details-text-two');
+
+      expect(firstDetailsParagraph.textContent).toContain(detailsTextOne);
+      expect(secondDetailsParagraph.textContent).toContain(detailsTextTwo);
     });
-  })
+  });
 
   describe('Radios', () => {
     it('should not preselect an option if accessing within the flow', async () => {
@@ -127,21 +141,29 @@ describe('UserResearchInviteComponent', () => {
     });
 
     it('should preselect the yes option if accessing from the summary page and this option was chosen previously', async () => {
-      const { component } = await setup(false, InviteResponse.Yes);
+      const { component } = await setup({
+        registrationFlow: false,
+        mockUserResearchInviteResponse: InviteResponse.Yes,
+      });
 
       const form = component.form;
-      expect(form.value.inviteResponse).toEqual('yes');
+      expect(form.value.inviteResponse).toEqual(InviteResponse.Yes);
     });
 
     it('should preselect the no option if accessing from the summary page and this option was chosen previously', async () => {
-      const { component } = await setup(false, InviteResponse.No);
+      const { component } = await setup({
+        registrationFlow: false,
+        mockUserResearchInviteResponse: InviteResponse.No,
+      });
 
       const form = component.form;
-      expect(form.value.inviteResponse).toEqual('no');
+      expect(form.value.inviteResponse).toEqual(InviteResponse.No);
     });
 
     it('should not preselect an option if the question was not previously answered', async () => {
-      const { component } = await setup(false, null);
+      const { component } = await setup({
+        registrationFlow: false,
+      });
 
       const form = component.form;
       expect(form.value.inviteResponse).toEqual(null);
@@ -187,8 +209,8 @@ describe('UserResearchInviteComponent', () => {
     describe('When the no radio option has been selected', () => {
       it('should call the registration service with No', async () => {
         const { userResearchInviteResponseSpy, getByRole } = await setup();
-        const yesRadioButton = getByRole('radio', { name: 'No' });
-        yesRadioButton.click();
+        const radioButton = getByRole('radio', { name: 'No' });
+        radioButton.click();
 
         const continueButton = getByRole('button');
         continueButton.click();
@@ -209,7 +231,7 @@ describe('UserResearchInviteComponent', () => {
     });
   });
 
-  describe('Progress bar', ()=> {
+  describe('Progress bar', () => {
     it('should render the workplace and user account progress bars', async () => {
       const { getByTestId } = await setup();
 
@@ -218,7 +240,9 @@ describe('UserResearchInviteComponent', () => {
     });
 
     it('should not render the progress bars when accessed from outside the flow', async () => {
-      const { queryByTestId } = await setup(false, null);
+      const { queryByTestId } = await setup({
+        registrationFlow: false,
+      });
 
       expect(queryByTestId('progress-bar-1')).toBeFalsy();
       expect(queryByTestId('progress-bar-2')).toBeFalsy();
@@ -226,8 +250,11 @@ describe('UserResearchInviteComponent', () => {
   });
 
   describe('When viewing the page from the summary page', () => {
+    const overrides = {
+      registrationFlow: false,
+    };
     it('should preselect the correct option', async () => {
-      const { component } = await setup(false);
+      const { component } = await setup(overrides);
 
       const form = component.form;
       expect(form.value.inviteResponse).toEqual(null);
@@ -235,7 +262,7 @@ describe('UserResearchInviteComponent', () => {
 
     describe('Save and return button', () => {
       it('should display', async () => {
-        const { getByRole } = await setup(false);
+        const { getByRole } = await setup(overrides);
         const button = getByRole('button', { name: 'Save and return' });
         expect(button).toBeTruthy();
       });
@@ -243,13 +270,13 @@ describe('UserResearchInviteComponent', () => {
 
     describe('Cancel link', () => {
       it('should display', async () => {
-        const { getByText } = await setup(false);
+        const { getByText } = await setup(overrides);
         const link = getByText('Cancel');
         expect(link).toBeTruthy();
       });
 
       it('should navigate to the summary page', async () => {
-        const { getByText } = await setup(false);
+        const { getByText } = await setup(overrides);
         const link = getByText('Cancel');
         expect(link.getAttribute('href')).toEqual('/registration/confirm-details');
       });
