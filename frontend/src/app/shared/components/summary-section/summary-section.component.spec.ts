@@ -18,6 +18,7 @@ import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
+import userEvent from '@testing-library/user-event';
 
 describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
@@ -71,6 +72,8 @@ describe('Summary section', () => {
 
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const routerLinkSpy = spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true));
+
     const tabsService = injector.inject(TabsService) as TabsService;
 
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
@@ -88,6 +91,7 @@ describe('Summary section', () => {
       ...setupTools,
       component,
       routerSpy,
+      routerLinkSpy,
       tabsService,
       updateSingleFieldSpy,
       setReturnToSpy,
@@ -193,407 +197,6 @@ describe('Summary section', () => {
       const workplaceRow = getByTestId('workplace-row');
       expect(within(workplaceRow).getByText('Finish adding your workplace data')).toBeTruthy();
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
-    });
-
-    describe('pay and pension workplace questions', () => {
-      const setupEstablishment = {
-        ...Establishment,
-        showAddWorkplaceDetailsBanner: false,
-        mainService: {
-          canDoDelegatedHealthcareActivities: true,
-          id: 7,
-          name: 'Short breaks, respite care',
-        },
-      };
-
-      [1, 2].forEach((group) => {
-        it(`shows the message for the added workplace questions when payAndPensionsMiniFlowViewed is null and the main service payAndPensionsGroup is ${group}`, async () => {
-          const establishment = {
-            ...setupEstablishment,
-            mainService: {
-              payAndPensionsGroup: group,
-            },
-            payAndPensionsMiniFlowViewed: null,
-          };
-
-          const { getByTestId } = await setup({ establishment });
-
-          const workplaceRow = getByTestId('workplace-row');
-          expect(within(workplaceRow).getByText("We've added some Workplace questions")).toBeTruthy();
-          expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
-        });
-      });
-
-      it('should navigate to the pensions page when the link is clicked', async () => {
-        const establishment = {
-          ...setupEstablishment,
-          mainService: {
-            payAndPensionsGroup: 1,
-          },
-          payAndPensionsMiniFlowViewed: null,
-        };
-
-        const { getByTestId, routerSpy } = await setup({ establishment });
-
-        const workplaceRow = getByTestId('workplace-row');
-        const link = within(workplaceRow).getByText("We've added some Workplace questions");
-        fireEvent.click(link);
-
-        expect(routerSpy).toHaveBeenCalledWith([
-          '/workplace',
-          Establishment.uid,
-          'workplace-data',
-          'workplace-summary',
-          'pensions',
-        ]);
-      });
-
-      it('should set return in establishment service when question link clicked', async () => {
-        const establishment = {
-          ...setupEstablishment,
-          mainService: {
-            payAndPensionsGroup: 1,
-          },
-          payAndPensionsMiniFlowViewed: null,
-        };
-
-        const { getByTestId, setReturnToSpy } = await setup({ establishment });
-
-        const workplaceRow = getByTestId('workplace-row');
-        const link = within(workplaceRow).getByText("We've added some Workplace questions");
-
-        fireEvent.click(link);
-        expect(setReturnToSpy).toHaveBeenCalled();
-      });
-
-      it('should set setInPayAndPensionsMiniFlow when question link clicked', async () => {
-        const establishment = {
-          ...setupEstablishment,
-          mainService: {
-            payAndPensionsGroup: 1,
-          },
-          payAndPensionsMiniFlowViewed: null,
-        };
-
-        const { getByTestId, payAndPensionServiceSpy } = await setup({ establishment });
-
-        const workplaceRow = getByTestId('workplace-row');
-        const link = within(workplaceRow).getByText("We've added some Workplace questions");
-
-        fireEvent.click(link);
-        expect(payAndPensionServiceSpy).toHaveBeenCalledWith(true);
-      });
-
-      it('should set payAndPensionsMiniFlowViewed when the question link is clicked', async () => {
-        const establishment = {
-          ...setupEstablishment,
-          mainService: {
-            payAndPensionsGroup: 1,
-          },
-          payAndPensionsMiniFlowViewed: null,
-        };
-
-        const { getByTestId, updateSingleFieldSpy } = await setup({ establishment });
-
-        const workplaceRow = getByTestId('workplace-row');
-        const link = within(workplaceRow).getByText("We've added some Workplace questions");
-
-        fireEvent.click(link);
-        expect(updateSingleFieldSpy).toHaveBeenCalledWith(establishment.uid, {
-          property: 'payAndPensionsMiniFlowViewed',
-          value: true,
-        });
-      });
-
-      it('should not update payAndPensionsMiniFlowViewed when Workplace link clicked', async () => {
-        const establishment = {
-          ...setupEstablishment,
-          mainService: {
-            payAndPensionsGroup: 1,
-          },
-          payAndPensionsMiniFlowViewed: null,
-        };
-
-        const { getByTestId, updateSingleFieldSpy } = await setup({ establishment });
-
-        const workplaceRow = getByTestId('workplace-row');
-        const link = within(workplaceRow).getByText('Workplace');
-
-        fireEvent.click(link);
-        expect(updateSingleFieldSpy).not.toHaveBeenCalled();
-      });
-
-      [3, null].forEach((group) => {
-        it(`should not show the message for the added workplace questions if payAndPensionsGroup is ${group}`, async () => {
-          const establishment = {
-            ...setupEstablishment,
-            mainService: {
-              payAndPensionsGroup: group,
-            },
-            payAndPensionsMiniFlowViewed: null,
-          };
-
-          const { getByTestId } = await setup({ establishment });
-
-          const workplaceRow = getByTestId('workplace-row');
-          expect(within(workplaceRow).queryByText("We've added some Workplace questions")).toBeFalsy();
-        });
-      });
-
-      it('should not show if payAndPensionsMiniFlowViewed is true', async () => {
-        const establishment = {
-          ...setupEstablishment,
-          mainService: {
-            payAndPensionsGroup: 1,
-          },
-          payAndPensionsMiniFlowViewed: true,
-        };
-
-        const { getByTestId } = await setup({ establishment });
-
-        const workplaceRow = getByTestId('workplace-row');
-        expect(within(workplaceRow).queryByText("We've added some Workplace questions")).toBeFalsy();
-      });
-    });
-
-    describe('CWP awareness question', () => {
-      const establishmentWhichShouldSeeMessage = () => {
-        return {
-          ...Establishment,
-          showAddWorkplaceDetailsBanner: false,
-          CWPAwarenessQuestionViewed: null,
-          careWorkforcePathwayWorkplaceAwareness: null,
-        };
-      };
-
-      it('should show the CWP awareness message if workplace details added, CWPAwarenessQuestionViewed null and awareness question not answered', async () => {
-        const { getByTestId } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
-
-        const workplaceRow = getByTestId('workplace-row');
-        expect(within(workplaceRow).getByText('How aware of the CWP is your workplace?')).toBeTruthy();
-        expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
-      });
-
-      it('should navigate to care-workforce-pathway-awareness when question link clicked', async () => {
-        const { getByTestId, routerSpy } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
-
-        const workplaceRow = getByTestId('workplace-row');
-        const link = within(workplaceRow).getByText('How aware of the CWP is your workplace?');
-
-        fireEvent.click(link);
-        expect(routerSpy).toHaveBeenCalledWith([
-          '/workplace',
-          Establishment.uid,
-          'workplace-data',
-          'workplace-summary',
-          'care-workforce-pathway-awareness',
-        ]);
-      });
-
-      it("should update CWPAwarenessQuestionViewed when question link clicked so user doesn't see question again", async () => {
-        const { getByTestId, updateSingleFieldSpy } = await setup({
-          establishment: establishmentWhichShouldSeeMessage(),
-        });
-
-        const workplaceRow = getByTestId('workplace-row');
-        const link = within(workplaceRow).getByText('How aware of the CWP is your workplace?');
-
-        fireEvent.click(link);
-        expect(updateSingleFieldSpy).toHaveBeenCalledWith(Establishment.uid, {
-          property: 'CWPAwarenessQuestionViewed',
-          value: true,
-        });
-      });
-
-      it('should set return in establishment service when question link clicked', async () => {
-        const { getByTestId, setReturnToSpy } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
-
-        const workplaceRow = getByTestId('workplace-row');
-        const link = within(workplaceRow).getByText('How aware of the CWP is your workplace?');
-
-        fireEvent.click(link);
-        expect(setReturnToSpy).toHaveBeenCalled();
-      });
-
-      it('should not update CWPAwarenessQuestionViewed when Workplace link clicked', async () => {
-        const { getByTestId, updateSingleFieldSpy } = await setup({
-          establishment: establishmentWhichShouldSeeMessage(),
-        });
-
-        const workplaceRow = getByTestId('workplace-row');
-        const link = within(workplaceRow).getByText('Workplace');
-
-        fireEvent.click(link);
-        expect(updateSingleFieldSpy).not.toHaveBeenCalled();
-      });
-
-      it('should not show the CWP awareness message if workplace details added and CWPAwarenessQuestionViewed null, but awareness question answered', async () => {
-        // user has answered question in workplace flow or from workplace tab so should not show
-        const establishment = {
-          ...Establishment,
-          showAddWorkplaceDetailsBanner: false,
-          CWPAwarenessQuestionViewed: null,
-          careWorkforcePathwayWorkplaceAwareness: {
-            id: 1,
-            title: 'Aware of how the care workforce pathway works in practice',
-          },
-        };
-
-        const { getByTestId } = await setup({ establishment });
-
-        const workplaceRow = getByTestId('workplace-row');
-        expect(within(workplaceRow).queryByText('How aware of the CWP is your workplace?')).toBeFalsy();
-      });
-
-      it('should not show the CWP awareness message if CWPAwarenessQuestionViewed true and awareness question not answered', async () => {
-        // user has clicked link and still not answered, should no longer see it
-        const establishment = {
-          ...Establishment,
-          showAddWorkplaceDetailsBanner: false,
-          CWPAwarenessQuestionViewed: true,
-          careWorkforcePathwayWorkplaceAwareness: null,
-        };
-
-        const { getByTestId } = await setup({ establishment });
-
-        const workplaceRow = getByTestId('workplace-row');
-        expect(within(workplaceRow).queryByText('How aware of the CWP is your workplace?')).toBeFalsy();
-      });
-
-      it('should not show the CWP awareness message if CWPAwarenessQuestionViewed true and awareness question answered', async () => {
-        const establishment = {
-          ...Establishment,
-          showAddWorkplaceDetailsBanner: false,
-          CWPAwarenessQuestionViewed: null,
-          careWorkforcePathwayWorkplaceAwareness: {
-            id: 1,
-            title: 'Aware of how the care workforce pathway works in practice',
-          },
-        };
-
-        const { getByTestId } = await setup({ establishment });
-
-        const workplaceRow = getByTestId('workplace-row');
-        expect(within(workplaceRow).queryByText('How aware of the CWP is your workplace?')).toBeFalsy();
-      });
-
-      it('should show with no link if there CWP awareness not viewed or answered but no edit permission for establishment', async () => {
-        const { getByTestId, getByText } = await setup({
-          canEditEstablishment: false,
-          establishment: establishmentWhichShouldSeeMessage(),
-        });
-
-        const workplaceRow = getByTestId('workplace-row');
-        const cwpMessage = within(workplaceRow).queryByText('How aware of the CWP is your workplace?');
-        expect(cwpMessage.tagName).not.toBe('A');
-
-        const workplaceLink = getByText('Workplace');
-        expect(workplaceLink.tagName).toBe('A');
-      });
-    });
-
-    describe('Staff carry out delegated healthcare activities question', () => {
-      const establishmentWhichShouldSeeMessage = () => {
-        return {
-          ...Establishment,
-          showAddWorkplaceDetailsBanner: false,
-          mainService: {
-            canDoDelegatedHealthcareActivities: true,
-            id: 9,
-            name: 'Day care and day services',
-            reportingID: 6,
-          },
-          staffDoDelegatedHealthcareActivities: null,
-        };
-      };
-
-      const questionMessage = 'Do your staff carry out delegated healthcare activities?';
-
-      it('should show the DHA question if staffDoDelegatedHealthcareActivities null and main service can do DHA', async () => {
-        const { getByTestId } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
-
-        const workplaceRow = getByTestId('workplace-row');
-        expect(within(workplaceRow).getByText(questionMessage)).toBeTruthy();
-        expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
-      });
-
-      it('should navigate to staff-do-delegated-healthcare-activities when question link clicked', async () => {
-        const { getByTestId, routerSpy } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
-
-        const workplaceRow = getByTestId('workplace-row');
-        const link = within(workplaceRow).getByText(questionMessage);
-
-        fireEvent.click(link);
-        expect(routerSpy).toHaveBeenCalledWith([
-          '/workplace',
-          Establishment.uid,
-          'workplace-data',
-          'workplace-summary',
-          'staff-do-delegated-healthcare-activities',
-        ]);
-      });
-
-      it('should set return in establishment service when question link clicked', async () => {
-        const { getByTestId, setReturnToSpy } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
-
-        const workplaceRow = getByTestId('workplace-row');
-        const link = within(workplaceRow).getByText(questionMessage);
-
-        fireEvent.click(link);
-        expect(setReturnToSpy).toHaveBeenCalled();
-      });
-
-      it('should show question with no link if no edit permission for establishment', async () => {
-        const { getByTestId, getByText } = await setup({
-          canEditEstablishment: false,
-          establishment: establishmentWhichShouldSeeMessage(),
-        });
-
-        const workplaceRow = getByTestId('workplace-row');
-        const dhaMessage = within(workplaceRow).queryByText(questionMessage);
-        expect(dhaMessage.tagName).not.toBe('A');
-
-        const workplaceLink = getByText('Workplace');
-        expect(workplaceLink.tagName).toBe('A');
-      });
-
-      it('should not show the DHA question if staffDoDelegatedHealthcareActivities null but main service cannot do DHA', async () => {
-        const { getByTestId } = await setup({
-          establishment: {
-            ...Establishment,
-            showAddWorkplaceDetailsBanner: false,
-            staffDoDelegatedHealthcareActivities: null,
-            mainService: {
-              canDoDelegatedHealthcareActivities: null,
-              id: 11,
-              name: 'Domestic services and home help',
-              reportingID: 10,
-            },
-          },
-        });
-
-        const workplaceRow = getByTestId('workplace-row');
-        expect(within(workplaceRow).queryByText(questionMessage)).toBeFalsy();
-      });
-
-      it('should not show the DHA question if main service can do DHA but staffDoDelegatedHealthcareActivities is answered', async () => {
-        const { getByTestId } = await setup({
-          establishment: {
-            ...Establishment,
-            showAddWorkplaceDetailsBanner: false,
-            staffDoDelegatedHealthcareActivities: 'Yes',
-            mainService: {
-              canDoDelegatedHealthcareActivities: true,
-              id: 9,
-              name: 'Day care and day services',
-              reportingID: 6,
-            },
-          },
-        });
-
-        const workplaceRow = getByTestId('workplace-row');
-        expect(within(workplaceRow).queryByText(questionMessage)).toBeFalsy();
-      });
     });
 
     it('should navigate to sub workplace page when clicking the add workplace details message in sub view', async () => {
@@ -901,166 +504,6 @@ describe('Summary section', () => {
       fireEvent.click(staffRecordMessage);
 
       expect(routerSpy).toHaveBeenCalledWith(['subsidiary', Establishment.uid, 'staff-records']);
-    });
-
-    describe('care workforce pathway link', () => {
-      it('should show if there are staff without an answer', async () => {
-        const overrides = {
-          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
-        };
-        const { fixture, getByText, routerSpy, tabsService } = await setup(overrides);
-        const selectedTabSpy = spyOnProperty(tabsService, 'selectedTab', 'set');
-
-        const workersCareWorkforcePathwayLink = getByText('Where are your staff on the care workforce pathway?');
-        fireEvent.click(workersCareWorkforcePathwayLink);
-        await fixture.whenStable();
-
-        expect(workersCareWorkforcePathwayLink).toBeTruthy();
-        expect(routerSpy).toHaveBeenCalledOnceWith([
-          '/workplace',
-          Establishment.uid,
-          'staff-record',
-          'care-workforce-pathway-workers-summary',
-        ]);
-        expect(selectedTabSpy).not.toHaveBeenCalled();
-      });
-
-      it('should show with no link if there are staff without an answer but no edit permission for workers', async () => {
-        const overrides = {
-          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
-          canEditWorker: false,
-        };
-        const { getByText } = await setup(overrides);
-
-        const workersCareWorkforcePathwayText = getByText('Where are your staff on the care workforce pathway?');
-        expect(workersCareWorkforcePathwayText.tagName).not.toBe('A');
-
-        const staffRecordsLink = getByText('Staff records');
-        expect(staffRecordsLink.tagName).toBe('A');
-      });
-
-      it('should not show if there are no staff without an answer', async () => {
-        const overrides = {
-          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 0,
-        };
-        const { queryByText } = await setup(overrides);
-
-        const workersCareWorkforcePathwayLink = queryByText('Where are your staff on the care workforce pathway?');
-
-        expect(workersCareWorkforcePathwayLink).toBeFalsy();
-      });
-    });
-
-    describe('Who carries out delegated healthcare activities', () => {
-      const establishmentWhichShouldSeeMessage = () => {
-        return {
-          ...Establishment,
-          showAddWorkplaceDetailsBanner: false,
-          mainService: {
-            canDoDelegatedHealthcareActivities: true,
-            id: 9,
-            name: 'Day care and day services',
-            reportingID: 6,
-          },
-          staffDoDelegatedHealthcareActivities: null,
-        };
-      };
-
-      const questionMessage = 'Who carries out delegated healthcare activities?';
-
-      it('should show the DHA staff question if staffDoDelegatedHealthcareActivities null and main service can do DHA and noOfWorkersWithDelegatedHealthcareUnanswered is greater than 0', async () => {
-        const { getByTestId } = await setup({
-          noOfWorkersWithDelegatedHealthcareUnanswered: 3,
-          establishment: establishmentWhichShouldSeeMessage(),
-        });
-
-        const staffRow = getByTestId('staff-records-row');
-        expect(within(staffRow).getByText(questionMessage)).toBeTruthy();
-        expect(within(staffRow).getByTestId('orange-flag')).toBeTruthy();
-      });
-
-      it('should navigate to who-carry-out-delegated-healthcare-activities when question link clicked', async () => {
-        const { getByTestId, routerSpy } = await setup({
-          noOfWorkersWithDelegatedHealthcareUnanswered: 3,
-          establishment: establishmentWhichShouldSeeMessage(),
-        });
-
-        const staffRow = getByTestId('staff-records-row');
-        const link = within(staffRow).getByText(questionMessage);
-
-        fireEvent.click(link);
-        expect(routerSpy).toHaveBeenCalledWith([
-          '/workplace',
-          Establishment.uid,
-          'staff-record',
-          'who-carry-out-delegated-healthcare-activities',
-        ]);
-      });
-
-      it('should set return in establishment service when question link clicked', async () => {
-        const { getByTestId, setReturnToSpy } = await setup({
-          noOfWorkersWithDelegatedHealthcareUnanswered: 3,
-          establishment: establishmentWhichShouldSeeMessage(),
-        });
-
-        const staffRow = getByTestId('staff-records-row');
-        const link = within(staffRow).getByText(questionMessage);
-
-        fireEvent.click(link);
-        expect(setReturnToSpy).toHaveBeenCalled();
-      });
-
-      it('should show question with no link if no edit permission for establishment', async () => {
-        const { getByTestId, getByText } = await setup({
-          noOfWorkersWithDelegatedHealthcareUnanswered: 3,
-          canEditWorker: false,
-          establishment: establishmentWhichShouldSeeMessage(),
-        });
-
-        const staffRow = getByTestId('staff-records-row');
-        const dhaStaffMessage = within(staffRow).queryByText(questionMessage);
-
-        expect(dhaStaffMessage.tagName).not.toBe('A');
-
-        const staffLink = getByText('Staff records');
-        expect(staffLink.tagName).toBe('A');
-      });
-
-      it('should not show the who carries out DHA activities question if staffDoDelegatedHealthcareActivities null but main service cannot do DHA and   noOfWorkersWithDelegatedHealthcareUnanswered is 0', async () => {
-        const { getByTestId } = await setup({
-          establishment: {
-            ...Establishment,
-            staffDoDelegatedHealthcareActivities: null,
-            mainService: {
-              canDoDelegatedHealthcareActivities: null,
-              id: 11,
-              name: 'Domestic services and home help',
-              reportingID: 10,
-            },
-          },
-        });
-
-        const staffRow = getByTestId('staff-records-row');
-        expect(within(staffRow).queryByText(questionMessage)).toBeFalsy();
-      });
-
-      it('should not show the who carries out DHA activities question question if main service can do DHA but staffDoDelegatedHealthcareActivities is answered', async () => {
-        const { getByTestId } = await setup({
-          establishment: {
-            ...Establishment,
-            staffDoDelegatedHealthcareActivities: 'No',
-            mainService: {
-              canDoDelegatedHealthcareActivities: true,
-              id: 9,
-              name: 'Day care and day services',
-              reportingID: 6,
-            },
-          },
-        });
-
-        const staffRow = getByTestId('staff-records-row');
-        expect(within(staffRow).queryByText(questionMessage)).toBeFalsy();
-      });
     });
 
     it('should show staff record does not match message when the number of staff is more than the staff record', async () => {
@@ -1695,6 +1138,401 @@ describe('Summary section', () => {
 
         expect(localStorageSpy.calls.all()[0].args).toEqual(['yourOtherWorkplacesSortValue', 'workplaceToCheckAsc']);
         expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'view-all-workplaces']);
+      });
+    });
+  });
+
+  describe('Update banner section', () => {
+    describe('pay and pension workplace questions', () => {
+      const setupEstablishment = {
+        ...Establishment,
+        showAddWorkplaceDetailsBanner: false,
+        mainService: {
+          canDoDelegatedHealthcareActivities: true,
+          id: 7,
+          name: 'Short breaks, respite care',
+        },
+      };
+
+      const payAndPensionBannerText = 'New questions about pay and pensions';
+
+      [1, 2].forEach((group) => {
+        it(`shows the message for the added workplace questions when payAndPensionsMiniFlowViewed is null and the main service payAndPensionsGroup is ${group}`, async () => {
+          const establishment = {
+            ...setupEstablishment,
+            mainService: {
+              payAndPensionsGroup: group,
+            },
+            payAndPensionsMiniFlowViewed: null,
+          };
+
+          const { fixture, getByTestId, setReturnToSpy, updateSingleFieldSpy } = await setup({ establishment });
+
+          const updateBannerArea = getByTestId('update-banner-area');
+          expect(within(updateBannerArea).queryByText(payAndPensionBannerText)).toBeTruthy();
+
+          const link = within(updateBannerArea).getByText('Answer questions') as HTMLAnchorElement;
+
+          expect(link.getAttribute('href')).toEqual(
+            `/workplace/${Establishment.uid}/workplace-data/workplace-summary/pensions`,
+          );
+
+          userEvent.click(link);
+          await fixture.whenStable();
+
+          expect(setReturnToSpy).toHaveBeenCalled();
+          expect(updateSingleFieldSpy).toHaveBeenCalledWith(establishment.uid, {
+            property: 'payAndPensionsMiniFlowViewed',
+            value: true,
+          });
+        });
+
+        it('should not show the banner when payAndPensionsMiniFlowViewed is true', async () => {
+          const establishment = {
+            ...setupEstablishment,
+            mainService: {
+              payAndPensionsGroup: group,
+            },
+            payAndPensionsMiniFlowViewed: true,
+          };
+
+          const { queryByTestId, queryByText } = await setup({ establishment });
+
+          expect(queryByTestId('update-banner-area')).toBeFalsy();
+          expect(queryByText(payAndPensionBannerText)).toBeFalsy();
+        });
+
+        it('should not show the banner if user does not have permission to edit workplace', async () => {
+          const establishment = {
+            ...setupEstablishment,
+            mainService: {
+              payAndPensionsGroup: group,
+            },
+            payAndPensionsMiniFlowViewed: null,
+          };
+
+          const { queryByTestId, queryByText } = await setup({ establishment, canEditEstablishment: false });
+
+          expect(queryByTestId('update-banner-area')).toBeFalsy();
+          expect(queryByText(payAndPensionBannerText)).toBeFalsy();
+        });
+      });
+
+      it('should not show the banner when pay and pension group is 3', async () => {
+        const establishment = {
+          ...setupEstablishment,
+          mainService: {
+            payAndPensionsGroup: 3,
+          },
+          payAndPensionsMiniFlowViewed: null,
+        };
+
+        const { queryByTestId, queryByText } = await setup({ establishment });
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(payAndPensionBannerText)).toBeFalsy();
+      });
+    });
+
+    describe('CWP awareness question', () => {
+      const establishmentWhichShouldSeeMessage = () => {
+        return {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          CWPAwarenessQuestionViewed: null,
+          careWorkforcePathwayWorkplaceAwareness: null,
+        };
+      };
+
+      const cwpAwarenessBannerText = 'How aware of the care workforce pathway is your workplace?';
+
+      it('should show the update banner if workplace details added, CWPAwarenessQuestionViewed null and awareness question not answered', async () => {
+        const { fixture, getByTestId, setReturnToSpy, updateSingleFieldSpy } = await setup({
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
+
+        const updateBannerArea = getByTestId('update-banner-area');
+        expect(within(updateBannerArea).queryByText(cwpAwarenessBannerText)).toBeTruthy();
+
+        const link = within(updateBannerArea).getByText('Answer questions') as HTMLAnchorElement;
+
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${Establishment.uid}/workplace-data/workplace-summary/care-workforce-pathway-awareness`,
+        );
+
+        userEvent.click(link);
+        await fixture.whenStable();
+
+        expect(setReturnToSpy).toHaveBeenCalled();
+        expect(updateSingleFieldSpy).toHaveBeenCalledWith(Establishment.uid, {
+          property: 'CWPAwarenessQuestionViewed',
+          value: true,
+        });
+      });
+
+      it('should not show the banner if workplace details added and CWPAwarenessQuestionViewed null, but awareness question answered', async () => {
+        // user has answered question in workplace flow or from workplace tab so should not show
+        const establishment = {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          CWPAwarenessQuestionViewed: null,
+          careWorkforcePathwayWorkplaceAwareness: {
+            id: 1,
+            title: 'Aware of how the care workforce pathway works in practice',
+          },
+        };
+
+        const { queryByTestId, queryByText } = await setup({ establishment });
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(cwpAwarenessBannerText)).toBeFalsy();
+      });
+
+      it('should not show the banner if CWPAwarenessQuestionViewed true and awareness question not answered', async () => {
+        // user has clicked link and still not answered, should no longer see it
+        const establishment = {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          CWPAwarenessQuestionViewed: true,
+          careWorkforcePathwayWorkplaceAwareness: null,
+        };
+
+        const { queryByTestId, queryByText } = await setup({ establishment });
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(cwpAwarenessBannerText)).toBeFalsy();
+      });
+
+      it('should not show the banner if CWPAwarenessQuestionViewed true and awareness question answered', async () => {
+        const establishment = {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          CWPAwarenessQuestionViewed: null,
+          careWorkforcePathwayWorkplaceAwareness: {
+            id: 1,
+            title: 'Aware of how the care workforce pathway works in practice',
+          },
+        };
+
+        const { queryByTestId, queryByText } = await setup({ establishment });
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(cwpAwarenessBannerText)).toBeFalsy();
+      });
+
+      it('should not show the banner if user does not have permission to  edit establishment', async () => {
+        const { queryByTestId, queryByText } = await setup({
+          canEditEstablishment: false,
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(cwpAwarenessBannerText)).toBeFalsy();
+      });
+    });
+
+    describe('CWP worker question', () => {
+      const cwpWorkerBannerText = 'Where are your staff on the care workforce pathway?';
+
+      it('should show the update banner if there are staff without an answer for CWP question', async () => {
+        const overrides = {
+          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
+        };
+        const { fixture, getByTestId } = await setup(overrides);
+
+        const updateBannerArea = getByTestId('update-banner-area');
+        expect(within(updateBannerArea).queryByText(cwpWorkerBannerText)).toBeTruthy();
+
+        const link = within(updateBannerArea).getByText('Answer questions') as HTMLAnchorElement;
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${Establishment.uid}/staff-record/care-workforce-pathway-workers-summary`,
+        );
+
+        userEvent.click(link);
+        await fixture.whenStable();
+      });
+
+      it('should not show the banner if all workers are answered', async () => {
+        const overrides = {
+          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 0,
+        };
+        const { queryByTestId, queryByText } = await setup(overrides);
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(cwpWorkerBannerText)).toBeFalsy();
+      });
+
+      it('should not show the banner if user does not have permission to edit workers', async () => {
+        const overrides = {
+          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
+          canEditWorker: false,
+        };
+        const { queryByTestId, queryByText } = await setup(overrides);
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(cwpWorkerBannerText)).toBeFalsy();
+      });
+    });
+
+    describe('Staff carry out delegated healthcare activities question', () => {
+      const establishmentWhichShouldSeeMessage = () => {
+        return {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          mainService: {
+            canDoDelegatedHealthcareActivities: true,
+            id: 9,
+            name: 'Day care and day services',
+            reportingID: 6,
+          },
+          staffDoDelegatedHealthcareActivities: null,
+        };
+      };
+
+      const carryOutDhaBannerText = 'Do your staff carry out delegated healthcare activities?';
+
+      it('should show the update banner if staffDoDelegatedHealthcareActivities null and main service can do DHA', async () => {
+        const { getByTestId, setReturnToSpy } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
+
+        const updateBannerArea = getByTestId('update-banner-area');
+        expect(within(updateBannerArea).queryByText(carryOutDhaBannerText)).toBeTruthy();
+
+        const link = within(updateBannerArea).getByText('Answer questions') as HTMLAnchorElement;
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${Establishment.uid}/workplace-data/workplace-summary/staff-do-delegated-healthcare-activities`,
+        );
+
+        userEvent.click(link);
+
+        expect(setReturnToSpy).toHaveBeenCalled();
+      });
+
+      it('should not show the banner if staffDoDelegatedHealthcareActivities null but main service cannot do DHA', async () => {
+        const mockEstablishment = {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          staffDoDelegatedHealthcareActivities: null,
+          mainService: {
+            canDoDelegatedHealthcareActivities: null,
+            id: 11,
+            name: 'Domestic services and home help',
+            reportingID: 10,
+          },
+        };
+
+        const { queryByTestId, queryByText } = await setup({
+          establishment: mockEstablishment,
+        });
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(carryOutDhaBannerText)).toBeFalsy();
+      });
+
+      it('should not show the banner if staffDoDelegatedHealthcareActivities is answered', async () => {
+        const { queryByTestId, queryByText } = await setup({
+          establishment: {
+            ...establishmentWhichShouldSeeMessage(),
+            staffDoDelegatedHealthcareActivities: 'Yes',
+          },
+        });
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(carryOutDhaBannerText)).toBeFalsy();
+      });
+
+      it('should not show the banner if user does not have permission to edit establishment', async () => {
+        const { queryByTestId, queryByText } = await setup({
+          establishment: establishmentWhichShouldSeeMessage(),
+          canEditEstablishment: false,
+        });
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(carryOutDhaBannerText)).toBeFalsy();
+      });
+    });
+
+    describe('Who carries out delegated healthcare activities', () => {
+      const establishmentWhichShouldSeeMessage = () => {
+        return {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          mainService: {
+            canDoDelegatedHealthcareActivities: true,
+            id: 9,
+            name: 'Day care and day services',
+            reportingID: 6,
+          },
+          staffDoDelegatedHealthcareActivities: 'Yes',
+        };
+      };
+
+      const dhaWorkerBannerText = 'Who carries out delegated healthcare activities?';
+
+      it('should show the banner for DHA staff question if staffDoDelegatedHealthcareActivities null and main service can do DHA and noOfWorkersWithDelegatedHealthcareUnanswered is greater than 0', async () => {
+        const { fixture, getByTestId, setReturnToSpy } = await setup({
+          noOfWorkersWithDelegatedHealthcareUnanswered: 3,
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
+
+        const updateBannerArea = getByTestId('update-banner-area');
+        expect(within(updateBannerArea).queryByText(dhaWorkerBannerText)).toBeTruthy();
+
+        const link = within(updateBannerArea).getByText('Answer questions') as HTMLAnchorElement;
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${Establishment.uid}/staff-record/who-carry-out-delegated-healthcare-activities`,
+        );
+
+        userEvent.click(link);
+        await fixture.whenStable();
+
+        expect(setReturnToSpy).toHaveBeenCalled();
+      });
+
+      it('should not show the banner if user do not have permission to edit worker', async () => {
+        const { queryByTestId, queryByText } = await setup({
+          noOfWorkersWithDelegatedHealthcareUnanswered: 3,
+          canEditWorker: false,
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(dhaWorkerBannerText)).toBeFalsy();
+      });
+
+      it('should not show the banner if staffDoDelegatedHealthcareActivities null but main service cannot do DHA and   noOfWorkersWithDelegatedHealthcareUnanswered is 0', async () => {
+        const { queryByTestId, queryByText } = await setup({
+          establishment: {
+            ...Establishment,
+            staffDoDelegatedHealthcareActivities: null,
+            mainService: {
+              canDoDelegatedHealthcareActivities: null,
+              id: 11,
+              name: 'Domestic services and home help',
+              reportingID: 10,
+            },
+          },
+        });
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(dhaWorkerBannerText)).toBeFalsy();
+      });
+
+      it('should not show the banner if main service can do DHA but staffDoDelegatedHealthcareActivities is answered', async () => {
+        const { queryByTestId, queryByText } = await setup({
+          establishment: {
+            ...Establishment,
+            staffDoDelegatedHealthcareActivities: 'No',
+            mainService: {
+              canDoDelegatedHealthcareActivities: true,
+              id: 9,
+              name: 'Day care and day services',
+              reportingID: 6,
+            },
+          },
+        });
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(dhaWorkerBannerText)).toBeFalsy();
       });
     });
   });
