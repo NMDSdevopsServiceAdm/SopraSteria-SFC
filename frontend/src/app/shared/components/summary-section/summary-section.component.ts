@@ -267,17 +267,6 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     return afterWorkerCreated;
   }
 
-  checkVacanciesStartersLeaversLastSavedDates() {
-    const { vacanciesSavedAt, startersSavedAt, leaversSavedAt } = this.workplace;
-    const today = dayjs();
-
-    const vacanciesOverOneYear = dayjs(vacanciesSavedAt).add(12, 'M').isBefore(today, 'day');
-    const startersOverOneYear = dayjs(startersSavedAt).add(12, 'M').isBefore(today, 'day');
-    const leaversOverOneYear = dayjs(leaversSavedAt).add(12, 'M').isBefore(today, 'day');
-
-    return { vacanciesOverOneYear, startersOverOneYear, leaversOverOneYear };
-  }
-
   private showInternationalRecruitmentMessage(): void {
     const singularQuestion = 'Is this worker on a Health and Care Worker visa?';
     const pluralQuestion = 'Are these workers on Health and Care Worker visas?';
