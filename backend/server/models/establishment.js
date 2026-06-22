@@ -2586,8 +2586,8 @@ module.exports = function (sequelize, DataTypes) {
     CASE
       -- Number of staff is null
       WHEN "NumberOfStaffValue" IS NULL THEN true
-      -- No vacancy data
-      WHEN "VacanciesValue" IS NULL THEN true
+      -- missing Vacancy / Starters / Leavers data
+      WHEN "VacanciesValue" IS NULL OR "StartersValue" IS NULL OR "LeaversValue" IS NULL THEN true
       -- Add workplace details banner showing
       WHEN "ShowAddWorkplaceDetailsBanner" = true THEN true
       -- CWP awareness flag showing
@@ -2612,6 +2612,7 @@ module.exports = function (sequelize, DataTypes) {
         WHERE w."EstablishmentFK" = "EstablishmentID"
         AND w."Archived" = false
       ) THEN true
+
       -- No workers created in last 12 months
       WHEN (
         'now'::timestamp >= ("created" + '12 months'::interval) AND
@@ -2622,6 +2623,13 @@ module.exports = function (sequelize, DataTypes) {
           WHERE w."EstablishmentFK" = "EstablishmentID"
           AND w."Archived" = false
         )
+      ) THEN true
+
+       -- Vacancy / Starter / Leaver last update older than 12 month ago
+      WHEN (
+        'now'::timestamp > "VacanciesSavedAt" + '12 months'::interval OR
+        'now'::timestamp > "StartersSavedAt" + '12 months'::interval OR
+        'now'::timestamp > "LeaversSavedAt" + '12 months'::interval
       ) THEN true
 
       WHEN (

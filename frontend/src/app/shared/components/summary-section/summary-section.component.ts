@@ -7,6 +7,8 @@ import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { TabsService } from '@core/services/tabs.service';
+import { DateUtil } from '@core/utils/date-util';
+import { FormatUtil } from '@core/utils/format-util';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
@@ -88,6 +90,8 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getWorkplaceSummaryMessage();
+    this.showViewSummaryLinks(this.sections[0].linkText);
+
     this.getStaffCreatedDate();
     this.getStaffSummaryMessage();
     this.getTrainingAndQualsSummary();
@@ -131,28 +135,68 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   };
 
   public getWorkplaceSummaryMessage(): void {
-    const { showAddWorkplaceDetailsBanner, numberOfStaff, vacancies, starters, leavers } = this.workplace;
+    const {
+      showAddWorkplaceDetailsBanner,
+      numberOfStaff,
+      vacancies,
+      starters,
+      leavers,
+      vacanciesSavedAt,
+      startersSavedAt,
+      leaversSavedAt,
+    } = this.workplace;
     this.sections[0].redFlag = false;
 
     if (showAddWorkplaceDetailsBanner) {
       this.sections[0].message = 'Finish adding your workplace data';
-    } else if (this.showCheckCqcDetails) {
+      return;
+    }
+    if (this.showCheckCqcDetails) {
       this.sections[0].message = 'Your workplace details do not match your CQC details';
-    } else if (numberOfStaff === undefined || numberOfStaff === null) {
+      return;
+    }
+
+    if (numberOfStaff === undefined || numberOfStaff === null) {
       this.sections[0].message = `You've not added your total number of staff`;
       this.sections[0].redFlag = true;
-    } else if (
-      numberOfStaff !== this.workerCount &&
-      this.afterEightWeeksFromFirstLogin() &&
-      this.canViewListOfWorkers
-    ) {
-      this.sections[0].message = 'Staff total does not match number of staff records';
-    } else if (!vacancies && !leavers && !starters) {
-      this.sections[0].message = `Add your vacancy, starters and leavers data`;
-    } else if (!vacancies && (leavers || starters)) {
-      this.sections[0].message = `Add your vacancy data`;
+      return;
     }
-    this.showViewSummaryLinks(this.sections[0].linkText);
+
+    if (numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin() && this.canViewListOfWorkers) {
+      this.sections[0].message = 'Staff total does not match number of staff records';
+      return;
+    }
+
+    const notAllTurnoverDataAnswered = [vacancies, leavers, starters].some((value) => !value);
+    if (notAllTurnoverDataAnswered) {
+      const missingOnes = Object.entries({ vacancy: vacancies, starters, leavers })
+        .filter(([_key, value]) => !value)
+        .map(([key, _value]) => key);
+
+      const message = `Add your ${FormatUtil.joinNouns(missingOnes)} data`;
+      this.sections[0].message = message;
+      return;
+    }
+
+    const vacanciesOverOneYear = DateUtil.isMoreThanOneYearAgo(vacanciesSavedAt);
+    const startersOverOneYear = DateUtil.isMoreThanOneYearAgo(startersSavedAt);
+    const leaversOverOneYear = DateUtil.isMoreThanOneYearAgo(leaversSavedAt);
+
+    const someDataOutdated = [vacanciesOverOneYear, startersOverOneYear, leaversOverOneYear].some((x) => x);
+
+    if (someDataOutdated) {
+      const outdatedOnes = [
+        ['staff vacancy', vacanciesOverOneYear],
+        ['starters', startersOverOneYear],
+        ['leavers', leaversOverOneYear],
+      ]
+        .filter(([_key, outdated]) => outdated)
+        .map(([key, _outdated]) => key) as string[];
+
+      const message = `Update your ${FormatUtil.joinNouns(outdatedOnes)} data`;
+      this.sections[0].message = message;
+      return;
+    }
   }
 
   private afterEightWeeksFromFirstLogin(): boolean {

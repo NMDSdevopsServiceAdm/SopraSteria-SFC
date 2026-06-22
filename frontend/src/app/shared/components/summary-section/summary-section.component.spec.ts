@@ -1,3 +1,6 @@
+import dayjs from 'dayjs';
+import { of } from 'rxjs';
+
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
@@ -13,12 +16,10 @@ import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
-import dayjs from 'dayjs';
-import { of } from 'rxjs';
+import userEvent from '@testing-library/user-event';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
-import userEvent from '@testing-library/user-event';
 
 describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
@@ -330,64 +331,118 @@ describe('Summary section', () => {
       expect(within(workplaceRow).queryByText('Staff total does not match number of staff records')).toBeFalsy();
     });
 
-    it('should show a warning saying that vacancy and turnover data has not been added if they have not been added', async () => {
-      const establishment = { ...Establishment, leavers: null, vacancies: null, starters: null };
+    const testCasesForAddYourVacancyStarterLeaverMessages = [
+      { vacancies: null, starters: null, leavers: null, expected: 'Add your vacancy, starters and leavers data' },
 
-      const overrides = {
-        checkCqcDetails: false,
-        establishment,
-      };
+      { vacancies: null, starters: null, leavers: 'None', expected: 'Add your vacancy and starters data' },
+      { vacancies: null, starters: 'None', leavers: null, expected: 'Add your vacancy and leavers data' },
+      { vacancies: 'None', starters: null, leavers: null, expected: 'Add your starters and leavers data' },
 
-      const { getByTestId } = await setup(overrides);
+      { vacancies: null, starters: `Don't know`, leavers: 'None', expected: 'Add your vacancy data' },
+      { vacancies: 'With Jobs', starters: null, leavers: 'None', expected: 'Add your starters data' },
+      { vacancies: 'With Jobs', starters: 'None', leavers: null, expected: 'Add your leavers data' },
+    ];
 
-      const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText(`Add your vacancy, starters and leavers data`)).toBeTruthy();
-      expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+    testCasesForAddYourVacancyStarterLeaverMessages.forEach((testcase) => {
+      const { leavers, vacancies, starters, expected: expectedWarningMessage } = testcase;
+      it(`should show a warning saying '${expectedWarningMessage}' when vacancies=${vacancies}, starters=${starters}, leavers=${leavers} })}`, async () => {
+        const establishment = { ...Establishment, leavers, vacancies, starters };
+
+        const overrides = {
+          checkCqcDetails: false,
+          establishment,
+        };
+
+        const { getByTestId } = await setup(overrides);
+
+        const workplaceRow = getByTestId('workplace-row');
+        expect(within(workplaceRow).getByText(expectedWarningMessage)).toBeTruthy();
+        expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+      });
     });
 
-    it('should show a warning saying that no vacancy data has been added if it has not been added, but starters data has been added', async () => {
-      const establishment = { ...Establishment, leavers: null, vacancies: null, starters: 'None' };
+    describe('Update your starter, leaver and vacancy data', () => {
+      const mockTimeNow = '2026-05-14';
+      const moreThanOneYearAgo = '2025-05-13T00:00:00.000Z';
+      const lessThanOneYearAgo = '2025-12-23T00:00:00.000Z';
 
-      const overrides = {
-        checkCqcDetails: false,
-        establishment,
-      };
+      beforeEach(() => {
+        jasmine.clock().install();
+        jasmine.clock().mockDate(new Date(mockTimeNow));
+      });
+      afterEach(() => {
+        jasmine.clock().uninstall();
+      });
 
-      const { getByTestId } = await setup(overrides);
+      const mockEstablishment = { ...Establishment, leavers: 'None', vacancies: 'None', starters: 'None' };
 
-      const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText(`Add your vacancy data`)).toBeTruthy();
-      expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
-    });
+      const testCasesForUpdateYourVacancyStarterLeaverMessages = [
+        {
+          vacanciesSavedAt: moreThanOneYearAgo,
+          startersSavedAt: moreThanOneYearAgo,
+          leaversSavedAt: moreThanOneYearAgo,
+          expected: 'Update your staff vacancy, starters and leavers data',
+        },
+        {
+          vacanciesSavedAt: moreThanOneYearAgo,
+          startersSavedAt: moreThanOneYearAgo,
+          leaversSavedAt: lessThanOneYearAgo,
+          expected: 'Update your staff vacancy and starters data',
+        },
+        {
+          vacanciesSavedAt: moreThanOneYearAgo,
+          startersSavedAt: lessThanOneYearAgo,
+          leaversSavedAt: moreThanOneYearAgo,
+          expected: 'Update your staff vacancy and leavers data',
+        },
+        {
+          vacanciesSavedAt: lessThanOneYearAgo,
+          startersSavedAt: moreThanOneYearAgo,
+          leaversSavedAt: moreThanOneYearAgo,
+          expected: 'Update your starters and leavers data',
+        },
+        {
+          vacanciesSavedAt: moreThanOneYearAgo,
+          startersSavedAt: lessThanOneYearAgo,
+          leaversSavedAt: lessThanOneYearAgo,
+          expected: 'Update your staff vacancy data',
+        },
+        {
+          vacanciesSavedAt: lessThanOneYearAgo,
+          startersSavedAt: moreThanOneYearAgo,
+          leaversSavedAt: lessThanOneYearAgo,
+          expected: 'Update your starters data',
+        },
+        {
+          vacanciesSavedAt: lessThanOneYearAgo,
+          startersSavedAt: lessThanOneYearAgo,
+          leaversSavedAt: moreThanOneYearAgo,
+          expected: 'Update your leavers data',
+        },
+      ];
 
-    it('should show a warning saying that no vacancy data has been added if it has not been added, but leavers data has been added', async () => {
-      const establishment = { ...Establishment, leavers: 'None', vacancies: null, starters: null };
+      testCasesForUpdateYourVacancyStarterLeaverMessages.forEach(
+        ({ vacanciesSavedAt, startersSavedAt, leaversSavedAt, expected: expectedWarningMessage }) => {
+          const caseName = JSON.stringify({ vacanciesSavedAt, startersSavedAt, leaversSavedAt });
+          it(`should show a warning saying ${expectedWarningMessage} if ${caseName}`, async () => {
+            const overrides = {
+              checkCqcDetails: false,
+              establishment: {
+                ...mockEstablishment,
+                vacanciesSavedAt,
+                startersSavedAt,
+                leaversSavedAt,
+              },
+            };
 
-      const overrides = {
-        checkCqcDetails: false,
-        establishment,
-      };
+            const { getByTestId } = await setup(overrides);
 
-      const { getByTestId } = await setup(overrides);
-
-      const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText(`Add your vacancy data`)).toBeTruthy();
-      expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
-    });
-
-    it('should show a warning saying that no vacancy data has been added if it has not been added, but both starters and leavers data has been added', async () => {
-      const establishment = { ...Establishment, leavers: 'None', vacancies: null, starters: `Don't know` };
-
-      const overrides = {
-        checkCqcDetails: false,
-        establishment,
-      };
-
-      const { getByTestId } = await setup(overrides);
-
-      const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText(`Add your vacancy data`)).toBeTruthy();
-      expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+            const workplaceRow = getByTestId('workplace-row');
+            expect(within(workplaceRow).getByText(expectedWarningMessage)).toBeTruthy();
+            expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+          });
+        },
+      );
     });
   });
 
@@ -485,7 +540,7 @@ describe('Summary section', () => {
 
       const staffRecordsRow = getByTestId('staff-records-row');
       expect(within(staffRecordsRow).getByText('You can start to add your staff records now')).toBeTruthy();
-      expect(getByTestId('orange-flag')).toBeTruthy();
+      expect(within(staffRecordsRow).getByTestId('orange-flag')).toBeTruthy();
     });
 
     it('should navigate to sub staff records page when clicking on start to add your staff message in sub view', async () => {

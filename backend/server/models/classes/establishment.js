@@ -1513,6 +1513,9 @@ class Establishment extends EntityValidator {
         this._payAndPensionsMiniFlowViewed = fetchResults.payAndPensionsMiniFlowViewed;
         this._updatePayForMultiStaffViewed = fetchResults.updatePayForMultiStaffViewed;
         this._fastTrackPayByJobRolesViewed = fetchResults.fastTrackPayByJobRolesViewed;
+        this._vacanciesSavedAt = fetchResults.VacanciesSavedAt;
+        this._startersSavedAt = fetchResults.StartersSavedAt;
+        this._leaversSavedAt = fetchResults.LeaversSavedAt;
 
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
@@ -1992,6 +1995,9 @@ class Establishment extends EntityValidator {
         myDefaultJSON.payAndPensionsMiniFlowViewed = this.payAndPensionsMiniFlowViewed;
         myDefaultJSON.updatePayForMultiStaffViewed = this.updatePayForMultiStaffViewed;
         myDefaultJSON.fastTrackPayByJobRolesViewed = this.fastTrackPayByJobRolesViewed;
+        myDefaultJSON.vacanciesSavedAt = this._vacanciesSavedAt;
+        myDefaultJSON.startersSavedAt = this._startersSavedAt;
+        myDefaultJSON.leaversSavedAt = this._leaversSavedAt;
       }
 
       if (this.showSharingPermissionsBanner !== null) {
