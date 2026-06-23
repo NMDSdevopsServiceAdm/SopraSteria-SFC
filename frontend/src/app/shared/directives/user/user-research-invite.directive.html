@@ -1,7 +1,7 @@
 <form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <span data-testid="caption" class="govuk-caption-l">User accounts</span>
+      <span data-testid="caption" class="govuk-caption-l">User account</span>
       <h1 data-testid="heading" class="govuk-heading-l">Would you like to take part in our user research sessions?</h1>
       <div data-testid="text">
         <p class="govuk-body govuk-!-margin-bottom-2">
@@ -23,7 +23,7 @@
         <div class="govuk-radios" data-module="govuk-radios">
           @for (option of userResearchInviteResponseOptions; track option) {
           <!--  -->
-          @let id = 'inviteResponse' + option | lowercase;
+          @let id = 'inviteResponse-' + option | lowercase;
 
           <div class="govuk-radios__item">
             <input
