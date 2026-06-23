@@ -195,6 +195,7 @@ export interface Establishment {
   vacanciesSavedAt?: string;
   startersSavedAt?: string;
   leaversSavedAt?: string;
+  lastStaffRecordMessageDismissedAt?: Date;
 }
 export interface UpdateJobsRequest {
   leavers?: Leaver[] | string;
@@ -295,7 +296,7 @@ export const StaffSummarySortByParamMap = {
 } as const;
 
 export type SortByKey = keyof typeof StaffSummarySortByParamMap;
-export type SortByParam = (typeof StaffSummarySortByParamMap)[SortByKey];
+export type SortByParam = typeof StaffSummarySortByParamMap[SortByKey];
 
 export enum SortStaffOptions {
   '0_asc' = 'Staff name (A to Z)',
