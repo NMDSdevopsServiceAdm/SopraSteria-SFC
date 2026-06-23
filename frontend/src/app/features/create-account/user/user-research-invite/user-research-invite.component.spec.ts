@@ -82,10 +82,10 @@ fdescribe('UserResearchInviteComponent', () => {
     expect(showBackLinkSpy).toHaveBeenCalled();
   });
 
-  it('should display the User accounts caption', async () => {
+  it('should display the User account caption', async () => {
     const { getByTestId } = await setup();
     const caption = getByTestId('caption');
-    expect(caption.textContent).toEqual('User accounts');
+    expect(caption.textContent).toEqual('User account');
   });
 
   it('should display the heading', async () => {
