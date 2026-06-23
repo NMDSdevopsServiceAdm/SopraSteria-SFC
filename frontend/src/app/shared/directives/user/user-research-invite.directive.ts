@@ -12,12 +12,13 @@ export class UserResearchInviteDirective implements OnInit, OnDestroy, AfterView
     'to improve the service and provide the sector with more useful tools.';
   public detailsTextTwo: string = 'Sessions last about an hour and are arranged for a time that suits you.';
   public userResearchInviteResponseOptions = Object.keys(InviteResponse);
+  public showProgressBar = false;
 
+  public userResearchInviteResponse: InviteResponse;
   public form: UntypedFormGroup;
   public submitted = false;
   public insideFlow: boolean;
   public confirmPagePath: string = '';
-  public userResearchInviteResponse: InviteResponse;
 
   constructor(
     protected backLinkService: BackLinkService,
@@ -30,8 +31,6 @@ export class UserResearchInviteDirective implements OnInit, OnDestroy, AfterView
     this.setBackLink();
     this.setupForm();
     this.loadUserResearchInviteResponse();
-    // this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
-    // this.userResearchInviteResponse = this.registrationService.userResearchInviteResponse$.value;
     this.prefillForm();
     this.init();
   }
