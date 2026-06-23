@@ -34,6 +34,7 @@ module.exports = function (sequelize, DataTypes) {
 
       defaultScope: {
         attributes: ['id', 'name', 'isOther'],
+        order: ['name'],
       },
     },
   );

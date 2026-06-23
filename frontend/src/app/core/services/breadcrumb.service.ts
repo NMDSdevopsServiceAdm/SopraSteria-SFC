@@ -50,7 +50,6 @@ import {
 } from '@core/breadcrumb/journey.workplaces';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
-import { parse } from 'url';
 
 @Injectable({
   providedIn: 'root',
@@ -65,7 +64,7 @@ export class BreadcrumbService {
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
-        map(() => parse(this.router.url).pathname),
+        map(() => new URL(this.router.url, window.location.origin).pathname),
         distinctUntilChanged(),
         map(() => this._routes$.value),
         filter((val) => !!val),

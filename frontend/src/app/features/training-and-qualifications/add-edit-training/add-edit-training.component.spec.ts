@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, provideRouter, Router } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { TrainingCertificateService } from '@core/services/certificate.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -25,6 +25,7 @@ import { SelectUploadFileComponent } from '../../../shared/components/select-upl
 import { AddEditTrainingComponent } from './add-edit-training.component';
 import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 import { TrainingCourse } from '@core/model/training-course.model';
+import { Component } from '@angular/core';
 
 const fillInDate = (containerDiv: HTMLElement, year: string, month: string, day: string) => {
   ['Day', 'Month', 'Year'].forEach((label) => {
@@ -35,7 +36,8 @@ const fillInDate = (containerDiv: HTMLElement, year: string, month: string, day:
   userEvent.type(within(containerDiv).getByLabelText('Month'), month);
   userEvent.type(within(containerDiv).getByLabelText('Year'), year);
 };
-
+@Component({ template: '' })
+class DummyComponent {}
 describe('AddEditTrainingComponent', () => {
   const mockTrainingProviders = [
     { id: 1, name: 'Preset provider name #1', isOther: false },
@@ -64,9 +66,15 @@ describe('AddEditTrainingComponent', () => {
     };
 
     const setupTools = await render(AddEditTrainingComponent, {
-      imports: [SharedModule, RouterModule, ReactiveFormsModule],
+      imports: [SharedModule, ReactiveFormsModule],
       declarations: [CertificationsTableComponent, SelectUploadFileComponent],
       providers: [
+        provideRouter([
+          {
+            path: 'workplace/:workplaceId/training-and-qualifications-record/:id/add-training-without-course',
+            component: DummyComponent,
+          },
+        ]),
         WindowRef,
         {
           provide: ActivatedRoute,
@@ -962,6 +970,8 @@ describe('AddEditTrainingComponent', () => {
       fireEvent.click(getByText('Save record'));
       fixture.detectChanges();
 
+      await fixture.whenStable();
+
       const expectedFormValue = {
         title: 'Some training',
         accredited: 'Yes',
@@ -995,7 +1005,6 @@ describe('AddEditTrainingComponent', () => {
 
       expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
 
-      await fixture.whenStable();
       expect(alertServiceSpy).toHaveBeenCalledWith({
         type: 'success',
         message: 'Training record added',
