@@ -44,7 +44,10 @@
             />
           </ng-template>
           <ng-container *ngIf="section.link && !section.showMessageAsText; else noLink">
-            <a (click)="onClick($event, section.fragment, section.route, section.skipTabSwitch)" href="#">
+            <a
+              (click)="onClick($event, section.fragment, section.route, section.skipTabSwitch, section.message)"
+              href="#"
+            >
               {{ section.message }}</a
             >
           </ng-container>
