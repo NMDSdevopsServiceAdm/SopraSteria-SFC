@@ -22,6 +22,7 @@ export const runTestsForDHAHomeTabFlag = (mockEstablishmentData) => {
       cy.archiveAllWorkersInWorkplace(establishmentId);
       cy.setWorkplaceMainService(establishmentId, mainServiceThatCanDoDHA.id);
       cy.resetWorkplaceDHAAnswers(establishmentId);
+      cy.setWorkplaceDHAAnswers(establishmentId, { staffDoDelegatedHealthcareActivities: 'Yes' });
     });
 
     beforeEach(() => {
@@ -33,6 +34,7 @@ export const runTestsForDHAHomeTabFlag = (mockEstablishmentData) => {
           careWorkforcePathwayRoleCategoryFK: '1',
         });
       });
+      cy.setWorkplaceDHAAnswers(establishmentId, { staffDoDelegatedHealthcareActivities: 'Yes' });
       cy.reload();
     });
 
@@ -41,14 +43,15 @@ export const runTestsForDHAHomeTabFlag = (mockEstablishmentData) => {
       cy.resetWorkplaceDHAAnswers(establishmentId);
     });
 
-    it('should show a flag for DHA in homepage summary panel', () => {
-      cy.get('[data-testid="staff-records-row"]').should('contain', dhaFlagMessage);
+    it('should show a update banner for DHA in homepage summary panel', () => {
+      cy.get('[data-testid="update-banner-area"]').should('contain', dhaFlagMessage);
     });
 
     it('the flag should direct user to a new question page to answer the DHA question for a list of workers', () => {
       const mockAnswersForEachWorker = testWorkerNames.map((_, index) => ['Yes', 'No', 'I do not know'].at(index % 3));
 
-      cy.get('[data-testid="staff-records-row"]').contains(dhaFlagMessage).click();
+      cy.get('[data-testid="update-banner-area"]').should('contain', dhaFlagMessage);
+      cy.get('[data-testid="update-banner-area"]').contains('Answer question').click();
 
       cy.get('h1').should('contain', 'Who carries out delegated healthcare activities?');
 
@@ -63,7 +66,7 @@ export const runTestsForDHAHomeTabFlag = (mockEstablishmentData) => {
       cy.get('button').contains('Save and return').click();
 
       cy.url().should('match', homePagePathRegex);
-      cy.get('[data-testid="staff-records-row"]').contains(dhaFlagMessage).should('not.exist');
+      cy.contains(dhaFlagMessage).should('not.exist');
       cy.get('app-alert span').should('contain', 'Delegated healthcare activity information saved');
 
       // verify that the staff records are updated
@@ -80,7 +83,7 @@ export const runTestsForDHAHomeTabFlag = (mockEstablishmentData) => {
     });
 
     it(`should show a link in each row to the worker's staff record summary page with the name of worker`, () => {
-      cy.get('[data-testid="staff-records-row"]').contains(dhaFlagMessage).click();
+      cy.get('[data-testid="update-banner-area"]').contains('Answer question').click();
 
       cy.get('h1').should('contain', 'Who carries out delegated healthcare activities?');
 
@@ -110,7 +113,8 @@ export const runTestsForDHAHomeTabFlag = (mockEstablishmentData) => {
 
       // test starts here
       onHomePage.clickTab('Home');
-      cy.get('[data-testid="staff-records-row"]').contains(dhaFlagMessage).click();
+      cy.get('[data-testid="update-banner-area"]').should('contain', dhaFlagMessage);
+      cy.get('[data-testid="update-banner-area"]').contains('Answer question').click();
 
       cy.get('h1').should('contain', 'Who carries out delegated healthcare activities?');
 
@@ -156,7 +160,8 @@ export const runTestsForDHAHomeTabFlag = (mockEstablishmentData) => {
 
       // test starts here
       onHomePage.clickTab('Home');
-      cy.get('[data-testid="staff-records-row"]').contains(dhaFlagMessage).click();
+      cy.get('[data-testid="update-banner-area"]').should('contain', dhaFlagMessage);
+      cy.get('[data-testid="update-banner-area"]').contains('Answer question').click();
 
       cy.get('h1').should('contain', 'Who carries out delegated healthcare activities?');
 
@@ -176,7 +181,8 @@ export const runTestsForDHAHomeTabFlag = (mockEstablishmentData) => {
 
     it('backlink in new question page should bring user back to home tab', () => {
       onHomePage.clickTab('Home');
-      cy.get('[data-testid="staff-records-row"]').contains(dhaFlagMessage).click();
+      cy.get('[data-testid="update-banner-area"]').should('contain', dhaFlagMessage);
+      cy.get('[data-testid="update-banner-area"]').contains('Answer question').click();
 
       cy.get('h1').should('contain', 'Who carries out delegated healthcare activities?');
 
@@ -189,7 +195,8 @@ export const runTestsForDHAHomeTabFlag = (mockEstablishmentData) => {
       const workersToAnswer = [testWorkerNames[0], testWorkerNames[2]];
 
       onHomePage.clickTab('Home');
-      cy.get('[data-testid="staff-records-row"]').contains(dhaFlagMessage).click();
+      cy.get('[data-testid="update-banner-area"]').should('contain', dhaFlagMessage);
+      cy.get('[data-testid="update-banner-area"]').contains('Answer question').click();
 
       cy.get('h1').should('contain', 'Who carries out delegated healthcare activities?');
 
@@ -201,7 +208,7 @@ export const runTestsForDHAHomeTabFlag = (mockEstablishmentData) => {
       cy.get('button').contains('Save and return').click();
 
       onHomePage.clickTab('Home');
-      cy.get('[data-testid="staff-records-row"]').contains(dhaFlagMessage).should('be.visible');
+      cy.get('[data-testid="update-banner-area"]').contains(dhaFlagMessage).should('be.visible');
     });
   });
 };

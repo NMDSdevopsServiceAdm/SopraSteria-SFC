@@ -1,6 +1,6 @@
 export const runTestsForPayAndPensionsMiniFlow = (mockEstablishmentData) => {
   const establishmentId = mockEstablishmentData.id;
-  const payAndPensionFlagMessage = "We've added some Workplace questions";
+  const payAndPensionFlagMessage = 'New questions about pay and pensions';
 
   const mainServiceWithPayAndPensionsGroup1 = { id: 20, name: 'Domiciliary care services' };
   const mainServiceWithPayAndPensionsGroup2 = { id: 7, name: 'Short breaks, respite care' };
@@ -19,11 +19,12 @@ export const runTestsForPayAndPensionsMiniFlow = (mockEstablishmentData) => {
       });
 
       it('should show a flag for the new workplace questions in the home page summary panel', () => {
-        cy.get('[data-testid="workplace-row"]').should('contain', payAndPensionFlagMessage);
+        cy.get('[data-testid="update-banner-area"]').should('contain', payAndPensionFlagMessage);
       });
 
       it('should direct users to the new questions and go through the flow', () => {
-        cy.get('[data-testid="workplace-row"]').should('contain', payAndPensionFlagMessage).click();
+        cy.get('[data-testid="update-banner-area"]').should('contain', payAndPensionFlagMessage);
+        cy.get('[data-testid="update-banner-area"]').contains('Answer questions').click();
 
         //pension contribution
         cy.get('h1').should(
@@ -59,7 +60,7 @@ export const runTestsForPayAndPensionsMiniFlow = (mockEstablishmentData) => {
 
         //home
         cy.get(`[data-testid="generic_alert"]`).contains('Workplace details added');
-        cy.get('[data-testid="workplace-row"]').should('not.contain', payAndPensionFlagMessage);
+        cy.get('[data-testid="update-banner-area"]').should('not.contain', payAndPensionFlagMessage);
       });
     });
 
@@ -75,11 +76,12 @@ export const runTestsForPayAndPensionsMiniFlow = (mockEstablishmentData) => {
       });
 
       it('should show a flag for the new workplace questions in the home page summary panel', () => {
-        cy.get('[data-testid="workplace-row"]').should('contain', payAndPensionFlagMessage);
+        cy.get('[data-testid="update-banner-area"]').should('contain', payAndPensionFlagMessage);
       });
 
       it('should direct users to the new questions and go through the flow', () => {
-        cy.get('[data-testid="workplace-row"]').should('contain', payAndPensionFlagMessage).click();
+        cy.get('[data-testid="update-banner-area"]').should('contain', payAndPensionFlagMessage);
+        cy.get('[data-testid="update-banner-area"]').contains('Answer questions').click();
 
         //pension contribution
         cy.get('h1').should(
@@ -110,7 +112,7 @@ export const runTestsForPayAndPensionsMiniFlow = (mockEstablishmentData) => {
 
         //home
         cy.get(`[data-testid="generic_alert"]`).contains('Workplace details added');
-        cy.get('[data-testid="workplace-row"]').should('not.contain', payAndPensionFlagMessage);
+        cy.get('[data-testid="update-banner-area"]').should('not.contain', payAndPensionFlagMessage);
       });
     });
 
@@ -126,7 +128,7 @@ export const runTestsForPayAndPensionsMiniFlow = (mockEstablishmentData) => {
       });
 
       it('should not show a flag for the new workplace questions in the home page summary panel', () => {
-        cy.get('[data-testid="workplace-row"]').should('not.contain', payAndPensionFlagMessage);
+        cy.get('[data-testid="update-banner-area"]').should('not.contain', payAndPensionFlagMessage);
       });
     });
   });

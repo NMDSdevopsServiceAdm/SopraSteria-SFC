@@ -120,7 +120,7 @@ describe('Create account', { tags: '@registration' }, () => {
     cy.get('h1').contains('Test workplace for cypress').should('be.visible');
     onHomePage.allTabs('edit');
 
-    cy.contains('Add more details to your workplace').click(); // on home page
+    cy.contains('Finish adding your workplace data').click(); // on home page
     cy.contains('Start to add more details about your workplace').click(); // on workplace tab
 
     // Add more details

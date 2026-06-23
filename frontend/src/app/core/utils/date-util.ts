@@ -12,6 +12,10 @@ export class DateUtil {
     return FormatUtil.formatDateToLocaleDateString(today);
   }
 
+  public static isMoreThanOneYearAgo(date: string | Date | dayjs.Dayjs | undefined): boolean {
+    return dayjs(date).isBefore(DateUtil.getDateForOneYearAgo(), 'day');
+  }
+
   public static toDayjs(input: string | FormGroupDateValues): dayjs.Dayjs {
     if (!input) return null;
 
