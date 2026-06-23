@@ -24,7 +24,6 @@ const { authLimiter, dbLimiter } = require('./server/utils/middleware/rateLimiti
 
 // security libraries
 var helmet = require('helmet');
-var xssClean = require('xss-clean');
 var sanitizer = require('express-sanitizer');
 var locations = require('./server/routes/locations/index');
 var postcodes = require('./server/routes/postcodes');
@@ -217,9 +216,6 @@ app.use(
   }),
   dbLimiter,
 );
-
-// encodes all URL parameters
-app.use(unless('/api', 'test', xssClean()));
 
 /*
  * end security

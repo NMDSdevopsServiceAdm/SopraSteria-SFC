@@ -1,86 +1,294 @@
+const dayjs = require('dayjs');
+const { TrainingCourseDeliveryMode, TrainingCourseDeliveredBy } = require('../../../../reference/databaseEnumTypes');
+
 exports.mockWorkerTrainingBreakdowns = [
   {
     name: 'Bob Test',
+    workplaceName: 'mock care home 1',
+    workplaceId: 1234,
+
     trainingCount: 6,
-    qualificationCount: 2,
+    mandatoryTrainingCount: 2,
+    nonMandatoryTrainingCount: 4,
+
     expiredTrainingCount: 2,
     expiredMandatoryTrainingCount: 0,
     expiredNonMandatoryTrainingCount: 2,
+
     expiringTrainingCount: 4,
     expiringMandatoryTrainingCount: 2,
     expiringNonMandatoryTrainingCount: 2,
+
+    upToDateTrainingCount: 0,
+    upToDateMandatoryTrainingCount: 0,
+    upToDateNonMandatoryTrainingCount: 0,
+
     missingMandatoryTrainingCount: 0,
-    mandatoryTrainingCount: 0,
+    qualificationCount: 2,
   },
   {
     name: 'Mike test',
+    workplaceName: 'mock care home 1',
+    workplaceId: 1234,
+
     trainingCount: 10,
-    qualificationCount: 0,
+    mandatoryTrainingCount: 5,
+    nonMandatoryTrainingCount: 5,
+
     expiredTrainingCount: 6,
     expiredMandatoryTrainingCount: 3,
     expiredNonMandatoryTrainingCount: 3,
+
     expiringTrainingCount: 0,
     expiringMandatoryTrainingCount: 0,
     expiringNonMandatoryTrainingCount: 0,
+
+    upToDateTrainingCount: 4,
+    upToDateMandatoryTrainingCount: 2,
+    upToDateNonMandatoryTrainingCount: 2,
+
     missingMandatoryTrainingCount: 0,
-    mandatoryTrainingCount: 5,
+    qualificationCount: 0,
   },
   {
     name: 'Andrew Test',
+    workplaceName: 'mock care home 1',
+    workplaceId: 1234,
+
     trainingCount: 13,
-    qualificationCount: 0,
+    mandatoryTrainingCount: 3,
+    nonMandatoryTrainingCount: 10,
+
     expiredTrainingCount: 0,
     expiredMandatoryTrainingCount: 0,
     expiredNonMandatoryTrainingCount: 0,
+
     expiringTrainingCount: 2,
     expiringMandatoryTrainingCount: 0,
     expiringNonMandatoryTrainingCount: 2,
+
+    upToDateTrainingCount: 11,
+    upToDateMandatoryTrainingCount: 3,
+    upToDateNonMandatoryTrainingCount: 8,
+
     missingMandatoryTrainingCount: 2,
-    mandatoryTrainingCount: 3,
+    qualificationCount: 0,
   },
   {
     name: 'Daniel Craig',
+    workplaceName: 'mock care home 1',
+    workplaceId: 1234,
+
     trainingCount: 6,
-    qualificationCount: 0,
+    mandatoryTrainingCount: 1,
+    nonMandatoryTrainingCount: 5,
+
     expiredTrainingCount: 4,
     expiredMandatoryTrainingCount: 1,
     expiredNonMandatoryTrainingCount: 3,
+
     expiringTrainingCount: 2,
     expiringMandatoryTrainingCount: 0,
     expiringNonMandatoryTrainingCount: 2,
+
+    upToDateTrainingCount: 0,
+    upToDateMandatoryTrainingCount: 0,
+    upToDateNonMandatoryTrainingCount: 0,
+
     missingMandatoryTrainingCount: 3,
-    mandatoryTrainingCount: 3,
+    qualificationCount: 0,
+  },
+];
+
+const totalCountsForMockWorkplaceA = {
+  trainingCount: 35,
+  mandatoryTrainingCount: 11,
+  nonMandatoryTrainingCount: 24,
+
+  expiredTrainingCount: 12,
+  expiredMandatoryTrainingCount: 4,
+  expiredNonMandatoryTrainingCount: 8,
+
+  expiringTrainingCount: 8,
+  expiringMandatoryTrainingCount: 2,
+  expiringNonMandatoryTrainingCount: 6,
+
+  upToDateTrainingCount: 15,
+  upToDateMandatoryTrainingCount: 5,
+  upToDateNonMandatoryTrainingCount: 10,
+
+  missingMandatoryTrainingCount: 5,
+  qualificationCount: 2,
+};
+exports.totalCountsForMockWorkplaceA = totalCountsForMockWorkplaceA;
+
+const totalCountsForMockWorkplaceAWithoutMandatoryTraining = {
+  trainingCount: 35,
+  mandatoryTrainingCount: 0,
+  nonMandatoryTrainingCount: 35,
+
+  expiredTrainingCount: 12,
+  expiredMandatoryTrainingCount: 0,
+  expiredNonMandatoryTrainingCount: 12,
+
+  expiringTrainingCount: 8,
+  expiringMandatoryTrainingCount: 0,
+  expiringNonMandatoryTrainingCount: 8,
+
+  upToDateTrainingCount: 15,
+  upToDateMandatoryTrainingCount: 0,
+  upToDateNonMandatoryTrainingCount: 15,
+
+  missingMandatoryTrainingCount: 0,
+  qualificationCount: 2,
+};
+exports.totalCountsForMockWorkplaceA = totalCountsForMockWorkplaceA;
+
+exports.mockWorkerTrainingBreakdownsWithNoMandatoryTraining = [
+  {
+    name: 'Bob Test',
+    workplaceName: 'mock care home no mandatory training',
+    trainingCount: 6,
+    mandatoryTrainingCount: 0,
+    nonMandatoryTrainingCount: 6,
+    workplaceHasMandatoryTraining: false,
+
+    expiredTrainingCount: 2,
+    expiredMandatoryTrainingCount: 0,
+    expiredNonMandatoryTrainingCount: 2,
+
+    expiringTrainingCount: 4,
+    expiringMandatoryTrainingCount: 0,
+    expiringNonMandatoryTrainingCount: 4,
+
+    upToDateTrainingCount: 0,
+    upToDateMandatoryTrainingCount: 0,
+    upToDateNonMandatoryTrainingCount: 0,
+
+    missingMandatoryTrainingCount: 0,
+    qualificationCount: 2,
+  },
+  {
+    name: 'Mike test',
+    workplaceName: 'mock care home no mandatory training',
+    trainingCount: 10,
+    mandatoryTrainingCount: 0,
+    nonMandatoryTrainingCount: 10,
+    workplaceHasMandatoryTraining: false,
+
+    expiredTrainingCount: 6,
+    expiredMandatoryTrainingCount: 0,
+    expiredNonMandatoryTrainingCount: 6,
+
+    expiringTrainingCount: 0,
+    expiringMandatoryTrainingCount: 0,
+    expiringNonMandatoryTrainingCount: 0,
+
+    upToDateTrainingCount: 4,
+    upToDateMandatoryTrainingCount: 0,
+    upToDateNonMandatoryTrainingCount: 4,
+
+    missingMandatoryTrainingCount: 0,
+    qualificationCount: 0,
   },
 ];
 
 exports.secondMockWorkerTrainingBreakdowns = [
   {
     name: 'Jane Test',
+    workplaceId: 2345,
+    workplaceName: 'mock care home 2',
+
     trainingCount: 13,
-    qualificationCount: 0,
+    mandatoryTrainingCount: 5,
+    nonMandatoryTrainingCount: 8,
+
     expiredTrainingCount: 0,
     expiredMandatoryTrainingCount: 0,
     expiredNonMandatoryTrainingCount: 0,
+
     expiringTrainingCount: 2,
     expiringMandatoryTrainingCount: 0,
     expiringNonMandatoryTrainingCount: 2,
+
+    upToDateTrainingCount: 11,
+    upToDateMandatoryTrainingCount: 5,
+    upToDateNonMandatoryTrainingCount: 6,
+
     missingMandatoryTrainingCount: 2,
-    mandatoryTrainingCount: 3,
+    qualificationCount: 0,
   },
   {
     name: 'John Test',
+    workplaceId: 2345,
+    workplaceName: 'mock care home 2',
+
     trainingCount: 10,
-    qualificationCount: 2,
+    mandatoryTrainingCount: 2,
+    nonMandatoryTrainingCount: 8,
+
     expiredTrainingCount: 4,
     expiredMandatoryTrainingCount: 0,
-    expiredNonMandatoryTrainingCount: 2,
+    expiredNonMandatoryTrainingCount: 4,
+
     expiringTrainingCount: 4,
     expiringMandatoryTrainingCount: 2,
     expiringNonMandatoryTrainingCount: 2,
+
+    upToDateTrainingCount: 2,
+    upToDateMandatoryTrainingCount: 0,
+    upToDateNonMandatoryTrainingCount: 2,
+
     missingMandatoryTrainingCount: 0,
-    mandatoryTrainingCount: 4,
+
+    qualificationCount: 2,
   },
 ];
+
+const totalCountsForMockWorkplaceB = {
+  trainingCount: 23,
+  mandatoryTrainingCount: 7,
+  nonMandatoryTrainingCount: 16,
+
+  expiredTrainingCount: 4,
+  expiredMandatoryTrainingCount: 0,
+  expiredNonMandatoryTrainingCount: 4,
+
+  expiringTrainingCount: 6,
+  expiringMandatoryTrainingCount: 2,
+  expiringNonMandatoryTrainingCount: 4,
+
+  upToDateTrainingCount: 13,
+  upToDateMandatoryTrainingCount: 5,
+  upToDateNonMandatoryTrainingCount: 8,
+
+  missingMandatoryTrainingCount: 2,
+  qualificationCount: 2,
+};
+exports.totalCountsForMockWorkplaceB = totalCountsForMockWorkplaceB;
+
+const grandTotalCountsForMockWorkplaceAAndB = {
+  trainingCount: 58,
+  mandatoryTrainingCount: 18,
+  nonMandatoryTrainingCount: 40,
+
+  expiredTrainingCount: 16,
+  expiredMandatoryTrainingCount: 4,
+  expiredNonMandatoryTrainingCount: 12,
+
+  expiringTrainingCount: 14,
+  expiringMandatoryTrainingCount: 4,
+  expiringNonMandatoryTrainingCount: 10,
+
+  upToDateTrainingCount: 28,
+  upToDateMandatoryTrainingCount: 10,
+  upToDateNonMandatoryTrainingCount: 18,
+
+  missingMandatoryTrainingCount: 7,
+  qualificationCount: 4,
+};
+
+exports.grandTotalCountsForMockWorkplaceAAndB = grandTotalCountsForMockWorkplaceAAndB;
 
 exports.mockWorkerTrainingRecords = [
   {
@@ -91,6 +299,7 @@ exports.mockWorkerTrainingRecords = [
         jobRole: 'Activities worker or co-ordinator',
         longTermAbsence: '',
         mandatoryTraining: ['Activity provision/Well-being'],
+        missingMandatoryTrainings: [],
         trainingRecords: [
           {
             category: 'Activity provision/Well-being',
@@ -100,6 +309,12 @@ exports.mockWorkerTrainingRecords = [
             status: 'Up-to-date',
             dateCompleted: '01/01/2020',
             accredited: 'Yes',
+            isMandatory: 'Yes',
+            validityPeriodInMonth: null,
+            trainingCertificateUploaded: 'Yes',
+            deliveredBy: null,
+            trainingProviderName: null,
+            howWasItDelivered: null,
           },
           {
             category: 'Dementia care',
@@ -109,6 +324,12 @@ exports.mockWorkerTrainingRecords = [
             status: 'Expiring soon',
             dateCompleted: '01/06/2020',
             accredited: 'Yes',
+            isMandatory: 'No',
+            validityPeriodInMonth: null,
+            trainingCertificateUploaded: 'No',
+            deliveredBy: null,
+            trainingProviderName: null,
+            howWasItDelivered: null,
           },
         ],
       },
@@ -117,6 +338,13 @@ exports.mockWorkerTrainingRecords = [
         jobRole: 'Advice, Guidance and Advocacy',
         longTermAbsence: '',
         mandatoryTraining: ['Activity provision/Well-being', 'Diabetes'],
+        missingMandatoryTrainings: [
+          {
+            category: 'Activity provision/Well-being',
+            status: 'Missing',
+            isMandatory: 'Yes',
+          },
+        ],
         trainingRecords: [
           {
             category: 'Emergency Aid awareness',
@@ -126,6 +354,13 @@ exports.mockWorkerTrainingRecords = [
             status: 'Up-to-date',
             dateCompleted: '31/03/2004',
             accredited: 'Yes',
+
+            isMandatory: 'No',
+            validityPeriodInMonth: null,
+            trainingCertificateUploaded: 'No',
+            deliveredBy: null,
+            trainingProviderName: null,
+            howWasItDelivered: null,
           },
           {
             category: 'Diabetes',
@@ -135,6 +370,13 @@ exports.mockWorkerTrainingRecords = [
             status: 'Expired',
             dateCompleted: '31/03/2012',
             accredited: 'No',
+
+            isMandatory: 'Yes',
+            validityPeriodInMonth: null,
+            trainingCertificateUploaded: 'No',
+            deliveredBy: null,
+            trainingProviderName: null,
+            howWasItDelivered: null,
           },
         ],
       },
@@ -143,6 +385,18 @@ exports.mockWorkerTrainingRecords = [
         jobRole: 'Activities worker or co-ordinator',
         longTermAbsence: '',
         mandatoryTraining: ['Activity provision/Well-being', 'Diabetes'],
+        missingMandatoryTrainings: [
+          {
+            category: 'Activity provision/Well-being',
+            status: 'Missing',
+            isMandatory: 'Yes',
+          },
+          {
+            category: 'Diabetes',
+            status: 'Missing',
+            isMandatory: 'Yes',
+          },
+        ],
         trainingRecords: [],
       },
     ],
@@ -211,12 +465,19 @@ exports.mockWorkersWithCareCertificateStatus = [
   {
     workerId: 'Bob',
     jobRole: 'Care Worker',
-    status: 'No',
+
+    careCertificate: 'Not started',
+
+    l2CareCertificate: 'Not started',
   },
+
   {
     workerId: 'Mike',
     jobRole: 'Care Coordinator',
-    status: 'Yes, in progress or partially completed',
+
+    careCertificate: 'Yes, in progress or partially completed',
+
+    l2CareCertificate: 'Yes, completed',
   },
 ];
 
@@ -326,18 +587,16 @@ exports.mockEstablishmentsQualificationsResponse = [
     NameValue: 'Workplace Name',
     workers: [
       {
-        get() {
-          return 'Bob Ross';
-        },
+        NameOrIdValue: 'Bob Ross',
+
         mainJob: {
           id: 1,
           title: 'Activities worker or co-ordinator',
         },
         qualifications: [
           {
-            get() {
-              return 2020;
-            },
+            year: 2020,
+            qualificationCertificatesCount: 1,
             qualification: {
               group: 'NVQ',
               title: 'Care NVQ',
@@ -347,18 +606,15 @@ exports.mockEstablishmentsQualificationsResponse = [
         ],
       },
       {
-        get() {
-          return 'Martin Mill';
-        },
+        NameOrIdValue: 'Martin Mill',
         mainJob: {
           id: 2,
           title: 'Care Giver',
         },
         qualifications: [
           {
-            get() {
-              return 2018;
-            },
+            year: 2018,
+            qualificationCertificatesCount: 0,
             qualification: {
               group: 'Award',
               title: 'Good Name Award',
@@ -373,18 +629,15 @@ exports.mockEstablishmentsQualificationsResponse = [
     NameValue: 'Subsidiary Workplace Name',
     workers: [
       {
-        get() {
-          return 'Roly Poly';
-        },
+        NameOrIdValue: 'Roly Poly',
         mainJob: {
           id: 3,
           title: 'Roll Connoisseur',
         },
         qualifications: [
           {
-            get() {
-              return 2020;
-            },
+            year: 2020,
+            qualificationCertificatesCount: 2,
             qualification: {
               group: 'Degree',
               title: 'Rolling',
@@ -392,9 +645,8 @@ exports.mockEstablishmentsQualificationsResponse = [
             },
           },
           {
-            get() {
-              return 2021;
-            },
+            year: 2021,
+            qualificationCertificatesCount: 0,
             qualification: {
               group: 'Degree',
               title: 'Rolling Masters',
@@ -409,123 +661,227 @@ exports.mockEstablishmentsQualificationsResponse = [
 
 exports.mockEstablishmentsCareCertificateResponse = [
   {
-    get() {
-      return 'Care Home 1';
-    },
+    id: 1234,
+    NameValue: 'mock care home 1',
+
     workers: [
       {
-        get(property) {
-          return property === 'NameOrIdValue' ? 'Bob Ross' : 'No';
-        },
+        NameOrIdValue: 'Bob Ross',
+        CareCertificateValue: 'No',
+        Level2CareCertificateValue: 'No',
+
         mainJob: {
           id: 1,
           title: 'Care Worker',
+          isCareProvidingRole: true,
+        },
+        socialCareQualification: {
+          level: 'Level 4',
         },
       },
+
       {
-        get(property) {
-          return property === 'NameOrIdValue' ? 'Mike Mill' : 'Yes, in progress or partially completed';
-        },
+        NameOrIdValue: 'Mike Mill',
+        CareCertificateValue: 'Yes, in progress or partially completed',
+        Level2CareCertificateValue: 'Yes, completed',
+
         mainJob: {
           id: 2,
           title: 'Care Coordinator',
+          isCareProvidingRole: true,
+        },
+        socialCareQualification: {
+          level: 'Level 8 or above',
         },
       },
     ],
   },
+
   {
-    get() {
-      return 'Care Home 2';
-    },
+    id: 2345,
+    NameValue: 'mock care home 2',
+
     workers: [
       {
-        get(property) {
-          return property === 'NameOrIdValue' ? 'Bill Bailey' : 'Yes, completed';
-        },
+        NameOrIdValue: 'Bill Bailey',
+        CareCertificateValue: 'Yes, completed',
+        Level2CareCertificateValue: null,
+
         mainJob: {
           id: 1,
           title: 'Care Worker',
+          isCareProvidingRole: true,
+        },
+        socialCareQualification: {
+          level: 'Level 2',
         },
       },
+
       {
-        get(property) {
-          return property === 'NameOrIdValue' ? 'Jenny Jones' : 'No';
-        },
+        NameOrIdValue: 'Jenny Jones',
+        CareCertificateValue: 'No',
+        Level2CareCertificateValue: 'Yes, started',
+
         mainJob: {
           id: 1,
           title: 'Care Worker',
+          isCareProvidingRole: true,
+        },
+        socialCareQualification: {
+          level: 'Level 3',
         },
       },
     ],
   },
 ];
 
+const careCertAndQualificationLevelsForWorkplaceA = {
+  workplaceId: 1234,
+  workplaceName: 'mock care home 1',
+  careProvidingStaffsCount: 2,
+  careCertificate: {
+    'Yes, in progress or partially completed': 1,
+    No: 1,
+  },
+  level2CareCertificate: {
+    No: 1,
+    'Yes, completed': 1,
+  },
+  socialCareQualificationLevel: {
+    'Level 4': 0.5,
+    'Level 8 or above': 0.5,
+    'Level 2 or above': 1.0,
+    'Level 5 or above': 0.5,
+  },
+};
+
+const careCertAndQualificationLevelsForWorkplaceB = {
+  workplaceId: 2345,
+  workplaceName: 'mock care home 2',
+  careProvidingStaffsCount: 2,
+  careCertificate: {
+    'Yes, completed': 1,
+    No: 1,
+  },
+  level2CareCertificate: {
+    'Yes, started': 1,
+    null: 1,
+  },
+  socialCareQualificationLevel: {
+    'Level 2': 0.5,
+    'Level 3': 0.5,
+    'Level 2 or above': 1.0,
+    'Level 5 or above': 0.0,
+  },
+};
+
+const grandTotalCareCertAndQualificationLevelsForWorkplaceAAndB = {
+  careProvidingStaffsCount: 4,
+  careCertificate: {
+    'Yes, in progress or partially completed': 1,
+    'Yes, completed': 1,
+    No: 2,
+  },
+  level2CareCertificate: {
+    'Yes, started': 1,
+    null: 1,
+    No: 1,
+    'Yes, completed': 1,
+  },
+  socialCareQualificationLevel: {
+    'Level 2': 0.25,
+    'Level 3': 0.25,
+    'Level 4': 0.25,
+    'Level 8 or above': 0.25,
+    'Level 2 or above': 1.0,
+    'Level 5 or above': 0.25,
+  },
+};
+
+exports.careCertAndQualificationLevelsForWorkplaceA = careCertAndQualificationLevelsForWorkplaceA;
+exports.careCertAndQualificationLevelsForWorkplaceB = careCertAndQualificationLevelsForWorkplaceB;
+exports.grandTotalCareCertAndQualificationLevelsForWorkplaceAAndB =
+  grandTotalCareCertAndQualificationLevelsForWorkplaceAAndB;
+
+const today = dayjs().format('YYYY-MM-DD');
+const yesterday = dayjs().subtract(1, 'days').format('YYYY-MM-DD');
+const after90Days = dayjs().add(90, 'days').format('YYYY-MM-DD');
+const after89Days = dayjs().add(89, 'days').format('YYYY-MM-DD');
+
 exports.mockEstablishmentsTrainingResponse = [
   {
     id: 2320,
     NameValue: 'Nursing Home',
-    get() {
-      return '90';
-    },
+    expiresSoonAlertDate: '90',
+
     workers: [
       {
         id: 11169,
         mainJob: { id: 1, title: 'Activities worker or co-ordinator' },
+        NameOrIdValue: 'New staff record',
         get(property) {
-          if (property === 'NameOrIdValue') return 'New staff record';
-          if (property === 'mandatoryTrainingCategories') return ['Communication skills'];
-          if (property === 'LongTermAbsence') return null;
+          if (property === 'mandatoryTrainingCategories') {
+            return ['Communication skills'];
+          }
         },
+        LongTermAbsence: null,
+
         workerTraining: [
           {
-            get(property) {
-              if (property === 'category') return { category: 'Dementia care' };
-              if (property === 'Expires') {
-                const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
-                return expiryDate.setDate(expiryDate.getDate() - 1);
-              }
-              if (property === 'Completed') return '2020-01-01';
-              if (property === 'CategoryFK') return 10;
-              if (property === 'Title') return 'Great';
-              if (property === 'Accredited') return 'No';
-            },
+            category: { category: 'Dementia care' },
+            expires: yesterday,
+            completed: '2020-01-01',
+            categoryFk: 10,
+            title: 'Great',
+            accredited: 'No',
+
+            validityPeriodInMonth: 24,
+            trainingCertificatesCount: 1,
+            deliveredBy: TrainingCourseDeliveredBy.ExternalProvider,
+            trainingProviderName: 'Care skill training',
+            howWasItDelivered: TrainingCourseDeliveryMode.FaceToFace,
           },
           {
-            get(property) {
-              if (property === 'category') return { category: 'Old age care' };
-              if (property === 'Expires') {
-                const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
-                return expiryDate.setDate(expiryDate.getDate() + 90);
-              }
-              if (property === 'Completed') return '2020-01-01';
-              if (property === 'CategoryFK') return 5;
-              if (property === 'Title') return 'Old age care training';
-              if (property === 'Accredited') return 'Yes';
-            },
+            category: { category: 'Old age care' },
+            expires: after90Days,
+            completed: '2020-01-01',
+            categoryFk: 5,
+            title: 'Old age care training',
+            accredited: 'Yes',
+
+            validityPeriodInMonth: 12,
+            trainingCertificatesCount: 0,
+            deliveredBy: TrainingCourseDeliveredBy.InHouseStaff,
+            trainingProviderName: null,
+            howWasItDelivered: TrainingCourseDeliveryMode.FaceToFace,
           },
         ],
       },
       {
         id: 1131,
         mainJob: { id: 3, title: 'Care giver' },
+        NameOrIdValue: 'Another staff record',
         get(property) {
-          if (property === 'NameOrIdValue') return 'Another staff record';
-          if (property === 'mandatoryTrainingCategories') return ['Learning'];
-          if (property === 'LongTermAbsence') return 'Yes';
+          if (property === 'mandatoryTrainingCategories') {
+            return ['Learning'];
+          }
         },
+        LongTermAbsence: 'Illness',
+
         workerTraining: [
           {
-            get(property) {
-              if (property === 'category') return { category: 'Learning' };
-              if (property === 'Expires') {
-                const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
-                return expiryDate.setDate(expiryDate.getDate() + 89);
-              }
-              if (property === 'Completed') return '2020-01-01';
-              if (property === 'CategoryFK') return 10;
-              if (property === 'Title') return 'Test Training';
-              if (property === 'Accredited') return 'No';
-            },
+            category: { category: 'Learning' },
+            expires: after89Days,
+            completed: '2020-01-01',
+            categoryFk: 10,
+            title: 'Test Training',
+            accredited: 'No',
+
+            validityPeriodInMonth: null,
+            trainingCertificatesCount: 0,
+            deliveredBy: TrainingCourseDeliveredBy.ExternalProvider,
+            trainingProviderName: null,
+            howWasItDelivered: TrainingCourseDeliveryMode.ELearning,
           },
         ],
       },
@@ -534,34 +890,81 @@ exports.mockEstablishmentsTrainingResponse = [
   {
     id: 2320,
     NameValue: 'Care Home',
-    get() {
-      return '90';
-    },
+    expiresSoonAlertDate: '90',
     workers: [
       {
         id: 11169,
         mainJob: { id: 1, title: 'Activities worker and care' },
+        NameOrIdValue: 'Test staff record',
         get(property) {
-          if (property === 'NameOrIdValue') return 'Test staff record';
-          if (property === 'mandatoryTrainingCategories') return ['Autism'];
-          if (property === 'LongTermAbsence') return null;
+          if (property === 'mandatoryTrainingCategories') {
+            return ['Autism'];
+          }
         },
+        LongTermAbsence: null,
+
         workerTraining: [
           {
-            get(property) {
-              if (property === 'category') return { category: 'Dementia care' };
-              if (property === 'Expires') {
-                const expiryDate = new Date(new Date().setHours(0, 0, 0, 0));
-                return expiryDate.setDate(expiryDate.getDate());
-              }
-              if (property === 'Completed') return '2014-01-01';
-              if (property === 'CategoryFK') return 3;
-              if (property === 'Title') return 'Helen';
-              if (property === 'Accredited') return 'No';
-            },
+            category: { category: 'Dementia care' },
+            expires: today,
+            completed: '2014-01-01',
+            categoryFk: 3,
+            title: 'Helen',
+            accredited: 'No',
+
+            validityPeriodInMonth: 60,
+            trainingCertificatesCount: 2,
+            deliveredBy: TrainingCourseDeliveredBy.ExternalProvider,
+            trainingProviderName: 'Care skill academy',
+            howWasItDelivered: TrainingCourseDeliveryMode.FaceToFace,
           },
         ],
       },
     ],
   },
 ];
+
+const mockSummaryTabDataForWorkplaceA = {
+  workplaceId: 1234,
+  workplaceName: 'mock care home 1',
+  trainingBreakdownTotals: totalCountsForMockWorkplaceA,
+  careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceA,
+};
+
+const mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining = {
+  workplaceId: 1234,
+  workplaceName: 'mock care home 1',
+  trainingBreakdownTotals: totalCountsForMockWorkplaceAWithoutMandatoryTraining,
+  careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceA,
+};
+
+const mockSummaryTabDataForWorkplaceAWithNoCareProvidingStaffs = {
+  workplaceId: 1234,
+  workplaceName: 'mock care home 1',
+  trainingBreakdownTotals: totalCountsForMockWorkplaceAWithoutMandatoryTraining,
+  careCertAndQualificationLevels: {
+    careProvidingStaffsCount: 0,
+  },
+};
+
+const mockSummaryTabDataForWorkplaceB = {
+  workplaceId: 2345,
+  workplaceName: 'mock care home 2',
+  trainingBreakdownTotals: totalCountsForMockWorkplaceB,
+  careCertAndQualificationLevels: careCertAndQualificationLevelsForWorkplaceB,
+};
+
+exports.mockSummaryTabDataForWorkplaceA = mockSummaryTabDataForWorkplaceA;
+exports.mockSummaryTabDataForWorkplaceB = mockSummaryTabDataForWorkplaceB;
+exports.mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining =
+  mockSummaryTabDataForWorkplaceAWithoutMandatoryTraining;
+exports.mockSummaryTabDataForWorkplaceAWithNoCareProvidingStaffs =
+  mockSummaryTabDataForWorkplaceAWithNoCareProvidingStaffs;
+
+exports.mockSummaryTabDataForParent = {
+  total: {
+    trainingBreakdownTotals: grandTotalCountsForMockWorkplaceAAndB,
+    careCertAndQualificationLevels: grandTotalCareCertAndQualificationLevelsForWorkplaceAAndB,
+  },
+  workplacesData: [mockSummaryTabDataForWorkplaceA, mockSummaryTabDataForWorkplaceB],
+};

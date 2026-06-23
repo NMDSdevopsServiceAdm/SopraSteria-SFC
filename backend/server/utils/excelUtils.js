@@ -1,3 +1,9 @@
+const colCache = require('exceljs/lib/utils/col-cache');
+const excelJS = require('exceljs');
+const lodash = require('lodash');
+
+//  ===== constants definitions =====
+
 exports.blueBackground = {
   type: 'pattern',
   pattern: 'solid',
@@ -11,6 +17,254 @@ const fullBorder = {
   right: { style: 'thin' },
 };
 exports.fullBorder = fullBorder;
+
+const standardFont = { name: 'Serif', family: 4, size: 12 };
+exports.standardFont = standardFont;
+
+const newStandardFont = { family: 4, size: 12 };
+exports.newStandardFont = newStandardFont;
+
+const textBoxAlignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+exports.textBoxAlignment = textBoxAlignment;
+
+const alignments = {
+  middleLeft: { vertical: 'middle', horizontal: 'left' },
+  middleCenter: { vertical: 'middle', horizontal: 'center' },
+  bottomCenter: { vertical: 'bottom', horizontal: 'center' },
+  topLeft: { vertical: 'top', horizontal: 'left' },
+  bottomLeft: { vertical: 'bottom', horizontal: 'left' },
+  bottomRight: { vertical: 'bottom', horizontal: 'right' },
+  middleRight: { vertical: 'middle', horizontal: 'right' },
+
+  middleCenterWrapText: { vertical: 'middle', horizontal: 'center', wrapText: true },
+  topLeftWrapText: { vertical: 'top', horizontal: 'left', wrapText: true },
+  middleLeftWrapText: { vertical: 'middle', horizontal: 'left', wrapText: true },
+};
+
+exports.alignments = alignments;
+
+exports.backgroundColours = {
+  yellow: { argb: 'FFEA99' },
+  blue: { argb: '0050AB' },
+  red: { argb: 'FFC0C8' },
+  green: { argb: 'BBEDC9' },
+  lightBlue: { argb: 'A3CBFA' },
+  darkBlue: { argb: '5981B8' },
+};
+
+exports.textColours = {
+  yellow: { argb: '945B19' },
+  white: { argb: 'FFFFFF' },
+  red: { argb: '960512' },
+  green: { argb: '005713' },
+  black: { argb: '000000' },
+  blue: { argb: '0050AB' },
+};
+
+const newBackgroundColours = {
+  lightGrey: { argb: 'EFEFEF' },
+  white: { argb: 'FFFFFF' },
+  green: { argb: '34A853' },
+  orange: { argb: 'FF7C1C' },
+  red: { argb: 'EA4335' },
+  darkBlue: { argb: '1A65A6' },
+  lightBlue: { argb: 'DBE8FF' },
+  black: { argb: '000000' },
+};
+
+const newTextColours = {
+  darkBlue: { argb: '1A65A6' },
+  white: { argb: 'FFFFFF' },
+  black: { argb: '000000' },
+  linkBlue: { argb: '0000FF' },
+};
+
+exports.newBackgroundColours = newBackgroundColours;
+exports.newTextColours = newTextColours;
+
+const borderColours = {
+  lightGrey: { argb: 'CCCCCC' },
+  black: { argb: '000000' },
+};
+exports.borderColours = borderColours;
+
+const lightGreyBorderTopAndBottom = {
+  top: { style: 'thin', color: borderColours.lightGrey },
+  bottom: { style: 'thin', color: borderColours.lightGrey },
+};
+
+const blackBorderLeftAndRight = {
+  left: { style: 'thin', color: borderColours.black },
+  right: { style: 'thin', color: borderColours.black },
+};
+
+const blackBorderTopAndBottom = {
+  top: { style: 'thin', color: borderColours.black },
+  bottom: { style: 'thin', color: borderColours.black },
+};
+
+const blackBorderBottom = {
+  bottom: { style: 'thin', color: borderColours.black },
+};
+
+const blackBorderAllSides = { ...blackBorderLeftAndRight, ...blackBorderTopAndBottom };
+
+const thickBlackBorderLeft = {
+  left: { style: 'thick', color: borderColours.black },
+};
+
+const thickBlackBorderRight = {
+  right: { style: 'thick', color: borderColours.black },
+};
+
+const borderStyles = {
+  tableCell: { ...blackBorderLeftAndRight, ...lightGreyBorderTopAndBottom },
+  lightGreyBorderTopAndBottom,
+  blackBorderLeftAndRight,
+  blackBorderTopAndBottom,
+  blackBorderAllSides,
+  thickBlackBorderLeft,
+  thickBlackBorderRight,
+};
+exports.borderStyles = borderStyles;
+
+const tableDataCellStyle = {
+  font: { size: 12, family: 4 },
+  border: borderStyles.tableCell,
+  alignment: { vertical: 'middle', horizontal: 'left' },
+};
+
+const tableHeaderCellStyle = {
+  font: { size: 12, family: 4, bold: true },
+  fill: { type: 'pattern', pattern: 'solid', fgColor: newBackgroundColours.lightGrey },
+  border: borderStyles.blackBorderAllSides,
+  alignment: { vertical: 'middle', horizontal: 'left' },
+};
+
+exports.tableDataCellStyle = tableDataCellStyle;
+exports.tableHeaderCellStyle = tableHeaderCellStyle;
+
+exports.setBasicTableStyle = (
+  tab,
+  tableRange,
+  { hasTotalRow = true, alignHorizontalCenter = true, bold = false } = {},
+) => {
+  const { top, left, bottom, right } = colCache.decode(tableRange);
+
+  const headerRange = colCache.encode(top, left, top, right);
+  const lastDataCellRow = hasTotalRow ? bottom - 1 : bottom;
+  const dataCellsRange = colCache.encode(top + 1, left, lastDataCellRow, right);
+
+  const dataCellStyle = lodash.cloneDeep(tableDataCellStyle);
+  const headerCellStyle = lodash.cloneDeep(tableHeaderCellStyle);
+
+  if (bold) {
+    dataCellStyle.font.bold = true;
+    headerCellStyle.font.bold = true;
+  }
+
+  if (alignHorizontalCenter) {
+    dataCellStyle.alignment.horizontal = 'center';
+    headerCellStyle.alignment.horizontal = 'center';
+  }
+
+  applyStyleToRange(tab, headerRange, headerCellStyle);
+  applyStyleToRange(tab, dataCellsRange, dataCellStyle);
+
+  const lastRowRange = colCache.encode(bottom, left, bottom, right);
+
+  if (hasTotalRow) {
+    applyStyleToRange(tab, lastRowRange, headerCellStyle);
+  } else {
+    applyStyleToRange(tab, lastRowRange, { border: blackBorderBottom });
+  }
+};
+
+const colourSchemeForTrainingExpiry = [
+  { text: 'Expired', colour: newBackgroundColours.red },
+  { text: 'Expiring soon', colour: newBackgroundColours.orange },
+  { text: 'Up-to-date', colour: newBackgroundColours.green },
+  { text: 'Missing', colour: newBackgroundColours.red },
+];
+
+const basicStyleForParentSummaryTable = {
+  font: { size: 12, family: 4, bold: true },
+  fill: { type: 'pattern', pattern: 'solid', fgColor: newBackgroundColours.white },
+  border: borderStyles.blackBorderAllSides,
+  alignment: { vertical: 'middle', horizontal: 'center' },
+};
+const getCellStyleForParentSummary = (columnName) => {
+  switch (columnName) {
+    case 'Workplace': {
+      return { font: { bold: false }, alignment: alignments.middleLeft };
+    }
+    case 'Expired':
+    case 'Missing records': {
+      return lodash.merge({}, basicStyleForParentSummaryTable, { fill: { fgColor: newBackgroundColours.red } });
+    }
+    case 'Expiring soon': {
+      return lodash.merge({}, basicStyleForParentSummaryTable, { fill: { fgColor: newBackgroundColours.orange } });
+    }
+    case 'Up-to-date': {
+      return lodash.merge({}, basicStyleForParentSummaryTable, { fill: { fgColor: newBackgroundColours.green } });
+    }
+    case 'Completed':
+    case 'Started':
+    case 'Not started':
+    case 'Level 2 or higher': {
+      return lodash.merge({}, basicStyleForParentSummaryTable, {
+        fill: { fgColor: newBackgroundColours.darkBlue },
+        font: { color: newTextColours.white },
+      });
+    }
+
+    case 'Level 2':
+    case 'Level 3':
+    case 'Level 4':
+    case 'Level 5 or above': {
+      return lodash.merge({}, basicStyleForParentSummaryTable, {
+        fill: { fgColor: newBackgroundColours.lightBlue },
+        font: { color: newTextColours.darkBlue },
+      });
+    }
+  }
+
+  return basicStyleForParentSummaryTable;
+};
+
+exports.colourSchemeForTrainingExpiry = colourSchemeForTrainingExpiry;
+exports.getCellStyleForParentSummary = getCellStyleForParentSummary;
+
+exports.conditionalColoursForTrainingExpiry = colourSchemeForTrainingExpiry.map(({ text, colour }) => {
+  return {
+    type: 'containsText',
+    operator: 'containsText',
+    text,
+    style: {
+      fill: { type: 'pattern', pattern: 'solid', bgColor: colour },
+      font: { bold: true, size: 12, family: 4 },
+      border: borderStyles.blackBorderAllSides,
+    },
+  };
+});
+
+exports.defaultDateFormat = 'd mmm yyyy';
+
+const MissingRecordsExplanationText = {
+  richText: [
+    { font: { size: 12, bold: true, family: 4 }, text: 'Missing records.' },
+    {
+      font: {
+        size: 12,
+        family: 4,
+      },
+      text: ' If a training category is mandatory, you must add a record for everybody who needs that training. Note, missing records may include training not yet taken by new starters.',
+    },
+  ],
+};
+exports.MissingRecordsExplanationText = MissingRecordsExplanationText;
+
+//  ===== helper methods =====
 
 function eachColumnInRange(ws, col1, col2, cb) {
   for (let c = col1; c <= col2; c++) {
@@ -100,6 +354,25 @@ exports.fitColumnsToSize = function (ws, startingColumn = 1, customWidth = 2.21)
   });
 };
 
+exports.autoFitColumnWidthByTextLength = function (worksheet, columnLetter, fontsize = 12) {
+  const cells = [];
+  const column = worksheet.getColumn(columnLetter);
+  column.eachCell((cell) => cells.push(cell));
+
+  const cellsToConsider = cells.filter(
+    (cell) => !cell.isMerged && cell.value?.length > 0 && cell.type === excelJS.ValueType.String,
+  );
+  if (!cellsToConsider.length) {
+    return;
+  }
+
+  const maxTextLength = Math.max(...cellsToConsider.map((cell) => cell.value.length));
+  const currentWidth = column.width ?? 0;
+  const newColumnWidth = (maxTextLength * fontsize) / 12.8;
+
+  column.width = Math.max(currentWidth, newColumnWidth);
+};
+
 const addBorder = (worksheet, cell) => {
   worksheet.getCell(cell).border = {
     ...fullBorder,
@@ -145,11 +418,64 @@ exports.addLine = (worksheet, startCell, endCell) => {
   };
 };
 
-const standardFont = { name: 'Serif', family: 4, size: 12 };
-exports.standardFont = standardFont;
+const addText = (tab, range, content, fontOptions = {}, otherStyleOptions = {}) => {
+  const [startCell, endCell] = range.split(':');
+  if (endCell) {
+    tab.mergeCells(`${startCell}:${endCell}`);
+  }
 
-const textBoxAlignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
-exports.textBoxAlignment = textBoxAlignment;
+  const font = { family: 4, size: 12, ...fontOptions };
+  const cell = tab.getCell(startCell);
+  cell.value = content;
+
+  const styleToApply = { font, ...otherStyleOptions };
+
+  applyStyleToCell(cell, styleToApply);
+};
+exports.addText = addText;
+
+exports.addLink = (tab, range, { text, hyperlink }, fontOptions = {}) => {
+  const fontWithLinkStyle = { color: newTextColours.linkBlue, underline: true, ...fontOptions };
+  const content = { text, hyperlink };
+
+  return addText(tab, range, content, fontWithLinkStyle);
+};
+
+const applyStyleToCell = (cell, styleChanges) => {
+  cell.style = lodash.merge({}, cell.style, styleChanges);
+};
+exports.applyStyleToCell = applyStyleToCell;
+
+const applyStyleToRange = (tab, range, styleChanges) => {
+  forEachCellInRange(tab, range, (cell) => {
+    applyStyleToCell(cell, styleChanges);
+  });
+};
+exports.applyStyleToRange = applyStyleToRange;
+
+const setColourForCell = (cell, { backgroundColour = null, textColour = null }) => {
+  const newCellStyle = {};
+  if (backgroundColour) {
+    newCellStyle.fill = { type: 'pattern', pattern: 'solid', fgColor: backgroundColour };
+  }
+  if (textColour) {
+    newCellStyle.font = { color: textColour };
+  }
+  applyStyleToCell(cell, newCellStyle);
+};
+exports.setColourForCell = setColourForCell;
+
+exports.setColourForRange = (tab, range, { backgroundColour = null, textColour = null }) => {
+  if (!backgroundColour && !textColour) {
+    return;
+  }
+
+  const callback = (cell) => {
+    setColourForCell(cell, { backgroundColour, textColour });
+  };
+
+  forEachCellInRange(tab, range, callback);
+};
 
 exports.setTableHeadingsStyle = (tab, currentLineNumber, backgroundColour, textColour, cellColumns) => {
   tab.getRow(currentLineNumber).alignment = { horizontal: 'center' };
@@ -173,7 +499,7 @@ exports.setCellTextAndBackgroundColour = (tab, cellCoordinate, backgroundColour,
     fgColor: backgroundColour,
   };
 
-  cell.font = { color: textColour };
+  cell.font = { ...cell.font, color: textColour };
 };
 
 exports.alignColumnToLeft = (tab, colNumber) => {
@@ -189,24 +515,6 @@ exports.addBlankRowIfTableEmpty = (tableObject, noOfColumns) => {
   }
 };
 
-exports.backgroundColours = {
-  yellow: { argb: 'FFEA99' },
-  blue: { argb: '0050AB' },
-  red: { argb: 'FFC0C8' },
-  green: { argb: 'BBEDC9' },
-  lightBlue: { argb: 'A3CBFA' },
-  darkBlue: { argb: '5981B8' },
-};
-
-exports.textColours = {
-  yellow: { argb: '945B19' },
-  white: { argb: 'FFFFFF' },
-  red: { argb: '960512' },
-  green: { argb: '005713' },
-  black: { argb: '000000' },
-  blue: { argb: '0050ab' },
-};
-
 exports.makeRowBold = (tab, rowNumber) => {
   tab.getRow(rowNumber).font = { bold: true };
 };
@@ -218,3 +526,124 @@ exports.setColumnWidths = (tab) => {
   longColumn.width = 33;
   longColumnsecond.width = 29;
 };
+
+const listRows = (startRow, endRow) => {
+  if (endRow < startRow) {
+    return listRows(endRow, startRow);
+  }
+
+  return Array(endRow - startRow + 1)
+    .fill(null)
+    .map((_, index) => startRow + index);
+};
+
+const columnLabelToNumber = (columnLabel) => colCache.l2n(columnLabel);
+const numberToColumnLabel = (number) => colCache.n2l(number);
+
+const forEachCellInRange = (tab, range, callback) => {
+  const { columns, rows } = parseRange(range);
+  rows.forEach((row) => {
+    columns.forEach((column) => {
+      const cell = tab.getRow(row).getCell(column);
+      callback(cell);
+    });
+  });
+};
+exports.forEachCellInRange = forEachCellInRange;
+
+exports.forEachColumnInRange = (tab, range, callback) => {
+  const { columns } = parseRange(range);
+  columns.forEach((columnLabel) => {
+    const column = tab.getColumn(columnLabel);
+    callback(column);
+  });
+};
+
+const parseRange = (range) => {
+  const regex = /^([A-Z]+)(\d+):([A-Z]+)(\d+)$/i;
+  const match = range.match(regex);
+
+  if (!match) {
+    return {};
+  }
+
+  const { top, left, bottom, right } = colCache.decode(range);
+
+  const startColumn = left;
+  const endColumn = right;
+  const startRow = top;
+  const endRow = bottom;
+
+  const rows = listRows(startRow, endRow);
+  const columns = listRows(startColumn, endColumn).map(numberToColumnLabel);
+
+  return { columns, rows };
+};
+
+exports.parseRange = parseRange;
+
+const rangeOfNumber = (startNumber, endNumber) => {
+  if (startNumber > endNumber) {
+    return rangeOfNumber(endNumber, startNumber);
+  }
+  const count = endNumber - startNumber;
+  return Array(count)
+    .fill(null)
+    .map((_, index) => {
+      return startNumber + index;
+    });
+};
+
+exports.rangeOfNumber = rangeOfNumber;
+
+exports.autoAdjustWrapTextAndRowHeight = (tab, cell) => {
+  if (cell.type !== excelJS.ValueType.String || !cell.value?.length) {
+    return;
+  }
+
+  applyStyleToCell(cell, { alignment: { wrapText: true } });
+  const row = tab.getRow(cell.row);
+
+  row.height = undefined; // to trigger excel's internal auto fit adjustment
+};
+
+const drawColourBoxWithBorder = (tab, range, { backgroundColour = null, textColour = null }) => {
+  const { top, left, bottom, right } = colCache.decode(range);
+
+  const newCellStyle = {};
+  if (backgroundColour) {
+    newCellStyle.fill = { type: 'pattern', pattern: 'solid', fgColor: backgroundColour };
+  }
+  if (textColour) {
+    newCellStyle.font = { color: textColour };
+  }
+
+  forEachCellInRange(tab, range, (cell) => {
+    const { col, row } = colCache.decode(cell.address);
+
+    const border = checkCellBorders({ top, left, bottom, right, col, row });
+
+    applyStyleToCell(cell, { ...newCellStyle, border });
+  });
+};
+
+exports.drawColourBoxWithBorder = drawColourBoxWithBorder;
+
+function checkCellBorders({ top, left, bottom, right, col, row }, borderStyle = null) {
+  borderStyle = borderStyle ?? { style: 'thin', color: borderColours.black };
+
+  let borders = {};
+  if (top === row) {
+    borders.top = borderStyle;
+  }
+  if (bottom === row) {
+    borders.bottom = borderStyle;
+  }
+  if (left === col) {
+    borders.left = borderStyle;
+  }
+  if (right === col) {
+    borders.right = borderStyle;
+  }
+  return borders;
+}

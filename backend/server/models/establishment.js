@@ -2277,6 +2277,7 @@ module.exports = function (sequelize, DataTypes) {
     let attributes = [
       'id',
       'NameOrIdValue',
+      'LongTermAbsence',
       [
         sequelize.literal(
           `
@@ -2292,7 +2293,6 @@ module.exports = function (sequelize, DataTypes) {
         ),
         'mandatoryTrainingCategories',
       ],
-      'LongTermAbsence',
     ];
     let subsidiaries = [];
     if (isParent) {
@@ -2309,7 +2309,7 @@ module.exports = function (sequelize, DataTypes) {
       ];
     }
     return this.findAll({
-      attributes: ['id', 'NameValue', 'ExpiresSoonAlertDate'],
+      attributes: ['id', 'NameValue', 'expiresSoonAlertDate'],
       where: {
         [Op.or]: [
           {
@@ -2335,9 +2335,19 @@ module.exports = function (sequelize, DataTypes) {
               required: false,
             },
             {
-              model: sequelize.models.workerTraining,
+              model: sequelize.models.workerTraining.scope(['withProviderData', 'withCertificateData']),
               as: 'workerTraining',
-              attributes: ['CategoryFK', 'Title', 'Expires', 'Completed', 'Accredited'],
+              attributes: [
+                'categoryFk',
+                'title',
+                'expires',
+                'completed',
+                'accredited',
+                'validityPeriodInMonth',
+                'deliveredBy',
+                'howWasItDelivered',
+                'otherTrainingProviderName',
+              ],
               required: false,
               include: [
                 {
@@ -2397,9 +2407,9 @@ module.exports = function (sequelize, DataTypes) {
               required: false,
             },
             {
-              model: sequelize.models.workerQualifications,
+              model: sequelize.models.workerQualifications.scope('withCertificateData'),
               as: 'qualifications',
-              attributes: ['Year'],
+              attributes: ['year', 'id'],
               include: [
                 {
                   model: sequelize.models.workerAvailableQualifications,
@@ -2446,9 +2456,13 @@ module.exports = function (sequelize, DataTypes) {
         {
           model: sequelize.models.worker,
           as: 'workers',
-          attributes: ['NameOrIdValue', 'CareCertificateValue'],
+          attributes: [
+            'NameOrIdValue',
+            'CareCertificateValue',
+            'Level2CareCertificateValue',
+            'SocialCareQualificationFkValue',
+          ],
           where: {
-            CareCertificateValue: { [Op.ne]: null },
             archived: false,
           },
           required: false,
@@ -2456,7 +2470,13 @@ module.exports = function (sequelize, DataTypes) {
             {
               model: sequelize.models.job,
               as: 'mainJob',
-              attributes: ['id', 'title'],
+              attributes: ['id', 'title', 'isCareProvidingRole'],
+              required: false,
+            },
+            {
+              model: sequelize.models.qualification,
+              as: 'socialCareQualification',
+              attributes: ['id', 'level'],
               required: false,
             },
           ],

@@ -2,12 +2,28 @@ const excelJS = require('exceljs');
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 const moment = require('moment');
-const { generateHowToTab } = require('../howToTab');
-const { generateSummaryTab } = require('./parentSummaryTab');
-const { generateTrainingTab } = require('../trainingTab');
-const { generateQualificationsTab } = require('../qualificationsTab');
+
+const Authorization = require('../../../../utils/security/isAuthenticated');
+const { hasPermission } = require('../../../../utils/security/hasPermission');
+
+const { generateParentSummaryTab } = require('./parentSummaryTab');
 const { generateCareCertificateTab } = require('../careCertificateTab');
 const models = require('../../../../models');
+const { generateIntroTab } = require('../introTab');
+const { generateTrainingRecordDetailsTab } = require('../trainingRecordDetailsTab');
+const { generateExpiredTrainingTab } = require('../expiredTrainingTab');
+const { generateTrainingByStaffTab } = require('../trainingByStaffTab');
+const { generateTrainingByCategoryTab } = require('../trainingByCategoryTab');
+const {
+  convertTrainingForEstablishments,
+  listAllExistingAndMissingTrainings,
+  convertWorkersWithCareCertificateStatus,
+  buildWorkerTrainingBreakdown,
+  buildWorkplaceSummaryData,
+  buildTrainingCategorySummary,
+} = require('../../../../utils/trainingAndQualificationsUtils');
+const { generateQualificationRecordDetailsTab } = require('../qualificationRecordDetailsTab');
+const { getRawDataForTrainingAndQualificationsReport } = require('../getRawData');
 
 const generateParentTrainingAndQualificationsReport = async (req, res) => {
   try {
@@ -18,11 +34,37 @@ const generateParentTrainingAndQualificationsReport = async (req, res) => {
     workbook.creator = 'Skills-For-Care';
     workbook.properties.date1904 = true;
 
-    generateHowToTab(workbook, true);
-    await generateSummaryTab(workbook, establishment.id);
-    await generateTrainingTab(workbook, establishment.id, true);
-    await generateQualificationsTab(workbook, establishment.id, true);
-    await generateCareCertificateTab(workbook, establishment.id, true);
+    const rawData = await getRawDataForTrainingAndQualificationsReport(establishment.id, true);
+
+    const careCertificateStatus = convertWorkersWithCareCertificateStatus(
+      rawData.rawEstablishmentCareCertificateStatus,
+    );
+
+    const workerTrainingBreakdowns = await buildWorkerTrainingBreakdown(rawData.rawEstablishmentTrainingBreakdowns);
+    const summaryTabData = buildWorkplaceSummaryData(
+      workerTrainingBreakdowns,
+      rawData.rawEstablishmentCareCertificateStatus,
+    );
+
+    generateIntroTab(workbook, establishment);
+    await generateParentSummaryTab(workbook, establishment, summaryTabData);
+
+    const rawEstablishmentWithTrainingRecords = await models.establishment.getEstablishmentTrainingRecords(
+      establishment.id,
+      true,
+    );
+    const establishmentWithTrainingRecords = convertTrainingForEstablishments(rawEstablishmentWithTrainingRecords);
+    const allTrainingRecordsAndMissingTrainings = listAllExistingAndMissingTrainings(establishmentWithTrainingRecords);
+
+    const trainingByCategoryBreakdowns = buildTrainingCategorySummary(establishmentWithTrainingRecords, true);
+
+    await generateTrainingByStaffTab(workbook, workerTrainingBreakdowns, true);
+    await generateTrainingByCategoryTab(workbook, trainingByCategoryBreakdowns, true);
+
+    await generateExpiredTrainingTab(workbook, allTrainingRecordsAndMissingTrainings, true);
+    await generateTrainingRecordDetailsTab(workbook, allTrainingRecordsAndMissingTrainings, true);
+    await generateCareCertificateTab(workbook, careCertificateStatus, true);
+    await generateQualificationRecordDetailsTab(workbook, establishment.id, true);
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader(
@@ -38,7 +80,13 @@ const generateParentTrainingAndQualificationsReport = async (req, res) => {
   }
 };
 
-router.route('/:id/report').get(generateParentTrainingAndQualificationsReport);
+router
+  .route('/:id/report')
+  .get(
+    Authorization.hasAuthorisedEstablishment,
+    hasPermission('canViewEstablishment'),
+    generateParentTrainingAndQualificationsReport,
+  );
 
 module.exports = router;
 module.exports.generateParentTrainingAndQualificationsReport = generateParentTrainingAndQualificationsReport;
