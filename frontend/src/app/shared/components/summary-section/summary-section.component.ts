@@ -101,8 +101,23 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     this.setupUpdateBanner();
   }
 
-  public async onClick(event: Event, fragment: string, route: string[], skipTabSwitch: boolean = false): Promise<void> {
+  public async onClick(
+    event: Event,
+    fragment: string,
+    route: string[],
+    skipTabSwitch: boolean = false,
+    message?: string,
+  ): Promise<void> {
     event.preventDefault();
+
+    if (message === 'You’ve not added any staff records in the last 12 months') {
+      const payload = {
+        property: 'lastStaffRecordMessageDismissedAt',
+        value: new Date(),
+      };
+      this.setCwpAwarenessQuestionViewed();
+    }
+
     if (this.payAndPensionWorkplaceQuestionsLinkDisplaying && fragment == 'workplace') {
       this.payAndPensionService.setInPayAndPensionsMiniFlow(true);
       this.setPayAndPensionsMiniFlowViewed();
@@ -212,6 +227,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     }
 
     const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
+    const lastStaffRecordMessageDismissedAt = dayjs(this.workplace.lastStaffRecordMessageDismissedAt).add(12, 'M');
     if (!this.workerCount) {
       this.sections[1].message = 'Start adding your staff records';
     } else if (this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0) {
@@ -245,9 +261,10 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     } else if (
       dayjs() >= afterWorkplaceCreated &&
       this.workplace.numberOfStaff > 10 &&
-      dayjs() >= this.getWorkerLatestCreatedDate()
+      dayjs() >= this.getWorkerLatestCreatedDate() &&
+      (!this.workplace.lastStaffRecordMessageDismissedAt || dayjs() >= lastStaffRecordMessageDismissedAt)
     ) {
-      this.sections[1].message = 'No staff records added in the last 12 months';
+      this.sections[1].message = 'You’ve not added any staff records in the last 12 months';
     } else if (this.workersNotCompleted?.length > 0 && this.getStaffCreatedDate()) {
       this.sections[1].message = 'Add more details to your staff records';
       if (this.isParentSubsidiaryView) {
@@ -330,9 +347,14 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   }
 
   private updateSingleEstablishmentField(dataToUpdate: any): void {
-    this.subscriptions.add(
-      this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, dataToUpdate).subscribe(),
-    );
+    this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, dataToUpdate).subscribe((response) => {
+      console.log('ress', response);
+      if (!response?.data) {
+        return;
+      }
+
+      this.workplace.lastStaffRecordMessageDismissedAt = response.data.lastStaffRecordMessageDismissedAt;
+    });
   }
 
   private setCwpAwarenessQuestionViewed(): void {
