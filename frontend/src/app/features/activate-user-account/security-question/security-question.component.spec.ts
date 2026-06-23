@@ -13,9 +13,10 @@ import { fireEvent, render } from '@testing-library/angular';
 import { ActivateUserAccountModule } from '../activate-user-account.module';
 import { SecurityQuestionComponent } from './security-question.component';
 
-describe('SecurityQuestionComponent', () => {
-  async function setup(insideActivationFlow = true) {
-    const { getByText, getByTestId, fixture, getAllByText } = await render(SecurityQuestionComponent, {
+fdescribe('SecurityQuestionComponent', () => {
+  async function setup(overrides: any = {}) {
+    const insideActivationFlow = overrides?.insideActivationFlow ?? true;
+    const setupTools = await render(SecurityQuestionComponent, {
       imports: [SharedModule, RouterModule, ActivateUserAccountModule],
       providers: [
         BackLinkService,
@@ -52,19 +53,16 @@ describe('SecurityQuestionComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
-    const spy = spyOn(router, 'navigate');
-    spy.and.returnValue(Promise.resolve(true));
+    const routerSpy = spyOn(router, 'navigate');
+    routerSpy.and.returnValue(Promise.resolve(true));
 
     return {
+      ...setupTools,
       component,
-      fixture,
       router,
-      spy,
-      getByTestId,
-      getByText,
-      getAllByText,
+      routerSpy,
     };
   }
 
@@ -157,8 +155,9 @@ describe('SecurityQuestionComponent', () => {
     expect(getAllByText('Answer must be 255 characters or fewer', { exact: false }).length).toBe(2);
   });
 
-  it('should navigate to confirm-details if form is valid', async () => {
-    const { component, spy, fixture, getByText } = await setup();
+  it('should navigate to user-research-invite when submitting form in the flow', async () => {
+    const { component, routerSpy, getByText, fixture } = await setup({ insideActivationFlow: true });
+
     const form = component.form;
 
     form.controls['securityQuestion'].markAsDirty();
@@ -169,17 +168,15 @@ describe('SecurityQuestionComponent', () => {
 
     const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
+    fixture.detectChanges();
 
     expect(form.valid).toBeTruthy();
-    expect(spy).toHaveBeenCalledWith(['/activate-account', '78kkh676', 'confirm-account-details']);
+    expect(routerSpy).toHaveBeenCalledWith(['/activate-account', '78kkh676', 'user-research-invite']);
   });
 
-  it('should navigate to confirm-details when submitting form and not in the flow', async () => {
-    const { component, spy, getByText, fixture } = await setup(false);
-
+  it('should navigate to confirm-account-details when submitting form if not in the flow', async () => {
+    const { component, routerSpy, getByText } = await setup({ insideActivationFlow: false });
     const form = component.form;
-
-    component.return = { url: ['/activate-account', '78kkh676', 'confirm-account-details'] };
 
     form.controls['securityQuestion'].markAsDirty();
     form.controls['securityQuestion'].setValue('question');
@@ -189,9 +186,8 @@ describe('SecurityQuestionComponent', () => {
 
     const submitButton = getByText('Save and return');
     fireEvent.click(submitButton);
-    fixture.detectChanges();
 
     expect(form.valid).toBeTruthy();
-    expect(spy).toHaveBeenCalledWith(['/activate-account', '78kkh676', 'confirm-account-details']);
+    expect(routerSpy).toHaveBeenCalledWith(['/activate-account', '78kkh676', 'confirm-account-details']);
   });
 });
