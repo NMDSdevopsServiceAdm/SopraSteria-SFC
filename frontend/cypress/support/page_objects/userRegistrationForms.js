@@ -13,6 +13,10 @@ export function fillUserRegistrationForm({ username, password }) {
   cy.getByLabel('Security question').type('What is the colour of a green orange?');
   cy.getByLabel('Answer').type('green');
   cy.get('button').contains('Continue').click();
+
+  cy.get('h1').should('contain.text', 'Would you like to take part in our user research sessions?');
+  cy.getByLabel('Yes').click();
+  cy.get('button').contains('Continue').click();
 }
 
 export function createUserWithinWorkplace({ userFullName, username, password }) {
