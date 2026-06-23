@@ -20,7 +20,7 @@ import { of } from 'rxjs';
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
 
-fdescribe('Summary section', () => {
+describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(SummarySectionComponent, {
       imports: [SharedModule, RouterModule],
@@ -380,31 +380,19 @@ fdescribe('Summary section', () => {
           vacanciesSavedAt: moreThanOneYearAgo,
           startersSavedAt: moreThanOneYearAgo,
           leaversSavedAt: moreThanOneYearAgo,
-<<<<<<< HEAD
-          expected: 'Update your staff vacancy, starters and leavers data',
-=======
           expected: 'Update your starter, leaver and vacancy data',
->>>>>>> 0e1fff84c (implement VLS updated date flags)
         },
         {
           vacanciesSavedAt: moreThanOneYearAgo,
           startersSavedAt: moreThanOneYearAgo,
           leaversSavedAt: lessThanOneYearAgo,
-<<<<<<< HEAD
           expected: 'Update your staff vacancy and starters data',
-=======
-          expected: 'Update your staff vacancy data',
->>>>>>> 0e1fff84c (implement VLS updated date flags)
         },
         {
           vacanciesSavedAt: moreThanOneYearAgo,
           startersSavedAt: lessThanOneYearAgo,
           leaversSavedAt: moreThanOneYearAgo,
-<<<<<<< HEAD
           expected: 'Update your staff vacancy and leavers data',
-=======
-          expected: 'Update your staff vacancy data',
->>>>>>> 0e1fff84c (implement VLS updated date flags)
         },
         {
           vacanciesSavedAt: lessThanOneYearAgo,
@@ -418,7 +406,6 @@ fdescribe('Summary section', () => {
           leaversSavedAt: lessThanOneYearAgo,
           expected: 'Update your staff vacancy data',
         },
-<<<<<<< HEAD
         {
           vacanciesSavedAt: lessThanOneYearAgo,
           startersSavedAt: moreThanOneYearAgo,
@@ -430,20 +417,19 @@ fdescribe('Summary section', () => {
           startersSavedAt: lessThanOneYearAgo,
           leaversSavedAt: moreThanOneYearAgo,
           expected: 'Update your leavers data',
-=======
-
-        {
-          vacanciesSavedAt: lessThanOneYearAgo,
-          startersSavedAt: lessThanOneYearAgo,
-          leaversSavedAt: moreThanOneYearAgo,
-          expected: 'Update your starters and leavers data',
         },
         {
           vacanciesSavedAt: lessThanOneYearAgo,
           startersSavedAt: moreThanOneYearAgo,
           leaversSavedAt: lessThanOneYearAgo,
+          expected: 'Update your starters data',
+        },
+        {
+          vacanciesSavedAt: lessThanOneYearAgo,
+
+          startersSavedAt: moreThanOneYearAgo,
+          leaversSavedAt: lessThanOneYearAgo,
           expected: 'Update your starters and leavers data',
->>>>>>> 0e1fff84c (implement VLS updated date flags)
         },
       ];
 
@@ -565,11 +551,7 @@ fdescribe('Summary section', () => {
       const { getByTestId } = await setup(overrides);
 
       const staffRecordsRow = getByTestId('staff-records-row');
-<<<<<<< HEAD
       expect(within(staffRecordsRow).getByText('Start adding your staff records')).toBeTruthy();
-=======
-      expect(within(staffRecordsRow).getByText('You can start to add your staff records now')).toBeTruthy();
->>>>>>> 0e1fff84c (implement VLS updated date flags)
       expect(within(staffRecordsRow).getByTestId('orange-flag')).toBeTruthy();
     });
 
