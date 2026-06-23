@@ -92,11 +92,6 @@ describe('Create account', { tags: '@registration' }, () => {
 
     fillUserRegistrationForm({ username: loginId, password: mockPassword });
 
-    // User research invite
-    cy.get('h1').contains('Would you like to take part in our user research sessions?').should('be.visible');
-    cy.getByLabel('Yes').check();
-    cy.get('button').contains('Continue').click();
-
     // Summary page
     cy.get('h1').contains('Test workplace for cypress').should('be.visible');
     cy.get('input#termsAndConditions').check();
