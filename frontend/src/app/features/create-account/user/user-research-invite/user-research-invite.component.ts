@@ -13,10 +13,7 @@ import { UserResearchInviteDirective } from '@shared/directives/user/user-resear
   standalone: false,
 })
 export class UserResearchInviteComponent extends UserResearchInviteDirective {
-  public form: UntypedFormGroup;
-  public submitted = false;
   public confirmPagePath: string = 'registration/confirm-details';
-  public userResearchInviteResponse: InviteResponse;
   public workplaceSections: string[];
   public userAccountSections: string[];
 
