@@ -115,7 +115,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
         property: 'lastStaffRecordMessageDismissedAt',
         value: new Date(),
       };
-      this.setCwpAwarenessQuestionViewed();
+      this.updateSingleEstablishmentField(payload);
     }
 
     if (this.payAndPensionWorkplaceQuestionsLinkDisplaying && fragment == 'workplace') {
