@@ -28,6 +28,8 @@ const { getRawDataForTrainingAndQualificationsReport } = require('./getRawData')
 
 const generateTrainingAndQualificationsReport = async (req, res) => {
   try {
+    console.log('start generating report');
+
     const workbook = new excelJS.Workbook();
 
     const establishment = await models.establishment.findByUid(req.params.id);
@@ -36,6 +38,7 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
     workbook.creator = 'Skills-For-Care';
     workbook.properties.date1904 = true;
 
+    console.log('start generating report for generateIntroTab');
     await generateIntroTab(workbook, establishment);
 
     const careCertificateStatus = convertWorkersWithCareCertificateStatus(
@@ -46,9 +49,10 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
       workerTrainingBreakdowns,
       rawData.rawEstablishmentCareCertificateStatus,
     );
-
+    console.log('start generating report for generateSummaryTab');
     await generateSummaryTab(workbook, workplacesData[0]);
 
+    console.log('start generating report for generateTrainingByStaffTab');
     await generateTrainingByStaffTab(workbook, workerTrainingBreakdowns);
 
     const establishmentWithTrainingRecords = convertTrainingForEstablishments(
@@ -57,14 +61,21 @@ const generateTrainingAndQualificationsReport = async (req, res) => {
     const allTrainingRecordsAndMissingTrainings = listAllExistingAndMissingTrainings(establishmentWithTrainingRecords);
     const trainingByCategoryBreakdowns = buildTrainingCategorySummary(establishmentWithTrainingRecords, false);
 
+    console.log('start generating report for generateTrainingByCategoryTab');
     await generateTrainingByCategoryTab(workbook, trainingByCategoryBreakdowns);
+    console.log('start generating report for generateExpiredTrainingTab');
     await generateExpiredTrainingTab(workbook, allTrainingRecordsAndMissingTrainings);
 
+    console.log('start generating report for generateTrainingRecordDetailsTab');
     await generateTrainingRecordDetailsTab(workbook, allTrainingRecordsAndMissingTrainings);
 
+    console.log('start generating report for generateCareCertificateTab');
     await generateCareCertificateTab(workbook, careCertificateStatus);
+
+    console.log('start generating report for generateQualificationRecordDetailsTab');
     await generateQualificationRecordDetailsTab(workbook, establishment.id);
 
+    console.log('start generating report finished');
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader(
       'Content-Disposition',
