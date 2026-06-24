@@ -1,15 +1,17 @@
-@if (updateBanner()) { @let props = updateBanner()!; @let linkText = props.linkText ?? 'Answer questions'; @let
-linkAriaDescription = props.linkAriaDescription ?? null;
+@if (updateBanner()) {
+  @let props = updateBanner()!;
+  @let linkText = props.linkText ?? 'Answer questions';
+  @let linkAriaDescription = props.linkAriaDescription ?? null;
 
-<div class="govuk-width-container govuk-!-margin-top-4" data-testid="update-banner-area">
-  <app-update-banner
-    [linkText]="linkText"
-    [linkAriaDescription]="linkAriaDescription"
-    [linkTo]="props.linkTo"
-    (linkClicked)="props.onLinkClicked?.()"
-    >{{ props.content }}
-  </app-update-banner>
-</div>
+  <div class="govuk-width-container govuk-!-margin-top-4" data-testid="update-banner-area">
+    <app-update-banner
+      [linkText]="linkText"
+      [linkAriaDescription]="linkAriaDescription"
+      [linkTo]="props.linkTo"
+      (linkClicked)="props.onLinkClicked?.()"
+      >{{ props.content }}
+    </app-update-banner>
+  </div>
 }
 
 <div class="govuk-width-container govuk-!-margin-top-4 govuk-!-margin-bottom-4 summary-box" data-testid="summaryBox">

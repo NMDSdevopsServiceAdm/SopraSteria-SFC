@@ -1,3 +1,6 @@
+import dayjs from 'dayjs';
+import { of } from 'rxjs';
+
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
@@ -14,8 +17,6 @@ import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import dayjs from 'dayjs';
-import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
@@ -380,7 +381,7 @@ describe('Summary section', () => {
           vacanciesSavedAt: moreThanOneYearAgo,
           startersSavedAt: moreThanOneYearAgo,
           leaversSavedAt: moreThanOneYearAgo,
-          expected: 'Update your starter, leaver and vacancy data',
+          expected: 'Update your staff vacancy, starters and leavers data',
         },
         {
           vacanciesSavedAt: moreThanOneYearAgo,
@@ -417,19 +418,6 @@ describe('Summary section', () => {
           startersSavedAt: lessThanOneYearAgo,
           leaversSavedAt: moreThanOneYearAgo,
           expected: 'Update your leavers data',
-        },
-        {
-          vacanciesSavedAt: lessThanOneYearAgo,
-          startersSavedAt: moreThanOneYearAgo,
-          leaversSavedAt: lessThanOneYearAgo,
-          expected: 'Update your starters data',
-        },
-        {
-          vacanciesSavedAt: lessThanOneYearAgo,
-
-          startersSavedAt: moreThanOneYearAgo,
-          leaversSavedAt: lessThanOneYearAgo,
-          expected: 'Update your starters and leavers data',
         },
       ];
 

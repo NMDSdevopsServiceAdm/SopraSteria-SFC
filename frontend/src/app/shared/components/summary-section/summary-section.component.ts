@@ -230,30 +230,6 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     const lastStaffRecordMessageDismissedAt = dayjs(this.workplace.lastStaffRecordMessageDismissedAt).add(12, 'M');
     if (!this.workerCount) {
       this.sections[1].message = 'Start adding your staff records';
-    } else if (this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0) {
-      this.sections[1].message = 'Where are your staff on the care workforce pathway?';
-      this.sections[1].skipTabSwitch = true;
-      this.sections[1].route = [
-        '/workplace',
-        this.workplace.uid,
-        'staff-record',
-        'care-workforce-pathway-workers-summary',
-      ];
-      this.sections[1].showMessageAsText = !this.canEditWorker;
-    } else if (
-      this.workplace.staffDoDelegatedHealthcareActivities !== 'No' &&
-      this.workplace.mainService.canDoDelegatedHealthcareActivities &&
-      this.noOfWorkersWithDelegatedHealthcareUnanswered > 0
-    ) {
-      this.sections[1].message = 'Who carries out delegated healthcare activities?';
-      this.sections[1].skipTabSwitch = true;
-      this.sections[1].route = [
-        '/workplace',
-        this.workplace.uid,
-        'staff-record',
-        'who-carry-out-delegated-healthcare-activities',
-      ];
-      this.sections[1].showMessageAsText = !this.canEditWorker;
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[1].message = 'Number of staff records does not match total staff';
     } else if (this.noOfWorkersWhoRequireInternationalRecruitment > 0) {
@@ -348,7 +324,6 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
   private updateSingleEstablishmentField(dataToUpdate: any): void {
     this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, dataToUpdate).subscribe((response) => {
-      console.log('ress', response);
       if (!response?.data) {
         return;
       }

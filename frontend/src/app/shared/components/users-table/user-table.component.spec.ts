@@ -29,7 +29,9 @@ describe('UserTableComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       componentProperties: {
         workplace: !admin && Establishment,
         users: admin ? adminUserArr : userArr,
@@ -54,6 +56,7 @@ describe('UserTableComponent', () => {
     expect(getByText('Full name')).toBeTruthy();
     expect(getByText('Username')).toBeTruthy();
     expect(getByText('Last updated')).toBeTruthy();
+    expect(getByText('Last sign in')).toBeTruthy();
     expect(getByText('Permissions')).toBeTruthy();
     expect(getByText('Status')).toBeTruthy();
 
@@ -162,6 +165,37 @@ describe('UserTableComponent', () => {
       fixture.detectChanges();
 
       expect(queryByText('Read only')).toBeTruthy();
+    });
+
+    it('should return locally stored last login for the logged-in user', async () => {
+      const { component } = await setup();
+
+      component.loggedUserUid = component.users[0].uid;
+      component.lastLoggedInFromLogin = '2024-06-01T10:00:00Z';
+
+      expect(component.getUserLastLogin(component.users[0])).toBe('2024-06-01T10:00:00Z');
+    });
+
+    it('should return API last login for users other than the logged-in user', async () => {
+      const { component } = await setup();
+
+      component.loggedUserUid = component.users[0].uid;
+      component.lastLoggedInFromLogin = '2024-06-01T10:00:00Z';
+
+      component.users[1].lastLoggedIn = '2024-05-20T09:00:00Z';
+
+      expect(component.getUserLastLogin(component.users[1])).toBe('2024-05-20T09:00:00Z');
+    });
+
+    it('should display the logged-in user last sign in date', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.loggedUserUid = component.users[0].uid;
+      component.lastLoggedInFromLogin = '2024-06-01T10:00:00Z';
+
+      fixture.detectChanges();
+
+      expect(getByText('1 Jun 2024')).toBeTruthy();
     });
   });
 });

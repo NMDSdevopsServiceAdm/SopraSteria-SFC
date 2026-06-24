@@ -55,7 +55,8 @@
                       <thead class="govuk-table__head">
                         <tr class="govuk-table__row">
                           <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Location ID</th>
-                          <th class="govuk-table__header govuk-!-width-one-half" scope="col">Workplace</th>
+                          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Workplace</th>
+                          <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">Last sign in</th>
                           <th class="govuk-table__header govuk-!-width-one-quarter" scope="col">&nbsp;</th>
                         </tr>
                       </thead>
@@ -70,6 +71,9 @@
                               href="#"
                               >{{ item.establishment.name }}</a
                             >
+                          </td>
+                          <td class="govuk-table__cell">
+                            {{ item.lastLoggedIn | date: 'd MMM y' }}
                           </td>
                           <th class="govuk-table__cell" scope="col">&nbsp;</th>
                         </tr>
