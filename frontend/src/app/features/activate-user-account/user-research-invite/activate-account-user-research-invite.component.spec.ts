@@ -1,46 +1,54 @@
-import { getTestBed } from '@angular/core/testing';
-import { UserResearchInviteComponent } from './user-research-invite.component';
-import { render } from '@testing-library/angular';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RegistrationService } from '@core/services/registration.service';
-import { BackLinkService } from '@core/services/backLink.service';
-import { SharedModule } from '@shared/shared.module';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BackService } from '@core/services/back.service';
-import { provideHttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
+
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { InviteResponse } from '@core/model/userDetails.model';
+import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
+import { CreateAccountService } from '@core/services/create-account/create-account.service';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-describe('UserResearchInviteComponent', () => {
+import { ActivateAccountUserResearchInviteComponent } from './activate-account-user-research-invite.component';
+
+describe('ActivateAccountUserResearchInviteComponent', () => {
+  const mockActivationToken = 'mock-token-uuid';
+
   async function setup(overrides: any = {}) {
     const showBackLinkSpy = jasmine.createSpy('setBacklink').and.returnValue(Promise.resolve(true));
-    const registrationFlow = overrides?.registrationFlow ?? true;
+    const insideActivationFlow = overrides?.insideActivationFlow ?? true;
     const mockUserResearchInviteResponse = overrides?.mockUserResearchInviteResponse ?? null;
 
     const mockSubject = new BehaviorSubject<InviteResponse>(mockUserResearchInviteResponse);
 
-    const setupTools = await render(UserResearchInviteComponent, {
+    const setupTools = await render(ActivateAccountUserResearchInviteComponent, {
       imports: [SharedModule, ReactiveFormsModule, FormsModule, RouterModule],
       providers: [
         BackService,
         provideHttpClient(),
+        provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
           useValue: {
+            parent: {
+              snapshot: {
+                url: [{ path: insideActivationFlow ? mockActivationToken : 'confirm-account-details' }],
+              },
+            },
+
             snapshot: {
-              parent: {
-                url: [
-                  {
-                    path: registrationFlow ? 'registration' : 'confirm-details',
-                  },
-                ],
+              params: {
+                activationToken: mockActivationToken,
               },
             },
           },
         },
         {
-          provide: RegistrationService,
+          provide: CreateAccountService,
           useValue: {
             userResearchInviteResponse$: mockSubject,
           },
@@ -60,8 +68,8 @@ describe('UserResearchInviteComponent', () => {
     const router = injector.inject(Router) as Router;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-    const registrationService = injector.inject(RegistrationService) as RegistrationService;
-    const userResearchInviteResponseSpy = spyOn(registrationService.userResearchInviteResponse$, 'next');
+    const createAccountService = injector.inject(CreateAccountService) as CreateAccountService;
+    const userResearchInviteResponseSpy = spyOn(createAccountService.userResearchInviteResponse$, 'next');
 
     return {
       ...setupTools,
@@ -189,7 +197,7 @@ describe('UserResearchInviteComponent', () => {
 
       const button = getByRole('button');
       button.click();
-      expect(routerSpy).toHaveBeenCalledWith(['registration/confirm-details']);
+      expect(routerSpy).toHaveBeenCalledWith([`/activate-account/${mockActivationToken}/confirm-account-details`]);
     });
 
     describe('When the yes radio option has been selected', () => {
@@ -231,17 +239,8 @@ describe('UserResearchInviteComponent', () => {
   });
 
   describe('Progress bar', () => {
-    it('should render the workplace and user account progress bars', async () => {
-      const { getByTestId } = await setup();
-
-      expect(getByTestId('progress-bar-1')).toBeTruthy();
-      expect(getByTestId('progress-bar-2')).toBeTruthy();
-    });
-
-    it('should not render the progress bars when accessed from outside the flow', async () => {
-      const { queryByTestId } = await setup({
-        registrationFlow: false,
-      });
+    it('should not render progress bars', async () => {
+      const { queryByTestId } = await setup({});
 
       expect(queryByTestId('progress-bar-1')).toBeFalsy();
       expect(queryByTestId('progress-bar-2')).toBeFalsy();
@@ -250,7 +249,7 @@ describe('UserResearchInviteComponent', () => {
 
   describe('When viewing the page from the summary page', () => {
     const overrides = {
-      registrationFlow: false,
+      insideActivationFlow: false,
     };
     it('should preselect the correct option', async () => {
       const { component } = await setup(overrides);
@@ -277,7 +276,7 @@ describe('UserResearchInviteComponent', () => {
       it('should navigate to the summary page', async () => {
         const { getByText } = await setup(overrides);
         const link = getByText('Cancel');
-        expect(link.getAttribute('href')).toEqual('/registration/confirm-details');
+        expect(link.getAttribute('href')).toEqual(`/activate-account/${mockActivationToken}/confirm-account-details`);
       });
     });
   });

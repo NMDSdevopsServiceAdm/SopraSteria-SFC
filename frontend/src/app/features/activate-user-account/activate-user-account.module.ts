@@ -10,6 +10,7 @@ import { ChangeYourDetailsComponent } from './change-your-details/change-your-de
 import { ConfirmAccountDetailsComponent } from './confirm-account-details/confirm-account-details.component';
 import { CreateUsernameComponent } from './create-username/create-username.component';
 import { SecurityQuestionComponent } from './security-question/security-question.component';
+import { ActivateAccountUserResearchInviteComponent } from './user-research-invite/activate-account-user-research-invite.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, ActivateUserAccountRoutingModule],
@@ -20,6 +21,7 @@ import { SecurityQuestionComponent } from './security-question/security-question
     ActivationCompleteComponent,
     ExpiredActivationLinkComponent,
     ChangeYourDetailsComponent,
+    ActivateAccountUserResearchInviteComponent,
   ],
 })
 export class ActivateUserAccountModule {}

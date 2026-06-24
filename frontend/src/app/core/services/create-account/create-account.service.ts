@@ -11,7 +11,7 @@ import {
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { URLStructure } from '@core/model/url.model';
-import { UserDetails } from '@core/model/userDetails.model';
+import { InviteResponse, UserDetails } from '@core/model/userDetails.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -23,6 +23,7 @@ export class CreateAccountService {
   public loginCredentials$: BehaviorSubject<LoginCredentials> = new BehaviorSubject(null);
   public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject(null);
   public activationComplete$: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  public userResearchInviteResponse$: BehaviorSubject<InviteResponse> = new BehaviorSubject(null);
   public returnTo$: BehaviorSubject<URLStructure> = new BehaviorSubject<URLStructure>(null);
   public userDetails$: Observable<UserDetails> = this._userDetails$.asObservable();
   public termsAndConditionsCheckbox$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -34,7 +35,10 @@ export class CreateAccountService {
     establishmentUid: string,
     requestPayload: CreateAccountRequest,
   ): Observable<CreateAccountResponse> {
-    return this.http.post<CreateAccountResponse>(`${environment.appRunnerEndpoint}/api/user/add/establishment/${establishmentUid}`, requestPayload);
+    return this.http.post<CreateAccountResponse>(
+      `${environment.appRunnerEndpoint}/api/user/add/establishment/${establishmentUid}`,
+      requestPayload,
+    );
   }
 
   public activateAccount(requestPayload: ActivateAccountRequest) {
@@ -44,9 +48,13 @@ export class CreateAccountService {
   public validateAccountActivationToken(
     requestPayload: ValidateAccountActivationTokenRequest,
   ): Observable<HttpResponse<ValidateAccountActivationTokenResponse>> {
-    return this.http.post<ValidateAccountActivationTokenResponse>(`${environment.appRunnerEndpoint}/api/user/validateAddUser`, requestPayload, {
-      observe: 'response',
-    });
+    return this.http.post<ValidateAccountActivationTokenResponse>(
+      `${environment.appRunnerEndpoint}/api/user/validateAddUser`,
+      requestPayload,
+      {
+        observe: 'response',
+      },
+    );
   }
 
   public setReturnTo(returnTo: URLStructure): void {
