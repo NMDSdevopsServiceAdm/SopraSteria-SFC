@@ -12,6 +12,8 @@ import { FormatUtil } from '@core/utils/format-util';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
+const NO_STAFF_RECORDS_MESSAGE = 'You’ve not added any staff records in the last 12 months';
+
 @Component({
   selector: 'app-summary-section',
   templateUrl: './summary-section.component.html',
@@ -110,7 +112,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   ): Promise<void> {
     event.preventDefault();
 
-    if (message === 'You’ve not added any staff records in the last 12 months') {
+    if (message === NO_STAFF_RECORDS_MESSAGE) {
       const payload = {
         property: 'lastStaffRecordMessageDismissedAt',
         value: new Date(),
@@ -227,7 +229,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     }
 
     const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
-    const lastStaffRecordMessageDismissedAt = dayjs(this.workplace.lastStaffRecordMessageDismissedAt).add(12, 'M');
+    const staffRecordMessageDismissalExpiry = dayjs(this.workplace.lastStaffRecordMessageDismissedAt).add(12, 'M');
     if (!this.workerCount) {
       this.sections[1].message = 'Start adding your staff records';
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
@@ -238,9 +240,9 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       dayjs() >= afterWorkplaceCreated &&
       this.workplace.numberOfStaff > 10 &&
       dayjs() >= this.getWorkerLatestCreatedDate() &&
-      (!this.workplace.lastStaffRecordMessageDismissedAt || dayjs() >= lastStaffRecordMessageDismissedAt)
+      (!this.workplace.lastStaffRecordMessageDismissedAt || dayjs() >= staffRecordMessageDismissalExpiry)
     ) {
-      this.sections[1].message = 'You’ve not added any staff records in the last 12 months';
+      this.sections[1].message = NO_STAFF_RECORDS_MESSAGE;
     } else if (this.workersNotCompleted?.length > 0 && this.getStaffCreatedDate()) {
       this.sections[1].message = 'Add more details to your staff records';
       if (this.isParentSubsidiaryView) {
@@ -328,10 +330,12 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
         return;
       }
 
-      this.workplace.lastStaffRecordMessageDismissedAt = response.data.lastStaffRecordMessageDismissedAt;
+      const { lastStaffRecordMessageDismissedAt } = response.data;
+      if (lastStaffRecordMessageDismissedAt) {
+        this.workplace.lastStaffRecordMessageDismissedAt = lastStaffRecordMessageDismissedAt;
+      }
     });
   }
-
   private setCwpAwarenessQuestionViewed(): void {
     const cwpData = {
       property: 'CWPAwarenessQuestionViewed',
