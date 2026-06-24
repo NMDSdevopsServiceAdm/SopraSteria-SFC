@@ -195,6 +195,7 @@ export interface Establishment {
   vacanciesSavedAt?: string;
   startersSavedAt?: string;
   leaversSavedAt?: string;
+  lastStaffRecordMessageDismissedAt?: Date;
 }
 export interface UpdateJobsRequest {
   leavers?: Leaver[] | string;
