@@ -15,7 +15,7 @@ import userEvent from '@testing-library/user-event';
 
 import { ActivateAccountUserResearchInviteComponent } from './activate-account-user-research-invite.component';
 
-fdescribe('ActivateAccountUserResearchInviteComponent', () => {
+describe('ActivateAccountUserResearchInviteComponent', () => {
   const mockActivationToken = 'mock-token-uuid';
 
   async function setup(overrides: any = {}) {
@@ -90,10 +90,10 @@ fdescribe('ActivateAccountUserResearchInviteComponent', () => {
     expect(showBackLinkSpy).toHaveBeenCalled();
   });
 
-  it('should display the User accounts caption', async () => {
+  it('should display the User account caption', async () => {
     const { getByTestId } = await setup();
     const caption = getByTestId('caption');
-    expect(caption.textContent).toEqual('User accounts');
+    expect(caption.textContent).toEqual('User account');
   });
 
   it('should display the heading', async () => {
