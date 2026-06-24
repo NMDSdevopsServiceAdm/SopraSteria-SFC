@@ -12,7 +12,7 @@ import { BehaviorSubject } from 'rxjs';
 import { InviteResponse } from '@core/model/userDetails.model';
 import userEvent from '@testing-library/user-event';
 
-fdescribe('UserResearchInviteComponent', () => {
+describe('UserResearchInviteComponent', () => {
   async function setup(overrides: any = {}) {
     const showBackLinkSpy = jasmine.createSpy('setBacklink').and.returnValue(Promise.resolve(true));
     const registrationFlow = overrides?.registrationFlow ?? true;

@@ -13,7 +13,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { ActivateUserAccountModule } from '../activate-user-account.module';
 import { SecurityQuestionComponent } from './security-question.component';
 
-fdescribe('SecurityQuestionComponent', () => {
+describe('SecurityQuestionComponent', () => {
   async function setup(overrides: any = {}) {
     const insideActivationFlow = overrides?.insideActivationFlow ?? true;
     const setupTools = await render(SecurityQuestionComponent, {
