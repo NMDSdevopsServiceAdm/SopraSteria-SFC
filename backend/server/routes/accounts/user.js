@@ -13,6 +13,7 @@ const bcrypt = require('bcrypt-nodejs');
 const generateJWT = require('../../utils/security/generateJWT');
 const usernameCheck = require('../../utils/security/usernameValidation').isUsernameValid;
 const { hasPermission } = require('../../utils/security/hasPermission');
+const { hasPermissionToUpdateProfile } = require('../../utils/security/hasPermissionToUpdateProfile');
 
 const config = require('../../config/config');
 const loginResponse = require('../../utils/login/response');
@@ -1068,7 +1069,7 @@ router
   .get(Authorization.hasAuthorisedEstablishment, hasPermission('canViewUser'), getUser);
 router
   .route('/establishment/:id/:userId')
-  .put(Authorization.hasAuthorisedEstablishmentAllowAllRoles, hasPermission('canEditUser'), updateNormalUser);
+  .put(Authorization.hasAuthorisedEstablishmentAllowAllRoles, hasPermissionToUpdateProfile, updateNormalUser);
 router
   .route('/establishment/:id/:userid')
   .delete(Authorization.hasAuthorisedEstablishment, hasPermission('canDeleteUser'), deleteUser);
