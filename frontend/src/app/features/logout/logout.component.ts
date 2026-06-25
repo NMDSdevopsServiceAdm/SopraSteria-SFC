@@ -4,20 +4,23 @@ import { AuthService } from '@core/services/auth.service';
 import { IdleService } from '@core/services/idle.service';
 
 @Component({
-    selector: 'app-logout',
-    templateUrl: './logout.component.html',
-    standalone: false
+  selector: 'app-logout',
+  templateUrl: './logout.component.html',
+  standalone: false,
 })
 export class LogoutComponent {
   private jwt = new JwtHelperService();
 
-  constructor(private idleService: IdleService, private authService: AuthService) {
+  constructor(
+    private idleService: IdleService,
+    private authService: AuthService,
+  ) {
     if (this.authService.token) {
       if (this.jwt.isTokenExpired(this.authService.token)) {
-        this.authService.logout();
+        this.authService.frontendLogout();
       }
     }
-    this.authService.logoutWithoutRouting();
+    this.authService.frontendLogoutWithoutRouting();
     this.idleService.clear();
   }
 }

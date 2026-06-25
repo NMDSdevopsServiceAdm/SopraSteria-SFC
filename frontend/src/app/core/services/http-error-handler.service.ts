@@ -10,14 +10,18 @@ import { MessageService } from './message.service';
   providedIn: 'root',
 })
 export class HttpErrorHandler {
-  constructor(private router: Router, private messageService: MessageService, private authService: AuthService) {
+  constructor(
+    private router: Router,
+    private messageService: MessageService,
+    private authService: AuthService,
+  ) {
     this.handleHttpError = this.handleHttpError.bind(this);
   }
 
   handleHttpError(error: HttpErrorResponse) {
     if (error.status === 403) {
       this.authService.storeRedirectLocation();
-      this.authService.logout();
+      this.authService.frontendLogout();
       return throwError('403');
     }
 

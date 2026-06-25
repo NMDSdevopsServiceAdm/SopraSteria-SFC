@@ -21,6 +21,7 @@ const { authLimiter } = require('../../utils/middleware/rateLimiting');
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
 const notifications = require('../../data/notifications');
+const { logout } = require('../logout');
 
 const normalUserRoles = ['None', 'Read', 'Edit'];
 const adminUserRoles = ['Admin', 'AdminManager'];
@@ -376,6 +377,8 @@ const changePassword = async (req, res) => {
             };
             await models.userAudit.create(auditEvent, { transaction: t });
           });
+
+          await logout(req.username);
 
           return res.status(200).send(`Changed password for ${login.user.FullNameValue}`);
         } else {
