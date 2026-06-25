@@ -28,6 +28,11 @@ const formatDateTime = (date, formatString) => {
   return dayjs(date).tz(timezone).format(formatString);
 };
 
+const getToday = (format = 'YYYY-MM-DD') => {
+  const now = dayjs();
+  return now.format(format);
+};
+
 const correctSequelizeDateWithoutTimezone = (rawDateValue) => {
   if (!rawDateValue) {
     return;
@@ -48,4 +53,4 @@ const correctSequelizeDateWithoutTimezone = (rawDateValue) => {
   return utcDate;
 };
 
-module.exports = { calculateTrainingExpiryDate, formatDateTime, correctSequelizeDateWithoutTimezone };
+module.exports = { calculateTrainingExpiryDate, getToday, formatDateTime, correctSequelizeDateWithoutTimezone };

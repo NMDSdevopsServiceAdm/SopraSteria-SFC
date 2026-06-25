@@ -198,6 +198,15 @@ const config = convict({
         },
         default: '80d54020-c420-46f1-866d-b8cc3196809d',
       },
+      updateUserDetails: {
+        doc: 'The template id for sending updateUserDetails emails',
+        format: function check(val) {
+          const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+          if (!uuidRegex.test(val.toUpperCase()))
+            throw new TypeError('gov.uk notify update user details template id should be a V4 UUID');
+        },
+        default: '80d54020-c420-46f1-866d-b8cc3196809d',
+      },
     },
   },
   jwt: {

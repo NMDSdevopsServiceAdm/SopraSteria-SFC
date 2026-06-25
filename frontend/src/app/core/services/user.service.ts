@@ -213,4 +213,8 @@ export class UserService {
       {},
     );
   }
+
+  public updateUserFlags(userUid: string, updates: Record<string, number | boolean>) {
+    return this.http.put(`${environment.appRunnerEndpoint}/api/user/flag/${userUid}`, updates);
+  }
 }
