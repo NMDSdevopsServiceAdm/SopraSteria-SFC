@@ -93,7 +93,7 @@ Cypress.Commands.add('deleteTestUserFromDb', (userFullName) => {
   cy.task('multipleDbQueries', dbQueries);
 });
 
-Cypress.Commands.add('addTestUser', (userFullName, username, establishmentID) => {
+Cypress.Commands.add('addTestUser', (userFullName, username, establishmentID, userRoleValue) => {
   const mockUserDetails = {
     FullNameValue: userFullName,
     UserUID: uuidv4(),
@@ -103,7 +103,7 @@ Cypress.Commands.add('addTestUser', (userFullName, username, establishmentID) =>
     EstablishmentID: establishmentID,
     SecurityQuestionValue: '2+2',
     SecurityQuestionAnswerValue: '4',
-    UserRoleValue: 'Read',
+    UserRoleValue: userRoleValue ?? 'Read',
     Archived: false,
     IsPrimary: false,
     updatedby: 'cypress test',
