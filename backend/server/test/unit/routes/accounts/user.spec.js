@@ -20,6 +20,7 @@ const User = require('../../../../models/classes/user').User;
 const models = require('../../../../models');
 const GovNotifySendEmail = require('../../../../utils/email/notify-email');
 const { UserExceptions } = require('../../../../models/classes/user');
+const logoutModule = require('../../../../routes/logout');
 
 describe('user.js', () => {
   let req;
@@ -793,6 +794,7 @@ describe('user.js', () => {
       sinon.stub(models.sequelize, 'transaction').callsFake((dbOperations) => dbOperations());
       sinon.stub(GovNotifySendEmail, 'sendUpdateUserDetails').returns({});
       sinon.stub(models.userAudit, 'create').resolves({});
+      sinon.stub(logoutModule, 'logout').resolves({});
 
       const req = httpMocks.createRequest(defaultReq);
       const res = httpMocks.createResponse();
@@ -803,6 +805,7 @@ describe('user.js', () => {
       expect(res.statusCode).to.equal(200);
 
       expect(GovNotifySendEmail.sendUpdateUserDetails).to.have.been.calledOnceWith(mockUserEmail, mockUserFullname);
+      expect(logoutModule.logout).to.have.been.calledOnce;
     });
 
     it('should not trigger send email (sendUpdateUserDetails) on failed change', async () => {
@@ -810,6 +813,7 @@ describe('user.js', () => {
       sinon.stub(models.sequelize, 'transaction').callsFake((dbOperations) => dbOperations());
       sinon.stub(GovNotifySendEmail, 'sendUpdateUserDetails').returns({});
       sinon.stub(models.userAudit, 'create').resolves({});
+      sinon.stub(logoutModule, 'logout').resolves({});
 
       const req = httpMocks.createRequest(defaultReq);
       const res = httpMocks.createResponse();
@@ -820,6 +824,7 @@ describe('user.js', () => {
       expect(res.statusCode).to.equal(403);
 
       expect(GovNotifySendEmail.sendUpdateUserDetails).not.to.have.been.called;
+      expect(logoutModule.logout).not.to.have.been.called;
     });
   });
 });
