@@ -23,6 +23,7 @@ const GovNotifySendEmail = require('../../utils/email/notify-email');
 const User = require('../../models/classes/user');
 const notifications = require('../../data/notifications');
 const HttpError = require('../../utils/errors/httpError');
+const { logout } = require('../logout');
 
 const normalUserRoles = ['None', 'Read', 'Edit'];
 const adminUserRoles = ['Admin', 'AdminManager'];
@@ -410,6 +411,9 @@ const changePassword = async (req, res) => {
 
           const userEmail = login?.user?.EmailValue;
           const userFullname = login?.user?.FullNameValue;
+
+          await logout(req.username);
+
           if (userEmail && userFullname) {
             await GovNotifySendEmail.sendUpdateUserDetails(userEmail, userFullname);
           }

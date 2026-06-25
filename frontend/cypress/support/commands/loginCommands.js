@@ -108,6 +108,7 @@ Cypress.Commands.add('addTestUser', (userFullName, username, establishmentID) =>
     IsPrimary: false,
     updatedby: 'cypress test',
   };
+  const mockPasswordHash = '$2a$10$mDCJKwlWQIfAYHF4dOBmBug9ZwIFxOzlLOWeszyMFCs0GwiyJ9EHq';
 
   const insertUser = `INSERT INTO cqc."User"
           (${Object.keys(mockUserDetails)
@@ -125,7 +126,9 @@ Cypress.Commands.add('addTestUser', (userFullName, username, establishmentID) =>
       RegistrationID: registrationId,
       Username: username,
       Active: true,
+      AgreedUpdatedTerms: true,
       InvalidAttempt: 0,
+      Hash: mockPasswordHash,
     };
 
     const insertLogin = `INSERT INTO cqc."Login"
@@ -133,7 +136,7 @@ Cypress.Commands.add('addTestUser', (userFullName, username, establishmentID) =>
           .map((columnName) => `"${columnName}"`)
           .join(', ')})
       VALUES
-        ($1, $2, $3, $4)`;
+        ($1, $2, $3, $4, $5, $6)`;
     const parameters = Object.values(mockLoginDetails);
 
     return cy.task('dbQuery', { queryString: insertLogin, parameters });

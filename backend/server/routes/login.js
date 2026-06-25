@@ -23,6 +23,7 @@ const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
 const { authLimiter } = require('../utils/middleware/rateLimiting');
 const { MaxLoginAttempts, UserAccountStatus } = require('../data/constants');
+const { validateTokenIssueTimeAgainstPasswordChange } = require('../utils/security/validateTokenIssueTime');
 
 const tribalHashCompare = (password, salt, expectedHash) => {
   const hash = crypto.createHash('sha256');
@@ -428,10 +429,9 @@ router.post('/', async (req, res) => {
   }
 });
 
-// renews a given bearer token; this token must exist and must be valid
-//  it must be a Logged In "Bearer" token
-router.use('/refresh', isAuthorised, authLimiter);
-router.get('/refresh', async function (req, res) {
+router.use('/refresh', isAuthorised, authLimiter, validateTokenIssueTimeAgainstPasswordChange);
+
+const refreshToken = async function (req, res) {
   // this assumes no re-authentication; this assumes no checking of origin; this assumes no validation against last logged in or timeout against last login
 
   // gets here the given token is still valid
@@ -447,6 +447,9 @@ router.get('/refresh', async function (req, res) {
     .json({
       expiryDate: new Date(expiryDate).toISOString(),
     });
-});
+};
+
+router.get('/refresh', refreshToken);
 
 module.exports = router;
+module.exports._controllers = { refreshToken };

@@ -5,6 +5,7 @@ const moment = require('moment');
 const Authorization = require('../utils/security/isAuthenticated');
 const config = require('../config/config');
 const Sentry = require('@sentry/node');
+const cacheUserLogoutTime = require('../utils/cacheUserLogoutTime');
 
 const logout = async function (username) {
   Sentry.configureScope((scope) => scope.setUser(null));
@@ -23,6 +24,8 @@ const logout = async function (username) {
 
   const logouts = await models.userAudit.countLogouts(registrationId, fromDate);
   const submissions = await models.satisfactionSurvey.countSubmissions(registrationId, fromDate);
+
+  await cacheUserLogoutTime.cacheUserLogoutTime(username);
 
   const showSurvey = logouts <= 3 && submissions == 0;
 

@@ -33,4 +33,24 @@ const getToday = (format = 'YYYY-MM-DD') => {
   return now.format(format);
 };
 
-module.exports = { calculateTrainingExpiryDate, getToday, formatDateTime };
+const correctSequelizeDateWithoutTimezone = (rawDateValue) => {
+  if (!rawDateValue) {
+    return;
+  }
+
+  const utcDate = new Date(
+    Date.UTC(
+      rawDateValue.getFullYear(),
+      rawDateValue.getMonth(),
+      rawDateValue.getDate(),
+      rawDateValue.getHours(),
+      rawDateValue.getMinutes(),
+      rawDateValue.getSeconds(),
+      rawDateValue.getMilliseconds(),
+    ),
+  );
+
+  return utcDate;
+};
+
+module.exports = { calculateTrainingExpiryDate, getToday, formatDateTime, correctSequelizeDateWithoutTimezone };
