@@ -261,6 +261,9 @@ class WorkplaceCSVValidator {
   static get VACANCIES_WARNING() {
     return 2300;
   }
+  static get REGISTERED_MANAGER_VACANCY_WARNING() {
+    return 2301;
+  }
   static get STARTERS_WARNING() {
     return 2310;
   }
@@ -1923,8 +1926,6 @@ class WorkplaceCSVValidator {
     const template = {
       origin: 'Establishments',
       lineNumber: this._lineNumber,
-      errCode: WorkplaceCSVValidator.ALL_JOBS_ERROR,
-      errType: 'ALL_JOBS_ERROR',
       source: this._currentLine.ALLJOBROLES,
       name: this._currentLine.LOCALESTID,
     };
@@ -1945,9 +1946,11 @@ class WorkplaceCSVValidator {
 
     if (isCQCRegulated && !hasRegisteredManagerVacancy() && registeredManager === 0 && notHeadOffice) {
       csvEstablishmentSchemaErrors.unshift(
-        Object.assign(template, {
-          error: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
-          column: 'VACANCY',
+        Object.assign(clonedeep(template), {
+          warnCode: WorkplaceCSVValidator.REGISTERED_MANAGER_VACANCY_WARNING,
+          warnType: 'REGISTERED_MANAGER_VACANCY_WARNING',
+          warning: 'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
+          column: 'VACANCIES',
         }),
       );
     }
