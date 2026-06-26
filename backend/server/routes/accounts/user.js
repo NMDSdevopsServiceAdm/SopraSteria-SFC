@@ -141,7 +141,9 @@ const updateNormalUser = async (req, res) => {
   let callbackAfterUpdate = () => {};
 
   const userChangingTheirOwnDetails = req?.user?.id === req?.params?.userId;
-  if (userChangingTheirOwnDetails) {
+  const notAdminUser = !isAdminRole(req.role);
+
+  if (userChangingTheirOwnDetails && notAdminUser) {
     callbackAfterUpdate = await sendEmailAfterUpdate(req);
   }
 

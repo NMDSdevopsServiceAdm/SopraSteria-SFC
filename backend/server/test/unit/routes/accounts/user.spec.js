@@ -509,10 +509,23 @@ describe('user.js', () => {
         expect(GovNotifySendEmail.sendUpdateUserDetails).not.to.have.been.called;
       });
 
-      it('should not send the email when an admin / primary user change the detail of other user', async () => {
+      it('should not send the email when a primary user change the detail of other user', async () => {
         const primaryUserUid = 'mock-primary-user-uid';
 
         const req = { ...defaultReq, user: { id: primaryUserUid } };
+        const res = httpMocks.createResponse();
+
+        await updateNormalUser(req, res);
+
+        expect(res.statusCode).to.equal(200);
+        expect(GovNotifySendEmail.sendUpdateUserDetails).not.to.have.been.called;
+      });
+
+      it('should not send the email when an admin swapped into a user and change the detail of that user', async () => {
+        // to address an edge case when admin swap into a user by POST /api/user/swap/ with username in body
+        // in this case, the auth token's userUid will be the user's uid, not the admin's uid
+
+        const req = { ...defaultReq, user: { id: mockUserUid }, role: 'AdminManager' };
         const res = httpMocks.createResponse();
 
         await updateNormalUser(req, res);
