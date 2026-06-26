@@ -1,4 +1,5 @@
 import { Roles } from '@core/model/roles.enum';
+import { InviteResponse } from './userDetails.model';
 
 export interface CreateAccountRequest {
   email: string;
@@ -27,6 +28,7 @@ export interface ActivateAccountRequest {
   securityQuestion: string;
   securityQuestionAnswer: string;
   username: string;
+  userResearchInviteResponse?: InviteResponse;
 }
 
 export interface ValidateAccountActivationTokenRequest {
