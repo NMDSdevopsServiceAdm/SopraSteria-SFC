@@ -2858,7 +2858,7 @@ describe('Bulk Upload - Establishment CSV', () => {
   });
 
   describe('Cross Validations', () => {
-    it('should show error if not Head Office and no registered manager or vacancy for one', async () => {
+    it('should show a warning if not Head Office and no registered manager or vacancy for one', async () => {
       const establishmentRow = buildEstablishmentCSV({
         overrides: {
           STATUS: 'NEW',
@@ -2874,12 +2874,12 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
-        expect(csvEstablishmentSchemaErrors[0].error).to.deep.equal(
+        expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal(
           'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
         );
       });
     });
-    it('should NOT show error if Head Office and no registered manager or vacancy for one', async () => {
+    it('should NOT show a warning if Head Office and no registered manager or vacancy for one', async () => {
       const establishmentRow = buildEstablishmentCSV({
         overrides: {
           STATUS: 'NEW',
@@ -2896,7 +2896,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       crossValidate(establishmentRow, workerRow, (csvEstablishmentSchemaErrors) => {
-        expect(csvEstablishmentSchemaErrors.length).to.equal(0);
+        expect(csvEstablishmentSchemaErrors[0]).to.be.undefined;
       });
     });
     xit('should NOT show error if not Head Office and registered manager is UNCHECKED ', async () => {
@@ -2934,7 +2934,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       );
     });
 
-    it('should show error if not Head Office and registered manager is DELETE ', async () => {
+    it('should show warning if not Head Office and registered manager is DELETE ', async () => {
       const establishmentRow = buildEstablishmentCSV({
         overrides: {
           STATUS: 'NEW',
@@ -2963,7 +2963,9 @@ describe('Bulk Upload - Establishment CSV', () => {
         establishmentRow,
         workerRow,
         (csvEstablishmentSchemaErrors) => {
-          expect(csvEstablishmentSchemaErrors[0].errCode).to.equal(1280);
+          expect(csvEstablishmentSchemaErrors[0].warning).to.deep.equal(
+            'You do not have a staff record for a Registered Manager therefore must record a vacancy for one',
+          );
         },
         databaseWorkers,
       );
