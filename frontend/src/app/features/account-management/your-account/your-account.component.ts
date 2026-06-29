@@ -7,19 +7,24 @@ import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-your-account-summary',
-    templateUrl: './your-account.component.html',
-    standalone: false
+  selector: 'app-your-account-summary',
+  templateUrl: './your-account.component.html',
+  standalone: false,
 })
 export class YourAccountComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  public loginInfo: SummaryList[];
-  public securityInfo: SummaryList[];
   public user: UserDetails;
-  public userInfo: SummaryList[];
   public username: string;
 
-  constructor(private userService: UserService, private breadcrumbService: BreadcrumbService) {}
+  public loginInfo: SummaryList[];
+  public securityInfo: SummaryList[];
+  public userInfo: SummaryList[];
+  public userResearchInfo: SummaryList[];
+
+  constructor(
+    private userService: UserService,
+    private breadcrumbService: BreadcrumbService,
+  ) {}
 
   ngOnInit() {
     this.breadcrumbService.show(JourneyType.ACCOUNT);
@@ -35,11 +40,15 @@ export class YourAccountComponent implements OnInit, OnDestroy {
   }
 
   private setAccountDetails(): void {
+    const showFlagForUserResearchQuestion =
+      !this.user.viewedUserResearchQuestion && !this.user.userResearchInviteResponse;
+
     this.userInfo = [
       {
         label: 'Full name',
         data: this.user.fullname,
         route: { url: ['/account-management/change-your-details'] },
+        ariaDescription: 'your personal details',
       },
       {
         label: 'Job title',
@@ -60,6 +69,7 @@ export class YourAccountComponent implements OnInit, OnDestroy {
         label: 'Username',
         data: this.user.username,
         route: { url: ['/account-management/change-password'] },
+        ariaDescription: 'your password',
       },
       {
         label: 'Password',
@@ -72,12 +82,32 @@ export class YourAccountComponent implements OnInit, OnDestroy {
         label: 'Security question',
         data: this.user.securityQuestion,
         route: { url: ['/account-management/change-user-security'] },
+        ariaDescription: 'your security question and answer',
       },
       {
         label: 'Security answer',
         data: this.user.securityQuestionAnswer,
       },
     ];
+
+    this.userResearchInfo = [
+      {
+        label: 'User research sessions',
+        data: this.user.userResearchInviteResponse,
+        route: { url: ['/account-management/user-research-invite'] },
+        showNewFlag: showFlagForUserResearchQuestion,
+        ariaDescription: 'your reply regarding taking part in our user research sessions',
+      },
+    ];
+  }
+
+  public setViewedUserResearchQuestion(): void {
+    if (this.user.viewedUserResearchQuestion) {
+      return;
+    }
+
+    const update = { viewedUserResearchQuestion: true };
+    this.subscriptions.add(this.userService.updateUserFlags(this.user.uid!, update).subscribe());
   }
 
   ngOnDestroy() {

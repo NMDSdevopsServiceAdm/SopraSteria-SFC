@@ -129,7 +129,31 @@ export class MockUserService extends UserService {
     };
   }
 
+  public static factoryWithOverrides(overrides: Record<string, any> = {}) {
+    return (httpClient: HttpClient) => {
+      const service = new MockUserService(httpClient);
+
+      Object.keys(overrides).forEach((overrideName) => {
+        switch (overrideName) {
+          case 'loggedInUser': {
+            Object.defineProperty(service, 'loggedInUser', {
+              get: () => overrides.loggedInUser,
+            });
+            break;
+          }
+          default: {
+            service[overrideName] = overrides[overrideName];
+            break;
+          }
+        }
+      });
+
+      return service;
+    };
+  }
+
   public get loggedInUser(): UserDetails {
+    console.log('get prop called');
     return {
       uid: 'mocked-uid',
       email: 'test@developer.com',
