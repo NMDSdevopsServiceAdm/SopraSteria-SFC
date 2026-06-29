@@ -4,7 +4,9 @@ import { SummaryList } from '@core/model/summary-list.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { UserService } from '@core/services/user.service';
+import { isAdminRole } from '@core/utils/check-role-util';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-your-account-summary',
@@ -20,6 +22,7 @@ export class YourAccountComponent implements OnInit, OnDestroy {
   public securityInfo: SummaryList[];
   public userInfo: SummaryList[];
   public userResearchInfo: SummaryList[];
+  public showUserResearchRow: boolean;
 
   constructor(
     private userService: UserService,
@@ -34,6 +37,7 @@ export class YourAccountComponent implements OnInit, OnDestroy {
         if (user) {
           this.user = user;
           this.setAccountDetails();
+          this.showUserResearchRow = !isAdminRole(user.role);
         }
       }),
     );
@@ -107,7 +111,12 @@ export class YourAccountComponent implements OnInit, OnDestroy {
     }
 
     const update = { viewedUserResearchQuestion: true };
-    this.subscriptions.add(this.userService.updateUserFlags(this.user.uid!, update).subscribe());
+    this.userService
+      .updateUserFlags(this.user.uid!, update)
+      .pipe(take(1))
+      .subscribe(() => {
+        this.userService.loggedInUser = { ...this.user, ...update };
+      });
   }
 
   ngOnDestroy() {

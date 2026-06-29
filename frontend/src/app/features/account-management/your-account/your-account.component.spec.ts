@@ -16,6 +16,7 @@ import { within } from '@testing-library/dom';
 import { UserDetails } from '@core/model/userDetails.model';
 import { Roles } from '@core/model/roles.enum';
 import userEvent from '@testing-library/user-event';
+import { of } from 'rxjs';
 
 fdescribe('YourAccountComponent', () => {
   const mockLoggedInUser: UserDetails = {
@@ -55,11 +56,14 @@ fdescribe('YourAccountComponent', () => {
     const routerSpy = spyOn(router, 'navigateByUrl');
     routerSpy.and.returnValue(Promise.resolve(true));
 
+    const userService = injector.inject(UserService) as UserService;
+
     return {
       ...setupTools,
       component,
       router,
       routerSpy,
+      userService,
     };
   }
 
@@ -70,7 +74,7 @@ fdescribe('YourAccountComponent', () => {
     expect(heading.textContent).toEqual('My account details');
   });
 
-  it('should show a User research sessions row', async () => {
+  it('should show a User research sessions row for normal user', async () => {
     const { getByText } = await setup();
 
     const label = getByText('User research sessions');
@@ -81,6 +85,17 @@ fdescribe('YourAccountComponent', () => {
     const addLink = within(row).getByRole('link', { name: /Add/ }) as HTMLAnchorElement;
     expect(addLink).toBeTruthy();
     expect(addLink.href).toContain('/account-management/user-research-invite');
+  });
+
+  it('should not show the User research sessions row for admin user', async () => {
+    const loggedInUser = {
+      ...mockLoggedInUser,
+      role: 'Admin',
+    };
+    const { queryByText } = await setup({ loggedInUser });
+
+    const label = queryByText('User research sessions');
+    expect(label).toBeFalsy();
   });
 
   it('should show a NEW icon and Add Link when user have not answered and have not seen the user research invite question', async () => {
@@ -143,7 +158,13 @@ fdescribe('YourAccountComponent', () => {
   });
 
   it('should update the user flag for "viewedUserResearchQuestion" when user clicked the Add link', async () => {
-    const { getByText } = await setup();
+    const loggedInUser = {
+      ...mockLoggedInUser,
+      userResearchInviteResponse: null,
+      viewedUserResearchQuestion: false,
+    };
+    const { fixture, getByText, userService } = await setup({ loggedInUser });
+    spyOn(userService, 'updateUserFlags').and.returnValue(of({}));
 
     const label = getByText('User research sessions');
     expect(label).toBeTruthy();
@@ -153,6 +174,8 @@ fdescribe('YourAccountComponent', () => {
     const addLink = within(row).getByRole('link', { name: /Add/ }) as HTMLAnchorElement;
     userEvent.click(addLink);
 
-    expect();
+    await fixture.whenStable();
+
+    expect(userService.updateUserFlags).toHaveBeenCalled();
   });
 });

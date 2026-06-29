@@ -3,9 +3,16 @@
 
 <app-summary-list [topBorder]="true" [summaryList]="userInfo"></app-summary-list>
 <app-summary-list [topBorder]="true" [summaryList]="loginInfo"></app-summary-list>
-<app-summary-list [topBorder]="true" [summaryList]="securityInfo"></app-summary-list>
 <app-summary-list
-  [wrapBorder]="true"
-  [summaryList]="userResearchInfo"
-  (setReturn)="setViewedUserResearchQuestion()"
+  [topBorder]="showUserResearchRow"
+  [wrapBorder]="!showUserResearchRow"
+  [summaryList]="securityInfo"
 ></app-summary-list>
+
+@if (showUserResearchRow) {
+  <app-summary-list
+    [wrapBorder]="true"
+    [summaryList]="userResearchInfo"
+    (setReturn)="setViewedUserResearchQuestion()"
+  ></app-summary-list>
+}

@@ -138,6 +138,7 @@ export class MockUserService extends UserService {
           case 'loggedInUser': {
             Object.defineProperty(service, 'loggedInUser', {
               get: () => overrides.loggedInUser,
+              set: () => {},
             });
             break;
           }
