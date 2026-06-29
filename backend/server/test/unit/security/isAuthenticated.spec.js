@@ -2,11 +2,10 @@ const expect = require('chai').expect;
 const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
 const Sentry = require('@sentry/node');
+const jwt = require('jsonwebtoken');
 
 const config = require('../../../config/config');
 const models = require('../../../models');
-const jwt = require('jsonwebtoken');
-
 const {
   getTokenSecret,
   authorisedEstablishmentPermissionCheck,
@@ -14,7 +13,9 @@ const {
   isAdminManager,
   isReadOnlyTryingToNotGET,
   parentNoWriteAccess,
+  isAuthorised,
 } = require('../../../utils/security/isAuthenticated');
+const cacheUserLogoutTime = require('../../../utils/cacheUserLogoutTime');
 
 describe('isAuthenticated', () => {
   describe('getTokenSecret', () => {
@@ -535,7 +536,7 @@ describe('isAuthenticated', () => {
         },
       });
 
-      expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true;
+      expect(res.statusCode).to.equal(200);
       expect(next.calledOnce).to.be.true;
     });
 
@@ -588,7 +589,7 @@ describe('isAuthenticated', () => {
         },
       });
 
-      expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true;
+      expect(res.statusCode).to.equal(200);
       expect(next.calledOnce).to.be.true;
     });
 
@@ -640,7 +641,7 @@ describe('isAuthenticated', () => {
         },
       });
 
-      expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true;
+      expect(res.statusCode).to.equal(200);
       expect(next.calledOnce).to.be.true;
     });
 
@@ -749,7 +750,7 @@ describe('isAuthenticated', () => {
 
       await authorisedEstablishmentPermissionCheck(req, res, next, true);
 
-      expect(res.statusCode).to.equal(200), expect(next.calledOnce).to.be.true;
+      expect(res.statusCode).to.equal(200);
       expect(next.calledOnce).to.be.true;
     });
   });
@@ -1143,6 +1144,150 @@ describe('isAuthenticated', () => {
 
       const result = parentNoWriteAccess(req);
       expect(result).to.be.false;
+    });
+  });
+
+  describe('isAuthorised', () => {
+    let jwtStub;
+    let claimReturn;
+    let next;
+
+    beforeEach(() => {
+      jwtStub = sinon.stub(jwt, 'verify');
+
+      claimReturn = {
+        aud: config.get('jwt.aud.login'),
+        iss: config.get('jwt.iss'),
+        iat: 1780659394,
+        EstablishmentId: 123,
+        EstablishmentUID: 'mock-uid',
+        sub: 'anySub',
+        userUid: 'someUid',
+        parentId: 123,
+        isParent: false,
+        role: 'edit',
+      };
+      next = sinon.fake();
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should reject with 401 error if the request does not have an auth token', async () => {
+      const req = httpMocks.createRequest({ headers: {} });
+      const res = httpMocks.createResponse();
+
+      await isAuthorised(req, res, next);
+
+      expect(res.statusCode).to.equal(401);
+      expect(next).has.not.been.called;
+    });
+
+    const mockRequest = {
+      headers: {
+        authorization: 'Bearer mock-token',
+      },
+    };
+
+    it('should reject with 403 if the token is not valid', async () => {
+      jwtStub.callsArgWith(2, 'Error', {});
+      const req = httpMocks.createRequest(mockRequest);
+      const res = httpMocks.createResponse();
+
+      await isAuthorised(req, res, next);
+
+      expect(res.statusCode).to.equal(403);
+      expect(next).has.not.been.called;
+    });
+
+    it('should reject with 403 if the claim audience does not match', async () => {
+      jwtStub.callsArgWith(2, null, { ...claimReturn, aud: 'incorrect-token-audience' });
+
+      const req = httpMocks.createRequest(mockRequest);
+      const res = httpMocks.createResponse();
+
+      await isAuthorised(req, res, next);
+
+      expect(res.statusCode).to.equal(403);
+      expect(next).has.not.been.called;
+    });
+
+    it('should reject with 403 if the claim issuer does not match', async () => {
+      jwtStub.callsArgWith(2, null, { ...claimReturn, iss: 'not-issued-by-asc-wds' });
+
+      const req = httpMocks.createRequest(mockRequest);
+      const res = httpMocks.createResponse();
+
+      await isAuthorised(req, res, next);
+
+      expect(res.statusCode).to.equal(403);
+      expect(next).has.not.been.called;
+    });
+
+    it('should reject with 403 if user has logged out recently and the token was issued before that', async () => {
+      jwtStub.callsArgWith(2, null, { ...claimReturn });
+      sinon.stub(cacheUserLogoutTime, 'getUserLastLogoutTime').resolves(claimReturn.iat + 100);
+
+      const req = httpMocks.createRequest(mockRequest);
+      const res = httpMocks.createResponse();
+
+      await isAuthorised(req, res, next);
+
+      expect(res.statusCode).to.equal(403);
+      expect(next).has.not.been.called;
+    });
+
+    it('should accept the token if it is newer then the most recent log out time', async () => {
+      jwtStub.callsArgWith(2, null, { ...claimReturn });
+      sinon.stub(cacheUserLogoutTime, 'getUserLastLogoutTime').resolves(claimReturn.iat - 100);
+
+      const req = httpMocks.createRequest(mockRequest);
+      const res = httpMocks.createResponse();
+
+      await isAuthorised(req, res, next);
+
+      expect(res.statusCode).to.equal(200);
+      expect(next).has.been.calledOnce;
+    });
+
+    it('should accept the token if user has not logged out', async () => {
+      jwtStub.callsArgWith(2, null, { ...claimReturn });
+      sinon.stub(cacheUserLogoutTime, 'getUserLastLogoutTime').resolves(null);
+
+      const req = httpMocks.createRequest(mockRequest);
+      const res = httpMocks.createResponse();
+
+      await isAuthorised(req, res, next);
+
+      expect(res.statusCode).to.equal(200);
+      expect(next).has.been.calledOnce;
+    });
+
+    it('should set user information from verified token to the request object', async () => {
+      jwtStub.callsArgWith(2, null, { ...claimReturn });
+      sinon.stub(cacheUserLogoutTime, 'getUserLastLogoutTime').resolves(null);
+
+      const req = httpMocks.createRequest(mockRequest);
+      const res = httpMocks.createResponse();
+
+      await isAuthorised(req, res, next);
+
+      expect(req).to.deep.include({
+        username: claimReturn.sub,
+        userUid: claimReturn.userUid,
+        user: {
+          id: claimReturn.userUid,
+        },
+        role: claimReturn.role,
+        isParent: claimReturn.isParent,
+        establishment: {
+          id: claimReturn.EstablishmentId,
+          uid: claimReturn.EstablishmentUID,
+        },
+        establishmentId: claimReturn.EstablishmentId,
+        tokenIssuedAt: claimReturn.iat,
+      });
     });
   });
 });
