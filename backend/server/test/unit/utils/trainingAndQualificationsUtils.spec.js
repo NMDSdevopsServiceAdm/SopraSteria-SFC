@@ -263,6 +263,16 @@ describe('trainingAndQualificationsUtils', () => {
         });
       });
 
+      it('should handle uri-encoded string in training names', () => {
+        const mockData = lodash.cloneDeep(mockEstablishmentsTrainingResponse);
+        mockData[0].workers[0].workerTraining[0].title = 'Dignity%20at%20Work%20eLearning';
+
+        const result = convertTrainingForEstablishments(mockData);
+        const firstWorkerFirstTrainingRecord = result[0].workerRecords[0].trainingRecords[0];
+
+        expect(firstWorkerFirstTrainingRecord.trainingName).to.deep.equal('Dignity at Work eLearning');
+      });
+
       it('should return second training record formatted as expected for first worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
         const firstWorkerSecondTrainingRecord = result[0].workerRecords[0].trainingRecords[1];
