@@ -5,6 +5,8 @@ const thisIss = config.get('jwt.iss');
 const models = require('../../models');
 const Sentry = require('@sentry/node');
 const { isAdminRole } = require('../adminUtils');
+const HttpError = require('../errors/httpError');
+const { validateTokenIssueTimeAgainstLastLogout } = require('./validateTokenIssueTime');
 
 const uuidV4Regex = /^[A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12}$/i;
 
@@ -12,56 +14,70 @@ const getTokenSecret = () => {
   return config.get('jwt.secret');
 };
 
-// this util middleware will block if the given request is not authorised
-const isAuthorised = (req, res, next) => {
+const verifyToken = async (token, tokenSecret) => {
+  const claim = await new Promise((resolve, reject) => {
+    jwt.verify(token, tokenSecret, function (err, claim) {
+      if (err || claim.aud !== config.get('jwt.aud.login') || claim.iss !== thisIss) {
+        reject(new HttpError('Invalid Token', 403));
+      } else {
+        resolve(claim);
+      }
+    });
+  });
+
+  return claim;
+};
+
+const isAuthorised = async (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
   const Token_Secret = config.get('jwt.secret');
 
-  if (token) {
-    // var dec = getverify(token, Token_Secret);
+  try {
+    if (!token) {
+      throw new HttpError('Requires authorisation', 401);
+    }
 
-    jwt.verify(token, Token_Secret, function (err, claim) {
-      if (err || claim.aud !== config.get('jwt.aud.login') || claim.iss !== thisIss) {
-        return res.status(403).send('Invalid Token');
-      } else {
-        req.username = claim.sub;
-        req.userUid = claim.userUid;
-        req.user = {
-          id: claim.userUid,
-        };
-        req.role = claim.role;
-        req.isParent = claim.isParent;
-        req.establishment = {
-          id: claim.EstablishmentId,
-          uid: Object.prototype.hasOwnProperty.call(claim, 'EstablishmentUID') ? claim.EstablishmentUID : null,
-        };
-        req.establishmentId = claim.EstablishmentId;
+    const claim = await verifyToken(token, Token_Secret);
 
-        Sentry.setUser({
-          username: req.username,
-          id: req.userUid,
-          ip_address: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
-        });
+    req.username = claim.sub;
+    req.userUid = claim.userUid;
+    req.user = {
+      id: claim.userUid,
+    };
+    req.role = claim.role;
+    req.isParent = claim.isParent;
+    req.establishment = {
+      id: claim.EstablishmentId,
+      uid: Object.prototype.hasOwnProperty.call(claim, 'EstablishmentUID') ? claim.EstablishmentUID : null,
+    };
+    req.establishmentId = claim.EstablishmentId;
+    req.tokenIssuedAt = claim.iat;
 
-        Sentry.setContext('establishment', {
-          id: req.establishment.id,
-          uid: req.establishment.uid,
-          isParent: req.isParent,
-        });
-
-        Sentry.setContext('user', {
-          username: req.username,
-          id: req.userUid,
-          ip_address: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
-          role: req.role,
-        });
-
-        next();
-      }
+    Sentry.setUser({
+      username: req.username,
+      id: req.userUid,
+      ip_address: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
     });
-  } else {
-    // not authenticated
-    res.status(401).send('Requires authorisation');
+
+    Sentry.setContext('establishment', {
+      id: req.establishment.id,
+      uid: req.establishment.uid,
+      isParent: req.isParent,
+    });
+
+    Sentry.setContext('user', {
+      username: req.username,
+      id: req.userUid,
+      ip_address: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+      role: req.role,
+    });
+
+    await validateTokenIssueTimeAgainstLastLogout(req, res, next);
+  } catch (error) {
+    if (error instanceof HttpError) {
+      return res.status(error.statusCode).send(error.message);
+    }
+    return res.status(500).send('internal error');
   }
 };
 
