@@ -154,7 +154,6 @@ export class MockUserService extends UserService {
   }
 
   public get loggedInUser(): UserDetails {
-    console.log('get prop called');
     return {
       uid: 'mocked-uid',
       email: 'test@developer.com',
@@ -210,6 +209,20 @@ export class MockUserService extends UserService {
     return of({});
   }
 }
+
+export const mockLoggedInUser: UserDetails = {
+  uid: 'mocked-uid',
+  email: 'test@developer.com',
+  fullname: 'John Smith',
+  jobTitle: 'Developer',
+  phone: '01234567890',
+  role: Roles.Edit,
+  securityQuestion: 'Not relevant',
+  securityQuestionAnswer: 'Not relevant',
+  lastLoggedInFromLogin: '2026-06-01T12:34:56.000Z',
+  userResearchInviteResponse: null,
+  viewedUserResearchQuestion: true,
+};
 
 @Injectable()
 export class MockUserServiceWithNoUserDetails extends MockUserService {
