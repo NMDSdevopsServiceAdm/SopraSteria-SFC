@@ -28,7 +28,7 @@ export interface ActivateAccountRequest {
   securityQuestion: string;
   securityQuestionAnswer: string;
   username: string;
-  userResearchInviteResponse?: InviteResponse;
+  userResearchInviteResponse: InviteResponse | null;
 }
 
 export interface ValidateAccountActivationTokenRequest {

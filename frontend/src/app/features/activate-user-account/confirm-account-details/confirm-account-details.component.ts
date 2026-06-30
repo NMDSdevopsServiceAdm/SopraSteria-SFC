@@ -103,7 +103,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
     this.userResearchInviteResponseInfo = [
       {
         label: 'User research sessions',
-        data: this.setUserResearchInviteResponseValue() ?? '',
+        data: this.setUserResearchInviteResponseValue(),
         route: this.getRoute('user-research-invite'),
       },
     ];
@@ -130,12 +130,11 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
 
   private setUserResearchInviteResponseValue(): string {
     if (this.userResearchInviteResponse === null) {
-      return '';
+      return '-';
     }
 
     return this.userResearchInviteResponse === InviteResponse.Yes ? 'Yes' : 'No';
   }
-
   public setTermsAndConditionsCheckbox(): void {
     const checked = !this.form.get('termsAndConditions')?.value;
 
