@@ -1,7 +1,7 @@
 import { render, fireEvent } from '@testing-library/angular';
 import { SummaryListComponent } from './summary-list.component';
 
-fdescribe('SummaryListComponent', () => {
+describe('SummaryListComponent', () => {
   async function setup(summaryList = [{ label: 'Full name', data: 'John Doe' }], displayShowPasswordToggle = false) {
     const setupTools = await render(SummaryListComponent, {
       imports: [],

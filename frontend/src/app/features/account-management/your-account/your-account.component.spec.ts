@@ -1,38 +1,23 @@
+import { of } from 'rxjs';
+
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { UserService } from '@core/services/user.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { mockLoggedInUser, MockUserService } from '@core/test-utils/MockUserService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
+import { within } from '@testing-library/dom';
+import userEvent from '@testing-library/user-event';
 
 import { AccountManagementModule } from '../account-management.module';
 import { YourAccountComponent } from './your-account.component';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { UserService } from '@core/services/user.service';
-import { MockUserService } from '@core/test-utils/MockUserService';
-import { within } from '@testing-library/dom';
-import { UserDetails } from '@core/model/userDetails.model';
-import { Roles } from '@core/model/roles.enum';
-import userEvent from '@testing-library/user-event';
-import { of } from 'rxjs';
 
-fdescribe('YourAccountComponent', () => {
-  const mockLoggedInUser: UserDetails = {
-    uid: 'mocked-uid',
-    email: 'test@developer.com',
-    fullname: 'John Smith',
-    jobTitle: 'Developer',
-    phone: '01234567890',
-    role: Roles.Edit,
-    securityQuestion: 'Not relevant',
-    securityQuestionAnswer: 'Not relevant',
-    lastLoggedInFromLogin: '2026-06-01T12:34:56.000Z',
-    userResearchInviteResponse: null,
-    viewedUserResearchQuestion: true,
-  };
-
+describe('YourAccountComponent', () => {
   async function setup(overrides: any = {}) {
     const loggedInUser = overrides?.loggedInUser ?? mockLoggedInUser;
     const setupTools = await render(YourAccountComponent, {
