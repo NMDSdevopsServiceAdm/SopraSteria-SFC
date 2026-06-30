@@ -286,6 +286,12 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: 0,
         field: 'TrainingCoursesMessageViewedQuantity',
       },
+      viewedUserResearchQuestion: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+        field: 'ViewedUserResearchQuestion',
+      },
     },
     {
       tableName: '"User"',
