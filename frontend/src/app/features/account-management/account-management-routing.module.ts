@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { ChangePasswordComponent } from './change-password/change-password.component';
+import { ChangeUserResearchComponent } from './change-user-research/change-user-research.component';
 import { ChangeUserSecurityComponent } from './change-user-security/change-user-security.component';
 import { ChangeYourDetailsComponent } from './change-your-details/change-your-details.component';
 import { YourAccountComponent } from './your-account/your-account.component';
@@ -25,6 +26,13 @@ const routes: Routes = [
     path: 'change-your-details',
     component: ChangeYourDetailsComponent,
     data: { title: 'Your details' },
+  },
+  {
+    path: 'change-user-research',
+    component: ChangeUserResearchComponent,
+    data: {
+      title: 'User research sessions',
+    },
   },
 ];
 
