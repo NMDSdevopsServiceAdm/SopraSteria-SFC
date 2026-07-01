@@ -273,6 +273,16 @@ describe('trainingAndQualificationsUtils', () => {
         expect(firstWorkerFirstTrainingRecord.trainingName).to.deep.equal('Dignity at Work eLearning');
       });
 
+      it('should not affect normal usage of % char', () => {
+        const mockData = lodash.cloneDeep(mockEstablishmentsTrainingResponse);
+        mockData[0].workers[0].workerTraining[0].title = 'First aid training (70%)';
+
+        const result = convertTrainingForEstablishments(mockData);
+        const firstWorkerFirstTrainingRecord = result[0].workerRecords[0].trainingRecords[0];
+
+        expect(firstWorkerFirstTrainingRecord.trainingName).to.deep.equal('First aid training (70%)');
+      });
+
       it('should return second training record formatted as expected for first worker', () => {
         const result = convertTrainingForEstablishments(mockEstablishmentsTrainingResponse);
         const firstWorkerSecondTrainingRecord = result[0].workerRecords[0].trainingRecords[1];
