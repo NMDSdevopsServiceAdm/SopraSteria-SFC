@@ -28,7 +28,7 @@ const routes: Routes = [
     data: { title: 'Your details' },
   },
   {
-    path: 'change-user-research',
+    path: 'user-research-invite',
     component: ChangeUserResearchComponent,
     data: {
       title: 'User research sessions',
