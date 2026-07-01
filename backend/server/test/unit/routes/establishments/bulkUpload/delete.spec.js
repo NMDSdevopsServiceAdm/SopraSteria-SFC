@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const { deleteFiles } = require('../../../../../routes/establishments/bulkUpload/delete');
-const s3 = require('../../../../../routes/establishments/bulkUpload/s3');
+const BulkUploadS3Utils = require('../../../../../routes/establishments/bulkUpload/s3');
 const httpMocks = require('node-mocks-http');
 
 describe('delete', () => {
@@ -16,8 +16,8 @@ describe('delete', () => {
   const establishmentId = 123;
 
   it('should return status 200 if the file is found', async () => {
-    sinon.stub(s3, 'findFilesS3').returns(filesList);
-    const deleteFilesFn = sinon.stub(s3, 'deleteFilesS3');
+    sinon.stub(BulkUploadS3Utils, 'findFilesS3').returns(filesList);
+    const deleteFilesFn = sinon.stub(BulkUploadS3Utils, 'deleteFilesS3');
     const req = httpMocks.createRequest({
       method: 'GET',
       url: `/api/establishment/${establishmentId}/bulkupload/delete/${fileName}`,
@@ -36,8 +36,8 @@ describe('delete', () => {
   });
 
   it('should return status 404 if the file is not found', async () => {
-    sinon.stub(s3, 'findFilesS3').returns([]);
-    const deleteFilesFn = sinon.stub(s3, 'deleteFilesS3');
+    sinon.stub(BulkUploadS3Utils, 'findFilesS3').returns([]);
+    const deleteFilesFn = sinon.stub(BulkUploadS3Utils, 'deleteFilesS3');
     const req = httpMocks.createRequest({
       method: 'GET',
       url: `/api/establishment/${establishmentId}/bulkupload/delete/${fileName}`,

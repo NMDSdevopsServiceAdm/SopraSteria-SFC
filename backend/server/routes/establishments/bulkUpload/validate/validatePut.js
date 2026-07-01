@@ -4,7 +4,7 @@ const csv = require('csvtojson');
 const { MetaData } = require('../../../../models/BulkImport/csv/metaData');
 const models = require('../../../../models');
 const { getFileType } = require('../whichFile');
-const S3 = require('../s3');
+const BulkUploadS3Utils = require('../s3');
 const { validateBulkUploadFiles } = require('./validateBulkUploadFiles');
 const { workerData } = require('worker_threads');
 const { completeLock } = require('../lock');
@@ -27,13 +27,13 @@ const validatePut = async (req, res) => {
   };
 
   try {
-    const bucketFiles = await S3.listLatestObjectsInWorkplaceBucket(req.establishmentId);
+    const bucketFiles = await BulkUploadS3Utils.listLatestObjectsInWorkplaceBucket(req.establishmentId);
     const bucketFilesContents = bucketFiles?.Contents ?? [];
 
     await Promise.all(
       bucketFilesContents.map(async (fileInfo) => {
         if (isNotMetadata(fileInfo.Key)) {
-          const file = await S3.downloadContent(fileInfo.Key);
+          const file = await BulkUploadS3Utils.downloadContent(fileInfo.Key);
           const fileType = getFileType(file.data);
 
           if (files[fileType].imported === null) {
@@ -48,7 +48,7 @@ const validatePut = async (req, res) => {
 
     res.buValidationResult = validationResponse.status;
 
-    await S3.saveResponse(req, res, 200, {
+    await BulkUploadS3Utils.saveResponse(req, res, 200, {
       establishment: validationResponse.metaData.establishments.toJSON(),
       workers: validationResponse.metaData.workers.toJSON(),
       training: validationResponse.metaData.training.toJSON(),
@@ -59,7 +59,7 @@ const validatePut = async (req, res) => {
     console.error(err);
     Sentry.captureException(err);
 
-    await S3.saveResponse(req, res, 500, {});
+    await BulkUploadS3Utils.saveResponse(req, res, 500, {});
   }
 };
 
