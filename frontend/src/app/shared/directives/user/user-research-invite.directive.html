@@ -1,8 +1,9 @@
 <form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <span data-testid="caption" class="govuk-caption-l">User account</span>
-      <h1 data-testid="heading" class="govuk-heading-l">Would you like to take part in our user research sessions?</h1>
+      <span data-testid="caption" class="govuk-caption-l">{{ caption }}</span>
+      <h1 data-testid="heading" class="govuk-heading-l">{{ heading }}</h1>
+      @if (!isExistingUser) {
       <div data-testid="text">
         <p class="govuk-body govuk-!-margin-bottom-2">
           We’d like your help and it doesn’t matter if you’re new to ASC-WDS.
@@ -11,6 +12,7 @@
           If you want to take part, select Yes so that a user researcher from our digital partner can contact you.
         </p>
       </div>
+      }
       <div class="govuk-!-margin-bottom-7">
         <app-details [title]="detailsTitle">
           <p data-testid="details-text-one" class="govuk-body govuk-!-margin-bottom-2 asc__negative-margin-right-4">
@@ -19,6 +21,12 @@
           <p data-testid="details-text-two" class="govuk-body">{{ detailsTextTwo }}</p>
         </app-details>
       </div>
+      @if (isExistingUser) {
+      <div data-testid="existing-user-text">
+        <p class="govuk-body govuk-!-margin-bottom-0">Select Yes to take part in user research sessions.</p>
+        <p class="govuk-body">A user researcher from our digital partner will contact you.</p>
+      </div>
+      }
       <div class="govuk-form-group govuk-!-margin-bottom-8 govuk-!-margin-top-4">
         <div class="govuk-radios" data-module="govuk-radios">
           @for (option of userResearchInviteResponseOptions; track option) {
