@@ -1,6 +1,7 @@
 const sinon = require('sinon');
 const S3 = require('../../../../../routes/establishments/bulkUpload/s3');
 const s3ClientV3 = require('../../../../../routes/establishments/bulkUpload/s3clientv3');
+const { buildGetObjectResponseBody } = require('./testUtils');
 const expect = require('chai').expect;
 
 const extraData = {
@@ -104,19 +105,14 @@ describe('s3', () => {
     it('should delete the files from s3', async () => {
       sinon.stub(s3ClientV3, 'listObjects').resolves(listObjects);
 
-      const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
-      deleteObjects.returns({
-        promise: async () => {
-          return;
-        },
-      });
+      const deleteObjects = sinon.stub(s3ClientV3, 'deleteObjects').resolves();
       await S3.deleteFilesS3(123, 'filename1');
       sinon.assert.calledWith(deleteObjects, deleteFiles);
     });
 
     it('should handle the case when listObjects found no result', async () => {
       sinon.stub(s3ClientV3, 'listObjects').resolves({});
-      const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
+      const deleteObjects = sinon.stub(s3ClientV3, 'deleteObjects');
 
       await S3.deleteFilesS3(123, 'filename1');
       sinon.assert.notCalled(deleteObjects);
@@ -137,13 +133,8 @@ describe('s3', () => {
         }
       });
 
-      const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
-      deleteObjects.returns({
-        promise: async () => {
-          return;
-        },
-      });
-
+      const deleteObjects = sinon.stub(s3ClientV3, 'deleteObjects');
+      deleteObjects.resolves();
       const consolidateFiles = [...latestFiles.Contents, ...validationFiles.Contents, ...intermediaryFiles.Contents];
 
       const justTheKeys = consolidateFiles.map((file) => {
@@ -164,7 +155,7 @@ describe('s3', () => {
 
     it('should handle the case when listObjects found no result', async () => {
       sinon.stub(s3ClientV3, 'listObjects').resolves({});
-      const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
+      const deleteObjects = sinon.stub(s3ClientV3, 'deleteObjects');
 
       await S3.deleteFilesS3(123, 'filename1');
       sinon.assert.notCalled(deleteObjects);
@@ -175,9 +166,9 @@ describe('s3', () => {
     it('should list the files from s3', async () => {
       sinon.stub(s3ClientV3, 'listObjects').resolves(latestFiles);
 
-      const getObject = sinon.stub(S3.s3, 'getObject');
+      const getObject = sinon.stub(s3ClientV3, 'getObject');
 
-      var workerFileBuffer = Buffer.from(
+      const workerFileBody = buildGetObjectResponseBody(
         '{\n' +
           '  "username": "george-benchmarking",\n' +
           '  "filename": "WorkerFile.csv",\n' +
@@ -188,27 +179,24 @@ describe('s3', () => {
           '  "deleted": 0\n' +
           '}',
       );
+
       getObject
         .withArgs({
           Bucket: S3.Bucket,
           Key: 'WorkerFile.metadata.json',
         })
-        .returns({
-          promise: async () => {
-            return {
-              AcceptRanges: 'bytes',
-              Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
-              LastModified: '2021-01-26T14:28:35.000Z',
-              ContentLength: 171,
-              ETag: '""',
-              VersionId: 'null',
-              ContentType: 'application/json',
-              Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
-              Body: workerFileBuffer,
-            };
-          },
+        .resolves({
+          AcceptRanges: 'bytes',
+          Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
+          LastModified: '2021-01-26T14:28:35.000Z',
+          ContentLength: 171,
+          ETag: '""',
+          VersionId: 'null',
+          ContentType: 'application/json',
+          Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
+          Body: workerFileBody,
         });
-      var establishmentFileBuffer = Buffer.from(
+      const establishmentFileBody = buildGetObjectResponseBody(
         '{\n' +
           '  "username": "george-benchmarking",\n' +
           '  "filename": "EstablishmentFile.csv",\n' +
@@ -224,21 +212,18 @@ describe('s3', () => {
           Bucket: S3.Bucket,
           Key: 'EstablishmentFile.metadata.json',
         })
-        .returns({
-          promise: async () => {
-            return {
-              AcceptRanges: 'bytes',
-              Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
-              LastModified: '2021-01-26T14:28:35.000Z',
-              ContentLength: 171,
-              ETag: '""',
-              VersionId: 'null',
-              ContentType: 'application/json',
-              Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
-              Body: establishmentFileBuffer,
-            };
-          },
+        .resolves({
+          AcceptRanges: 'bytes',
+          Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
+          LastModified: '2021-01-26T14:28:35.000Z',
+          ContentLength: 171,
+          ETag: '""',
+          VersionId: 'null',
+          ContentType: 'application/json',
+          Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
+          Body: establishmentFileBody,
         });
+
       const results = await S3.listMetaData(123, '/lastBulkUpload/');
       const expectedResult = [
         {
@@ -283,7 +268,7 @@ describe('s3', () => {
     it('should handle the case when listObjects found no result', async () => {
       sinon.stub(s3ClientV3, 'listObjects').resolves({});
 
-      const getObject = sinon.stub(S3.s3, 'getObject');
+      const getObject = sinon.stub(s3ClientV3, 'getObject');
 
       const results = await S3.listMetaData(123, '/lastBulkUpload/');
 
