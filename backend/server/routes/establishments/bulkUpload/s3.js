@@ -2,11 +2,6 @@
 const moment = require('moment');
 const config = require('../../../config/config');
 
-const AWS_SDK_V2 = require('aws-sdk');
-const s3 = new AWS_SDK_V2.S3({
-  region: String(config.get('bulkupload.region')),
-});
-
 const s3ClientV3 = require('./s3clientv3');
 
 const Bucket = String(config.get('bulkupload.bucketname'));
@@ -114,6 +109,15 @@ const saveResponse = async (req, res, statusCode, body, headers) => {
       responseHeaders: typeof headers === 'object' ? headers : undefined,
     }),
   });
+};
+
+const downloadObjectAsString = async (key) => {
+  const getObjectResult = await s3ClientV3.getObject({
+    Bucket,
+    Key: key,
+  });
+
+  return getObjectResult.Body.transformToString();
 };
 
 const downloadContent = async (key, size, lastModified) => {
@@ -260,13 +264,11 @@ const listMetaData = async (establishmentId, folder) => {
     return [];
   }
 
-  filesInFolder.Contents.forEach(async (myFile) => {
-    if (findMetaDataObjects.test(myFile.Key)) {
-      toDownload.push(downloadContent(myFile.Key, myFile.Size, myFile.LastModified));
-    }
-  });
+  const filesToDownload = filesInFolder.Contents.filter((file) => findMetaDataObjects.test(file.Key)).map((file) =>
+    downloadContent(file.Key, file.Size, file.LastModified),
+  );
 
-  const allMetaFiles = await Promise.all(toDownload);
+  const allMetaFiles = await Promise.all(filesToDownload);
 
   return allMetaFiles.map((file) => {
     file.data = JSON.parse(file.data);
@@ -309,7 +311,7 @@ const deleteFilesS3 = async (establishmentId, fileName) => {
   }
 };
 
-const listObjectsInBucket = async (establishmentId) => {
+const listLatestObjectsInWorkplaceBucket = async (establishmentId) => {
   return s3ClientV3.listObjects({
     Bucket,
     Prefix: `${establishmentId}/latest/`,
@@ -338,9 +340,7 @@ const getSignedUrlForUpload = async ({ ...args }) => {
 };
 
 module.exports = {
-  s3,
   s3ClientV3,
-  Bucket,
   bulkUploadBucket: Bucket,
   uploadJSONDataToS3,
   uploadMetadataToS3,
@@ -355,10 +355,10 @@ module.exports = {
   deleteFilesS3,
   findFilesS3,
   listMetaData,
-  listLatestObjectsInWorkplaceBucket: listObjectsInBucket,
-  listObjectsInBucket,
+  listLatestObjectsInWorkplaceBucket,
   uploadDisbursementFileToS3,
   getKeysFromFolder,
   headObjectInBucket,
   getSignedUrlForUpload,
+  downloadObjectAsString,
 };

@@ -27,7 +27,7 @@ const validatePut = async (req, res) => {
   };
 
   try {
-    const bucketFiles = await S3.listObjectsInBucket(req.establishmentId);
+    const bucketFiles = await S3.listLatestObjectsInWorkplaceBucket(req.establishmentId);
     const bucketFilesContents = bucketFiles?.Contents ?? [];
 
     await Promise.all(

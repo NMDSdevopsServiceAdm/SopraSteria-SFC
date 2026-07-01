@@ -1,5 +1,5 @@
 const sinon = require('sinon');
-const S3 = require('../../../../../routes/establishments/bulkUpload/s3');
+const BulkUploadS3Utils = require('../../../../../routes/establishments/bulkUpload/s3');
 const s3ClientV3 = require('../../../../../routes/establishments/bulkUpload/s3clientv3');
 const { buildGetObjectResponseBody } = require('./testUtils');
 const expect = require('chai').expect;
@@ -96,7 +96,7 @@ const deleteFiles = {
   },
 };
 
-describe('s3', () => {
+describe('BulkUploadS3Utils', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -106,7 +106,7 @@ describe('s3', () => {
       sinon.stub(s3ClientV3, 'listObjects').resolves(listObjects);
 
       const deleteObjects = sinon.stub(s3ClientV3, 'deleteObjects').resolves();
-      await S3.deleteFilesS3(123, 'filename1');
+      await BulkUploadS3Utils.deleteFilesS3(123, 'filename1');
       sinon.assert.calledWith(deleteObjects, deleteFiles);
     });
 
@@ -114,7 +114,7 @@ describe('s3', () => {
       sinon.stub(s3ClientV3, 'listObjects').resolves({});
       const deleteObjects = sinon.stub(s3ClientV3, 'deleteObjects');
 
-      await S3.deleteFilesS3(123, 'filename1');
+      await BulkUploadS3Utils.deleteFilesS3(123, 'filename1');
       sinon.assert.notCalled(deleteObjects);
     });
   });
@@ -148,7 +148,7 @@ describe('s3', () => {
           Quiet: true,
         },
       };
-      await S3.purgeBulkUploadS3Objects(1);
+      await BulkUploadS3Utils.purgeBulkUploadS3Objects(1);
 
       sinon.assert.calledWith(deleteObjects, expectedResult);
     });
@@ -157,7 +157,7 @@ describe('s3', () => {
       sinon.stub(s3ClientV3, 'listObjects').resolves({});
       const deleteObjects = sinon.stub(s3ClientV3, 'deleteObjects');
 
-      await S3.deleteFilesS3(123, 'filename1');
+      await BulkUploadS3Utils.deleteFilesS3(123, 'filename1');
       sinon.assert.notCalled(deleteObjects);
     });
   });
@@ -182,7 +182,7 @@ describe('s3', () => {
 
       getObject
         .withArgs({
-          Bucket: S3.Bucket,
+          Bucket: BulkUploadS3Utils.bulkUploadBucket,
           Key: 'WorkerFile.metadata.json',
         })
         .resolves({
@@ -209,7 +209,7 @@ describe('s3', () => {
       );
       getObject
         .withArgs({
-          Bucket: S3.Bucket,
+          Bucket: BulkUploadS3Utils.bulkUploadBucket,
           Key: 'EstablishmentFile.metadata.json',
         })
         .resolves({
@@ -224,7 +224,7 @@ describe('s3', () => {
           Body: establishmentFileBody,
         });
 
-      const results = await S3.listMetaData(123, '/lastBulkUpload/');
+      const results = await BulkUploadS3Utils.listMetaData(123, '/lastBulkUpload/');
       const expectedResult = [
         {
           key: 'EstablishmentFile.metadata.json',
@@ -270,7 +270,7 @@ describe('s3', () => {
 
       const getObject = sinon.stub(s3ClientV3, 'getObject');
 
-      const results = await S3.listMetaData(123, '/lastBulkUpload/');
+      const results = await BulkUploadS3Utils.listMetaData(123, '/lastBulkUpload/');
 
       expect(getObject).not.to.be.called;
       expect(results).to.deep.equal([]);
