@@ -3,6 +3,7 @@ import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
+import { UserService } from '@core/services/user.service';
 import { UserResearchInviteDirective } from '@shared/directives/user/user-research-invite.directive';
 
 @Component({
@@ -20,14 +21,16 @@ export class ActivateAccountUserResearchInviteComponent extends UserResearchInvi
     protected router: Router,
     protected route: ActivatedRoute,
     private createAccountService: CreateAccountService,
+    protected userService: UserService,
   ) {
-    super(backLinkService, formBuilder, router, route);
+    super(backLinkService, formBuilder, router, route, userService);
   }
 
   init(): void {
     this.activationToken = this.route.snapshot.params.activationToken;
     this.insideFlow = this.route.parent?.snapshot?.url?.[0]?.path === this.activationToken;
     this.confirmPagePath = `/activate-account/${this.activationToken}/confirm-account-details`;
+    this.isExistingUser = false;
   }
 
   protected loadUserResearchInviteResponse(): void {
