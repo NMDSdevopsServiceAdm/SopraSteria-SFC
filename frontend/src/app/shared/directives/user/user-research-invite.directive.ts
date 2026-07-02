@@ -1,8 +1,10 @@
 import { AfterViewInit, Directive, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { InviteResponse, UserDetails } from '@core/model/userDetails.model';
 import { BackLinkService } from '@core/services/backLink.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { UserService } from '@core/services/user.service';
 
 @Directive()
@@ -32,23 +34,28 @@ export class UserResearchInviteDirective implements OnInit, OnDestroy, AfterView
     protected router: Router,
     protected route: ActivatedRoute,
     protected userService: UserService,
+    protected breadcrumbService: BreadcrumbService,
   ) {}
 
   ngOnInit(): void {
-    this.setBackLink();
     this.setupForm();
-    this.loadUserResearchInviteResponse();
     this.setupUserSubscription();
-    this.prefillForm();
+    this.loadUserResearchInviteResponse();
     this.init();
-    this.updateUiText();
+    this.prefillForm();
+    this.setupNavigation();
+    this.updatePageText();
   }
 
   protected init(): void {}
   protected loadUserResearchInviteResponse(): void {}
 
-  protected setBackLink(): void {
-    this.backLinkService.showBackLink();
+  protected setupNavigation(): void {
+    if (this.isExistingUser) {
+      this.breadcrumbService.show(JourneyType.ACCOUNT);
+    } else {
+      this.backLinkService.showBackLink();
+    }
   }
 
   protected setupForm(): void {
@@ -57,10 +64,7 @@ export class UserResearchInviteDirective implements OnInit, OnDestroy, AfterView
     });
   }
 
-  protected updateUiText(): void {
-    console.log('updateUiText');
-    console.log('isExistingUser', this.isExistingUser);
-    console.log('userDetails', this.userDetails);
+  protected updatePageText(): void {
     this.caption = this.isExistingUser && this.userDetails?.fullname ? this.userDetails.fullname : 'User account';
 
     this.heading = this.isExistingUser
