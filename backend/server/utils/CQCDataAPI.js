@@ -14,6 +14,10 @@ module.exports = {
   },
 
   getCQCProviderData: async function (locationID) {
+    if (!cqcSubscriptionKey) {
+      return { locationIds: [] };
+    }
+
     const regex = new RegExp('^[0-9 -]{1,}$', 'gm');
     let isCorrectFormat = regex.test(locationID);
 

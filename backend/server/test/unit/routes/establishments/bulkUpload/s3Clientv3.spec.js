@@ -2,7 +2,7 @@ const sinon = require('sinon');
 const expect = require('chai').expect;
 const { ListObjectsV2Command, S3Client } = require('@aws-sdk/client-s3');
 
-const s3ClientV3 = require('../../../../../routes/establishments/bulkUpload/s3clientv3');
+const s3ClientV3 = require('../../../../../routes/establishments/bulkUpload/s3ClientForBulkUpload');
 
 describe('S3 Client (Ver 3) for Bulk upload', () => {
   afterEach(() => {

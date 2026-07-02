@@ -1,31 +1,25 @@
 const config = require('../../config/config');
-const s3 = new (require('aws-sdk').S3)({
-  region: String(config.get('certificate.region')),
-});
 
-const Bucket = String(config.get('certificate.bucketname'));
 const pdfLib = require('pdf-lib');
 const Establishment = require('../../models/classes/establishment');
 const Authorization = require('../../utils/security/isAuthenticated');
 
 const express = require('express');
+const { S3ClientV3 } = require('../../aws/s3Client');
 const router = express.Router({ mergeParams: true });
 
-const filePathBase = 'public/download/certificates';
-let fileNameBase = 'ASC-WDS certificate';
-let Key;
+const region = String(config.get('certificate.region'));
+const Bucket = String(config.get('certificate.bucketname'));
 
-const params = () => {
-  return {
-    Bucket,
-    Key,
-  };
-};
+const S3Client = new S3ClientV3(region);
+
+const filePathBase = 'public/download/certificates';
+const fileNameBase = 'ASC-WDS certificate';
 
 const getCertificate = async (req, res) => {
   const fileName = `${fileNameBase} ${req.params.years}.pdf`;
   const establishmentFileName = `${req.params.id} ${fileName}`;
-  Key = `${filePathBase}/${establishmentFileName}`;
+  const Key = `${filePathBase}/${establishmentFileName}`;
   try {
     const thisEstablishment = new Establishment.Establishment(req.username);
     await thisEstablishment.restore(req.params.id);
@@ -41,20 +35,20 @@ const getCertificate = async (req, res) => {
 
     await uploadToS3(uploadParams);
 
-    const url = await getSignedUrl();
+    const url = await getSignedUrl(Key);
     res.status(200).send({ data: url });
   } catch (err) {
     return res.status(500).send({ err });
   }
 };
 
-const getSignedUrl = async () => {
-  return new Promise((resolve, reject) => {
-    s3.getSignedUrl('getObject', params(), (err, url) => {
-      if (err) reject(err);
-      resolve(url);
-    });
-  });
+const getSignedUrl = async (Key) => {
+  const parameters = {
+    Bucket,
+    Key,
+  };
+  const signedUrl = await S3Client.getSignedUrlForGetObject(parameters);
+  return signedUrl;
 };
 
 const modifyPdf = async (establishmentName, fileName) => {
@@ -77,7 +71,7 @@ const modifyPdf = async (establishmentName, fileName) => {
 
 const uploadToS3 = async (uploadParams) => {
   try {
-    await s3.putObject(uploadParams).promise();
+    await S3Client.putObject(uploadParams);
   } catch (err) {
     console.log(err);
     throw err;
