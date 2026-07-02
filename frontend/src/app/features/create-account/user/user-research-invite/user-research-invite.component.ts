@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 import { ProgressBarUtil } from '@core/utils/progress-bar-util';
@@ -27,8 +28,9 @@ export class UserResearchInviteComponent extends UserResearchInviteDirective {
     protected route: ActivatedRoute,
     private registrationService: RegistrationService,
     protected userService: UserService,
+    protected breadcrumbService: BreadcrumbService,
   ) {
-    super(backLinkService, formBuilder, router, route, userService);
+    super(backLinkService, formBuilder, router, route, userService, breadcrumbService);
   }
 
   init(): void {

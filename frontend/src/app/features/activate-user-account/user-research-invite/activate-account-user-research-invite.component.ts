@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { UserService } from '@core/services/user.service';
 import { UserResearchInviteDirective } from '@shared/directives/user/user-research-invite.directive';
@@ -22,8 +23,9 @@ export class ActivateAccountUserResearchInviteComponent extends UserResearchInvi
     protected route: ActivatedRoute,
     private createAccountService: CreateAccountService,
     protected userService: UserService,
+    protected breadcrumbService: BreadcrumbService,
   ) {
-    super(backLinkService, formBuilder, router, route, userService);
+    super(backLinkService, formBuilder, router, route, userService, breadcrumbService);
   }
 
   init(): void {
