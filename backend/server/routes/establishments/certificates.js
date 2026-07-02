@@ -57,9 +57,10 @@ const modifyPdf = async (establishmentName, fileName) => {
     Bucket,
   };
 
-  var response = await s3.getObject(params).promise();
+  const response = await S3Client.getObject(params);
+  const responseBodyAsBuffer = await response.Body.transformToByteArray();
 
-  const pdfDoc = await pdfLib.PDFDocument.load(response.Body.buffer);
+  const pdfDoc = await pdfLib.PDFDocument.load(responseBodyAsBuffer);
 
   const form = pdfDoc.getForm();
   const fields = form.getFields();
