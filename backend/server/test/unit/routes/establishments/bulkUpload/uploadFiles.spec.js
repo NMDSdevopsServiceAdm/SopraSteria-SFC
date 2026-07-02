@@ -3,7 +3,7 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const BulkUploadS3Utils = require('../../../../../routes/establishments/bulkUpload/s3');
-const bulkUploadS3Client = require('../../../../../routes/establishments/bulkUpload/s3clientv3');
+const bulkUploadS3Client = require('../../../../../routes/establishments/bulkUpload/s3ClientForBulkUpload');
 const buUtils = require('../../../../../utils/bulkUploadUtils');
 const uploadedFiles = require('../../../../../routes/establishments/bulkUpload/uploadFiles');
 const { trainingHeadersAsArray } = require('../../../mockdata/training');

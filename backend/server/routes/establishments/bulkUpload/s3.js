@@ -2,7 +2,7 @@
 const moment = require('moment');
 const config = require('../../../config/config');
 
-const bulkUploadS3Client = require('./s3clientv3');
+const bulkUploadS3Client = require('./s3ClientForBulkUpload');
 
 const Bucket = String(config.get('bulkupload.bucketname'));
 

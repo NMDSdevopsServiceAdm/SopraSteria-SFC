@@ -1,6 +1,6 @@
 const sinon = require('sinon');
 const BulkUploadS3Utils = require('../../../../../routes/establishments/bulkUpload/s3');
-const s3ClientV3 = require('../../../../../routes/establishments/bulkUpload/s3clientv3');
+const s3ClientV3 = require('../../../../../routes/establishments/bulkUpload/s3ClientForBulkUpload');
 const { buildGetObjectResponseBody } = require('./testUtils');
 const expect = require('chai').expect;
 
