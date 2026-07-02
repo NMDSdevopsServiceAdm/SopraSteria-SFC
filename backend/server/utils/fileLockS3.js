@@ -1,22 +1,19 @@
-const AWS = require('aws-sdk');
 const config = require('../config/config');
 const { v4: uuidv4 } = require('uuid');
-uuidv4();
+const { S3ClientV3 } = require('../aws/s3Client');
 
-const s3 = new AWS.S3({
-  region: String(config.get('locks.region')),
-});
+const region = String(config.get('locks.region'));
 const Bucket = String(config.get('locks.bucketname'));
+
+const s3client = new S3ClientV3(region);
 
 const lockExists = async (establishmentId, lockName) => {
   let lockExists = true;
   try {
-    await s3
-      .headObject({
-        Bucket,
-        Key: `establishments/${establishmentId}/${lockName}.json`,
-      })
-      .promise();
+    await s3client.headObject({
+      Bucket,
+      Key: `establishments/${establishmentId}/${lockName}.json`,
+    });
   } catch (err) {
     if (err.statusCode === 403) {
       lockExists = false;
@@ -28,13 +25,12 @@ const lockExists = async (establishmentId, lockName) => {
 const lockAquired = async (establishmentId, lockName) => {
   let lockAquired = false;
   try {
-    await s3
-      .putObject({
-        Body: JSON.stringify({}),
-        Bucket,
-        Key: `establishments/${establishmentId}/${lockName}.json`,
-      })
-      .promise();
+    await s3client.putObject({
+      Body: JSON.stringify({}),
+      Bucket,
+      Key: `establishments/${establishmentId}/${lockName}.json`,
+    });
+
     lockAquired = true;
   } catch (err) {
     console.log(err);
@@ -45,7 +41,7 @@ const lockAquired = async (establishmentId, lockName) => {
 const lockDeleted = async (establishmentId, lockName) => {
   let lockDeleted = true;
   try {
-    await s3
+    await s3client
       .deleteObject({
         Bucket,
         Key: `establishments/${establishmentId}/${lockName}.json`,
