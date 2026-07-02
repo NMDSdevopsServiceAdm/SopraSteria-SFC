@@ -1,5 +1,3 @@
-import { BehaviorSubject } from 'rxjs';
-
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
@@ -12,6 +10,7 @@ import { CreateAccountService } from '@core/services/create-account/create-accou
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { BehaviorSubject } from 'rxjs';
 
 import { ActivateAccountUserResearchInviteComponent } from './activate-account-user-research-invite.component';
 
@@ -99,7 +98,7 @@ describe('ActivateAccountUserResearchInviteComponent', () => {
   it('should display the heading', async () => {
     const { getByTestId } = await setup();
     const caption = getByTestId('heading');
-    expect(caption.textContent).toEqual('Would you like to take part in our user research sessions?');
+    expect(caption.textContent).toEqual('Would you like to take part in our online user research sessions?');
   });
 
   it('should display the text', async () => {
