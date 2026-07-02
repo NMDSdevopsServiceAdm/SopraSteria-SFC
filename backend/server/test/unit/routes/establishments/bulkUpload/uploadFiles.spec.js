@@ -3,18 +3,21 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const BulkUploadS3Utils = require('../../../../../routes/establishments/bulkUpload/s3');
-const s3ClientV3 = require('../../../../../routes/establishments/bulkUpload/s3clientv3');
+const bulkUploadS3Client = require('../../../../../routes/establishments/bulkUpload/s3clientv3');
 const buUtils = require('../../../../../utils/bulkUploadUtils');
 const uploadedFiles = require('../../../../../routes/establishments/bulkUpload/uploadFiles');
 const { trainingHeadersAsArray } = require('../../../mockdata/training');
 const { knownHeaders } = require('../../../mockdata/establishment');
-const s3clientv3 = require('../../../../../routes/establishments/bulkUpload/s3clientv3');
 const { buildGetObjectResponseBody } = require('./testUtils');
 
 const trainingHeaders = trainingHeadersAsArray.join(',');
 const newLine = '\r\n';
 
 describe('/server/routes/establishment/uploadFiles.js', () => {
+  beforeEach(() => {
+    sinon.stub(bulkUploadS3Client, 'putObject');
+  });
+
   afterEach(() => {
     sinon.restore();
   });
@@ -27,7 +30,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
     const OtherFile = 'Test,This,is,NOT,A,BULK,UPLOAD,FILE';
 
     it('Identifies establishment files', async () => {
-      sinon.stub(s3ClientV3, 'listObjects').resolves({
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves({
         IsTruncated: false,
         Marker: '',
         Contents: [
@@ -46,7 +49,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         Prefix: '2351/latest/',
       });
       const body = buildGetObjectResponseBody(EstablishmentFile);
-      sinon.stub(s3ClientV3, 'getObject').resolves({
+      sinon.stub(bulkUploadS3Client, 'getObject').resolves({
         AcceptRanges: 'bytes',
         Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
         LastModified: '2021-01-26T14:28:35.000Z',
@@ -90,7 +93,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
     });
 
     it('Identifies Training files', async () => {
-      sinon.stub(s3clientv3, 'listObjects').resolves({
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves({
         IsTruncated: false,
         Marker: '',
         Contents: [
@@ -110,7 +113,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
       });
 
       const body = buildGetObjectResponseBody(TrainingFile);
-      sinon.stub(s3ClientV3, 'getObject').resolves({
+      sinon.stub(bulkUploadS3Client, 'getObject').resolves({
         AcceptRanges: 'bytes',
         Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
         LastModified: '2021-01-26T14:28:35.000Z',
@@ -154,7 +157,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
     });
 
     it('Identifies Worker files', async () => {
-      sinon.stub(s3ClientV3, 'listObjects').resolves({
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves({
         IsTruncated: false,
         Marker: '',
         Contents: [
@@ -173,7 +176,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         Prefix: '2351/latest/',
       });
       const body = buildGetObjectResponseBody(WorkerFile);
-      sinon.stub(s3ClientV3, 'getObject').resolves({
+      sinon.stub(bulkUploadS3Client, 'getObject').resolves({
         AcceptRanges: 'bytes',
         Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
         LastModified: '2021-01-26T14:28:35.000Z',
@@ -218,7 +221,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
     });
 
     it('Identifies None Bulk Upload CSV files', async () => {
-      sinon.stub(s3ClientV3, 'listObjects').resolves({
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves({
         IsTruncated: false,
         Marker: '',
         Contents: [
@@ -233,7 +236,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
       });
 
       const body = buildGetObjectResponseBody(OtherFile);
-      sinon.stub(s3ClientV3, 'getObject').resolves({
+      sinon.stub(bulkUploadS3Client, 'getObject').resolves({
         AcceptRanges: 'bytes',
         Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
         LastModified: '2021-01-26T14:28:35.000Z',

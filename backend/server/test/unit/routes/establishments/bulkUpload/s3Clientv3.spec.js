@@ -11,6 +11,7 @@ describe('S3 Client (Ver 3) for Bulk upload', () => {
 
   describe('listObjects', () => {
     it('should call s3.send() with listObjectcommand', async () => {
+      sinon.restore();
       const sendSpy = sinon.stub(S3Client.prototype, 'send');
 
       await s3ClientV3.listObjects({ Bucket: 'bulk-upload-s3-bucket', Prefix: '1234/' });

@@ -1,6 +1,8 @@
 'use strict';
 const csv = require('csvtojson');
 
+const sinon = require('sinon');
+
 const BulkUploadS3Utils = require('./s3');
 const { buStates } = require('./states');
 const WorkplaceCSVValidator = require('../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
