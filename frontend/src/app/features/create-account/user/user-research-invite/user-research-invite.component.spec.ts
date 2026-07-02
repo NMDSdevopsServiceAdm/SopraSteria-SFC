@@ -1,16 +1,17 @@
-import { getTestBed } from '@angular/core/testing';
-import { UserResearchInviteComponent } from './user-research-invite.component';
-import { render } from '@testing-library/angular';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RegistrationService } from '@core/services/registration.service';
-import { BackLinkService } from '@core/services/backLink.service';
-import { SharedModule } from '@shared/shared.module';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BackService } from '@core/services/back.service';
 import { provideHttpClient } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
+import { getTestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { InviteResponse } from '@core/model/userDetails.model';
+import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
+import { RegistrationService } from '@core/services/registration.service';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { BehaviorSubject } from 'rxjs';
+
+import { UserResearchInviteComponent } from './user-research-invite.component';
 
 describe('UserResearchInviteComponent', () => {
   async function setup(overrides: any = {}) {
@@ -91,7 +92,7 @@ describe('UserResearchInviteComponent', () => {
   it('should display the heading', async () => {
     const { getByTestId } = await setup();
     const caption = getByTestId('heading');
-    expect(caption.textContent).toEqual('Would you like to take part in our user research sessions?');
+    expect(caption.textContent).toEqual('Would you like to take part in our online user research sessions?');
   });
 
   it('should display the text', async () => {
