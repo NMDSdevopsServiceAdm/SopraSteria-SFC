@@ -123,7 +123,8 @@ const uploadedPut = async (req, res) => {
 
     const data = await BulkUploadS3Utils.listLatestObjectsInWorkplaceBucket(req.establishmentId);
 
-    data.Contents.forEach((myFile) => {
+    const dataContents = data.Contents ?? [];
+    dataContents.forEach((myFile) => {
       const ignoreMetaDataObjects = /.*metadata.json$/;
       const ignoreRoot = /.*\/$/;
 
@@ -272,7 +273,7 @@ const uploadedPut = async (req, res) => {
     const returnData = [];
 
     // now forn response for each file
-    data.Contents.forEach((myFile) => {
+    dataContents.forEach((myFile) => {
       const ignoreMetaDataObjects = /.*metadata.json$/;
       const ignoreRoot = /.*\/$/;
       if (!ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)) {
