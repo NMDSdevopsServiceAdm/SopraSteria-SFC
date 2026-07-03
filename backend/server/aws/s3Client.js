@@ -1,4 +1,4 @@
-const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const S3RequestPresigner = require('@aws-sdk/s3-request-presigner');
 const {
   ListObjectsV2Command,
   S3Client,
@@ -56,12 +56,12 @@ class S3ClientV3 {
 
   async getSignedUrlForPutObject({ options, ...params }) {
     const putCommand = new PutObjectCommand(params);
-    return getSignedUrl(this.client, putCommand, options);
+    return S3RequestPresigner.getSignedUrl(this.client, putCommand, options);
   }
 
   async getSignedUrlForGetObject({ options, ...params }) {
     const getCommand = new GetObjectCommand(params);
-    return getSignedUrl(this.client, getCommand, options);
+    return S3RequestPresigner.getSignedUrl(this.client, getCommand, options);
   }
 }
 
