@@ -2,7 +2,7 @@
 const moment = require('moment');
 const config = require('../../../config/config');
 
-const bulkUploadS3Client = require('./s3ClientForBulkUpload');
+const bulkUploadS3Client = require('./bulkUploadS3Client');
 
 const Bucket = String(config.get('bulkupload.bucketname'));
 
@@ -353,7 +353,6 @@ const getSignedUrlForUpload = async ({ ...args }) => {
 };
 
 module.exports = {
-  s3ClientV3: bulkUploadS3Client,
   bulkUploadBucket: Bucket,
   uploadJSONDataToS3,
   uploadMetadataToS3,

@@ -129,7 +129,7 @@ const uploadedPut = async (req, res) => {
       const ignoreRoot = /.*\/$/;
 
       if (!ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)) {
-        createModelPromises.push(req.establishmentId.downloadContent(myFile.Key, myFile.Size, myFile.LastModified));
+        createModelPromises.push(BulkUploadS3Utils.downloadContent(myFile.Key, myFile.Size, myFile.LastModified));
       }
     });
 

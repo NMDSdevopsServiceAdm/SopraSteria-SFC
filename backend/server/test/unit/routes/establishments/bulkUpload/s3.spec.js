@@ -1,6 +1,6 @@
 const sinon = require('sinon');
 const BulkUploadS3Utils = require('../../../../../routes/establishments/bulkUpload/s3');
-const s3ClientV3 = require('../../../../../routes/establishments/bulkUpload/s3ClientForBulkUpload');
+const bulkUploadS3Client = require('../../../../../routes/establishments/bulkUpload/bulkUploadS3Client');
 const { buildGetObjectResponseBody } = require('./testUtils');
 const expect = require('chai').expect;
 
@@ -103,16 +103,16 @@ describe('BulkUploadS3Utils', () => {
 
   describe('deleteFilesS3', () => {
     it('should delete the files from s3', async () => {
-      sinon.stub(s3ClientV3, 'listObjects').resolves(listObjects);
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves(listObjects);
 
-      const deleteObjects = sinon.stub(s3ClientV3, 'deleteObjects').resolves();
+      const deleteObjects = sinon.stub(bulkUploadS3Client, 'deleteObjects').resolves();
       await BulkUploadS3Utils.deleteFilesS3(123, 'filename1');
       sinon.assert.calledWith(deleteObjects, deleteFiles);
     });
 
     it('should handle the case when listObjects found no result', async () => {
-      sinon.stub(s3ClientV3, 'listObjects').resolves({});
-      const deleteObjects = sinon.stub(s3ClientV3, 'deleteObjects');
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves({});
+      const deleteObjects = sinon.stub(bulkUploadS3Client, 'deleteObjects');
 
       await BulkUploadS3Utils.deleteFilesS3(123, 'filename1');
       sinon.assert.notCalled(deleteObjects);
@@ -121,7 +121,7 @@ describe('BulkUploadS3Utils', () => {
 
   describe('purgeBulkUploadS3Objects', () => {
     it('should delete all the files', async () => {
-      const s3listObject = sinon.stub(s3ClientV3, 'listObjects');
+      const s3listObject = sinon.stub(bulkUploadS3Client, 'listObjects');
       s3listObject.callsFake(async (listParams) => {
         switch (listParams?.Prefix) {
           case '1/latest/':
@@ -133,7 +133,7 @@ describe('BulkUploadS3Utils', () => {
         }
       });
 
-      const deleteObjects = sinon.stub(s3ClientV3, 'deleteObjects');
+      const deleteObjects = sinon.stub(bulkUploadS3Client, 'deleteObjects');
       deleteObjects.resolves();
       const consolidateFiles = [...latestFiles.Contents, ...validationFiles.Contents, ...intermediaryFiles.Contents];
 
@@ -154,8 +154,8 @@ describe('BulkUploadS3Utils', () => {
     });
 
     it('should handle the case when listObjects found no result', async () => {
-      sinon.stub(s3ClientV3, 'listObjects').resolves({});
-      const deleteObjects = sinon.stub(s3ClientV3, 'deleteObjects');
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves({});
+      const deleteObjects = sinon.stub(bulkUploadS3Client, 'deleteObjects');
 
       await BulkUploadS3Utils.deleteFilesS3(123, 'filename1');
       sinon.assert.notCalled(deleteObjects);
@@ -164,9 +164,9 @@ describe('BulkUploadS3Utils', () => {
 
   describe('listMetaData', () => {
     it('should list the files from s3', async () => {
-      sinon.stub(s3ClientV3, 'listObjects').resolves(latestFiles);
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves(latestFiles);
 
-      const getObject = sinon.stub(s3ClientV3, 'getObject');
+      const getObject = sinon.stub(bulkUploadS3Client, 'getObject');
 
       const workerFileBody = buildGetObjectResponseBody(
         '{\n' +
@@ -266,9 +266,9 @@ describe('BulkUploadS3Utils', () => {
     });
 
     it('should handle the case when listObjects found no result', async () => {
-      sinon.stub(s3ClientV3, 'listObjects').resolves({});
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves({});
 
-      const getObject = sinon.stub(s3ClientV3, 'getObject');
+      const getObject = sinon.stub(bulkUploadS3Client, 'getObject');
 
       const results = await BulkUploadS3Utils.listMetaData(123, '/lastBulkUpload/');
 
