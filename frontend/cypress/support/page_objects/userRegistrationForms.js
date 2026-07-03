@@ -14,7 +14,7 @@ export function fillUserRegistrationForm({ username, password }) {
   cy.getByLabel('Answer').type('green');
   cy.get('button').contains('Continue').click();
 
-  cy.get('h1').should('contain.text', 'Would you like to take part in our user research sessions?');
+  cy.get('h1').should('contain.text', 'Would you like to take part in our online user research sessions?');
   cy.getByLabel('Yes').click();
   cy.get('button').contains('Continue').click();
 }
