@@ -17,7 +17,7 @@ describe('BenefitsTrainingDiscountsComponent', () => {
   const pages = MockPagesService.pagesFactory();
 
   async function setup() {
-    const { fixture, getByText, queryByText } = await render(BenefitsTrainingDiscountsComponent, {
+    const { fixture, getByText, queryByText, getByRole } = await render(BenefitsTrainingDiscountsComponent, {
       imports: [SharedModule, RouterModule],
       providers: [
         { provide: PagesService, useClass: MockPagesService },
@@ -44,6 +44,7 @@ describe('BenefitsTrainingDiscountsComponent', () => {
       fixture,
       getByText,
       queryByText,
+      getByRole,
     };
   }
 
@@ -66,13 +67,14 @@ describe('BenefitsTrainingDiscountsComponent', () => {
     expect(getByText(workplaceName)).toBeTruthy();
   });
 
-  it('should dispaly the reveal and the contents', async () => {
-    const { component, getByText } = await setup();
-    const reveal = getByText(component.revealTitle);
-    const revealContent = getByText(/Skills for Care helps deliver the Quality Assured Care Learning Service/i);
+  it('should display the reveal and the contents', async () => {
+    const { component, getByText, getByRole } = await setup();
 
-    expect(reveal).toBeTruthy();
-    expect(revealContent).toBeTruthy();
+    expect(getByText(component.revealTitle)).toBeTruthy();
+
+    expect(getByText(/Quality Assured Care Learning Service/i)).toBeTruthy();
+
+    expect(getByRole('link', { name: /here/i })).toBeTruthy();
   });
 
   it('should display the content of the cms page', async () => {
