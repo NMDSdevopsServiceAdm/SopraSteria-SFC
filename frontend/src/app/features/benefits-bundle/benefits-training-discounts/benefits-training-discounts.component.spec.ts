@@ -54,7 +54,7 @@ describe('BenefitsTrainingDiscountsComponent', () => {
 
   it('should display the title', async () => {
     const { getByText } = await setup();
-    const title = getByText(`Discounts from Skills for Care's training providers`);
+    const title = getByText(`Learning provider offers – QACLS assured courses and qualifications`);
 
     expect(title).toBeTruthy();
   });
@@ -69,10 +69,7 @@ describe('BenefitsTrainingDiscountsComponent', () => {
   it('should dispaly the reveal and the contents', async () => {
     const { component, getByText } = await setup();
     const reveal = getByText(component.revealTitle);
-    const revealContent = getByText(
-      `These are the best learning and development providers within the adult social care sector who've gained a quality mark endorsement from Skills for Care.`,
-      { exact: false },
-    );
+    const revealContent = getByText(/Skills for Care helps deliver the Quality Assured Care Learning Service/i);
 
     expect(reveal).toBeTruthy();
     expect(revealContent).toBeTruthy();
