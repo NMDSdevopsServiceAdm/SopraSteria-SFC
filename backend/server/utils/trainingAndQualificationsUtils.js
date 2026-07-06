@@ -189,7 +189,7 @@ const convertIndividualWorkerTrainingRecords = (
     return {
       category: trainingRecord.category.category,
       categoryFK: trainingRecord.categoryFk,
-      trainingName: trainingRecord.title,
+      trainingName: unescapeText(trainingRecord.title),
       expiryDate,
       status: getTrainingRecordStatus(expiryDate, expiresSoonAlertDate),
       dateCompleted,
@@ -265,6 +265,13 @@ const numberCheck = (value) => {
   const isNumber = /^\d+$/.test(value);
 
   return isNumber ? parseInt(value) : value;
+};
+
+const unescapeText = (value) => {
+  if (value) {
+    return unescape(value);
+  }
+  return value;
 };
 
 exports.getTrainingTotals = (workers) => {
