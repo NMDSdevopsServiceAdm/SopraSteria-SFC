@@ -231,3 +231,7 @@ dl.asc__name-value-pair {
 .asc__govuk-error-message--orange {
   color: govuk-colour('orange');
 }
+
+.asc-util__break-word-on-overflow {
+  overflow-wrap: break-word;
+}

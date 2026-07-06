@@ -7,8 +7,9 @@
   flex-direction: column;
   justify-content: flex-end;
 
-  &__full-height {
-    height: 215px;
+  &__home-tab {
+    height: unset;
+    padding-top: govuk-spacing(6);
   }
 }
 
