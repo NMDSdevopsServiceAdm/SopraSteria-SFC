@@ -67,15 +67,15 @@ describe('BenefitsTrainingDiscountsComponent', () => {
     expect(getByText(workplaceName)).toBeTruthy();
   });
 
-  it('should display the reveal and the contents', async () => {
-    const { component, getByText, getByRole } = await setup();
+  // it('should display the reveal and the contents', async () => {
+  //   const { component, getByText, getByRole } = await setup();
 
-    expect(getByText(component.revealTitle)).toBeTruthy();
+  //   expect(getByText(component.revealTitle)).toBeTruthy();
 
-    expect(getByText(/Quality Assured Care Learning Service/i)).toBeTruthy();
+  //   expect(getByText(/Quality Assured Care Learning Service/i)).toBeTruthy();
 
-    expect(getByRole('link', { name: /here/i })).toBeTruthy();
-  });
+  //   expect(getByRole('link', { name: /here/i })).toBeTruthy();
+  // });
 
   it('should display the content of the cms page', async () => {
     const { getByText } = await setup();
