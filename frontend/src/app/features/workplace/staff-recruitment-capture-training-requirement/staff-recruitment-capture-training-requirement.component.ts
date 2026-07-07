@@ -53,11 +53,11 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent
     this.setupForm();
     this.setPreviousRoute();
     this.prefill();
-    this.skipToQuestionPage = 'accept-previous-care-certificate';
+    this.skipToQuestionPage = 'care-workforce-pathway-awareness';
   }
 
   private setPreviousRoute(): void {
-    this.previousQuestionPage = 'cash-loyalty';
+    this.previousQuestionPage = 'staff-benefit-holiday-leave';
   }
 
   private setupForm(): void {
@@ -101,7 +101,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent
   }
 
   protected onSuccess(): void {
-    this.nextQuestionPage = 'accept-previous-care-certificate';
+    this.nextQuestionPage = 'care-workforce-pathway-awareness';
   }
 
   ngOnDestroy(): void {

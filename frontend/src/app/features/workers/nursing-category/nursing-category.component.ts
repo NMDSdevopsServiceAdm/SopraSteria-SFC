@@ -9,9 +9,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-    selector: 'app-nursing-category',
-    templateUrl: './nursing-category.component.html',
-    standalone: false
+  selector: 'app-nursing-category',
+  templateUrl: './nursing-category.component.html',
+  standalone: false,
 })
 export class NursingCategoryComponent extends QuestionComponent {
   public nursingCategories = [
@@ -43,12 +43,11 @@ export class NursingCategoryComponent extends QuestionComponent {
       this.prefill();
     }
 
-    this.next = this.insideFlow ? this.getRoutePath('nursing-specialism') : this.getSummaryRoute();
+    this.next = this.insideFlow ? this.getRoutePath('recruited-from') : this.getSummaryRoute();
   }
 
   private getSummaryRoute(): string[] {
     const summaryUrl = this.determineBaseRoute();
-    summaryUrl.push('nursing-specialism');
     return summaryUrl;
   }
 

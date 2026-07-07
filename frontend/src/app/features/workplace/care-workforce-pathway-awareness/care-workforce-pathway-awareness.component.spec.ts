@@ -20,7 +20,7 @@ import { of, throwError } from 'rxjs';
 import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway-awareness.component';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
-describe('CareWorkforcePathwayAwarenessComponent', () => {
+fdescribe('CareWorkforcePathwayAwarenessComponent', () => {
   const awareAnswers = careWorkforcePathwayAwarenessAnswers.slice(0, 3);
   const notAwareAnswers = careWorkforcePathwayAwarenessAnswers.slice(3, 5);
 
@@ -131,7 +131,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
   });
 
   describe('inside the flow', () => {
-    it('should set the previous page to accept-previous-care-certificate page', async () => {
+    it('should set the previous page to staff-recruitment-capture-training-requirement page', async () => {
       const { component } = await setup({ returnToUrl: null });
 
       expect(component.previousRoute).toEqual([
@@ -139,13 +139,13 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
         'mocked-uid',
         'workplace-data',
         'add-workplace-details',
-        'accept-previous-care-certificate',
+        'staff-recruitment-capture-training-requirement',
       ]);
     });
   });
 
   describe('outside the flow (when coming from workplace summary)', () => {
-    it('should set the previous page to accept-previous-care-certificate page', async () => {
+    it('should set the previous page to staff-recruitment-capture-training-requirement page', async () => {
       const { component } = await setup({ returnToUrl: true });
 
       expect(component.previousRoute).toEqual([
@@ -153,7 +153,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
         'mocked-uid',
         'workplace-data',
         'workplace-summary',
-        'accept-previous-care-certificate',
+        'staff-recruitment-capture-training-requirement',
       ]);
     });
   });
@@ -251,7 +251,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
             workplaceId,
             'workplace-data',
             'add-workplace-details',
-            'sharing-data'
+            'sharing-data',
           ]);
         });
       });

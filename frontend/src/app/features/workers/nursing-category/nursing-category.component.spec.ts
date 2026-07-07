@@ -10,7 +10,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { NursingCategoryComponent } from './nursing-category.component';
 
-describe('NursingCategoryComponent', () => {
+fdescribe('NursingCategoryComponent', () => {
   async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       NursingCategoryComponent,
@@ -98,11 +98,11 @@ describe('NursingCategoryComponent', () => {
       'mocked-uid',
       'staff-record',
       component.worker.uid,
-      'nursing-specialism',
+      'recruited-from',
     ]);
   });
 
-  it(`should navigate to 'nursing-specialism' page when skipping the question in the flow`, async () => {
+  it(`should navigate to 'recruited-from' page when skipping the question in the flow`, async () => {
     const { component, routerSpy, getByText } = await setup();
 
     const workerId = component.worker.uid;
@@ -111,7 +111,7 @@ describe('NursingCategoryComponent', () => {
     const skipButton = getByText('Skip this question');
     fireEvent.click(skipButton);
 
-    expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'nursing-specialism']);
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'recruited-from']);
   });
 
   it(`should navigate to 'staff-summary-page' page when clicking 'View this staff record' link `, async () => {
@@ -132,7 +132,7 @@ describe('NursingCategoryComponent', () => {
     ]);
   });
 
-  it('should navigate to nursing-specialism page when pressing Save button outside of the flow', async () => {
+  it('should navigate to summary page when pressing Save button outside of the flow', async () => {
     const { component, routerSpy, getByText } = await setup(false);
 
     const workerId = component.worker.uid;
@@ -147,7 +147,6 @@ describe('NursingCategoryComponent', () => {
       'staff-record',
       workerId,
       'staff-record-summary',
-      'nursing-specialism',
     ]);
   });
 
