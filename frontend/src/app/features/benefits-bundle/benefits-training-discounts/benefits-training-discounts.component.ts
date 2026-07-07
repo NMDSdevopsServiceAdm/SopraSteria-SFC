@@ -13,7 +13,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 export class BenefitsTrainingDiscountsComponent implements OnInit {
   public pages: Page;
   public workplaceName: string;
-  public revealTitle = `What's a training provider?`;
+  public revealTitle = `What is QACLS?`;
 
   constructor(
     private establishmentService: EstablishmentService,
