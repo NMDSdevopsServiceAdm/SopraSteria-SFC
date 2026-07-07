@@ -27,7 +27,6 @@ import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.m
 import { DataAreaTabModule } from '@shared/components/data-area-tab/data-area-tab.module';
 import { SharedModule } from '@shared/shared.module';
 
-import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
 import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
 import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway-awareness/care-workforce-pathway-awareness.component';
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use/care-workforce-pathway-use.component';
@@ -55,7 +54,6 @@ import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/selec
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
-import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
 import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
 import { StaffDoDelegatedHealthcareActivitiesComponent } from './staff-do-delegated-healthcase-activities/staff-do-delegated-healthcare-activities.component';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
@@ -116,10 +114,8 @@ import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workp
     ChangeExpiresSoonAlertsComponent,
     UsersComponent,
     StaffRecruitmentCaptureTrainingRequirementComponent,
-    AcceptPreviousCareCertificateComponent,
     CareWorkforcePathwayAwarenessComponent,
     StaffBenefitHolidayLeaveComponent,
-    StaffBenefitCashLoyaltyComponent,
     BenefitsStatutorySickPayComponent,
     PensionsComponent,
     EmployedFromOutsideUkExistingWorkersComponent,

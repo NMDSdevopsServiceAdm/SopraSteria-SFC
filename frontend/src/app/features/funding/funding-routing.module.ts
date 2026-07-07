@@ -119,11 +119,6 @@ const routes: Routes = [
                 data: { title: 'Nursing Category' },
               },
               {
-                path: 'nursing-specialism',
-                component: NursingSpecialismComponent,
-                data: { title: 'Nursing Specialism' },
-              },
-              {
                 path: 'mental-health-professional',
                 component: MentalHealthProfessionalComponent,
                 data: { title: 'Mental Health Professional' },

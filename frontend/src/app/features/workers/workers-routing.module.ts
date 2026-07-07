@@ -416,11 +416,6 @@ const routes: Routes = [
             data: { title: 'Nursing Category' },
           },
           {
-            path: 'nursing-specialism',
-            component: NursingSpecialismComponent,
-            data: { title: 'Nursing Specialism' },
-          },
-          {
             path: 'mental-health-professional',
             component: MentalHealthProfessionalComponent,
             data: { title: 'Mental Health Professional' },
@@ -702,11 +697,11 @@ const routes: Routes = [
         component: NursingCategoryComponent,
         data: { title: 'Nursing Category' },
       },
-      {
-        path: 'nursing-specialism',
-        component: NursingSpecialismComponent,
-        data: { title: 'Nursing Specialism' },
-      },
+      // {
+      //   path: 'nursing-specialism',
+      //   component: NursingSpecialismComponent,
+      //   data: { title: 'Nursing Specialism' },
+      // },
       {
         path: 'mental-health-professional',
         component: MentalHealthProfessionalComponent,
