@@ -25,7 +25,6 @@ module.exports.apiEstablishmentBuilder = build('Establishment', {
     jobs: [],
     reasonsForLeaving: '',
     doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: null,
-    wouldYouAcceptCareCertificatesFromPreviousEmployment: null,
     careWorkersCashLoyaltyForFirstTwoYears: null,
     sickPay: null,
     pensionContribution: null,
