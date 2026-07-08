@@ -60,7 +60,6 @@ class WorkerCsvValidator {
     this._avgHours = null;
 
     this._registeredNurse = null;
-    this._nursingSpecialist = null;
 
     this._nationality = null;
     this._countryOfBirth = null;
@@ -2205,79 +2204,6 @@ class WorkerCsvValidator {
     }
   }
 
-  _validateNursingSpecialist() {
-    const listOfNurseSpecialisms = this._currentLine.NURSESPEC.length
-      ? this._currentLine.NURSESPEC.split(';').map((s) => parseFloat(s))
-      : [];
-    const specialisms = [1, 2, 3, 4, 5, 6];
-    const notSpecialisms = [7, 8];
-
-    const NURSING_ROLE = 16;
-    const mainJobRoleIsNurse = this._mainJobRole === NURSING_ROLE;
-    const notNurseRole = !mainJobRoleIsNurse;
-
-    if (mainJobRoleIsNurse) {
-      if (listOfNurseSpecialisms.length === 0) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: WorkerCsvValidator.NURSE_SPEC_WARNING,
-          warnType: 'NURSE_SPEC_WARNING',
-          warning: 'NURSESPEC has not been supplied',
-          source: this._currentLine.NURSESPEC,
-          column: 'NURSESPEC',
-        });
-      }
-
-      if (
-        specialisms.some((s) => listOfNurseSpecialisms.includes(s)) &&
-        notSpecialisms.some((s) => listOfNurseSpecialisms.includes(s))
-      ) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: WorkerCsvValidator.NURSE_SPEC_WARNING,
-          warnType: 'NURSE_SPEC_WARNING',
-          warning:
-            'NURSESPEC it is not possible to use code 7 (not applicable) and code 8 (not known) with codes 1 to 6. Code 7 and 8 will be ignored',
-          source: this._currentLine.NURSESPEC,
-          column: 'NURSESPEC',
-        });
-      }
-
-      if (notSpecialisms.every((s) => listOfNurseSpecialisms.includes(s))) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: WorkerCsvValidator.NURSE_SPEC_WARNING,
-          warnType: 'NURSE_SPEC_WARNING',
-          warning:
-            'NURSESPEC it is not possible to use codes 7 (not applicable) with code 8 (not know). These will be ignored',
-          source: this._currentLine.NURSESPEC,
-          column: 'NURSESPEC',
-        });
-      }
-    } else if (this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0 && notNurseRole) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: WorkerCsvValidator.NURSE_SPEC_WARNING,
-        warnType: 'NURSE_SPEC_WARNING',
-        warning: 'NURSESPEC will be ignored as this is not required for the MAINJOBROLE',
-        source: this._currentLine.NURSESPEC,
-        column: 'NURSESPEC',
-      });
-      return false;
-    }
-
-    this._nursingSpecialist = listOfNurseSpecialisms;
-    return true;
-  }
-
   _validateAmhp() {
     const SOCIAL_WORKER_ROLE = 6;
     const amhpValues = [1, 2, 999];
@@ -2806,30 +2732,6 @@ class WorkerCsvValidator {
     }
   }
 
-  _transformNursingSpecialist() {
-    if (this._nursingSpecialist && Array.isArray(this._nursingSpecialist)) {
-      const validatedSpecialisms = [];
-      for (let specialism of this._nursingSpecialist) {
-        const validatedSpecialism = this.BUDI.nursingSpecialist(this.BUDI.TO_ASC, specialism);
-        if (!validatedSpecialism) {
-          this._validationErrors.push({
-            worker: this._currentLine.UNIQUEWORKERID,
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            warnCode: WorkerCsvValidator.NURSE_SPEC_WARNING,
-            warnType: 'NURSE_SPEC_WARNING',
-            warning: `NURSESPEC the code ${specialism} you have entered has not been recognised and will be ignored`,
-            source: this._currentLine.NURSESPEC,
-            column: 'NURSESPEC',
-          });
-        } else {
-          validatedSpecialisms.push(validatedSpecialism);
-        }
-      }
-      this._nursingSpecialist = validatedSpecialisms;
-    }
-  }
-
   _transformNationality() {
     if (this._nationality) {
       // ASC WDS nationality is a split enum/index
@@ -2850,7 +2752,7 @@ class WorkerCsvValidator {
             errCode: WorkerCsvValidator.NATIONALITY_ERROR,
             errType: 'NATIONALITY_ERROR',
             error: `Nationality code (${this._nationality}) is not a valid entry`,
-            source: this._currentLine.NURSESPEC,
+            source: this._currentLine.NATIONALITY,
             column: 'NATIONALITY',
           });
         } else {
@@ -3029,7 +2931,6 @@ class WorkerCsvValidator {
       status = !this._validateContHours() ? false : status;
       status = !this._validateAvgHours() ? false : status;
       status = !this._validateRegisteredNurse() ? false : status;
-      status = !this._validateNursingSpecialist() ? false : status;
       status = !this._validationQualificationRecords() ? false : status;
       status = !this._validateSocialCareQualification() ? false : status;
       status = !this._validateNonSocialCareQualification() ? false : status;
@@ -3052,7 +2953,6 @@ class WorkerCsvValidator {
       status = !this._transformRecruitment() ? false : status;
       status = !this._transformMainJobRole() ? false : status;
       status = !this._transformRegisteredNurse() ? false : status;
-      status = !this._transformNursingSpecialist() ? false : status;
       status = !this._transformNationality() ? false : status;
       status = !this._transformCountryOfBirth() ? false : status;
       status = !this._transformSocialCareQualificationLevel() ? false : status;
@@ -3130,7 +3030,6 @@ class WorkerCsvValidator {
       },
       nursing: {
         registered: this._registeredNurse ? this._registeredNurse : undefined,
-        specialist: this._nursingSpecialist ? this._nursingSpecialist : undefined,
       },
       highestQualifications: {
         social: this._socialCareQualification
@@ -3204,18 +3103,9 @@ class WorkerCsvValidator {
       apprenticeshipTraining: this._apprentice ? this._apprentice : undefined,
       zeroHoursContract: this._zeroHourContract ? this._zeroHourContract : undefined,
       registeredNurse: this._registeredNurse ? this._registeredNurse : undefined,
-      nurseSpecialism: this._nursingSpecialist
-        ? {
-            id: this._nursingSpecialist,
-          }
-        : undefined,
       approvedMentalHealthWorker: this._amhp ? this._amhp : undefined,
       completed: true, // on bulk upload, every Worker record is naturally completed!
     };
-
-    if (this._nursingSpecialist) {
-      changeProperties.nurseSpecialisms = this.BUDI.mapNurseSpecialismsToDb(this._nursingSpecialist);
-    }
 
     if (this._startInsect) {
       if (this._startInsect === 999) {

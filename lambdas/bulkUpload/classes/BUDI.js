@@ -43,10 +43,6 @@ class BUDI {
     return this.convertValue(direction, originalCode, this.mappings.RECRUITMENT);
   }
 
-  nursingSpecialist(direction, originalCode) {
-    return this.convertValue(direction, originalCode, this.mappings.NURSING_SPECIALIST);
-  }
-
   mapNurseSpecialismsToDb(specialisms) {
     if (specialisms.length === 1 && specialisms[0] === 7) {
       return { value: 'No' };

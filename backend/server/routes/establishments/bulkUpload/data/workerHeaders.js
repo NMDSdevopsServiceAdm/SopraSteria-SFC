@@ -33,7 +33,6 @@ const workerHeaders = [
   'CONTHOURS',
   'AVGHOURS',
   'NMCREG',
-  'NURSESPEC',
   'AMHP',
   'SCQUAL',
   'NONSCQUAL',

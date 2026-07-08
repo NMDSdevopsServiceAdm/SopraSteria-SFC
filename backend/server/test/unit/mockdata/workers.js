@@ -172,7 +172,6 @@ exports.knownHeaders = [
   'CONTHOURS',
   'AVGHOURS',
   'NMCREG',
-  'NURSESPEC',
   'AMHP',
   'SCQUAL',
   'NONSCQUAL',
