@@ -31,7 +31,6 @@ import { MentalHealthProfessionalComponent } from '@features/workers/mental-heal
 import { NationalInsuranceNumberComponent } from '@features/workers/national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from '@features/workers/nationality/nationality.component';
 import { NursingCategoryComponent } from '@features/workers/nursing-category/nursing-category.component';
-import { NursingSpecialismComponent } from '@features/workers/nursing-specialism/nursing-specialism.component';
 import { OtherQualificationsLevelComponent } from '@features/workers/other-qualifications-level/other-qualifications-level.component';
 import { OtherQualificationsComponent } from '@features/workers/other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from '@features/workers/recruited-from/recruited-from.component';
@@ -317,11 +316,6 @@ const routes: Routes = [
         path: 'nursing-category',
         component: NursingCategoryComponent,
         data: { title: 'Nursing Category' },
-      },
-      {
-        path: 'nursing-specialism',
-        component: NursingSpecialismComponent,
-        data: { title: 'Nursing Specialism' },
       },
       {
         path: 'mental-health-professional',

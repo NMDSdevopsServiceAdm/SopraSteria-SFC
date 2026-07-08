@@ -37,7 +37,6 @@ import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/selec
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
-import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
 import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
 import { StaffDoDelegatedHealthcareActivitiesComponent } from './staff-do-delegated-healthcase-activities/staff-do-delegated-healthcare-activities.component';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
