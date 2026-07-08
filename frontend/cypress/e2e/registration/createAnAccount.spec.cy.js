@@ -234,20 +234,9 @@ describe('Create account', { tags: '@registration' }, () => {
     cy.getByLabel('Number of days').type(25);
     cy.get('button').contains('Save and continue').click();
 
-    // Cash loyalty bonus
-    cy.contains('Do you pay care workers a cash loyalty bonus within their first 2 years of employment?');
-    cy.getByLabel('Yes').check();
-    cy.getByLabel('Amount (optional)').type('300.00');
-    cy.get('button').contains('Save and continue').click();
-
     // Repeat training
     cy.contains("Do new care workers have to repeat training they've done with previous employers?");
     cy.getByLabel('Yes, always').check();
-    cy.get('button').contains('Save and continue').click();
-
-    // Would you accept a Care Certificate...
-    cy.contains("Would you accept a Care Certificate from a worker's previous employer?");
-    cy.getByLabel('No, never').check();
     cy.get('button').contains('Save and continue').click();
 
     // Care workforce pathway aware
@@ -256,7 +245,7 @@ describe('Create account', { tags: '@registration' }, () => {
     cy.get('button').contains('Save and continue').click();
 
     // Using the care workforce pathway
-    cy.contains('Is your workplace using the care workforce pathway?');
+    cy.contains('Is your workplace using the care workforce pathway?').should('be.visible');
     cy.getByLabel('No, we do not currently use the pathway').check();
     cy.get('button').contains('Save and continue').click();
 
