@@ -12,7 +12,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave.component';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
-fdescribe('StaffBenefitHolidayLeaveComponent', () => {
+describe('StaffBenefitHolidayLeaveComponent', () => {
   async function setup(overrides: any = {}) {
     const returnUrl = overrides?.returnUrl ?? true;
     const holidayLeave = overrides?.holidayLeave ?? undefined;

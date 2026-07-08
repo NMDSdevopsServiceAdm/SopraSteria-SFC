@@ -10,7 +10,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { NursingCategoryComponent } from './nursing-category.component';
 
-fdescribe('NursingCategoryComponent', () => {
+describe('NursingCategoryComponent', () => {
   async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       NursingCategoryComponent,

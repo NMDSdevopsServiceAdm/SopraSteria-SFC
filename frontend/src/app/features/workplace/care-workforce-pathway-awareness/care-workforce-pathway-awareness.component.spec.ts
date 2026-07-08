@@ -20,7 +20,7 @@ import { of, throwError } from 'rxjs';
 import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway-awareness.component';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
-fdescribe('CareWorkforcePathwayAwarenessComponent', () => {
+describe('CareWorkforcePathwayAwarenessComponent', () => {
   const awareAnswers = careWorkforcePathwayAwarenessAnswers.slice(0, 3);
   const notAwareAnswers = careWorkforcePathwayAwarenessAnswers.slice(3, 5);
 

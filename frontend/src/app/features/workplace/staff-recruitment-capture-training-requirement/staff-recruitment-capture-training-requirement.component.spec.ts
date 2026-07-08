@@ -12,7 +12,7 @@ import { of } from 'rxjs';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement.component';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
-fdescribe('StaffRecruitmentCaptureTrainingRequirement', () => {
+describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   async function setup(overrides: any = {}) {
     const isInAddDetailsFlow = !overrides?.returnTo;
 
