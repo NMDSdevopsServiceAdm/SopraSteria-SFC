@@ -529,7 +529,7 @@ describe('Summary section', () => {
       expect(within(staffRecordsRow).getByText('Remember to check and update this data often')).toBeTruthy();
     });
 
-    it('should show start to add your staff message when there is no staff records', async () => {
+    it('should show start adding your staff records message when there is no staff records', async () => {
       const overrides = {
         checkCqcDetails: false,
         establishment: Establishment,
@@ -539,11 +539,11 @@ describe('Summary section', () => {
       const { getByTestId } = await setup(overrides);
 
       const staffRecordsRow = getByTestId('staff-records-row');
-      expect(within(staffRecordsRow).getByText('You can start to add your staff records now')).toBeTruthy();
+      expect(within(staffRecordsRow).getByText('Start adding your staff records')).toBeTruthy();
       expect(within(staffRecordsRow).getByTestId('orange-flag')).toBeTruthy();
     });
 
-    it('should navigate to sub staff records page when clicking on start to add your staff message in sub view', async () => {
+    it('should navigate to sub staff records page when clicking on start adding your staff records message in sub view', async () => {
       const overrides = {
         checkCqcDetails: false,
         establishment: Establishment,
@@ -555,13 +555,13 @@ describe('Summary section', () => {
 
       const { getByText, routerSpy } = await setup(overrides);
 
-      const staffRecordMessage = getByText('You can start to add your staff records now');
+      const staffRecordMessage = getByText('Start adding your staff records');
       fireEvent.click(staffRecordMessage);
 
       expect(routerSpy).toHaveBeenCalledWith(['subsidiary', Establishment.uid, 'staff-records']);
     });
 
-    it('should show staff record does not match message when the number of staff is more than the staff record', async () => {
+    it('should show number of staff records does not match total staff message when the number of staff is more than the staff record', async () => {
       const establishment = {
         ...Establishment,
         eightWeeksFromFirstLogin: dayjs(new Date()).subtract(1, 'day').toString(),
@@ -576,11 +576,11 @@ describe('Summary section', () => {
       const { getByTestId } = await setup(overrides);
 
       const staffRecordsRow = getByTestId('staff-records-row');
-      expect(within(staffRecordsRow).getByText('Staff records added does not match staff total')).toBeTruthy();
+      expect(within(staffRecordsRow).getByText('Number of staff records does not match total staff')).toBeTruthy();
       expect(within(staffRecordsRow).getByTestId('orange-flag')).toBeTruthy();
     });
 
-    it('should not show staff record does not match message when the number of staff is equal to the staff record', async () => {
+    it('should not show number of staff records does not match total staff message when the number of staff is equal to the staff record', async () => {
       const establishment = {
         ...Establishment,
         eightWeeksFromFirstLogin: dayjs(new Date()).subtract(1, 'day').toString(),
@@ -594,10 +594,10 @@ describe('Summary section', () => {
       const { getByTestId } = await setup(overrides);
 
       const staffRecordsRow = getByTestId('staff-records-row');
-      expect(within(staffRecordsRow).queryByText('Staff records added does not match staff total')).toBeFalsy();
+      expect(within(staffRecordsRow).queryByText('Number of staff records does not match total staff')).toBeFalsy();
     });
 
-    it('should not show the Staff records added does not match staff total warning when after eight weeks since first login is null', async () => {
+    it('should not show the number of staff records does not match total staff warning when after eight weeks since first login is null', async () => {
       const establishment = { ...Establishment, eightWeeksFromFirstLogin: null };
 
       const overrides = {
@@ -609,10 +609,10 @@ describe('Summary section', () => {
       const { getByTestId } = await setup(overrides);
 
       const staffRecordsRow = getByTestId('staff-records-row');
-      expect(within(staffRecordsRow).queryByText('Staff records added does not match staff total')).toBeFalsy();
+      expect(within(staffRecordsRow).queryByText('Number of staff records does not match total staff')).toBeFalsy();
     });
 
-    it('should not show staff record does not match message when the eight week date is in the future ', async () => {
+    it('should not show number of staff records does not match total staff message when the eight week date is in the future ', async () => {
       const establishment = {
         ...Establishment,
         eightWeeksFromFirstLogin: dayjs(new Date()).add(1, 'day').toString(),
@@ -625,14 +625,15 @@ describe('Summary section', () => {
       const { fixture, getByTestId } = await setup(overrides);
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
-      expect(within(staffRecordsRow).queryByText('Staff records added does not match staff total')).toBeFalsy();
+      expect(within(staffRecordsRow).queryByText('Number of staff records does not match total staff')).toBeFalsy();
     });
 
-    it('should  show "No staff records added in the last 12 months" message when stablishment has more than 10 staff and workplace created date and last worker added date is more than 12 month ', async () => {
+    it('should show "You’ve not added any staff records in the last 12 months" message when establishment has more than 10 staff and workplace created date and last worker added date is more than 12 months', async () => {
       const establishment = {
         ...Establishment,
         created: dayjs().subtract(1, 'year'),
         numberOfStaff: 12,
+        lastStaffRecordMessageDismissedAt: null,
       };
 
       const date = [dayjs().subtract(1, 'year')];
@@ -647,14 +648,19 @@ describe('Summary section', () => {
       const { fixture, getByTestId } = await setup(overrides);
 
       fixture.detectChanges();
+
       const staffRecordsRow = getByTestId('staff-records-row');
-      expect(within(staffRecordsRow).queryByText('No staff records added in the last 12 months')).toBeTruthy();
+
+      expect(
+        within(staffRecordsRow).getByText('You’ve not added any staff records in the last 12 months'),
+      ).toBeTruthy();
     });
 
-    it('should not  show "No staff records added in the last 12 months" message when stablishment has less thsn 10 staff and workplace created date and last worker added date is less than 12 months', async () => {
+    it('should not show "You’ve not added any staff records in the last 12 months" message when establishment has less than 10 staff and workplace created date and last worker added date is less than 12 months', async () => {
       const establishment = {
         ...Establishment,
         created: dayjs().subtract(11, 'month'),
+        lastStaffRecordMessageDismissedAt: null,
       };
 
       const overrides = {
@@ -666,8 +672,40 @@ describe('Summary section', () => {
       const { fixture, getByTestId } = await setup(overrides);
 
       fixture.detectChanges();
+
       const staffRecordsRow = getByTestId('staff-records-row');
-      expect(within(staffRecordsRow).queryByText('No staff records added in the last 12 months')).toBeFalsy();
+
+      expect(
+        within(staffRecordsRow).queryByText('You’ve not added any staff records in the last 12 months'),
+      ).toBeFalsy();
+    });
+
+    it('should not show "You’ve not added any staff records in the last 12 months" message when all conditions are met but user dismissed it within last 12 months', async () => {
+      const establishment = {
+        ...Establishment,
+        created: dayjs().subtract(2, 'year'),
+        numberOfStaff: 12,
+        lastStaffRecordMessageDismissedAt: dayjs().subtract(2, 'month'),
+      };
+
+      const date = [dayjs().subtract(2, 'year')];
+
+      const overrides = {
+        checkCqcDetails: false,
+        establishment,
+        workerCount: 12,
+        workerCreatedDate: date,
+      };
+
+      const { fixture, getByTestId } = await setup(overrides);
+
+      fixture.detectChanges();
+
+      const staffRecordsRow = getByTestId('staff-records-row');
+
+      expect(
+        within(staffRecordsRow).queryByText('You’ve not added any staff records in the last 12 months'),
+      ).toBeFalsy();
     });
 
     [
@@ -719,10 +757,11 @@ describe('Summary section', () => {
       });
     });
 
-    it('should not show "No staff records added in the last 12 months" message when stablishment has more than 10 staff  and and workplace created date is less than 12 month ', async () => {
+    it('should not show "You’ve not added any staff records in the last 12 months" message when stablishment has more than 10 staff  and and workplace created date is less than 12 months', async () => {
       const establishment = {
         ...Establishment,
         created: dayjs().subtract(11, 'month'),
+        lastStaffRecordMessageDismissedAt: null,
       };
 
       const date = [dayjs().subtract(11, 'month')];
@@ -737,13 +776,16 @@ describe('Summary section', () => {
 
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
-      expect(within(staffRecordsRow).queryByText('No staff records added in the last 12 months')).toBeFalsy();
+      expect(
+        within(staffRecordsRow).queryByText('You’ve not added any staff records in the last 12 months'),
+      ).toBeFalsy();
     });
 
-    it('should not show "No staff records added in the last 12 months" message when stablishment has more than 10 staff  and last worker added date is less than 12 month ', async () => {
+    it('should not show "You’ve not added any staff records in the last 12 months" message when stablishment has more than 10 staff  and last worker added date is less than 12 month ', async () => {
       const establishment = {
         ...Establishment,
         created: dayjs().subtract(11, 'month'),
+        lastStaffRecordMessageDismissedAt: null,
       };
 
       const overrides = {
@@ -756,10 +798,12 @@ describe('Summary section', () => {
 
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
-      expect(within(staffRecordsRow).queryByText('No staff records added in the last 12 months')).toBeFalsy();
+      expect(
+        within(staffRecordsRow).queryByText('You’ve not added any staff records in the last 12 months'),
+      ).toBeFalsy();
     });
 
-    describe('"Some records only have mandatory data added" link', () => {
+    describe('"Add more details to your staff records" link', () => {
       const workerCreatedDate = (timeframe) => {
         return [
           {
@@ -770,7 +814,7 @@ describe('Summary section', () => {
         ] as Worker[];
       };
 
-      it('should show "Some records only have mandatory data added" message when staff records are not completed and worker added date is more than 1 month ago', async () => {
+      it('should show "Add more details to your staff records" message when staff records are not completed and worker added date is more than 1 month ago', async () => {
         const overrides = {
           checkCqcDetails: false,
           establishment: Establishment,
@@ -782,10 +826,10 @@ describe('Summary section', () => {
         const { getByTestId } = await setup(overrides);
 
         const staffRecordsRow = getByTestId('staff-records-row');
-        expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeTruthy();
+        expect(within(staffRecordsRow).queryByText('Add more details to your staff records')).toBeTruthy();
       });
 
-      it('should navigate to basic-staff-records when "Some records only have mandatory data added" clicked', async () => {
+      it('should navigate to basic-staff-records when "Add more details to your staff records" clicked', async () => {
         const overrides = {
           checkCqcDetails: false,
           establishment: Establishment,
@@ -796,12 +840,12 @@ describe('Summary section', () => {
 
         const { getByText, routerSpy } = await setup(overrides);
 
-        const basicStaffRecordsLink = getByText('Some records only have mandatory data added');
+        const basicStaffRecordsLink = getByText('Add more details to your staff records');
         fireEvent.click(basicStaffRecordsLink);
         expect(routerSpy).toHaveBeenCalledWith(['/staff-basic-records']);
       });
 
-      it('should navigate to basic-staff-records with uid when "Some records only have mandatory data added" clicked in sub view', async () => {
+      it('should navigate to basic-staff-records with uid when "Add more details to your staff records" clicked in sub view', async () => {
         const overrides = {
           checkCqcDetails: false,
           establishment: Establishment,
@@ -815,12 +859,12 @@ describe('Summary section', () => {
 
         const { getByText, routerSpy } = await setup(overrides);
 
-        const basicStaffRecordsLink = getByText('Some records only have mandatory data added');
+        const basicStaffRecordsLink = getByText('Add more details to your staff records');
         fireEvent.click(basicStaffRecordsLink);
         expect(routerSpy).toHaveBeenCalledWith(['/staff-basic-records', Establishment.uid]);
       });
 
-      it('should not show "Some records only have mandatory data added" message when staff records are not completed and worker added date is less than 1 month ago', async () => {
+      it('should not show "Add more details to your staff records" message when staff records are not completed and worker added date is less than 1 month ago', async () => {
         const overrides = {
           checkCqcDetails: false,
           establishment: Establishment,
@@ -832,10 +876,10 @@ describe('Summary section', () => {
         const { getByTestId } = await setup(overrides);
 
         const staffRecordsRow = getByTestId('staff-records-row');
-        expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeFalsy();
+        expect(within(staffRecordsRow).queryByText('Add more details to your staff records')).toBeFalsy();
       });
 
-      it('should not show "Some records only have mandatory data added" message when staff records are completed and worker added date is less than 1 month ago', async () => {
+      it('should not show "Add more details to your staff records" message when staff records are completed and worker added date is less than 1 month ago', async () => {
         const overrides = {
           checkCqcDetails: false,
           establishment: Establishment,
@@ -847,7 +891,7 @@ describe('Summary section', () => {
         const { getByTestId } = await setup(overrides);
 
         const staffRecordsRow = getByTestId('staff-records-row');
-        expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeFalsy();
+        expect(within(staffRecordsRow).queryByText('Add more details to your staff records')).toBeFalsy();
       });
     });
   });

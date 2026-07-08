@@ -1034,6 +1034,11 @@ module.exports = function (sequelize, DataTypes) {
         field: '"FastTrackPayByJobRolesViewed"',
         allowNull: true,
       },
+      lastStaffRecordMessageDismissedAt: {
+        type: DataTypes.DATE,
+        field: '"LastStaffRecordMessageDismissedAt"',
+        allowNull: true,
+      },
     },
     {
       defaultScope: {

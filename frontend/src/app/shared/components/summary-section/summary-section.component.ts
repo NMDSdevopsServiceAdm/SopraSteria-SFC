@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, signal, Signal, WritableSignal } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
@@ -11,6 +11,8 @@ import { DateUtil } from '@core/utils/date-util';
 import { FormatUtil } from '@core/utils/format-util';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
+
+const NO_STAFF_RECORDS_MESSAGE = 'You’ve not added any staff records in the last 12 months';
 
 @Component({
   selector: 'app-summary-section',
@@ -101,8 +103,23 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     this.setupUpdateBanner();
   }
 
-  public async onClick(event: Event, fragment: string, route: string[], skipTabSwitch: boolean = false): Promise<void> {
+  public async onClick(
+    event: Event,
+    fragment: string,
+    route: string[],
+    skipTabSwitch: boolean = false,
+    message?: string,
+  ): Promise<void> {
     event.preventDefault();
+
+    if (message === NO_STAFF_RECORDS_MESSAGE) {
+      const payload = {
+        property: 'lastStaffRecordMessageDismissedAt',
+        value: new Date(),
+      };
+      this.updateSingleEstablishmentField(payload);
+    }
+
     if (this.payAndPensionWorkplaceQuestionsLinkDisplaying && fragment == 'workplace') {
       this.payAndPensionService.setInPayAndPensionsMiniFlow(true);
       this.setPayAndPensionsMiniFlowViewed();
@@ -212,20 +229,22 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     }
 
     const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
+    const staffRecordMessageDismissalExpiry = dayjs(this.workplace.lastStaffRecordMessageDismissedAt).add(12, 'M');
     if (!this.workerCount) {
-      this.sections[1].message = 'You can start to add your staff records now';
+      this.sections[1].message = 'Start adding your staff records';
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
-      this.sections[1].message = 'Staff records added does not match staff total';
+      this.sections[1].message = 'Number of staff records does not match total staff';
     } else if (this.noOfWorkersWhoRequireInternationalRecruitment > 0) {
       this.showInternationalRecruitmentMessage();
     } else if (
       dayjs() >= afterWorkplaceCreated &&
       this.workplace.numberOfStaff > 10 &&
-      dayjs() >= this.getWorkerLatestCreatedDate()
+      dayjs() >= this.getWorkerLatestCreatedDate() &&
+      (!this.workplace.lastStaffRecordMessageDismissedAt || dayjs() >= staffRecordMessageDismissalExpiry)
     ) {
-      this.sections[1].message = 'No staff records added in the last 12 months';
+      this.sections[1].message = NO_STAFF_RECORDS_MESSAGE;
     } else if (this.workersNotCompleted?.length > 0 && this.getStaffCreatedDate()) {
-      this.sections[1].message = 'Some records only have mandatory data added';
+      this.sections[1].message = 'Add more details to your staff records';
       if (this.isParentSubsidiaryView) {
         this.sections[1].route = ['/staff-basic-records', this.workplace.uid];
       } else {
@@ -306,11 +325,17 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   }
 
   private updateSingleEstablishmentField(dataToUpdate: any): void {
-    this.subscriptions.add(
-      this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, dataToUpdate).subscribe(),
-    );
-  }
+    this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, dataToUpdate).subscribe((response) => {
+      if (!response?.data) {
+        return;
+      }
 
+      const { lastStaffRecordMessageDismissedAt } = response.data;
+      if (lastStaffRecordMessageDismissedAt) {
+        this.workplace.lastStaffRecordMessageDismissedAt = lastStaffRecordMessageDismissedAt;
+      }
+    });
+  }
   private setCwpAwarenessQuestionViewed(): void {
     const cwpData = {
       property: 'CWPAwarenessQuestionViewed',

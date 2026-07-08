@@ -111,6 +111,7 @@ class Establishment extends EntityValidator {
     this._payAndPensionsMiniFlowViewed = null;
     this._updatePayForMultiStaffViewed = null;
     this._fastTrackPayByJobRolesViewed = null;
+    this._lastStaffRecordMessageDismissedAt = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -461,6 +462,10 @@ class Establishment extends EntityValidator {
 
   get fastTrackPayByJobRolesViewed() {
     return this._fastTrackPayByJobRolesViewed;
+  }
+
+  get lastStaffRecordMessageDismissedAt() {
+    return this._lastStaffRecordMessageDismissedAt;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -1516,6 +1521,7 @@ class Establishment extends EntityValidator {
         this._vacanciesSavedAt = fetchResults.VacanciesSavedAt;
         this._startersSavedAt = fetchResults.StartersSavedAt;
         this._leaversSavedAt = fetchResults.LeaversSavedAt;
+        this._lastStaffRecordMessageDismissedAt = fetchResults.lastStaffRecordMessageDismissedAt;
 
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
@@ -1998,6 +2004,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.vacanciesSavedAt = this._vacanciesSavedAt;
         myDefaultJSON.startersSavedAt = this._startersSavedAt;
         myDefaultJSON.leaversSavedAt = this._leaversSavedAt;
+        myDefaultJSON.lastStaffRecordMessageDismissedAt = this.lastStaffRecordMessageDismissedAt;
       }
 
       if (this.showSharingPermissionsBanner !== null) {
