@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, signal, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -16,6 +16,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { combineLatest, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -44,6 +45,7 @@ export class ConfirmDetailsComponent implements OnInit {
   public isCqcRegulated: boolean;
   public typeOfEmployer: EmployerType;
   public workplaceName: string;
+  private validationIsActive = signal(false);
 
   constructor(
     public registrationService: RegistrationService,
@@ -130,6 +132,9 @@ export class ConfirmDetailsComponent implements OnInit {
   }
 
   public onSubmit(): void {
+    this.validationIsActive.set(true);
+    this.form.get('termsAndConditions')!.updateValueAndValidity();
+
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -137,6 +142,7 @@ export class ConfirmDetailsComponent implements OnInit {
       this.save();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
+      this.validationIsActive.set(false);
     }
   }
 
@@ -175,11 +181,15 @@ export class ConfirmDetailsComponent implements OnInit {
   }
 
   private setupForm(): void {
+    const validators = [Validators.required, Validators.requiredTrue].map((validatorFn) => {
+      return CustomValidators.withSignalToggle(validatorFn, this.validationIsActive);
+    });
+
     this.form = this.formBuilder.group({
       termsAndConditions: [
         null,
         {
-          validators: [Validators.required, Validators.requiredTrue],
+          validators: validators,
         },
       ],
     });

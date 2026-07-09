@@ -112,6 +112,31 @@ describe('ConfirmDetailsComponent', () => {
       expect(postRegistrationSpy).not.toHaveBeenCalled();
     });
 
+    it('should keep showing the error message when user tick and untick the checkbox (delayed validation)', async () => {
+      const { queryByText, getByText, getByTestId, getAllByText, postRegistrationSpy } = await setup();
+      const expectedErrorMessage = 'Confirm that you agree to the terms and conditions';
+
+      const termsAndConditionsCheckbox = getByTestId('checkbox') as HTMLInputElement;
+      const submitButton = getByText('Submit details');
+      fireEvent.click(submitButton);
+
+      expect(queryByText('There is a problem')).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+      expect(postRegistrationSpy).not.toHaveBeenCalled();
+
+      fireEvent.click(termsAndConditionsCheckbox);
+      expect(termsAndConditionsCheckbox.checked).toBeTrue();
+
+      expect(queryByText('There is a problem')).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+
+      fireEvent.click(termsAndConditionsCheckbox);
+      expect(termsAndConditionsCheckbox.checked).toBeFalse();
+
+      expect(queryByText('There is a problem')).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+    });
+
     it('should preselect the terms and conditions checkbox if it is set to true in the service', async () => {
       const { getByTestId } = await setup({ termsAndConditionsCheckbox: true });
 
