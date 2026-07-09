@@ -88,7 +88,6 @@ class WorkplaceCSVValidator {
     this._leavers = null;
     this._reasonsForLeaving = null;
     this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
-    this._careWorkersCashLoyaltyForFirstTwoYears = null;
     this._sickPay = null;
     this._pensionContribution = null;
     this._pensionContributionPercentage = null;
@@ -508,10 +507,6 @@ class WorkplaceCSVValidator {
 
   get careWorkersLeaveDaysPerYear() {
     return this._careWorkersLeaveDaysPerYear;
-  }
-
-  get careWorkersCashLoyaltyForFirstTwoYears() {
-    return this._careWorkersCashLoyaltyForFirstTwoYears;
   }
 
   get pensionContribution() {

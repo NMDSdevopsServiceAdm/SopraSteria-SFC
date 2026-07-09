@@ -19,7 +19,6 @@ const establishmentBuilder = build('Establishment', {
     },
     otherServices: { value: 'Yes', services: [{ id: 9 }] },
     doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 'Yes, always',
-    careWorkersCashLoyaltyForFirstTwoYears: fake((f) => f.finance.amount(1, 10000, 2)),
     sickPay: 'Yes',
     careWorkersLeaveDaysPerYear: fake((f) => f.datatype.number(1000)),
     careWorkforcePathwayWorkplaceAwareness: {

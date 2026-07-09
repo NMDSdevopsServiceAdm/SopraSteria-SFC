@@ -170,7 +170,6 @@ export interface Establishment {
   pensionContribution?: string;
   pensionContributionPercentage?: number;
   careWorkersLeaveDaysPerYear?: string;
-  careWorkersCashLoyaltyForFirstTwoYears?: string;
   sickPay?: string;
   isParentApprovedBannerViewed?: boolean;
   provId?: string;
