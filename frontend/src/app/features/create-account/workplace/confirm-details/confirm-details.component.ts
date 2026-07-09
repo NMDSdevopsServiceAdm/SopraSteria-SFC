@@ -20,9 +20,9 @@ import { combineLatest, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-confirm-details',
-    templateUrl: './confirm-details.component.html',
-    standalone: false
+  selector: 'app-confirm-details',
+  templateUrl: './confirm-details.component.html',
+  standalone: false,
 })
 export class ConfirmDetailsComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
@@ -31,7 +31,6 @@ export class ConfirmDetailsComponent implements OnInit {
   public form: UntypedFormGroup;
   private formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
-  public termsAndConditionsCheckbox: boolean;
   protected service: Service;
   public userInfo: SummaryList[];
   public loginInfo: SummaryList[];
@@ -62,7 +61,6 @@ export class ConfirmDetailsComponent implements OnInit {
     this.prefillForm();
     this.setupSubscriptions();
     this.setBackLink();
-    this.termsAndConditionsCheckbox = false;
     this.workplaceName = this.locationAddress.locationName;
   }
 
@@ -90,7 +88,16 @@ export class ConfirmDetailsComponent implements OnInit {
     const subscriptions = combineLatest([registrationSubscriptions, userSubscriptions]).pipe(
       map(
         ([
-          [isCqcRegulated, locationAddress, service, loginCredentials, securityDetails, userResearchInviteResponse, totalStaff, typeOfEmployer],
+          [
+            isCqcRegulated,
+            locationAddress,
+            service,
+            loginCredentials,
+            securityDetails,
+            userResearchInviteResponse,
+            totalStaff,
+            typeOfEmployer,
+          ],
           [userDetails],
         ]) => {
           return {
@@ -169,8 +176,18 @@ export class ConfirmDetailsComponent implements OnInit {
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      termsAndConditions: [null, { validators: [Validators.required, Validators.requiredTrue], updateOn: 'submit' }],
+      termsAndConditions: [
+        null,
+        {
+          validators: [Validators.required, Validators.requiredTrue],
+        },
+      ],
     });
+
+    const syncCheckboxWithService = this.form.get('termsAndConditions')?.valueChanges.subscribe((newValue) => {
+      this.registrationService.termsAndConditionsCheckbox$.next(newValue);
+    });
+    this.subscriptions.add(syncCheckboxWithService);
   }
 
   private setupFormErrorsMap(): void {
@@ -188,16 +205,12 @@ export class ConfirmDetailsComponent implements OnInit {
   }
 
   protected prefillForm(): void {
-    this.termsAndConditionsCheckbox = this.registrationService.termsAndConditionsCheckbox$.value;
-    if (this.termsAndConditionsCheckbox) {
+    const tickedPreviously = this.registrationService.termsAndConditionsCheckbox$.value;
+    if (tickedPreviously) {
       this.form.patchValue({
-        termsAndConditions: 'check',
+        termsAndConditions: true,
       });
     }
-  }
-  public setTermsAndConditionsCheckbox() {
-    this.termsAndConditionsCheckbox = !this.form.get('termsAndConditions').value;
-    this.registrationService.termsAndConditionsCheckbox$.next(this.termsAndConditionsCheckbox);
   }
 
   public getFirstErrorMessage(item: string): string {
