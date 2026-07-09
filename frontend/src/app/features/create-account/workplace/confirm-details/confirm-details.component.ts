@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, signal, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -16,13 +16,14 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { combineLatest, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-confirm-details',
-    templateUrl: './confirm-details.component.html',
-    standalone: false
+  selector: 'app-confirm-details',
+  templateUrl: './confirm-details.component.html',
+  standalone: false,
 })
 export class ConfirmDetailsComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
@@ -31,7 +32,6 @@ export class ConfirmDetailsComponent implements OnInit {
   public form: UntypedFormGroup;
   private formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
-  public termsAndConditionsCheckbox: boolean;
   protected service: Service;
   public userInfo: SummaryList[];
   public loginInfo: SummaryList[];
@@ -45,6 +45,7 @@ export class ConfirmDetailsComponent implements OnInit {
   public isCqcRegulated: boolean;
   public typeOfEmployer: EmployerType;
   public workplaceName: string;
+  private validationIsActive = signal(false);
 
   constructor(
     public registrationService: RegistrationService,
@@ -62,7 +63,6 @@ export class ConfirmDetailsComponent implements OnInit {
     this.prefillForm();
     this.setupSubscriptions();
     this.setBackLink();
-    this.termsAndConditionsCheckbox = false;
     this.workplaceName = this.locationAddress.locationName;
   }
 
@@ -90,7 +90,16 @@ export class ConfirmDetailsComponent implements OnInit {
     const subscriptions = combineLatest([registrationSubscriptions, userSubscriptions]).pipe(
       map(
         ([
-          [isCqcRegulated, locationAddress, service, loginCredentials, securityDetails, userResearchInviteResponse, totalStaff, typeOfEmployer],
+          [
+            isCqcRegulated,
+            locationAddress,
+            service,
+            loginCredentials,
+            securityDetails,
+            userResearchInviteResponse,
+            totalStaff,
+            typeOfEmployer,
+          ],
           [userDetails],
         ]) => {
           return {
@@ -123,6 +132,9 @@ export class ConfirmDetailsComponent implements OnInit {
   }
 
   public onSubmit(): void {
+    this.validationIsActive.set(true);
+    this.form.get('termsAndConditions')!.updateValueAndValidity();
+
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -130,6 +142,7 @@ export class ConfirmDetailsComponent implements OnInit {
       this.save();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
+      this.validationIsActive.set(false);
     }
   }
 
@@ -168,9 +181,23 @@ export class ConfirmDetailsComponent implements OnInit {
   }
 
   private setupForm(): void {
-    this.form = this.formBuilder.group({
-      termsAndConditions: [null, { validators: [Validators.required, Validators.requiredTrue], updateOn: 'submit' }],
+    const validators = [Validators.required, Validators.requiredTrue].map((validatorFn) => {
+      return CustomValidators.withSignalToggle(validatorFn, this.validationIsActive);
     });
+
+    this.form = this.formBuilder.group({
+      termsAndConditions: [
+        null,
+        {
+          validators: validators,
+        },
+      ],
+    });
+
+    const syncCheckboxWithService = this.form.get('termsAndConditions')?.valueChanges.subscribe((newValue) => {
+      this.registrationService.termsAndConditionsCheckbox$.next(newValue);
+    });
+    this.subscriptions.add(syncCheckboxWithService);
   }
 
   private setupFormErrorsMap(): void {
@@ -188,16 +215,12 @@ export class ConfirmDetailsComponent implements OnInit {
   }
 
   protected prefillForm(): void {
-    this.termsAndConditionsCheckbox = this.registrationService.termsAndConditionsCheckbox$.value;
-    if (this.termsAndConditionsCheckbox) {
+    const tickedPreviously = this.registrationService.termsAndConditionsCheckbox$.value;
+    if (tickedPreviously) {
       this.form.patchValue({
-        termsAndConditions: 'check',
+        termsAndConditions: true,
       });
     }
-  }
-  public setTermsAndConditionsCheckbox() {
-    this.termsAndConditionsCheckbox = !this.form.get('termsAndConditions').value;
-    this.registrationService.termsAndConditionsCheckbox$.next(this.termsAndConditionsCheckbox);
   }
 
   public getFirstErrorMessage(item: string): string {

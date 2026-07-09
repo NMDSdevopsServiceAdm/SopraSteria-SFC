@@ -38,8 +38,7 @@
             name="termsAndConditions"
             type="checkbox"
             data-testid="checkbox"
-            value="check"
-            (click)="setTermsAndConditionsCheckbox()"
+            [value]="true"
             [formControlName]="'termsAndConditions'"
           />
           <label class="govuk-label govuk-checkboxes__label" for="termsAndConditions">
