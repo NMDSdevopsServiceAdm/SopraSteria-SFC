@@ -67,14 +67,6 @@ exports.data = [
     },
     registeredNurse: 'Mental Health Nurse',
     registeredNurseId: '02',
-    nurseSpecialisms: {
-      value: 'Yes',
-      specialisms: [
-        {
-          id: 1,
-        },
-      ],
-    },
     approvedMentalHealthWorker: 'No',
     approvedMentalHealthWorkerId: 2,
     socialCareQualification: 'Yes',

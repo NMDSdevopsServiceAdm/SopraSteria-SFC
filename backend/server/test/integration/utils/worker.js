@@ -70,12 +70,6 @@ module.exports.apiWorkerBuilder = build('Worker', {
       "Children's Nurse",
       'Enrolled Nurse',
     ),
-    NurseSpecialismsValue: oneOf('Yes', 'No', "Don't know"),
-    nurseSpecialisms: [
-      {
-        id: fake((f) => f.datatype.number({ min: 1, max: 7 })),
-      },
-    ],
     ApprovedMentalHealthWorkerValue: oneOf('Yes', 'No', "Don't know"),
     QualificationInSocialCareValue: oneOf('Yes', 'No', "Don't know"),
     socialCareQualification: [
