@@ -137,6 +137,10 @@
   width: 100%;
 }
 
+.asc-util__width-85-percent {
+  width: 85%;
+}
+
 .asc-font-19 {
   @include govuk-font($size: 19);
 }
