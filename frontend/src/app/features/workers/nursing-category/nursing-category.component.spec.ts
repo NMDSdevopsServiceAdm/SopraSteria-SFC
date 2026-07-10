@@ -79,10 +79,10 @@ describe('NursingCategoryComponent', () => {
       expect(getByText('Skip this question')).toBeTruthy();
     });
 
-    it(`should show 'Save' cta button and 'Cancel' link if not in the flow`, async () => {
+    it(`should show 'Save and return' cta button and 'Cancel' link if not in the flow`, async () => {
       const { getByText } = await setup(false);
 
-      expect(getByText('Save')).toBeTruthy();
+      expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
   });
@@ -138,7 +138,7 @@ describe('NursingCategoryComponent', () => {
     const workerId = component.worker.uid;
     const workplaceId = component.workplace.uid;
 
-    const link = getByText('Save');
+    const link = getByText('Save and return');
     fireEvent.click(link);
 
     expect(routerSpy).toHaveBeenCalledWith([
