@@ -9,6 +9,7 @@ import { ConfirmAccountDetailsComponent } from '@features/activate-user-account/
 import { CreateUsernameComponent } from '@features/activate-user-account/create-username/create-username.component';
 import { ExpiredActivationLinkComponent } from '@features/activate-user-account/expired-activation-link/expired-activation-link.component';
 import { SecurityQuestionComponent } from '@features/activate-user-account/security-question/security-question.component';
+import { ActivateAccountUserResearchInviteComponent } from './user-research-invite/activate-account-user-research-invite.component';
 
 const routes: Routes = [
   {
@@ -37,8 +38,14 @@ const routes: Routes = [
       {
         path: 'security-question',
         component: SecurityQuestionComponent,
-        canActivate: [CreateUserGuard, ActivationCompleteWithOutChildGuard],
+        canActivate: [CreateUserGuard],
         data: { title: 'Security Question' },
+      },
+      {
+        path: 'user-research-invite',
+        component: ActivateAccountUserResearchInviteComponent,
+        canActivate: [CreateUserGuard, ActivationCompleteWithOutChildGuard],
+        data: { title: 'Select if you would like to take part in user research' },
       },
 
       {
@@ -65,6 +72,11 @@ const routes: Routes = [
             path: 'security-question',
             component: SecurityQuestionComponent,
             data: { title: 'Security Question' },
+          },
+          {
+            path: 'user-research-invite',
+            component: ActivateAccountUserResearchInviteComponent,
+            data: { title: 'Select if you would like to take part in user research' },
           },
         ],
       },

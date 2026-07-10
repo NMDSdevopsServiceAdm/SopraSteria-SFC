@@ -3,22 +3,17 @@ import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { RegistrationService } from '@core/services/registration.service';
+import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { UserService } from '@core/services/user.service';
-import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import { UserResearchInviteDirective } from '@shared/directives/user/user-research-invite.directive';
 
 @Component({
-  selector: 'app-user-research-invite',
-  templateUrl: './../../../../shared/directives/user/user-research-invite.directive.html',
+  selector: 'app-activate-account-user-research-invite',
+  templateUrl: './../../../shared/directives/user/user-research-invite.directive.html',
   standalone: false,
 })
-export class UserResearchInviteComponent extends UserResearchInviteDirective {
-  public confirmPagePath: string = 'registration/confirm-details';
-  public workplaceSections: string[];
-  public userAccountSections: string[];
-
-  public insideFlow = false;
+export class ActivateAccountUserResearchInviteComponent extends UserResearchInviteDirective {
+  private activationToken: string;
   public showProgressBar = false;
 
   constructor(
@@ -26,7 +21,7 @@ export class UserResearchInviteComponent extends UserResearchInviteDirective {
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected route: ActivatedRoute,
-    private registrationService: RegistrationService,
+    private createAccountService: CreateAccountService,
     protected userService: UserService,
     protected breadcrumbService: BreadcrumbService,
   ) {
@@ -34,15 +29,14 @@ export class UserResearchInviteComponent extends UserResearchInviteDirective {
   }
 
   init(): void {
-    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
-    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
-    this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
-    this.showProgressBar = this.insideFlow;
+    this.activationToken = this.route.snapshot.params.activationToken;
+    this.insideFlow = this.route.parent?.snapshot?.url?.[0]?.path === this.activationToken;
+    this.confirmPagePath = `/activate-account/${this.activationToken}/confirm-account-details`;
     this.isExistingUser = false;
   }
 
   protected loadUserResearchInviteResponse(): void {
-    this.userResearchInviteResponse = this.registrationService.userResearchInviteResponse$.value;
+    this.userResearchInviteResponse = this.createAccountService.userResearchInviteResponse$.value;
   }
 
   public onSubmit(): void {
@@ -51,9 +45,9 @@ export class UserResearchInviteComponent extends UserResearchInviteDirective {
     if (responseValue !== null) {
       const responseValueToSubmit = responseValue;
 
-      this.registrationService.userResearchInviteResponse$.next(responseValueToSubmit);
+      this.createAccountService.userResearchInviteResponse$.next(responseValueToSubmit);
     }
 
-    this.router.navigate(['registration/confirm-details']);
+    this.router.navigate([this.confirmPagePath]);
   }
 }

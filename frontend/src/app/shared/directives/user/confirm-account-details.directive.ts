@@ -28,7 +28,7 @@ export class ConfirmAccountDetailsDirective implements OnInit, OnDestroy, AfterV
   public form: UntypedFormGroup;
   public loginCredentials: LoginCredentials;
   public securityDetails: SecurityDetails;
-  public userResearchInviteResponse: InviteResponse;
+  public userResearchInviteResponse: InviteResponse | null = null;
   public serverError: string;
   public submitted = false;
   public userDetails: UserDetails;

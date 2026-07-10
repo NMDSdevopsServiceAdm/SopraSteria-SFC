@@ -4,7 +4,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Roles } from '@core/model/roles.enum';
-import { UserDetails } from '@core/model/userDetails.model';
+import { InviteResponse, UserDetails } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
@@ -13,17 +13,21 @@ import { UserService } from '@core/services/user.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockNotificationsService } from '@core/test-utils/MockNotificationsService';
-import { EditUser, MockUserService } from '@core/test-utils/MockUserService';
+import { EditUser, mockLoggedInUser, MockUserService } from '@core/test-utils/MockUserService';
 import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
+import lodash from 'lodash';
 
 import { HeaderComponent } from './header.component';
+import { within } from '@testing-library/dom';
 
 describe('HeaderComponent', () => {
   async function setup(overrides: any = {}) {
     const isAdmin = overrides.isAdmin ?? false;
     const role = isAdmin ? Roles.Admin : Roles.Edit;
     const isLoggedIn = overrides.isLoggedIn ?? false;
+
+    const loggedInUser = lodash.merge({}, mockLoggedInUser, overrides.loggedInUser, { role });
     const showNotificationsLink = overrides.showNotificationsLink ?? true;
 
     const setupTools = await render(HeaderComponent, {
@@ -32,7 +36,7 @@ describe('HeaderComponent', () => {
       providers: [
         {
           provide: UserService,
-          useFactory: MockUserService.factory(overrides.subsidiaries ?? 0, role),
+          useFactory: MockUserService.factoryWithOverrides({ loggedInUser }),
           deps: [HttpClient],
         },
         {
@@ -88,6 +92,64 @@ describe('HeaderComponent', () => {
       const nameLink = getByText('John');
 
       expect(nameLink.getAttribute('href')).toEqual('/account-management');
+    });
+
+    it('should show a flag beside user name to notify existing user for UR invite question', async () => {
+      const loggedInUser = { userResearchInviteResponse: null, viewedUserResearchQuestion: false };
+
+      const { getByRole } = await setup({ loggedInUser, isLoggedIn: true });
+      const nameLink = getByRole('link', { name: /John/ });
+
+      expect(nameLink.getAttribute('href')).toEqual('/account-management');
+
+      const flag = within(nameLink).queryByAltText('flag');
+      expect(flag).toBeTruthy();
+    });
+
+    it('should not show the flag for admin user', async () => {
+      const loggedInUser = {
+        userResearchInviteResponse: null,
+        viewedUserResearchQuestion: false,
+        role: Roles.Admin,
+      };
+
+      const { getByRole } = await setup({ loggedInUser, isLoggedIn: true, isAdmin: true });
+      const nameLink = getByRole('link', { name: /John/ });
+
+      expect(nameLink.getAttribute('href')).toEqual('/account-management');
+
+      const flag = within(nameLink).queryByAltText('flag');
+      expect(flag).toBeFalsy();
+    });
+
+    it('should not show the flag if user already answered the UR invite question', async () => {
+      const loggedInUser = {
+        userResearchInviteResponse: InviteResponse.Yes,
+        viewedUserResearchQuestion: false,
+      };
+
+      const { getByRole } = await setup({ loggedInUser, isLoggedIn: true });
+      const nameLink = getByRole('link', { name: /John/ });
+
+      expect(nameLink.getAttribute('href')).toEqual('/account-management');
+
+      const flag = within(nameLink).queryByAltText('flag');
+      expect(flag).toBeFalsy();
+    });
+
+    it('should not show the flag if user already viewed the question', async () => {
+      const loggedInUser = {
+        userResearchInviteResponse: null,
+        viewedUserResearchQuestion: true,
+      };
+
+      const { getByRole } = await setup({ loggedInUser, isLoggedIn: true });
+      const nameLink = getByRole('link', { name: /John/ });
+
+      expect(nameLink.getAttribute('href')).toEqual('/account-management');
+
+      const flag = within(nameLink).queryByAltText('flag');
+      expect(flag).toBeFalsy();
     });
   });
 

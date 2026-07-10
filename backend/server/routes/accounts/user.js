@@ -1024,6 +1024,7 @@ const updateUserFlags = async (req, res) => {
     'lastViewedVacanciesAndTurnoverMessage',
     'trainingCoursesMessageViewedQuantity',
     'agreedUpdatedTerms',
+    'viewedUserResearchQuestion',
   ];
 
   try {

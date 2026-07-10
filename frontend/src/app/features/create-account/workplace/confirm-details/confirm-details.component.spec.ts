@@ -13,19 +13,24 @@ import { RegistrationModule } from '@features/registration/registration.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import { BehaviorSubject, of } from 'rxjs';
+import { of } from 'rxjs';
 
 import { ConfirmDetailsComponent } from './confirm-details.component';
 import { InviteResponse } from '@core/model/userDetails.model';
 
 describe('ConfirmDetailsComponent', () => {
-  async function setup(registrationFlow = true) {
-    const { fixture, getByText, getByTestId, getAllByText, queryByText } = await render(ConfirmDetailsComponent, {
+  async function setup(overrides: any = {}) {
+    const registrationFlow = overrides?.registrationFlow ?? true;
+    const termsAndConditionsCheckboxValue = overrides?.termsAndConditionsCheckbox ?? null;
+
+    const setupTools = await render(ConfirmDetailsComponent, {
       imports: [SharedModule, RegistrationModule, FormsModule, ReactiveFormsModule],
       providers: [
         {
           provide: RegistrationService,
-          useFactory: MockRegistrationServiceWithMainService.factory(),
+          useFactory: MockRegistrationServiceWithMainService.factoryWithOverrides({
+            termsAndConditionsCheckboxValue,
+          }),
           deps: [HttpClient],
         },
         {
@@ -55,24 +60,20 @@ describe('ConfirmDetailsComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
 
-    const spy = spyOn(router, 'navigate');
-    spy.and.returnValue(Promise.resolve(true));
+    const routerSpy = spyOn(router, 'navigate');
+    routerSpy.and.returnValue(Promise.resolve(true));
 
     const registrationService = injector.inject(RegistrationService) as RegistrationService;
 
     const postRegistrationSpy = spyOn(registrationService, 'postRegistration');
     postRegistrationSpy.and.returnValue(of({ userStatus: 'PENDING' }));
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     return {
-      fixture,
+      ...setupTools,
       component,
-      spy,
-      getAllByText,
-      queryByText,
-      getByText,
-      getByTestId,
+      routerSpy,
       postRegistrationSpy,
     };
   }
@@ -98,62 +99,124 @@ describe('ConfirmDetailsComponent', () => {
     expect(getAllByText(termsAndConditionsLink, { exact: false })).toBeTruthy();
   });
 
-  it('should show an error message when pressing submit without agreeing to terms and conditions', async () => {
-    const { fixture, getByText, getAllByText } = await setup();
-    const expectedErrorMessage = 'Confirm that you agree to the terms and conditions';
+  describe('validation', () => {
+    it('should show an error message when pressing submit without agreeing to terms and conditions', async () => {
+      const { queryByText, getByText, getAllByText, postRegistrationSpy } = await setup();
+      const expectedErrorMessage = 'Confirm that you agree to the terms and conditions';
 
-    const submitButton = getByText('Submit details');
-    fireEvent.click(submitButton);
+      const submitButton = getByText('Submit details');
+      fireEvent.click(submitButton);
 
-    expect(fixture.componentInstance.form.invalid).toBeTruthy();
-    expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
-  });
+      expect(queryByText('There is a problem')).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+      expect(postRegistrationSpy).not.toHaveBeenCalled();
+    });
 
-  it('should preselect the terms and conditions checkbox if it is set to true in the service', async () => {
-    const { component } = await setup();
+    it('should keep showing the error message when user tick and untick the checkbox (delayed validation)', async () => {
+      const { queryByText, getByText, getByTestId, getAllByText, postRegistrationSpy } = await setup();
+      const expectedErrorMessage = 'Confirm that you agree to the terms and conditions';
 
-    component.registrationService.termsAndConditionsCheckbox$ = new BehaviorSubject(true);
-    component.ngOnInit();
+      const termsAndConditionsCheckbox = getByTestId('checkbox') as HTMLInputElement;
+      const submitButton = getByText('Submit details');
+      fireEvent.click(submitButton);
 
-    expect(component.form.value.termsAndConditions).toEqual('check');
-  });
+      expect(queryByText('There is a problem')).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+      expect(postRegistrationSpy).not.toHaveBeenCalled();
 
-  it('should not preselect the terms and conditions checkbox if it is set to false in the service', async () => {
-    const { component } = await setup();
+      fireEvent.click(termsAndConditionsCheckbox);
+      expect(termsAndConditionsCheckbox.checked).toBeTrue();
 
-    component.registrationService.termsAndConditionsCheckbox$ = new BehaviorSubject(false);
-    component.ngOnInit();
+      expect(queryByText('There is a problem')).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
 
-    expect(component.form.value.termsAndConditions).toBeNull();
-  });
+      fireEvent.click(termsAndConditionsCheckbox);
+      expect(termsAndConditionsCheckbox.checked).toBeFalse();
 
-  it('should update the value of termsAndConditionsCheckbox$ in the service when the checkbox is clicked', async () => {
-    const { component, getByTestId } = await setup();
+      expect(queryByText('There is a problem')).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+    });
 
-    const spy = spyOn(component, 'setTermsAndConditionsCheckbox').and.callThrough();
+    it('should preselect the terms and conditions checkbox if it is set to true in the service', async () => {
+      const { getByTestId } = await setup({ termsAndConditionsCheckbox: true });
 
-    component.registrationService.termsAndConditionsCheckbox$ = new BehaviorSubject(false);
-    component.ngOnInit();
+      const termsAndConditionsCheckbox = getByTestId('checkbox') as HTMLInputElement;
 
-    const termsAndConditionsCheckbox = getByTestId('checkbox');
-    fireEvent.click(termsAndConditionsCheckbox);
+      expect(termsAndConditionsCheckbox.checked).toBeTrue();
+    });
 
-    expect(spy).toHaveBeenCalled();
-    expect(component.registrationService.termsAndConditionsCheckbox$.value).toBe(true);
+    it('should not preselect the terms and conditions checkbox if it is set to false in the service', async () => {
+      const { getByTestId } = await setup({ termsAndConditionsCheckbox: false });
+
+      const termsAndConditionsCheckbox = getByTestId('checkbox') as HTMLInputElement;
+
+      expect(termsAndConditionsCheckbox.checked).toBeFalse();
+    });
+
+    it('should update the value of termsAndConditionsCheckbox$ in the service when the checkbox is clicked', async () => {
+      const { component, getByTestId } = await setup();
+
+      expect(component.registrationService.termsAndConditionsCheckbox$.value).toBe(null);
+
+      const termsAndConditionsCheckbox = getByTestId('checkbox') as HTMLInputElement;
+      fireEvent.click(termsAndConditionsCheckbox);
+
+      expect(termsAndConditionsCheckbox.checked).toBeTrue();
+      expect(component.registrationService.termsAndConditionsCheckbox$.value).toBe(true);
+
+      fireEvent.click(termsAndConditionsCheckbox);
+
+      expect(termsAndConditionsCheckbox.checked).toBeFalse();
+      expect(component.registrationService.termsAndConditionsCheckbox$.value).toBe(false);
+    });
+
+    it('should not show an error on submit when termsAndConditionsCheckbox is ticked from prefill', async () => {
+      const { getByTestId, getByText, postRegistrationSpy, queryByText } = await setup({
+        termsAndConditionsCheckbox: true,
+      });
+
+      const termsAndConditionsCheckbox = getByTestId('checkbox') as HTMLInputElement;
+      expect(termsAndConditionsCheckbox.checked).toBeTrue();
+
+      const submitButton = getByText('Submit details');
+
+      fireEvent.click(submitButton);
+
+      expect(queryByText('There is a problem')).toBeFalsy();
+      expect(postRegistrationSpy).toHaveBeenCalled();
+    });
+
+    it('should show an error on submit when termsAndConditionsCheckbox is ticked from prefill but unticked by user', async () => {
+      const { getByTestId, getByText, postRegistrationSpy, queryByText } = await setup({
+        termsAndConditionsCheckbox: true,
+      });
+
+      const termsAndConditionsCheckbox = getByTestId('checkbox') as HTMLInputElement;
+      expect(termsAndConditionsCheckbox.checked).toBeTrue();
+
+      fireEvent.click(termsAndConditionsCheckbox);
+      expect(termsAndConditionsCheckbox.checked).toBeFalse();
+
+      const submitButton = getByText('Submit details');
+
+      fireEvent.click(submitButton);
+
+      expect(queryByText('There is a problem')).toBeTruthy();
+      expect(postRegistrationSpy).not.toHaveBeenCalled();
+    });
   });
 
   it('should call the save function to create account when pressing submit after agreeing to terms and conditions', async () => {
-    const { component, fixture, getByText, getByTestId } = await setup();
+    const { fixture, getByText, getByTestId, postRegistrationSpy } = await setup();
 
     const termsAndConditionsCheckbox = getByTestId('checkbox');
     const submitButton = getByText('Submit details');
-    const saveSpy = spyOn(component, 'save').and.returnValue(null);
 
     fireEvent.click(termsAndConditionsCheckbox);
     fireEvent.click(submitButton);
 
     expect(fixture.componentInstance.form.invalid).toBeFalsy();
-    expect(saveSpy).toHaveBeenCalled();
+    expect(postRegistrationSpy).toHaveBeenCalled();
   });
 
   describe('Submitting registration', () => {
