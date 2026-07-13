@@ -29,33 +29,35 @@
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half govuk-!-padding-right-1">
-          <app-card [image]="'/assets/images/benchmarks.svg'">
+          <app-card [image]="'/assets/images/benchmarks.svg'" title="Benchmarks">
             <a
               (click)="navigateToTab($event, 'benchmarks')"
-              class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
+              class="govuk-link govuk-link--no-visited-state homepage-card-link"
               href="#"
             >
               <ng-container *ngIf="bigThreeServices && hasBenchmarkComparisonData; else notBigThreeServices">
-                See how your pay, recruitment and retention compares against other workplaces</ng-container
+                Compare your workplace <br />on staff pay and retention</ng-container
               >
               <ng-template #notBigThreeServices> See how you compare against other workplaces</ng-template>
             </a>
-            <p class="govuk-!-margin-top-5">
+            <p class="govuk-!-margin-top-0 homepage-card-description">
               {{ benchmarksMessage }}
             </p>
           </app-card>
         </div>
 
         <div class="govuk-grid-column-one-half govuk-!-padding-left-1">
-          <app-card [image]="'/assets/images/benefits-bundle.svg'">
+          <app-card [image]="'/assets/images/benefits-bundle.svg'" title="Benefits Bundle">
             <a
-              class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
+              class="govuk-link govuk-link--no-visited-state homepage-card-link"
               routerLink="/benefits-bundle"
               href="#"
-              >View the ASC-WDS Benefits Bundle</a
             >
-            <p class="govuk-!-margin-top-5">
-              Get discounts and special offers from training providers and across Skills for Care's product range.
+              View the ASC-WDS<br />
+              Benefits Bundle</a
+            >
+            <p class="govuk-!-margin-top-0 homepage-card-description">
+              Access discounts and special offers for staff training.
             </p></app-card
           >
         </div>
