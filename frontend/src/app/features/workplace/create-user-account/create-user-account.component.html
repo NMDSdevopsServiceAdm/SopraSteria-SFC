@@ -30,12 +30,6 @@
             <label class="govuk-label" for="{{ item.name }}">
               {{ item.label }}
             </label>
-            @if (item.name === 'email') {
-              <strong class="govuk-body asc-email-input--hint">
-                Use your own work email address. If possible, avoid&nbsp;shared&nbsp;inboxes like
-                admin&#64;myworkplace.com
-              </strong>
-            }
             <span
               *ngIf="submitted && form.get(item.name).errors"
               id="{{ item.name }}-error"
@@ -43,6 +37,13 @@
             >
               <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(item.name) }}
             </span>
+
+            @if (item.name === 'email') {
+              <strong class="govuk-body asc-email-input--hint">
+                Use your own work email address. If possible, avoid&nbsp;shared&nbsp;inboxes like
+                admin&#64;myworkplace.com
+              </strong>
+            }
 
             <input
               class="govuk-input govuk-input--width-20"
