@@ -4,8 +4,20 @@
   box-sizing: border-box;
 }
 
+@media (max-width: 1024px) {
+  .asc-card {
+    height: 444px;
+  }
+}
+
 .asc-card__container {
-  margin: 0 30px 0 18px;
+  margin: 0 15px 0 18px;
+}
+
+@media (max-width: 768px) {
+  .asc-card__container {
+    margin-right: 4px;
+  }
 }
 
 .asc-card__image {

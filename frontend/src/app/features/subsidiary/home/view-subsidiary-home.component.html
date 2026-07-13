@@ -32,15 +32,15 @@
           <app-card [image]="'/assets/images/benchmarks.svg'" title="Benchmarks">
             <a
               (click)="navigateToTab($event, 'benchmarks')"
-              class="govuk-link govuk-link--no-visited-state homepage-card-link"
+              class="govuk-link govuk-link--no-visited-state asc-card-link"
               href="#"
             >
               <ng-container *ngIf="bigThreeServices && hasBenchmarkComparisonData; else notBigThreeServices">
-                Compare your workplace <br />on staff pay and retention</ng-container
+                Compare your workplace<span class="asc-card-break"><br /></span>on staff pay and retention</ng-container
               >
               <ng-template #notBigThreeServices> See how you compare against other workplaces</ng-template>
             </a>
-            <p class="govuk-!-margin-top-0 homepage-card-description">
+            <p class="govuk-!-margin-top-0 asc-card-description">
               {{ benchmarksMessage }}
             </p>
           </app-card>
@@ -48,15 +48,10 @@
 
         <div class="govuk-grid-column-one-half govuk-!-padding-left-1">
           <app-card [image]="'/assets/images/benefits-bundle.svg'" title="Benefits Bundle">
-            <a
-              class="govuk-link govuk-link--no-visited-state homepage-card-link"
-              routerLink="/benefits-bundle"
-              href="#"
+            <a class="govuk-link govuk-link--no-visited-state asc-card-link" routerLink="/benefits-bundle" href="#">
+              View the ASC-WDS<span class="asc-card-break"><br /></span>Benefits Bundle</a
             >
-              View the ASC-WDS<br />
-              Benefits Bundle</a
-            >
-            <p class="govuk-!-margin-top-0 homepage-card-description">
+            <p class="govuk-!-margin-top-0 asc-card-description">
               Access discounts and special offers for staff training.
             </p></app-card
           >

@@ -1,6 +1,6 @@
-.homepage-card-link {
+.asc-card-link {
   display: inline-block;
-  width: 266px;
+  width: 100%;
   margin-bottom: 24px;
   font-size: 21px;
   font-weight: 500;
@@ -8,6 +8,15 @@
   padding-top: 7px;
 }
 
-.homepage-card-description {
-  width: 266px;
+.asc-card-description {
+  width: 100%;
+}
+.asc-card-break {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .asc-card-break {
+    display: inline;
+  }
 }

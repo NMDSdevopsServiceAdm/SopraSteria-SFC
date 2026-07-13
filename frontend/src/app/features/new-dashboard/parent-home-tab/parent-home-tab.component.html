@@ -41,7 +41,7 @@
         <app-card [image]="'/assets/images/bulk-upload.svg'" title="Bulk upload">
           <ng-container *ngIf="canBulkUpload; else noLink">
             <a
-              class="govuk-link--no-visited-state govuk-link govuk-heading-s homepage-card-link"
+              class="govuk-link--no-visited-state govuk-link govuk-heading-s asc-card-link"
               routerLink="/bulk-upload"
               href="#"
               data-testid="bulkUploadLink"
@@ -50,23 +50,23 @@
           </ng-container>
 
           <ng-template #noLink>
-            <p class="govuk-heading-s homepage-card-link">Bulk upload your data</p>
+            <p class="govuk-heading-s asc-card-link">Bulk upload your data</p>
           </ng-template>
 
-          <p class="govuk-!-margin-0 homepage-card-description">Add your data using CSV files.</p>
+          <p class="govuk-!-margin-0 asc-card-description">Add your data using CSV files.</p>
         </app-card>
       </div>
 
       <div *ngIf="canViewReports" class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/access-funding.svg'" title="Access funding">
           <a
-            class="govuk-link--no-visited-state govuk-link govuk-heading-s homepage-card-link"
+            class="govuk-link--no-visited-state govuk-link govuk-heading-s asc-card-link"
             routerLink="/funding"
             href="#"
           >
             LDSS funding {{ fundingYear }}
           </a>
-          <p class="govuk-!-margin-0 homepage-card-description">
+          <p class="govuk-!-margin-0 asc-card-description">
             Check your eligibility to claim funding for staff training.
           </p>
         </app-card>
@@ -76,15 +76,15 @@
         <app-card [image]="'/assets/images/benchmarks.svg'" title="Benchmarks">
           <a
             (click)="navigateToTab($event, 'benchmarks')"
-            class="govuk-link--no-visited-state govuk-link govuk-heading-s homepage-card-link"
+            class="govuk-link--no-visited-state govuk-link govuk-heading-s asc-card-link"
             href="#"
           >
             <ng-container *ngIf="bigThreeServices && hasBenchmarkComparisonData; else notBigThreeServices">
-              Compare your workplace <br />on staff pay and retention</ng-container
+              Compare your workplace <span class="asc-card-break"><br /></span>on staff pay and retention</ng-container
             >
             <ng-template #notBigThreeServices> See how you compare against other workplaces</ng-template>
           </a>
-          <p class="govuk-!-margin-0 homepage-card-description">
+          <p class="govuk-!-margin-0 asc-card-description">
             {{ benchmarksMessage }}
           </p>
         </app-card>
@@ -96,14 +96,13 @@
       <div class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/benefits-bundle.svg'" title="Benefits Bundle">
           <a
-            class="govuk-link--no-visited-state govuk-link govuk-heading-s homepage-card-link"
+            class="govuk-link--no-visited-state govuk-link govuk-heading-s asc-card-link"
             routerLink="/benefits-bundle"
             href="#"
           >
-            View the ASC-WDS<br />
-            Benefits Bundle</a
+            View the ASC-WDS<span class="asc-card-break"><br /></span> Benefits Bundle</a
           >
-          <p class="govuk-!-margin-0 homepage-card-description">
+          <p class="govuk-!-margin-0 asc-card-description">
             Access discounts and special offers for staff training.
           </p></app-card
         >
@@ -111,27 +110,30 @@
       <div class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/certificate.svg'" title="ASC-WDS certificate">
           <a
-            class="govuk-link--no-visited-state govuk-link govuk-heading-s homepage-card-link"
+            class="govuk-link--no-visited-state govuk-link govuk-heading-s asc-card-link"
             routerLink="/asc-wds-certificate"
             href="#"
             >Get your ASC-WDS certificate</a
           >
-          <p class="govuk-!-margin-0 homepage-card-description">
-            Get a certificate, email signature or logo to show that you provide information to help <br />the adult
-            social care sector.
+          <p class="govuk-!-margin-0 asc-card-description">
+            Get a certificate, email<span class="asc-card-break"><br /></span>
+            signature or logo to show that you provide information to help the adult social care sector.
           </p></app-card
         >
       </div>
       <div *ngIf="article" class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/news.svg'" title="News">
           <a
-            class="govuk-link--no-visited-state govuk-link govuk-heading-s homepage-card-link"
+            class="govuk-link--no-visited-state govuk-link govuk-heading-s asc-card-link"
             [routerLink]="['/articles', article.slug]"
             href="#"
             >ASC-WDS news</a
           >
-          <p class="govuk-!-margin-0 homepage-card-description">
-            Read all about how your data gets used and be the first to hear about any new ASC-<br />WDS developments.
+          <p class="govuk-!-margin-0 asc-card-description">
+            Read all about how your data gets used and be the first to hear about any new ASC-<span
+              class="asc-card-break"
+              ><br /></span
+            >WDS developments.
           </p></app-card
         >
       </div>
