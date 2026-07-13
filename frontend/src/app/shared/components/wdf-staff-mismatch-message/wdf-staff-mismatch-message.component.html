@@ -2,7 +2,9 @@
   <dt class="govuk-summary-list__key"></dt>
   <dd class="govuk-summary-list__value govuk-summary-list__message">
     <span class="govuk-!-margin-bottom-2 govuk-!-margin-top-2 govuk__flex">
-      <img class="govuk-!-margin-right-1" src="/assets/images/{{ icon }}.svg" alt="" />{{ staffMismatchMessage }}
+      <img *ngIf="icon" class="govuk-!-margin-right-1" src="/assets/images/{{ icon }}.svg" alt="" />{{
+        staffMismatchMessage
+      }}
     </span>
     <span *ngIf="workplace.numberOfStaff !== 0" class="govuk__nowrap">
       Either change the total or
