@@ -1,11 +1,12 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+import { userPassword } from '../../support/configData';
 import { ParentEstablishment } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
 
 describe('Parent home page as read only user', { tags: '@home' }, () => {
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('readOnlyParentUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(ParentEstablishment.readOnlyUserLoginName, userPassword);
   });
 
   it('should see the parent establishment home page', () => {

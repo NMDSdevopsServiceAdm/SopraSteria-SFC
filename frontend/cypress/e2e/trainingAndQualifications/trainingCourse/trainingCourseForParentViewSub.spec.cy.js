@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+import { userPassword } from '../../../support/configData';
 import { ParentEstablishment, SubEstablishmentNotDataOwner } from '../../../support/mockEstablishmentData';
 import { runTestsForTrainingCourseJourney } from './runTestsForTrainingCourse';
 import { runTestsForUpdateTrainingRecordsWithCourseDetails } from './runTestsForUpdateRecordsWithTrainingCourseDetails';
@@ -7,7 +8,7 @@ describe('Training course for parent workplace edit user', { tags: '@trainingCou
   const subsidaryToView = SubEstablishmentNotDataOwner;
 
   beforeEach(() => {
-    cy.loginAsUser(ParentEstablishment.editUserLoginName, Cypress.env('userPassword'));
+    cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
 
     cy.get('app-navigate-to-workplace-dropdown select').select(subsidaryToView.name);
 

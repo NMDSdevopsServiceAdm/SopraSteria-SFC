@@ -3,6 +3,7 @@
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
 import { onTrainingAndQualsPage } from '../../support/page_objects/onTrainingAndQualsPage';
+import { userPassword } from '../../support/configData';
 
 describe('Standalone training and qualifications page as edit user', { tags: '@trainingAndQualifications' }, () => {
   const workerName = 'Cypress test worker';
@@ -14,7 +15,7 @@ describe('Standalone training and qualifications page as edit user', { tags: '@t
   });
 
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
     onHomePage.clickTab('Training and qualifications');
   });
 

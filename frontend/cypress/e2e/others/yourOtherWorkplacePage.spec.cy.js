@@ -1,4 +1,5 @@
-import { MockNewEstablishment } from '../../support/mockEstablishmentData';
+import { userPassword } from '../../support/configData';
+import { MockNewEstablishment, ParentEstablishment } from '../../support/mockEstablishmentData';
 import {
   approveRegistrationRequestAsAdmin,
   fillInAddress,
@@ -15,7 +16,7 @@ describe('Parent "Your other workplaces" page as edit user', { tags: '@others' }
 
   beforeEach(() => {
     cy.reload();
-    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
     cy.get('[data-cy="tab-list"]').contains('Home').click();
     cy.get('a').contains('Your other workplaces').click();
   });
@@ -58,7 +59,7 @@ describe('Parent "Your other workplaces" page as edit user', { tags: '@others' }
     approveRegistrationRequestAsAdmin(workplaceName);
 
     // verify that new sub workplace exists
-    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
     cy.get('a').contains('Your other workplaces').click();
     cy.get('a').contains(workplaceName).should('be.visible');
 

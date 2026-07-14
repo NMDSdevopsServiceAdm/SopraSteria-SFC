@@ -2,6 +2,7 @@
 import { onHomePage } from '../../support/page_objects/onHomePage';
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 import { fillUserRegistrationForm } from '../../support/page_objects/userRegistrationForms';
+import { userPassword } from '../../support/configData';
 
 describe('As a workplace primary user I want to register a new user', { tags: '@registration' }, () => {
   const userFullName = 'Test new user for cypress';
@@ -24,7 +25,7 @@ describe('As a workplace primary user I want to register a new user', { tags: '@
   };
 
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
     getPassInterstitialLoginMessage();
   });
 

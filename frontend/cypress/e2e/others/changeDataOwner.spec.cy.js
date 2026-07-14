@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+import { userPassword } from '../../support/configData';
 import { ParentEstablishment, MockNewEstablishment } from '../../support/mockEstablishmentData';
 import {
   approveRegistrationRequestAsAdmin,
@@ -19,7 +20,7 @@ describe('change data owner', { tags: '@others' }, () => {
     cy.deleteTestUserFromDb(userFullName);
     cy.deleteTestWorkplaceFromDb(subsidiaryWorkplaceName);
 
-    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
     cy.get('[data-cy="tab-list"]').contains('Home').click();
     cy.get('a').contains('Your other workplaces').click();
 
@@ -52,7 +53,7 @@ describe('change data owner', { tags: '@others' }, () => {
     approveRegistrationRequestAsAdmin(subsidiaryWorkplaceName);
 
     //create user for sub
-    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
     cy.get('a').contains('Your other workplaces').click();
     cy.get('a').contains(subsidiaryWorkplaceName).click();
     cy.get('a').contains('Workplace users').click();
@@ -79,7 +80,7 @@ describe('change data owner', { tags: '@others' }, () => {
     });
 
     beforeEach(() => {
-      cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+      cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
       cy.get('a').contains('Your other workplaces').click();
     });
 
@@ -142,7 +143,7 @@ describe('change data owner', { tags: '@others' }, () => {
       cy.wait('@logout');
 
       //log into parent
-      cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+      cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
       cy.get('a').contains('Your other workplaces').click();
       cy.get(`[data-cy="${subsidiaryWorkplaceName}"]`).contains('Change data owner');
     });
@@ -177,7 +178,7 @@ describe('change data owner', { tags: '@others' }, () => {
       cy.get('a').contains('Sign out').click();
 
       //log into parent
-      cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+      cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
       cy.get('a').contains('Your other workplaces').click();
       cy.get(`[data-cy="${subsidiaryWorkplaceName}"]`).contains('Change data owner').should('not.exist');
     });
@@ -235,7 +236,7 @@ describe('change data owner', { tags: '@others' }, () => {
       cy.get('a').contains('Sign out').click();
 
       // log into parent
-      cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+      cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
       cy.contains('Notifications').click();
 
       cy.get('h1').contains('Notifications').should('be.visible');
@@ -275,7 +276,7 @@ describe('change data owner', { tags: '@others' }, () => {
       cy.get('a').contains('Sign out').click();
 
       // log into parent
-      cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+      cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
       cy.contains('Notifications').click();
 
       cy.get('h1').contains('Notifications').should('be.visible');

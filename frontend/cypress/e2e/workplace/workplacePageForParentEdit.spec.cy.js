@@ -2,13 +2,14 @@
 /// <reference types="cypress" />
 import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
 import { ParentEstablishment } from '../../support/mockEstablishmentData';
+import { userPassword } from '../../support/configData';
 
 describe('Parent workplace page as edit user', { tags: '@workplace' }, () => {
   const establishmentId = ParentEstablishment.id;
 
   beforeEach(() => {
     cy.reload();
-    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();
   });
 

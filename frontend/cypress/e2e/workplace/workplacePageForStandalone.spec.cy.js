@@ -3,6 +3,7 @@
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
 import { runTestsForWorkplaceQuestions } from './runTestsForWorkplaceQuestions';
+import { userPassword } from '../../support/configData';
 
 describe('Standalone workplace page as edit user', { tags: '@workplace' }, () => {
   const establishmentId = StandAloneEstablishment.id;
@@ -19,7 +20,7 @@ describe('Standalone workplace page as edit user', { tags: '@workplace' }, () =>
 
   beforeEach(() => {
     cy.reload();
-    cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();
   });
 
