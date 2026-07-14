@@ -16,7 +16,6 @@
     "integ-test": "mocha tests/integration/"
   },
   "devDependencies": {
-    "aws-sdk": "^2.815.0",
     "chai": "^4.2.0",
     "mocha": "^8.2.1"
   }

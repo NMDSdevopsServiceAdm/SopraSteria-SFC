@@ -7,6 +7,7 @@ enum Path {
   YOUR_DETAILS = '/account-management/change-your-details',
   YOUR_PASSWORD = '/account-management/change-password',
   YOUR_SECURITY_QUESTION = '/account-management/change-user-security',
+  USER_RESEARCH = '/account-management/user-research-invite',
 }
 
 export const accountJourney: JourneyRoute = {
@@ -26,6 +27,10 @@ export const accountJourney: JourneyRoute = {
         {
           title: 'Security question',
           path: Path.YOUR_SECURITY_QUESTION,
+        },
+        {
+          title: 'User research sessions',
+          path: Path.USER_RESEARCH,
         },
       ],
     },

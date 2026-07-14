@@ -1,16 +1,8 @@
 const config = require('./config');
-const AWSSecrets = require('../aws/secrets');
 const fs = require('fs');
 const path = require('path');
 
 module.exports = async () => {
-  if (config.get('aws.secrets.use')) {
-    await AWSSecrets.initialiseSecrets(config.get('aws.region'), config.get('aws.secrets.wallet'));
-
-    config.set('db.host', AWSSecrets.dbHost());
-    config.set('db.password', AWSSecrets.dbPass());
-  }
-
   return {
     production: {
       username: config.get('db.username'),

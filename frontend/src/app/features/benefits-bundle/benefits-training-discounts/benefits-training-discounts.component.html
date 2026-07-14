@@ -1,19 +1,31 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-three-quarters">
     <span class="govuk-caption-xl govuk-!-margin-bottom-2">{{ workplaceName }}</span>
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-8">Discounts from Skills for Care's training providers</h1>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-8">
+      Learning provider offers – QACLS assured courses and qualifications
+    </h1>
     <app-details [title]="revealTitle">
       <p>
-        These are the best learning and development providers within the adult social care sector who've gained a
-        quality mark endorsement from Skills for Care.
+        Skills for Care helps deliver the Quality Assured Care Learning Service, which reviews training provider and
+        course quality, making sure training is accessible, high-quality, and meets the needs of both the workforce and
+        people who draw on care and support. More information about the Quality Assured Care Learning Service is
+        available
+        <a
+          href="https://www.skillsforcare.org.uk/Developing-your-workforce/Quality-assured-training-and-courses.aspx"
+          target="_blank"
+          >here <span class="govuk-visually-hidden">(opens in a new window)</span></a
+        >.
       </p>
       <p>
+        On this page you will find additional offers that certain providers have agreed to specifically make available
+        to you as part of your registered manager membership – this is in addition to the provision available for these
+        courses from the
         <a
-          href="https://www.skillsforcare.org.uk/Developing-your-workforce/Training-providers/Training-providers.aspx"
+          href="https://www.gov.uk/government/publications/adult-social-care-learning-and-development-support-scheme/learning-and-development-support-scheme-for-the-adult-social-care-workforce-a-guide-for-employers"
           target="_blank"
-          >Read more about training providers</a
+          >Learning and Development Support Scheme<span class="govuk-visually-hidden">(opens in a new window)</span></a
         >
-        on the Skills for Care website.
+        for the adult social care workforce.
       </p>
     </app-details>
     <div class="asc-cms-content" [innerHTML]="pages.content"></div>

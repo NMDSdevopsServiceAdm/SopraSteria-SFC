@@ -1,16 +1,11 @@
-const AWS = require('aws-sdk');
-const config = require('../config/config');
 const models = require('../models/');
 const { v4: uuidv4 } = require('uuid');
-uuidv4();
-const s3 = new AWS.S3({
-  region: String(config.get('bulkupload.region')),
-});
-const Bucket = String(config.get('bulkupload.bucketname'));
+
 // Prevent multiple report requests from being ongoing simultaneously so we can store what was previously the http responses in the S3 bucket
 // This function can't be an express middleware as it needs to run both before and after the regular logic
 const reportsAvailable = ['la'];
 const Sentry = require('@sentry/node');
+const BulkUploadS3Utils = require('../routes/establishments/bulkUpload/s3');
 
 const fileLock = {
   acquireLock: async function (reportType, logic, onUser, req, res) {
@@ -99,20 +94,17 @@ const fileLock = {
     if (!Number.isInteger(statusCode) || statusCode < 100) {
       statusCode = 500;
     }
-    return s3
-      .putObject({
-        Bucket,
-        Key: `${req.userUid}/intermediary/${req.buRequestId}.json`,
-        Body: JSON.stringify({
-          url: req.url,
-          startTime: req.startTime,
-          endTime: new Date().toISOString(),
-          responseCode: statusCode,
-          responseBody: body,
-          responseHeaders: typeof headers === 'object' ? headers : undefined,
-        }),
-      })
-      .promise();
+    const fileKey = `${req.userUid}/intermediary/${req.buRequestId}.json`;
+    const fileBody = JSON.stringify({
+      url: req.url,
+      startTime: req.startTime,
+      endTime: new Date().toISOString(),
+      responseCode: statusCode,
+      responseBody: body,
+      responseHeaders: typeof headers === 'object' ? headers : undefined,
+    });
+
+    return BulkUploadS3Utils.uploadToBulkUploadBucket({ key: fileKey, body: fileBody });
   },
 
   responseGet: async (req, res) => {
@@ -149,13 +141,8 @@ const fileLock = {
   },
 
   getS3: async (key) => {
-    const data = await s3
-      .getObject({
-        Bucket,
-        Key: key,
-      })
-      .promise();
-    return JSON.parse(data.Body.toString());
+    const dataAsString = await BulkUploadS3Utils.downloadObjectAsString(key);
+    return JSON.parse(dataAsString);
   },
 
   lockStatusGet: async (reportType, onUser, req, res) => {

@@ -2,26 +2,24 @@
 
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const S3 = require('../../../../../routes/establishments/bulkUpload/s3');
+const BulkUploadS3Utils = require('../../../../../routes/establishments/bulkUpload/s3');
+const bulkUploadS3Client = require('../../../../../routes/establishments/bulkUpload/bulkUploadS3Client');
 const buUtils = require('../../../../../utils/bulkUploadUtils');
 const uploadedFiles = require('../../../../../routes/establishments/bulkUpload/uploadFiles');
 const { trainingHeadersAsArray } = require('../../../mockdata/training');
 const { knownHeaders } = require('../../../mockdata/establishment');
+const { buildGetObjectResponseBody } = require('./testUtils');
 
 const trainingHeaders = trainingHeadersAsArray.join(',');
 const newLine = '\r\n';
 
 describe('/server/routes/establishment/uploadFiles.js', () => {
-  afterEach(() => {
-    sinon.restore();
+  beforeEach(() => {
+    sinon.stub(bulkUploadS3Client, 'putObject');
   });
 
-  beforeEach(() => {
-    sinon.stub(S3.s3, 'putObject').returns({
-      promise: async () => {
-        return {};
-      },
-    });
+  afterEach(() => {
+    sinon.restore();
   });
 
   describe('uploadedPut', () => {
@@ -32,43 +30,35 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
     const OtherFile = 'Test,This,is,NOT,A,BULK,UPLOAD,FILE';
 
     it('Identifies establishment files', async () => {
-      sinon.stub(S3.s3, 'listObjects').returns({
-        promise: async () => {
-          return {
-            IsTruncated: false,
-            Marker: '',
-            Contents: [
-              {
-                Key: '2351/latest/2021-01-26-sfc-bulk-upload-establishments.csv',
-                LastModified: '2021-01-27T08:34:53.000Z',
-                Size: 294,
-              },
-              {
-                Key: '2351/latest/2021-01-26-sfc-bulk-upload-establishments.csv.metadata.json',
-                LastModified: '2021-01-26T14:28:35.000Z',
-                Size: 181,
-              },
-            ],
-            Name: 'sfcbulkuploadfiles',
-            Prefix: '2351/latest/',
-          };
-        },
-      });
-      var buff = Buffer.from(EstablishmentFile);
-      sinon.stub(S3.s3, 'getObject').returns({
-        promise: async () => {
-          return {
-            AcceptRanges: 'bytes',
-            Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves({
+        IsTruncated: false,
+        Marker: '',
+        Contents: [
+          {
+            Key: '2351/latest/2021-01-26-sfc-bulk-upload-establishments.csv',
+            LastModified: '2021-01-27T08:34:53.000Z',
+            Size: 294,
+          },
+          {
+            Key: '2351/latest/2021-01-26-sfc-bulk-upload-establishments.csv.metadata.json',
             LastModified: '2021-01-26T14:28:35.000Z',
-            ContentLength: 171,
-            ETag: '""',
-            VersionId: 'null',
-            ContentType: 'application/json',
-            Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
-            Body: buff,
-          };
-        },
+            Size: 181,
+          },
+        ],
+        Name: 'sfcbulkuploadfiles',
+        Prefix: '2351/latest/',
+      });
+      const body = buildGetObjectResponseBody(EstablishmentFile);
+      sinon.stub(bulkUploadS3Client, 'getObject').resolves({
+        AcceptRanges: 'bytes',
+        Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
+        LastModified: '2021-01-26T14:28:35.000Z',
+        ContentLength: 171,
+        ETag: '""',
+        VersionId: 'null',
+        ContentType: 'application/json',
+        Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
+        Body: body,
       });
 
       const returnData = [
@@ -85,7 +75,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         },
       ];
 
-      const saveResponse = sinon.stub(S3, 'saveResponse');
+      const saveResponse = sinon.stub(BulkUploadS3Utils, 'saveResponse');
 
       await uploadedFiles.uploadedPut(
         {
@@ -103,43 +93,36 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
     });
 
     it('Identifies Training files', async () => {
-      sinon.stub(S3.s3, 'listObjects').returns({
-        promise: async () => {
-          return {
-            IsTruncated: false,
-            Marker: '',
-            Contents: [
-              {
-                Key: '2351/latest/2021-01-26-sfc-bulk-upload-training.csv',
-                LastModified: '2021-01-27T08:34:53.000Z',
-                Size: 294,
-              },
-              {
-                Key: '2351/latest/2021-01-26-sfc-bulk-upload-training.csv.metadata.json',
-                LastModified: '2021-01-26T14:28:35.000Z',
-                Size: 181,
-              },
-            ],
-            Name: 'sfcbulkuploadfiles',
-            Prefix: '2351/latest/',
-          };
-        },
-      });
-      var buff = Buffer.from(TrainingFile);
-      sinon.stub(S3.s3, 'getObject').returns({
-        promise: async () => {
-          return {
-            AcceptRanges: 'bytes',
-            Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves({
+        IsTruncated: false,
+        Marker: '',
+        Contents: [
+          {
+            Key: '2351/latest/2021-01-26-sfc-bulk-upload-training.csv',
+            LastModified: '2021-01-27T08:34:53.000Z',
+            Size: 294,
+          },
+          {
+            Key: '2351/latest/2021-01-26-sfc-bulk-upload-training.csv.metadata.json',
             LastModified: '2021-01-26T14:28:35.000Z',
-            ContentLength: 171,
-            ETag: '""',
-            VersionId: 'null',
-            ContentType: 'application/json',
-            Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
-            Body: buff,
-          };
-        },
+            Size: 181,
+          },
+        ],
+        Name: 'sfcbulkuploadfiles',
+        Prefix: '2351/latest/',
+      });
+
+      const body = buildGetObjectResponseBody(TrainingFile);
+      sinon.stub(bulkUploadS3Client, 'getObject').resolves({
+        AcceptRanges: 'bytes',
+        Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
+        LastModified: '2021-01-26T14:28:35.000Z',
+        ContentLength: 171,
+        ETag: '""',
+        VersionId: 'null',
+        ContentType: 'application/json',
+        Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
+        Body: body,
       });
 
       const returnData = [
@@ -156,7 +139,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         },
       ];
 
-      const saveResponse = sinon.stub(S3, 'saveResponse');
+      const saveResponse = sinon.stub(BulkUploadS3Utils, 'saveResponse');
 
       await uploadedFiles.uploadedPut(
         {
@@ -174,43 +157,35 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
     });
 
     it('Identifies Worker files', async () => {
-      sinon.stub(S3.s3, 'listObjects').returns({
-        promise: async () => {
-          return {
-            IsTruncated: false,
-            Marker: '',
-            Contents: [
-              {
-                Key: '2351/latest/2021-01-26-sfc-bulk-upload-worker.csv',
-                LastModified: '2021-01-27T08:34:53.000Z',
-                Size: 294,
-              },
-              {
-                Key: '2351/latest/2021-01-26-sfc-bulk-upload-worker.csv.metadata.json',
-                LastModified: '2021-01-26T14:28:35.000Z',
-                Size: 181,
-              },
-            ],
-            Name: 'sfcbulkuploadfiles',
-            Prefix: '2351/latest/',
-          };
-        },
-      });
-      var buff = Buffer.from(WorkerFile);
-      sinon.stub(S3.s3, 'getObject').returns({
-        promise: async () => {
-          return {
-            AcceptRanges: 'bytes',
-            Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves({
+        IsTruncated: false,
+        Marker: '',
+        Contents: [
+          {
+            Key: '2351/latest/2021-01-26-sfc-bulk-upload-worker.csv',
+            LastModified: '2021-01-27T08:34:53.000Z',
+            Size: 294,
+          },
+          {
+            Key: '2351/latest/2021-01-26-sfc-bulk-upload-worker.csv.metadata.json',
             LastModified: '2021-01-26T14:28:35.000Z',
-            ContentLength: 171,
-            ETag: '""',
-            VersionId: 'null',
-            ContentType: 'application/json',
-            Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
-            Body: buff,
-          };
-        },
+            Size: 181,
+          },
+        ],
+        Name: 'sfcbulkuploadfiles',
+        Prefix: '2351/latest/',
+      });
+      const body = buildGetObjectResponseBody(WorkerFile);
+      sinon.stub(bulkUploadS3Client, 'getObject').resolves({
+        AcceptRanges: 'bytes',
+        Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
+        LastModified: '2021-01-26T14:28:35.000Z',
+        ContentLength: 171,
+        ETag: '""',
+        VersionId: 'null',
+        ContentType: 'application/json',
+        Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
+        Body: body,
       });
 
       const returnData = [
@@ -227,7 +202,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         },
       ];
 
-      const saveResponse = sinon.stub(S3, 'saveResponse');
+      const saveResponse = sinon.stub(BulkUploadS3Utils, 'saveResponse');
 
       await uploadedFiles.uploadedPut(
         {
@@ -244,39 +219,33 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         returnData,
       ]);
     });
+
     it('Identifies None Bulk Upload CSV files', async () => {
-      sinon.stub(S3.s3, 'listObjects').returns({
-        promise: async () => {
-          return {
-            IsTruncated: false,
-            Marker: '',
-            Contents: [
-              {
-                Key: '2351/latest/2021-01-26-MyTaxes.csv',
-                LastModified: '2021-01-27T08:34:53.000Z',
-                Size: 294,
-              },
-            ],
-            Name: 'sfcbulkuploadfiles',
-            Prefix: '2351/latest/',
-          };
-        },
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves({
+        IsTruncated: false,
+        Marker: '',
+        Contents: [
+          {
+            Key: '2351/latest/2021-01-26-MyTaxes.csv',
+            LastModified: '2021-01-27T08:34:53.000Z',
+            Size: 294,
+          },
+        ],
+        Name: 'sfcbulkuploadfiles',
+        Prefix: '2351/latest/',
       });
-      var buff = Buffer.from(OtherFile);
-      sinon.stub(S3.s3, 'getObject').returns({
-        promise: async () => {
-          return {
-            AcceptRanges: 'bytes',
-            Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
-            LastModified: '2021-01-26T14:28:35.000Z',
-            ContentLength: 171,
-            ETag: '""',
-            VersionId: 'null',
-            ContentType: 'application/json',
-            Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
-            Body: buff,
-          };
-        },
+
+      const body = buildGetObjectResponseBody(OtherFile);
+      sinon.stub(bulkUploadS3Client, 'getObject').resolves({
+        AcceptRanges: 'bytes',
+        Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
+        LastModified: '2021-01-26T14:28:35.000Z',
+        ContentLength: 171,
+        ETag: '""',
+        VersionId: 'null',
+        ContentType: 'application/json',
+        Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
+        Body: body,
       });
 
       const returnData = [
@@ -293,7 +262,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         },
       ];
 
-      const saveResponse = sinon.stub(S3, 'saveResponse');
+      const saveResponse = sinon.stub(BulkUploadS3Utils, 'saveResponse');
 
       await uploadedFiles.uploadedPut(
         {
@@ -317,14 +286,14 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         const data = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,AB123456B,AB1 2CD,01/02/1990,`;
 
-        sinon.stub(S3, 'downloadContent').returns({ data });
+        sinon.stub(BulkUploadS3Utils, 'downloadContent').resolves({ data });
 
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,Admin,AB1 2CD,Admin,`;
 
         sinon.stub(buUtils, 'staffData').returns(updatedData);
 
-        const saveResponse = sinon.stub(S3, 'saveResponse');
+        const saveResponse = sinon.stub(BulkUploadS3Utils, 'saveResponse');
 
         await uploadedFiles.uploadedStarGet(
           {
@@ -353,14 +322,14 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         const data = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,Admin,AB1 2CD,Admin,`;
 
-        sinon.stub(S3, 'downloadContent').returns({ data });
+        sinon.stub(BulkUploadS3Utils, 'downloadContent').resolves({ data });
 
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,Admin,AB1 2CD,Admin,`;
 
         sinon.stub(buUtils, 'staffData').returns(updatedData);
 
-        const saveResponse = sinon.stub(S3, 'saveResponse');
+        const saveResponse = sinon.stub(BulkUploadS3Utils, 'saveResponse');
 
         await uploadedFiles.uploadedStarGet(
           {
@@ -389,14 +358,14 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         const data = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,,AB1 2CD,,`;
 
-        sinon.stub(S3, 'downloadContent').returns({ data });
+        sinon.stub(BulkUploadS3Utils, 'downloadContent').resolves({ data });
 
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,,AB1 2CD,,`;
 
         sinon.stub(buUtils, 'staffData').returns(updatedData);
 
-        const saveResponse = sinon.stub(S3, 'saveResponse');
+        const saveResponse = sinon.stub(BulkUploadS3Utils, 'saveResponse');
 
         await uploadedFiles.uploadedStarGet(
           {
@@ -427,14 +396,14 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         const data = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,AB123456B,AB1 2CD,01/02/1990,`;
 
-        sinon.stub(S3, 'downloadContent').returns({ data });
+        sinon.stub(BulkUploadS3Utils, 'downloadContent').returns({ data });
 
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,AB123456B,AB1 2CD,01/02/1990,`;
 
         sinon.stub(buUtils, 'staffData').returns(updatedData);
 
-        const saveResponse = sinon.stub(S3, 'saveResponse');
+        const saveResponse = sinon.stub(BulkUploadS3Utils, 'saveResponse');
 
         await uploadedFiles.uploadedStarGet(
           {
@@ -463,14 +432,14 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         const data = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,Admin,AB1 2CD,Admin,`;
 
-        sinon.stub(S3, 'downloadContent').returns({ data });
+        sinon.stub(BulkUploadS3Utils, 'downloadContent').returns({ data });
 
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,AB123456B,AB1 2CD,01/02/1990,`;
 
         sinon.stub(buUtils, 'staffData').returns(updatedData);
 
-        const saveResponse = sinon.stub(S3, 'saveResponse');
+        const saveResponse = sinon.stub(BulkUploadS3Utils, 'saveResponse');
 
         await uploadedFiles.uploadedStarGet(
           {
@@ -499,14 +468,14 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         const data = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,,AB1 2CD,,`;
 
-        sinon.stub(S3, 'downloadContent').returns({ data });
+        sinon.stub(BulkUploadS3Utils, 'downloadContent').returns({ data });
 
         const updatedData = `LOCALESTID,UNIQUEWORKERID,STATUS,NINUMBER,POSTCODE,DOB\r\n
         human,Nurse Jones,UPDATE,,AB1 2CD,,`;
 
         sinon.stub(buUtils, 'staffData').returns(updatedData);
 
-        const saveResponse = sinon.stub(S3, 'saveResponse');
+        const saveResponse = sinon.stub(BulkUploadS3Utils, 'saveResponse');
 
         await uploadedFiles.uploadedStarGet(
           {
@@ -537,9 +506,9 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         const data = `LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,\r\n
         human,UPDATE,Care Home 1,31 Some Street,,,Leeds,LS1 2AD,`;
 
-        sinon.stub(S3, 'downloadContent').returns({ data });
+        sinon.stub(BulkUploadS3Utils, 'downloadContent').returns({ data });
 
-        const saveResponse = sinon.stub(S3, 'saveResponse');
+        const saveResponse = sinon.stub(BulkUploadS3Utils, 'saveResponse');
 
         await uploadedFiles.uploadedStarGet(
           {
@@ -572,9 +541,9 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
         const data = `${trainingHeaders},${newLine}
         human,Nurse Jones,31,Test,01/01/2020,01/01/2023,0,,`;
 
-        sinon.stub(S3, 'downloadContent').returns({ data });
+        sinon.stub(BulkUploadS3Utils, 'downloadContent').returns({ data });
 
-        const saveResponse = sinon.stub(S3, 'saveResponse');
+        const saveResponse = sinon.stub(BulkUploadS3Utils, 'saveResponse');
 
         await uploadedFiles.uploadedStarGet(
           {

@@ -3,9 +3,6 @@ const fs = require('fs');
 const yaml = require('js-yaml');
 const cfenv = require('cfenv');
 
-// AWS Secrets Manager override
-const AWSSecrets = require('../aws/secrets');
-
 const AppConfig = require('./appConfig');
 
 convict.addFormat(require('convict-format-with-validator').ipaddress);
@@ -713,37 +710,6 @@ if (!appEnv.isLocal) {
   config.set('redis.url', appEnv.getServiceCreds(config.get('redis.serviceName')).uri);
 }
 
-// now, if defined, load secrets from AWS Secret Manager
-if (config.get('aws.secrets.use')) {
-  AWSSecrets.initialiseSecrets(config.get('aws.region'), config.get('aws.secrets.wallet')).then(() => {
-    // DB rebind
-    config.set('db.host', AWSSecrets.dbHost());
-    config.set('db.password', AWSSecrets.dbPass());
-
-    // external APIs
-    config.set('slack.url', AWSSecrets.slackUrl());
-    config.set('notify.key', AWSSecrets.govNotify());
-    config.set('admin.url', AWSSecrets.adminUrl());
-    config.set('getAddress.apikey', AWSSecrets.getAddressKey());
-    //  config.set('datadog.api_key', AWSSecrets.datadogApiKey()); // Data dog is still work in progress, checking if we really need this
-    config.set('sentry.dsn', AWSSecrets.sentryDsn());
-
-    // Send in Blue
-    config.set('sendInBlue.apiKey', AWSSecrets.sendInBlueKey());
-    config.set('sendInBlue.whitelist', AWSSecrets.sendInBlueWhitelist());
-
-    // sqs queue
-    config.set('aws.sqsqueue', AWSSecrets.sendEmailsToSQSQueue());
-
-    // token secret
-    config.set('jwt.secret', AWSSecrets.jwtSecret());
-
-    AppConfig.ready = true;
-    AppConfig.emit(AppConfig.READY_EVENT);
-  });
-} else {
-  // emit something here
-  AppConfig.ready = true;
-}
+AppConfig.ready = true;
 
 module.exports = config;

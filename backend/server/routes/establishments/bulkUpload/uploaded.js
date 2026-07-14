@@ -1,14 +1,12 @@
 'use strict';
 const csv = require('csvtojson');
 
-const config = require('../../../config/config');
 const { MetaData } = require('../../../models/BulkImport/csv/metaData');
 const WorkplaceCSVValidator = require('../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
 const { validateWorkerHeaders } = require('./validate/headers/worker');
 const { validateTrainingHeaders } = require('./validate/headers/training');
 const { isWorkerFile, isTrainingFile } = require('./whichFile');
-const S3 = require('./s3');
-const Bucket = S3.Bucket;
+const BulkUploadS3Utils = require('./s3');
 const { buStates } = require('./states');
 const buUtils = require('../../../utils/bulkUploadUtils');
 
@@ -17,33 +15,25 @@ const uploadedGet = async (req, res) => {
     const ignoreMetaDataObjects = /.*metadata.json$/;
     const ignoreRoot = /.*\/$/;
 
-    const data = await S3.s3
-      .listObjects({
-        Bucket,
-        Prefix: `${req.establishmentId}/latest/`,
-      })
-      .promise();
+    const data = await BulkUploadS3Utils.listLatestObjectsInWorkplaceBucket(req.establishmentId);
 
+    const dataContents = data.Contents ?? [];
     const returnData = await Promise.all(
-      data.Contents.filter((myFile) => !ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)).map(
-        async (file) => {
+      dataContents
+        .filter((myFile) => !ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key))
+        .map(async (file) => {
           const elements = file.Key.split('/');
 
-          const objData = await S3.s3
-            .headObject({
-              Bucket,
-              Key: file.Key,
-            })
-            .promise();
+          const objData = await BulkUploadS3Utils.headObjectInBucket(file.Key);
 
-          const username = objData && objData.Metadata ? objData.Metadata.username : '';
+          const username = objData?.Metadata?.username ?? '';
 
-          const fileMetaData = data.Contents.filter((myFile) => myFile.Key === file.Key + '.metadata.json');
+          const fileMetaData = dataContents.filter((myFile) => myFile.Key === file.Key + '.metadata.json');
 
           let metadataJSON = {};
 
           if (fileMetaData.length === 1) {
-            const metaData = await S3.downloadContent(fileMetaData[0].Key);
+            const metaData = await BulkUploadS3Utils.downloadContent(fileMetaData[0].Key);
             metadataJSON = JSON.parse(metaData.data);
           }
 
@@ -58,11 +48,10 @@ const uploadedGet = async (req, res) => {
             size: file.Size,
             key: encodeURI(file.Key),
           };
-        },
-      ),
+        }),
     );
 
-    await S3.saveResponse(req, res, 200, {
+    await BulkUploadS3Utils.saveResponse(req, res, 200, {
       establishment: {
         uid: req.establishmentId,
       },
@@ -71,7 +60,7 @@ const uploadedGet = async (req, res) => {
   } catch (err) {
     console.error(err);
 
-    await S3.saveResponse(req, res, 500, {});
+    await BulkUploadS3Utils.saveResponse(req, res, 500, {});
   }
 };
 
@@ -89,37 +78,34 @@ const uploadedPost = async (req, res) => {
     uploadedFiles.length < MINIMUM_NUMBER_OF_FILES ||
     uploadedFiles.length > MAXIMUM_NUMBER_OF_FILES
   ) {
-    await S3.saveResponse(req, res, 400, {});
+    await BulkUploadS3Utils.saveResponse(req, res, 400, {});
     return;
   }
 
   try {
     // clean up existing bulk upload objects
-    await S3.purgeBulkUploadS3Objects(establishmentId);
+    await BulkUploadS3Utils.purgeBulkUploadS3Objects(establishmentId);
 
-    const signedUrls = [];
+    const filesAndSignedUrls = [];
+    const filesWithName = uploadedFiles.filter((file) => file.filename);
 
-    uploadedFiles.forEach((thisFile) => {
-      if (thisFile.filename) {
-        thisFile.signedUrl = S3.s3.getSignedUrl('putObject', {
-          Bucket,
-          Key: `${establishmentId}/latest/${thisFile.filename}`,
-          ContentType: req.query.type,
-          Metadata: {
-            username,
-            establishmentId,
-            validationstatus: 'pending',
-          },
-          Expires: config.get('bulkupload.uploadSignedUrlExpire'),
-        });
-        signedUrls.push(thisFile);
-      }
-    });
+    for (let file of filesWithName) {
+      const signedUrl = await BulkUploadS3Utils.getSignedUrlForUpload({
+        Key: `${establishmentId}/latest/${file.filename}`,
+        ContentType: req.query.type,
+        Metadata: {
+          username,
+          establishmentId,
+          validationstatus: 'pending',
+        },
+      });
+      filesAndSignedUrls.push({ ...file, signedUrl });
+    }
 
-    await S3.saveResponse(req, res, 200, signedUrls);
+    await BulkUploadS3Utils.saveResponse(req, res, 200, filesAndSignedUrls);
   } catch (err) {
     console.error('API POST bulkupload/uploaded: ', err);
-    await S3.saveResponse(req, res, 500, {});
+    await BulkUploadS3Utils.saveResponse(req, res, 500, {});
   }
 };
 
@@ -135,19 +121,15 @@ const uploadedPut = async (req, res) => {
     // awaits must be within a try/catch block - checking if file exists - saves having to repeatedly download from S3 bucket
     const createModelPromises = [];
 
-    const data = await S3.s3
-      .listObjects({
-        Bucket,
-        Prefix: `${req.establishmentId}/latest/`,
-      })
-      .promise();
+    const data = await BulkUploadS3Utils.listLatestObjectsInWorkplaceBucket(req.establishmentId);
 
-    data.Contents.forEach((myFile) => {
+    const dataContents = data.Contents ?? [];
+    dataContents.forEach((myFile) => {
       const ignoreMetaDataObjects = /.*metadata.json$/;
       const ignoreRoot = /.*\/$/;
 
       if (!ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)) {
-        createModelPromises.push(S3.downloadContent(myFile.Key, myFile.Size, myFile.LastModified));
+        createModelPromises.push(BulkUploadS3Utils.downloadContent(myFile.Key, myFile.Size, myFile.LastModified));
       }
     });
 
@@ -213,7 +195,6 @@ const uploadedPut = async (req, res) => {
 
     await Promise.all(headerPromises);
 
-    // ////////////////////////////
     const firstRow = 0;
     const firstLineNumber = 1;
     const metadataS3Promises = [];
@@ -225,7 +206,7 @@ const uploadedPut = async (req, res) => {
         // count records and update metadata
         establishmentMetadata.records = importedEstablishments.length;
         metadataS3Promises.push(
-          S3.uploadJSONDataToS3(
+          BulkUploadS3Utils.uploadJSONDataToS3(
             username,
             establishmentId,
             establishmentMetadata,
@@ -243,7 +224,7 @@ const uploadedPut = async (req, res) => {
         // count records and update metadata
         workerMetadata.records = importedWorkers.length;
         metadataS3Promises.push(
-          S3.uploadJSONDataToS3(
+          BulkUploadS3Utils.uploadJSONDataToS3(
             username,
             establishmentId,
             workerMetadata,
@@ -261,7 +242,7 @@ const uploadedPut = async (req, res) => {
         // count records and update metadata
         trainingMetadata.records = importedTraining.length;
         metadataS3Promises.push(
-          S3.uploadJSONDataToS3(
+          BulkUploadS3Utils.uploadJSONDataToS3(
             username,
             establishmentId,
             trainingMetadata,
@@ -292,7 +273,7 @@ const uploadedPut = async (req, res) => {
     const returnData = [];
 
     // now forn response for each file
-    data.Contents.forEach((myFile) => {
+    dataContents.forEach((myFile) => {
       const ignoreMetaDataObjects = /.*metadata.json$/;
       const ignoreRoot = /.*\/$/;
       if (!ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)) {
@@ -323,10 +304,10 @@ const uploadedPut = async (req, res) => {
       }
     });
 
-    await S3.saveResponse(req, res, 200, returnData);
+    await BulkUploadS3Utils.saveResponse(req, res, 200, returnData);
   } catch (err) {
     console.error(err);
-    await S3.saveResponse(req, res, 500, {});
+    await BulkUploadS3Utils.saveResponse(req, res, 500, {});
   }
 };
 
@@ -336,7 +317,7 @@ const uploadedStarGet = async (req, res) => {
 
   try {
     const { downloadType } = req.query;
-    const { data } = await S3.downloadContent(Key);
+    const { data } = await BulkUploadS3Utils.downloadContent(Key);
     let updatedData;
     switch (downloadType) {
       case 'Workplace':
@@ -354,16 +335,16 @@ const uploadedStarGet = async (req, res) => {
       }
     }
 
-    await S3.saveResponse(req, res, 200, updatedData, {
+    await BulkUploadS3Utils.saveResponse(req, res, 200, updatedData, {
       'Content-Type': 'text/csv',
       'Content-disposition': `attachment; filename=${elements[elements.length - 1]}`,
     });
   } catch (err) {
     if (err.code && err.code === 'NotFound') {
-      await S3.saveResponse(req, res, 404, {});
+      await BulkUploadS3Utils.saveResponse(req, res, 404, {});
     } else {
       console.error(err);
-      await S3.saveResponse(req, res, 500, {});
+      await BulkUploadS3Utils.saveResponse(req, res, 500, {});
     }
   }
 };

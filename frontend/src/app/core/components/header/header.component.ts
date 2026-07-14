@@ -1,11 +1,14 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import lodash from 'lodash';
+import { interval, Subscription } from 'rxjs';
+
+import { Component, computed, Input, OnDestroy, OnInit } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { UserService } from '@core/services/user.service';
-import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -22,6 +25,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public user: UserDetails;
   public showDropdown = false;
   public workplaceId: string;
+
+  public loggedInUserSignal = toSignal(this.userService.loggedInUser$);
+  public showFlagForUsername = computed(() => {
+    const loggedInUser = this.loggedInUserSignal();
+    if (loggedInUser) {
+      const isNormalUser = !this.isAdminUser();
+      const notViewedTheQuestionYet = !loggedInUser.viewedUserResearchQuestion;
+      const notAnsweredYet = lodash.isNil(loggedInUser.userResearchInviteResponse);
+
+      return isNormalUser && notViewedTheQuestionYet && notAnsweredYet;
+    }
+
+    return false;
+  });
 
   constructor(
     private authService: AuthService,
