@@ -5,7 +5,6 @@ import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 @Component({
   selector: 'app-new-home-tab',
   templateUrl: './home-tab.component.html',
-  styleUrls: ['./home-tab.component.scss'],
   providers: [ServiceNamePipe],
   standalone: false,
 })
