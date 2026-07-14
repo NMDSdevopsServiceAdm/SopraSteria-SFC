@@ -78,10 +78,6 @@ var WDFRoute = require('./server/routes/wdf/index');
 
 var errors = require('./server/routes/errors');
 
-// SNS
-const AWSsns = require('./server/aws/sns');
-AWSsns.initialise(config.get('aws.region'));
-
 var app = express();
 
 //NHSBSA API

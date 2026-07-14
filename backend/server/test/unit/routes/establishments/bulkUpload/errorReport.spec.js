@@ -2,7 +2,7 @@
 
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const s3 = require('../../../../../routes/establishments/bulkUpload/s3');
+const BulkUploadS3Utils = require('../../../../../routes/establishments/bulkUpload/s3');
 const { errorReport, generateBUReport } = require('../../../../../routes/establishments/bulkUpload/errorReport');
 const httpMocks = require('node-mocks-http');
 const {
@@ -34,7 +34,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
 
     const res = httpMocks.createResponse();
     it('should reply with a 200 status', async () => {
-      sinon.stub(s3, 'downloadContent').callsFake(async (url) => {
+      sinon.stub(BulkUploadS3Utils, 'downloadContent').callsFake(async (url) => {
         if (url.includes('establishments')) {
           return { data: '[]' };
         } else if (url.includes('workers')) {
@@ -43,7 +43,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
           return { data: '[]' };
         }
       });
-      sinon.stub(s3, 'saveResponse').callsFake(async (req, res, statusCode, value) => {
+      sinon.stub(BulkUploadS3Utils, 'saveResponse').callsFake(async (req, res, statusCode, value) => {
         expect(statusCode).to.deep.equal(200);
         expect(value.establishments.errors.length).to.deep.equal(0);
         expect(value.establishments.warnings.length).to.deep.equal(0);
@@ -56,7 +56,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
     });
 
     it('should reply with 2 errors, 1 warning with 2 establishments for 1 error', async () => {
-      sinon.stub(s3, 'downloadContent').callsFake(async (url) => {
+      sinon.stub(BulkUploadS3Utils, 'downloadContent').callsFake(async (url) => {
         if (url.includes('establishments')) {
           return {
             data: establishmentErrorsWarnings,
@@ -65,7 +65,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
           return { data: '[]' };
         }
       });
-      sinon.stub(s3, 'saveResponse').callsFake(async (req, res, statusCode, value) => {
+      sinon.stub(BulkUploadS3Utils, 'saveResponse').callsFake(async (req, res, statusCode, value) => {
         expect(statusCode).to.deep.equal(200);
 
         expect(value.establishments.errors.length).to.deep.equal(2);
@@ -98,7 +98,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
     });
 
     it('should reply with 2 errors, 1 warning with 2 workers for 1 error', async () => {
-      sinon.stub(s3, 'downloadContent').callsFake(async (url) => {
+      sinon.stub(BulkUploadS3Utils, 'downloadContent').callsFake(async (url) => {
         if (url.includes('workers')) {
           return {
             data: workerErrorsWarnings,
@@ -107,7 +107,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
           return { data: '[]' };
         }
       });
-      sinon.stub(s3, 'saveResponse').callsFake(async (req, res, statusCode, value) => {
+      sinon.stub(BulkUploadS3Utils, 'saveResponse').callsFake(async (req, res, statusCode, value) => {
         expect(statusCode).to.deep.equal(200);
         expect(value.workers.errors.length).to.deep.equal(2);
         expect(value.workers.warnings.length).to.deep.equal(1);
@@ -139,7 +139,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
     });
 
     it('should reply with 2 errors. 1 warning with 3 types of training for 1 error', async () => {
-      sinon.stub(s3, 'downloadContent').callsFake(async (url) => {
+      sinon.stub(BulkUploadS3Utils, 'downloadContent').callsFake(async (url) => {
         if (url.includes('training')) {
           return {
             data: trainingErrorsWarnings,
@@ -148,7 +148,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
           return { data: '[]' };
         }
       });
-      sinon.stub(s3, 'saveResponse').callsFake(async (req, res, statusCode, value) => {
+      sinon.stub(BulkUploadS3Utils, 'saveResponse').callsFake(async (req, res, statusCode, value) => {
         expect(statusCode).to.deep.equal(200);
         expect(value.training.errors.length).to.deep.equal(2);
         expect(value.training.warnings.length).to.deep.equal(1);
@@ -180,7 +180,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
       await errorReport(req, res);
     });
     it('should reply errors and warnings for all files', async () => {
-      sinon.stub(s3, 'downloadContent').callsFake(async (url) => {
+      sinon.stub(BulkUploadS3Utils, 'downloadContent').callsFake(async (url) => {
         if (url.includes('training')) {
           return { data: trainingErrorsWarnings };
         } else if (url.includes('establishments')) {
@@ -189,7 +189,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
           return { data: workerErrorsWarnings };
         }
       });
-      sinon.stub(s3, 'saveResponse').callsFake(async (req, res, statusCode, value) => {
+      sinon.stub(BulkUploadS3Utils, 'saveResponse').callsFake(async (req, res, statusCode, value) => {
         expect(statusCode).to.deep.equal(200);
         expect(value.training.errors.length).to.deep.equal(2);
         expect(value.training.warnings.length).to.deep.equal(1);
@@ -259,7 +259,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
       await errorReport(req, res);
     });
     it('should reply with 1 error and warning for establishment file', async () => {
-      sinon.stub(s3, 'downloadContent').callsFake(async (url) => {
+      sinon.stub(BulkUploadS3Utils, 'downloadContent').callsFake(async (url) => {
         if (url.includes('training')) {
           return { data: trainingErrorsWarnings };
         } else if (url.includes('establishments')) {
@@ -268,7 +268,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
           return { data: workerErrorsWarnings };
         }
       });
-      sinon.stub(s3, 'saveResponse').callsFake(async (req, res, statusCode, value) => {
+      sinon.stub(BulkUploadS3Utils, 'saveResponse').callsFake(async (req, res, statusCode, value) => {
         expect(statusCode).to.deep.equal(200);
         expect(value.training.errors.length).to.deep.equal(2);
         expect(value.training.warnings.length).to.deep.equal(1);
@@ -344,7 +344,7 @@ describe('/server/routes/establishment/bulkUpload/errorReport.js', () => {
 
     const res = httpMocks.createResponse();
     it('should return status 200 and an excel format', async () => {
-      sinon.stub(s3, 'downloadContent').callsFake(async (url) => {
+      sinon.stub(BulkUploadS3Utils, 'downloadContent').callsFake(async (url) => {
         if (url.includes('establishments')) {
           return { data: establishmentErrorsWarnings };
         } else if (url.includes('workers')) {

@@ -14,6 +14,7 @@ const UserSaveException = require('../../../../models/classes/user/userException
 describe('registerAccountWithTransaction', async () => {
   let req;
   let res;
+  let postRegistrationToSlackStub;
 
   beforeEach(() => {
     req = {
@@ -32,6 +33,8 @@ describe('registerAccountWithTransaction', async () => {
       },
     };
     res = httpMocks.createResponse();
+
+    postRegistrationToSlackStub = sinon.stub(slack, 'postRegistrationToSlack').returns(null);
   });
 
   afterEach(() => {
@@ -186,9 +189,9 @@ describe('registerAccountWithTransaction', async () => {
     });
 
     it('should call postRegistrationToSlack with request and establishmentInfo', async () => {
-      const postRegistrationToSlackStub = sinon.stub(slack, 'postRegistrationToSlack').returns(null);
-
       await registerAccountWithTransaction(req, res);
+
+      expect(postRegistrationToSlackStub).to.have.been.called;
 
       expect(postRegistrationToSlackStub.getCall(0).args[0]).to.deep.equal(req);
       expect(postRegistrationToSlackStub.getCall(0).args[1]).to.deep.equal({ uid: 'a413' });
