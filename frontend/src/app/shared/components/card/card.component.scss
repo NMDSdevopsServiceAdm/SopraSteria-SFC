@@ -14,7 +14,7 @@
   margin: 0 15px 0 18px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 769px) {
   .asc-card__container {
     margin-right: 4px;
   }
@@ -24,6 +24,14 @@
   width: 100%;
   height: 138px;
   display: block;
+}
+
+@media (max-width: 641px) {
+  .asc-card__image {
+    width: 100%;
+    height: auto;
+    max-height: 270px;
+  }
 }
 
 .asc-card-heading {
