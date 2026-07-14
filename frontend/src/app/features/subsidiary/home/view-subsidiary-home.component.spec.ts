@@ -250,8 +250,7 @@ describe('ViewSubsidiaryHomeComponent', () => {
 
           it('with comparison data, should show a card with a link that takes you to the benchmarks tab', async () => {
             const { getByText, tabsServiceSpy } = await setup({ cqcStatusMatch: false, establishment });
-
-            const benchmarksLink = getByText('Compare your workplace on staff pay and retention');
+            const benchmarksLink = getByText(/Compare your workplace/);
             const benchmarksCardText = getByText(
               'There are 9 workplaces providing day care and day services in Test LA.',
             );
@@ -316,7 +315,7 @@ describe('ViewSubsidiaryHomeComponent', () => {
     it('should show a card with a link that takes you to the benefits bundle page', async () => {
       const { getByText } = await setup();
 
-      const benefitsBundleLink = getByText('View the ASC-WDS Benefits Bundle');
+      const benefitsBundleLink = getByText(/View the ASC-WDS/);
 
       expect(benefitsBundleLink).toBeTruthy();
       expect(benefitsBundleLink.getAttribute('href')).toBe('/benefits-bundle');

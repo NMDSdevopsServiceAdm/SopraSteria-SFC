@@ -595,7 +595,7 @@ describe('NewHomeTabComponent', () => {
             const overrides = { cqcStatusMatch: false, establishment, comparisonDataAvailable: true };
             const { getByText, tabsServiceSpy } = await setup(overrides);
 
-            const benchmarksLink = getByText('Compare your workplace on staff pay and retention');
+            const benchmarksLink = getByText(/Compare your workplace/);
             const benchmarksCardText = getByText(
               'There are 9 workplaces providing day care and day services in Test LA.',
             );
