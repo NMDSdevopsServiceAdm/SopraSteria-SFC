@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import { v4 as uuidv4 } from 'uuid';
+import { adminUserLoginName, userPassword } from '../configData';
 
 Cypress.Commands.add('openLoginPage', () => {
   cy.setCookie('cookies_preferences_set', 'true');
@@ -11,8 +12,8 @@ Cypress.Commands.add('loginAsAdmin', () => {
 
   cy.setCookie('cookies_preferences_set', 'true');
   cy.visit('/');
-  cy.get('[data-cy="username"]').type(Cypress.env('adminUser'));
-  cy.get('[data-cy="password"]').type(Cypress.env('userPassword'));
+  cy.get('[data-cy="username"]').type(adminUserLoginName);
+  cy.get('[data-cy="password"]').type(userPassword);
   cy.get('[data-testid="signinButton"]').click();
   cy.wait('@login');
 });
