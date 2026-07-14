@@ -20,7 +20,7 @@ interface DbQueryType {
 }
 
 export default defineConfig({
-  env: {
+  expose: {
     userPassword: 'Password00!',
     adminUser: 'admin',
     editParentUser: 'editparent',
