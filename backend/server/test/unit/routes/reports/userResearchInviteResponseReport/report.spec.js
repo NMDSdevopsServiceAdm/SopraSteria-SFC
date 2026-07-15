@@ -9,7 +9,7 @@ const {
 } = require('../../../../../routes/reports/userResearchInviteResponsesReport/report.js');
 const { printRow } = require('../../../../../routes/reports/userResearchInviteResponsesReport/report.js');
 
-describe.only('UserResearchInviteResponsesDataService', () => {
+describe('UserResearchInviteResponsesDataService', () => {
   afterEach(() => {
     sinon.restore();
   });
