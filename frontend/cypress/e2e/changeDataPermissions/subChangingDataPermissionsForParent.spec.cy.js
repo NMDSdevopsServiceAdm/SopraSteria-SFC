@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+import { userPassword } from '../../support/configData';
 import { SubEstablishment } from '../../support/mockEstablishmentData';
 
 describe(
@@ -7,7 +8,7 @@ describe(
   { tags: '@changeDataPermissions' },
   () => {
     beforeEach(() => {
-      cy.loginAsUser(Cypress.env('editSubUser'), Cypress.env('userPassword'));
+      cy.loginAsUser(SubEstablishment.editUserLoginName, userPassword);
     });
 
     const parentName = SubEstablishment.parentName;

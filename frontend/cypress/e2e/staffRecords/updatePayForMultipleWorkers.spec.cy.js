@@ -3,6 +3,7 @@
 
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
+import { userPassword } from '../../support/configData';
 
 describe('Update pay for multiple workers', { tags: '@staffRecords' }, () => {
   const establishmentID = StandAloneEstablishment.id;
@@ -31,7 +32,7 @@ describe('Update pay for multiple workers', { tags: '@staffRecords' }, () => {
   });
 
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
     onHomePage.clickTab('Staff records');
   });
 

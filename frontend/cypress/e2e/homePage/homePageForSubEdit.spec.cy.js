@@ -1,11 +1,12 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+import { userPassword } from '../../support/configData';
 import { SubEstablishment } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
 
 describe('Sub home page as edit user', { tags: '@home' }, () => {
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editSubUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(SubEstablishment.editUserLoginName, userPassword);
   });
 
   it('should see the sub establishment home page', () => {

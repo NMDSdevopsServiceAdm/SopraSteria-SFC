@@ -3,6 +3,7 @@
 
 const { SubEstablishmentNotDataOwner } = require('../../support/mockEstablishmentData');
 const { onHomePage } = require('../../support/page_objects/onHomePage');
+import { userPassword } from '../../support/configData';
 
 describe(
   'Sub training and quals page as edit user where parent owns the data',
@@ -20,7 +21,7 @@ describe(
     });
 
     beforeEach(() => {
-      cy.loginAsUser(Cypress.env('editSubUserNonDataOwner'), Cypress.env('userPassword'));
+      cy.loginAsUser(SubEstablishmentNotDataOwner.editUserLoginName, userPassword);
       onHomePage.clickTab('Training and qualifications');
     });
 

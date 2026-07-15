@@ -6,6 +6,7 @@ import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
 import { onStaffRecordsPage, onStaffRecordSummaryPage } from '../../support/page_objects/onStaffRecordsPage';
 import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
+import { userPassword } from '../../support/configData';
 
 describe('Standalone staff records page as edit user', { tags: '@staffRecords' }, () => {
   const establishmentId = StandAloneEstablishment.id;
@@ -25,7 +26,7 @@ describe('Standalone staff records page as edit user', { tags: '@staffRecords' }
   beforeEach(() => {
     cy.insertTestWorker({ establishmentID: establishmentId, workerName: 'Cypress test worker' });
 
-    cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
     onHomePage.clickTab('Staff records');
   });
 

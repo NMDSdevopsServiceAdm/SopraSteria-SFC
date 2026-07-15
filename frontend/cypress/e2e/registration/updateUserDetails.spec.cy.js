@@ -1,5 +1,6 @@
 const { StandAloneEstablishment } = require('../../support/mockEstablishmentData');
 const { onHomePage } = require('../../support/page_objects/onHomePage');
+import { userPassword } from '../../support/configData';
 
 describe('change password for a user', { tags: '@registration' }, () => {
   const userRoleTypes = ['Read', 'Edit', 'Admin', 'AdminManager'];
@@ -11,7 +12,7 @@ describe('change password for a user', { tags: '@registration' }, () => {
     role,
   }));
 
-  const oldPassword = Cypress.env('userPassword');
+  const oldPassword = userPassword;
   const mockNewPassword = 'Mock-new-password00!';
 
   before(() => {
@@ -26,7 +27,7 @@ describe('change password for a user', { tags: '@registration' }, () => {
     const { fullname, username, role } = mockUser;
     describe(`for user role type: ${role}`, () => {
       beforeEach(() => {
-        cy.loginAsUser(username, Cypress.env('userPassword'));
+        cy.loginAsUser(username, userPassword);
       });
 
       it('should allow user to change their user details', () => {

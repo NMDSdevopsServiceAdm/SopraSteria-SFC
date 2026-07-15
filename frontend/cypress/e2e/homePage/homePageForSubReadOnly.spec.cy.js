@@ -1,11 +1,12 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+import { userPassword } from '../../support/configData';
 import { SubEstablishment } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
 
 describe('Sub home page as read only user', { tags: '@home' }, () => {
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('readOnlySubUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(SubEstablishment.readOnlyUserLoginName, userPassword);
   });
 
   it('should see the sub establishment home page', () => {

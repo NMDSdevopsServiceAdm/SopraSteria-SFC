@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 
+import { editParentMainServiceEight, userPassword } from '../../support/configData';
 import { ParentEstablishment } from '../../support/mockEstablishmentData';
 import { onBenchmarksPage } from '../../support/page_objects/onBenchmarksPage';
 import { onHomePage } from '../../support/page_objects/onHomePage';
@@ -11,7 +12,7 @@ describe('Parent benchmark page, main service 8, as edit user', { tags: '@benchm
   });
 
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editParentMainServiceEight'), Cypress.env('userPassword'));
+    cy.loginAsUser(editParentMainServiceEight, userPassword);
     onHomePage.clickTab('Benchmarks');
   });
 

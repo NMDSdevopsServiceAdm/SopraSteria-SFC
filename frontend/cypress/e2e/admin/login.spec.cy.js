@@ -1,5 +1,6 @@
 /// <reference types="cypress" />
 import { onLoginPage } from '../../support/page_objects/onLoginPage';
+import { adminUserLoginName, userPassword } from '../../support/configData';
 
 /* eslint-disable no-undef */
 describe('As an admin I want to login', { tags: '@admin' }, () => {
@@ -12,12 +13,12 @@ describe('As an admin I want to login', { tags: '@admin' }, () => {
   });
 
   it('should login to admin section when given admin username and password', () => {
-    onLoginPage.submitFormWithUsernameAndPassword(Cypress.env('adminUser'), Cypress.env('userPassword'));
+    onLoginPage.submitFormWithUsernameAndPassword(adminUserLoginName, userPassword);
     cy.get('[data-cy="admin-heading"]').should('contain', 'Admin');
   });
 
   it('should show an error summary box with an error message on password input when username is not provided and focus on the input when summary box link is clicked', () => {
-    onLoginPage.submitFormWithNoUsername(Cypress.env('userPassword'));
+    onLoginPage.submitFormWithNoUsername(userPassword);
     onLoginPage.showsErrorSummary('Enter your username');
     cy.get('[data-cy="username-error"]').should('contain', 'Enter your username');
     onLoginPage.clickErrorLinkSetsFocus('Enter your username');
@@ -25,7 +26,7 @@ describe('As an admin I want to login', { tags: '@admin' }, () => {
   });
 
   it('should show an error summary box with an error message on password input when password is not provided and focus on the input when summary box link is clicked', () => {
-    onLoginPage.submitFormWithNoPassword(Cypress.env('adminUser'));
+    onLoginPage.submitFormWithNoPassword(adminUserLoginName);
     onLoginPage.showsErrorSummary('Enter your password');
     cy.get('[data-cy="password-error"]').should('contain', 'Enter your password');
     onLoginPage.clickErrorLinkSetsFocus('Enter your password');
@@ -40,12 +41,12 @@ describe('As an admin I want to login', { tags: '@admin' }, () => {
   });
 
   it('should show an error summary box and errors if and invalid username is provided', () => {
-    onLoginPage.submitFormWithUsernameAndPassword('invalidUsername', Cypress.env('userPassword'));
+    onLoginPage.submitFormWithUsernameAndPassword('invalidUsername', userPassword);
     onLoginPage.showsErrorSummary('Your username or your password is incorrect');
   });
 
   it('should show an error summary box and errors if and invalid password is provided', () => {
-    onLoginPage.submitFormWithUsernameAndPassword(Cypress.env('adminUser'), 'invalidPassword');
+    onLoginPage.submitFormWithUsernameAndPassword(adminUserLoginName, 'invalidPassword');
     onLoginPage.showsErrorSummary('Your username or your password is incorrect');
   });
 });

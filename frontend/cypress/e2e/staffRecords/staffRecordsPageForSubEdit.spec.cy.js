@@ -2,6 +2,7 @@
 /// <reference types="cypress" />
 import { SubEstablishment } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
+import { userPassword } from '../../support/configData';
 
 describe('Sub staff records page as edit user', { tags: '@staffRecords' }, () => {
   const workerName = 'test worker for staff record page';
@@ -16,7 +17,7 @@ describe('Sub staff records page as edit user', { tags: '@staffRecords' }, () =>
   });
 
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editSubUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(SubEstablishment.editUserLoginName, userPassword);
     onHomePage.clickTab('Staff records');
   });
 

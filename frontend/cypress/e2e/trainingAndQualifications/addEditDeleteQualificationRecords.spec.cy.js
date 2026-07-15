@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
+import { userPassword } from '../../support/configData';
 
 describe('qualification record', { tags: '@trainingAndQualifications' }, () => {
   const workerName1 = 'Test worker';
@@ -19,7 +20,7 @@ describe('qualification record', { tags: '@trainingAndQualifications' }, () => {
   });
 
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
     cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
   });
 

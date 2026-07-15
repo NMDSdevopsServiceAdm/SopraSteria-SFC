@@ -1,4 +1,5 @@
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
+import { userPassword } from '../../support/configData';
 
 describe('delete a user from workplace', { tags: '@registration' }, () => {
   const mockUserForDeletion = 'Mock new user for deletion';
@@ -9,7 +10,7 @@ describe('delete a user from workplace', { tags: '@registration' }, () => {
   });
 
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
   });
 
   it(`should be able to remove a user from the workplace`, () => {

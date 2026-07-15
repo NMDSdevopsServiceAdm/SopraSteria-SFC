@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 
+import { userPassword } from '../../support/configData';
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 
 describe('page after login', { tags: '@others' }, () => {
@@ -11,7 +12,7 @@ describe('page after login', { tags: '@others' }, () => {
   const setUpUserAttributes = (property, value) => {
     cy.updateUserFieldForLoginTests(fullUserName, property, value);
     cy.reload();
-    cy.loginAsUserForInterstitialPages(fullUserName, Cypress.env('userPassword'));
+    cy.loginAsUserForInterstitialPages(fullUserName, userPassword);
   };
 
   beforeEach(() => {
@@ -26,7 +27,7 @@ describe('page after login', { tags: '@others' }, () => {
   });
 
   it('should go straight to the dashboard', () => {
-    cy.loginAsUser(fullUserName, Cypress.env('userPassword'));
+    cy.loginAsUser(fullUserName, userPassword);
 
     cy.url().should('eq', Cypress.config().baseUrl + '/dashboard#home');
     cy.contains(StandAloneEstablishment.name);
@@ -86,7 +87,7 @@ describe('page after login', { tags: '@others' }, () => {
   it('should go to the type-of-employer page', () => {
     cy.updateEmployerTypeValue(establishmentID, null);
     cy.reload();
-    cy.loginAsUser(fullUserName, Cypress.env('userPassword'));
+    cy.loginAsUser(fullUserName, userPassword);
 
     cy.url().should('include', '/type-of-employer');
     cy.get('h1').should('contain', 'What type of employer are you?');
