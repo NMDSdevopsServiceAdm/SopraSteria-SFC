@@ -6,7 +6,7 @@ const router = express.Router();
 const { UserResearchInviteResponsesDataService } = require('./data');
 
 const printRow = (worksheet, result) => {
-  const latestChangedEvent = result.auditEvents?.sort((a, b) => new Date(b.when) - new Date(a.when))[0];
+  const latestChangedEvent = result?.auditEvents?.sort((a, b) => new Date(b.when) - new Date(a.when))[0];
   const previousResponse = latestChangedEvent?.event?.current;
 
   worksheet.addRow({
