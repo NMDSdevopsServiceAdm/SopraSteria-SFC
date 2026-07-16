@@ -2,12 +2,26 @@ import { DatePipe } from '@angular/common';
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
+enum FlagType {
+  Red = 'RedFlag',
+  Amber = 'AmberFlag',
+  Green = 'GreenTick',
+  None = 'NoFlag',
+}
+interface Section {
+  title: string;
+  message: string;
+  fragment: string;
+  showLink: boolean;
+  showFlag: FlagType;
+}
+
 @Component({
-    selector: 'app-wdf-summary-panel',
-    templateUrl: './wdf-summary-panel.component.html',
-    styleUrls: ['../summary-section/summary-section.component.scss', './wdf-summary-panel.component.scss'],
-    providers: [DatePipe],
-    standalone: false
+  selector: 'app-wdf-summary-panel',
+  templateUrl: './wdf-summary-panel.component.html',
+  styleUrls: ['../summary-section/summary-section.component.scss', './wdf-summary-panel.component.scss'],
+  providers: [DatePipe],
+  standalone: false,
 })
 export class WdfSummaryPanel implements OnInit, OnChanges {
   @Input() workplaceWdfEligibilityStatus: boolean;
@@ -20,23 +34,26 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
   @Input() activatedFragment: string;
   @Input() onDataPage: boolean = true;
   @Input() someSubsidiariesMeetingRequirements: boolean;
+  @Input() subsidiariesCount: number;
 
-  public sections: any = [];
+  public sections: Section[] = [];
   public meetingMessage: string;
   public notMeetingMessage: string;
   public someSubsMeetingMessage: string;
+  readonly FlagType = FlagType;
 
-  constructor(private router: Router, private datePipe: DatePipe) {}
+  constructor(
+    private router: Router,
+    private datePipe: DatePipe,
+  ) {}
 
   ngOnInit(): void {
     this.setMessages();
     this.getSections();
-    this.showLink(this.activatedFragment);
   }
 
   ngOnChanges(): void {
     this.getSections();
-    this.showLink(this.activatedFragment);
   }
 
   private setMessages(): void {
@@ -49,36 +66,58 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
   }
 
   public getSections(): void {
-    this.sections = [
-      {
-        title: 'Workplace',
-        eligibility:
-          this.workplaceWdfEligibilityStatus || (!this.workplaceWdfEligibilityStatus && this.overallWdfEligibility),
-        fragment: 'workplace',
-        showLink: true,
-        meetingMessage: this.meetingMessage,
-        notMeetingMessage: this.notMeetingMessage,
-      },
-      {
-        title: 'Staff records',
-        eligibility: this.staffWdfEligibilityStatus || (!this.staffWdfEligibilityStatus && this.overallWdfEligibility),
-        fragment: 'staff',
-        showLink: true,
-        meetingMessage: this.meetingMessage,
-        notMeetingMessage: this.notMeetingMessage,
-      },
-    ];
+    this.sections = [];
+
+    this.getWorkplaceSection();
+    this.getStaffSection();
 
     if (this.isParent) {
-      this.sections.push({
-        title: 'Your other workplaces',
-        eligibility: this.subsidiariesOverallWdfEligibility,
-        fragment: 'workplaces',
-        showLink: true,
-        meetingMessage: this.meetingMessage,
-        notMeetingMessage: this.getOtherWorkplacesNotMeetingMessage(),
-      });
+      this.getOtherWorkplacesSection();
     }
+  }
+
+  private addSection(
+    title: string,
+    fragment: string,
+    specificEligibility: boolean,
+    getNotMeetingMessage?: () => string,
+  ): void {
+    const meetRequirements = specificEligibility || this.overallWdfEligibility;
+    const showLink = this.activatedFragment !== fragment;
+
+    getNotMeetingMessage = getNotMeetingMessage ?? (() => this.notMeetingMessage);
+
+    this.sections.push({
+      title,
+      fragment,
+      showLink,
+      showFlag: meetRequirements ? FlagType.Green : FlagType.Red,
+      message: meetRequirements ? this.meetingMessage : getNotMeetingMessage(),
+    });
+  }
+
+  private getWorkplaceSection(): void {
+    this.addSection('Workplace', 'workplace', this.workplaceWdfEligibilityStatus);
+  }
+
+  private getStaffSection(): void {
+    this.addSection('Staff records', 'staff', this.staffWdfEligibilityStatus);
+  }
+
+  private getOtherWorkplacesSection(): void {
+    const getNotMeetingMessage = () => {
+      if (!this.subsidiariesOverallWdfEligibility && this.someSubsidiariesMeetingRequirements) {
+        return this.someSubsMeetingMessage;
+      }
+      return this.notMeetingMessage;
+    };
+
+    this.addSection(
+      'Your other workplaces',
+      'workplaces',
+      this.subsidiariesOverallWdfEligibility,
+      getNotMeetingMessage,
+    );
   }
 
   public onClick(event: Event, fragment: string): void {
@@ -86,22 +125,5 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
 
     const urlToNavigateTo = this.onDataPage ? [] : ['/funding/data'];
     this.router.navigate(urlToNavigateTo, { fragment: fragment });
-  }
-
-  private getOtherWorkplacesNotMeetingMessage(): string {
-    if (!this.subsidiariesOverallWdfEligibility && this.someSubsidiariesMeetingRequirements) {
-      return this.someSubsMeetingMessage;
-    }
-    return this.notMeetingMessage;
-  }
-
-  public showLink(fragment: string): void {
-    for (var i = 0; i < this.sections.length; i++) {
-      if (fragment === this.sections[i].fragment) {
-        this.sections[i].showLink = false;
-      } else {
-        this.sections[i].showLink = true;
-      }
-    }
   }
 }

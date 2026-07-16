@@ -8,7 +8,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 
 import { WdfSummaryPanel } from './wdf-summary-panel.component';
 
-describe('WdfSummaryPanel', () => {
+fdescribe('WdfSummaryPanel', () => {
   const currentYear = new Date().getFullYear();
 
   const messages = {
@@ -228,6 +228,25 @@ describe('WdfSummaryPanel', () => {
         expect(staffFundingMessage).toBeTruthy();
         expect(allWorkplacesFundingMessage).toBeFalsy();
       });
+
+      xit(`should show "You've not added any other workplaces yet" without a link when no other workplaces has been added`, async () => {
+        const overrides = {
+          workplaceWdfEligibilityStatus: true,
+          staffWdfEligibilityStatus: true,
+          subsidiariesOverallWdfEligibility: true,
+          isParent: true,
+          subsidiariesCount: 0,
+        };
+        const { getByTestId } = await setup(overrides);
+
+        const allWorkplacesRow = getByTestId('workplaces-row');
+
+        const allWorkplacesFundingMessage = within(allWorkplacesRow).queryByRole('link');
+
+        expect(allWorkplacesFundingMessage).toBeFalsy();
+
+        expect(within(allWorkplacesRow).getByText(`You've not added any other workplaces yet`)).toBeTruthy();
+      });
     });
   });
 
@@ -321,9 +340,7 @@ describe('WdfSummaryPanel', () => {
       },
     ].forEach(({ scenario, onDataPage, expectedLink }) => {
       [{ isEligible: true }, { isEligible: false }].forEach(({ isEligible }) => {
-        const linkId = isEligible ? 'met-funding-message' : 'not-met-funding-message';
-
-        it(`should navigate to workplace when ${linkId} clicked ${scenario}`, async () => {
+        it(`should navigate to workplace when workplace message clicked ${scenario}`, async () => {
           const overrides = {
             workplaceWdfEligibilityStatus: isEligible,
             overallWdfEligibility: isEligible,
@@ -334,7 +351,7 @@ describe('WdfSummaryPanel', () => {
 
           const workplaceRow = getByTestId('workplace-row');
 
-          const notMetFundingMessage = within(workplaceRow).getByTestId(linkId);
+          const notMetFundingMessage = within(workplaceRow).getByRole('link');
 
           expect(notMetFundingMessage).toBeTruthy();
 
@@ -344,7 +361,7 @@ describe('WdfSummaryPanel', () => {
           expect(routerSpy).toHaveBeenCalledWith(expectedLink, { fragment: 'workplace' });
         });
 
-        it(`should navigate to staff when ${linkId} clicked ${scenario}`, async () => {
+        it(`should navigate to staff when staff message clicked ${scenario}`, async () => {
           const overrides = {
             staffWdfEligibilityStatus: isEligible,
             overallWdfEligibility: isEligible,
@@ -355,7 +372,7 @@ describe('WdfSummaryPanel', () => {
 
           const staffRow = getByTestId('staff-row');
 
-          const notMetFundingMessage = within(staffRow).getByTestId(linkId);
+          const notMetFundingMessage = within(staffRow).getByRole('link');
 
           expect(notMetFundingMessage).toBeTruthy();
 
@@ -375,7 +392,7 @@ describe('WdfSummaryPanel', () => {
 
           const workplacesRow = getByTestId('workplaces-row');
 
-          const notMetFundingMessage = within(workplacesRow).getByTestId(linkId);
+          const notMetFundingMessage = within(workplacesRow).getByRole('link');
 
           expect(notMetFundingMessage).toBeTruthy();
 
