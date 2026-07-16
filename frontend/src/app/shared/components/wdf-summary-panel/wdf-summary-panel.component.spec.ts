@@ -8,7 +8,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 
 import { WdfSummaryPanel } from './wdf-summary-panel.component';
 
-fdescribe('WdfSummaryPanel', () => {
+describe('WdfSummaryPanel', () => {
   const currentYear = new Date().getFullYear();
 
   const messages = {
@@ -63,22 +63,6 @@ fdescribe('WdfSummaryPanel', () => {
       const overrides = {
         staffWdfEligibilityStatus: true,
         overallWdfEligibility: false,
-      };
-
-      const { getByTestId } = await setup(overrides);
-
-      const staffRow = getByTestId('staff-row');
-
-      expect(staffRow).toBeTruthy();
-      expect(within(staffRow).queryByText(messages.fundingNotMet)).toBeFalsy();
-      expect(within(staffRow).getByText(messages.fundingMet)).toBeTruthy();
-      expect(within(staffRow).getByTestId('green-tick')).toBeTruthy();
-    });
-
-    it("should display the correct message with timeframe for meeting funding requirements for staff if overall has met but staff hasn't", async () => {
-      const overrides = {
-        staffWdfEligibilityStatus: false,
-        overallWdfEligibility: true,
       };
 
       const { getByTestId } = await setup(overrides);
@@ -316,10 +300,10 @@ fdescribe('WdfSummaryPanel', () => {
   });
 
   describe('Orange flag (met overall requirements before but data changed)', () => {
-    it('should display "Check your workplace data" when met overall requirements but workplace become not eligible', async () => {
+    it('should display "Check your workplace data" if overall requirements has met but workplace has not', async () => {
       const overrides = {
         workplaceWdfEligibilityStatus: false,
-        staffWdfEligibilityStatus: false,
+        staffWdfEligibilityStatus: true,
         overallWdfEligibility: true,
       };
 
@@ -334,6 +318,49 @@ fdescribe('WdfSummaryPanel', () => {
       expect(within(workplaceRow).queryByTestId('green-tick')).toBeFalsy();
       expect(within(workplaceRow).queryByText(messages.fundingMet)).toBeFalsy();
       expect(within(workplaceRow).queryByText(messages.fundingNotMet)).toBeFalsy();
+    });
+
+    it('should display "Check your staff records" if overall requirements has met but staff records has not', async () => {
+      const overrides = {
+        workplaceWdfEligibilityStatus: true,
+        staffWdfEligibilityStatus: false,
+        overallWdfEligibility: true,
+      };
+
+      const { getByTestId } = await setup(overrides);
+
+      const staffRow = getByTestId('staff-row');
+
+      expect(within(staffRow).getByText('Check your staff records')).toBeTruthy();
+      expect(within(staffRow).queryByTestId('orange-flag')).toBeTruthy();
+
+      expect(within(staffRow).queryByTestId('red-flag')).toBeFalsy();
+      expect(within(staffRow).queryByTestId('green-tick')).toBeFalsy();
+      expect(within(staffRow).queryByText(messages.fundingMet)).toBeFalsy();
+      expect(within(staffRow).queryByText(messages.fundingNotMet)).toBeFalsy();
+    });
+
+    it('should display "Check your other workplaces" if subsidiaries overall requirements has met but some subsidiaries need check again', async () => {
+      const overrides = {
+        workplaceWdfEligibilityStatus: true,
+        staffWdfEligibilityStatus: true,
+        isParent: true,
+        subsidiariesCount: 2,
+        subsidiariesOverallWdfEligibility: true,
+        someSubsidiariesNeedCheckAgain: true,
+      };
+
+      const { getByTestId } = await setup(overrides);
+
+      const otherWorkplacesRow = getByTestId('workplaces-row');
+
+      expect(within(otherWorkplacesRow).getByText('Check your other workplaces')).toBeTruthy();
+      expect(within(otherWorkplacesRow).queryByTestId('orange-flag')).toBeTruthy();
+
+      expect(within(otherWorkplacesRow).queryByTestId('red-flag')).toBeFalsy();
+      expect(within(otherWorkplacesRow).queryByTestId('green-tick')).toBeFalsy();
+      expect(within(otherWorkplacesRow).queryByText(messages.fundingMet)).toBeFalsy();
+      expect(within(otherWorkplacesRow).queryByText(messages.fundingNotMet)).toBeFalsy();
     });
   });
 
