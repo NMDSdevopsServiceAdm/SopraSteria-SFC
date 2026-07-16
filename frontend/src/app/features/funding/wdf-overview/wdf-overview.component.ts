@@ -27,6 +27,7 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
   public parentOverallWdfEligibility: boolean;
   public subsidiariesOverallWdfEligibility: boolean;
   public someSubsidiariesMeetingRequirements: boolean;
+  public someSubsidiariesNeedCheckAgain: boolean;
   public overallEligibilityDate: string;
   public parentOverallEligibilityDate: string;
   public isParent: boolean;
@@ -99,6 +100,11 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
   public setSubsidiariesEligibility(subsidiaryWorkplaces): void {
     this.subsidiariesOverallWdfEligibility = subsidiaryWorkplaces.every((workplace) => workplace.wdf.overall === true);
     this.someSubsidiariesMeetingRequirements = subsidiaryWorkplaces.some((workplace) => workplace.wdf.overall === true);
+
+    this.someSubsidiariesNeedCheckAgain = subsidiaryWorkplaces.some(
+      (workplace) =>
+        (workplace?.wdf?.overall === true && workplace?.wdf?.workplace === false) || workplace?.wdf?.staff === false,
+    );
   }
 
   private setEligibilityStatus(): void {

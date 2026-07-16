@@ -21,9 +21,9 @@ import { WdfEligibilityStatus } from '../../../core/model/wdf.model';
 import { Worker } from '../../../core/model/worker.model';
 
 @Component({
-    selector: 'app-wdf-data',
-    templateUrl: './wdf-data.component.html',
-    standalone: false
+  selector: 'app-wdf-data',
+  templateUrl: './wdf-data.component.html',
+  standalone: false,
 })
 export class WdfDataComponent implements OnInit {
   public workplace: Establishment;
@@ -42,6 +42,7 @@ export class WdfDataComponent implements OnInit {
   public overallWdfEligibility: boolean;
   public subsidiariesOverallWdfEligibility: boolean;
   public someSubsidiariesMeetingRequirements: boolean;
+  public someSubsidiariesNeedCheckAgain: boolean;
 
   public isParent: boolean;
   public subsidiaryWorkplaces = [];
@@ -191,6 +192,10 @@ export class WdfDataComponent implements OnInit {
     );
     this.someSubsidiariesMeetingRequirements = this.subsidiaryWorkplaces.some(
       (workplace) => workplace.wdf.overall === true,
+    );
+    this.someSubsidiariesNeedCheckAgain = this.subsidiaryWorkplaces.some(
+      (workplace) =>
+        (workplace?.wdf?.overall === true && workplace?.wdf?.workplace === false) || workplace?.wdf?.staff === false,
     );
   }
 
