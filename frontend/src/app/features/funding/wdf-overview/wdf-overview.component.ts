@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
+import { GetWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
 import { WDFReport } from '@core/model/reports.model';
 import { WdfEligibilityStatus } from '@core/model/wdf.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -13,10 +13,10 @@ import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-wdf-overview',
-    templateUrl: './wdf-overview.component.html',
-    styleUrls: ['../../../shared/components/summary-section/summary-section.component.scss'],
-    standalone: false
+  selector: 'app-wdf-overview',
+  templateUrl: './wdf-overview.component.html',
+  styleUrls: ['../../../shared/components/summary-section/summary-section.component.scss'],
+  standalone: false,
 })
 export class WdfOverviewComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
@@ -36,6 +36,7 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
   public sections: any = [];
   public staffOverallWdfEligibility: boolean;
   public wdfEligibilityStatus: WdfEligibilityStatus = {};
+  public activeSubsidiaryWorkplaces: Workplace[] = [];
 
   constructor(
     private establishmentService: EstablishmentService,
