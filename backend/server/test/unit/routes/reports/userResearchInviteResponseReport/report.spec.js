@@ -1,9 +1,13 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
-const { UserResearchInviteResponsesDataService } = require('../../../../../routes/reports/userResearchInviteResponsesReport/data');
-const { generateUserResearchInviteResponsesReport }= require('../../../../../routes/reports/userResearchInviteResponsesReport/report.js');
-const { printRow }= require('../../../../../routes/reports/userResearchInviteResponsesReport/report.js');
+const {
+  UserResearchInviteResponsesDataService,
+} = require('../../../../../routes/reports/userResearchInviteResponsesReport/data');
+const {
+  generateUserResearchInviteResponsesReport,
+} = require('../../../../../routes/reports/userResearchInviteResponsesReport/report.js');
+const { printRow } = require('../../../../../routes/reports/userResearchInviteResponsesReport/report.js');
 
 describe('UserResearchInviteResponsesDataService', () => {
   afterEach(() => {
@@ -28,8 +32,8 @@ describe('UserResearchInviteResponsesDataService', () => {
                   NumberOfStaffValue: 10,
                   mainService: {
                     dataValues: {
-                      name: 'Carers support'
-                    }
+                      name: 'Carers support',
+                    },
                   },
                 },
               },
@@ -250,7 +254,7 @@ describe('UserResearchInviteResponsesDataService', () => {
     describe('When all data is present', () => {
       it('calls addRow with the correct parameters', async () => {
         const mockWorksheet = {
-          addRow: () => {}
+          addRow: () => {},
         };
 
         const data = {
@@ -266,8 +270,8 @@ describe('UserResearchInviteResponsesDataService', () => {
               NumberOfStaffValue: 10,
               mainService: {
                 dataValues: {
-                  name: 'Carers support'
-                }
+                  name: 'Carers support',
+                },
               },
             },
           },
@@ -286,14 +290,14 @@ describe('UserResearchInviteResponsesDataService', () => {
         expect(addRowSpy.args[0][0].totalStaff).to.equal(10);
         expect(addRowSpy.args[0][0].userResearchInviteResponse).to.equal('Yes');
         expect(addRowSpy.args[0][0].createdDate).to.equal('2026-02-19T15:53:53.895Z');
-        expect(addRowSpy.args[0][0].updatedDate).to.equal('');
+        expect(addRowSpy.args[0][0].updatedDate).to.equal('2026-02-19T15:53:53.895Z');
       });
     });
 
     describe('When some data is missing', () => {
       it('calls addRow with the correct parameters', async () => {
         const mockWorksheet = {
-          addRow: () => {}
+          addRow: () => {},
         };
 
         const data = {
@@ -323,7 +327,7 @@ describe('UserResearchInviteResponsesDataService', () => {
     describe('When some data is empty', () => {
       it('calls addRow with the correct parameters', async () => {
         const mockWorksheet = {
-          addRow: () => {}
+          addRow: () => {},
         };
 
         const data = {
@@ -353,8 +357,7 @@ describe('UserResearchInviteResponsesDataService', () => {
     describe('When there is no data', () => {
       it('calls addRow with the correct parameters', async () => {
         const mockWorksheet = {
-          addRow: () => {
-          }
+          addRow: () => {},
         };
 
         const data = null;
@@ -378,8 +381,7 @@ describe('UserResearchInviteResponsesDataService', () => {
     describe('When all data is empty', () => {
       it('calls addRow with the correct parameters', async () => {
         const mockWorksheet = {
-          addRow: () => {
-          }
+          addRow: () => {},
         };
 
         const data = {};
@@ -397,6 +399,82 @@ describe('UserResearchInviteResponsesDataService', () => {
         expect(addRowSpy.args[0][0].userResearchInviteResponse).to.equal('');
         expect(addRowSpy.args[0][0].createdDate).to.equal('');
         expect(addRowSpy.args[0][0].updatedDate).to.equal('');
+      });
+    });
+  });
+
+  describe('audit data', () => {
+    describe('When audit data is present', () => {
+      it('calls addRow with the audit values', async () => {
+        const mockWorksheet = {
+          addRow: () => {},
+        };
+
+        const data = {
+          FullNameValue: 'Test User',
+          EmailValue: 'me@example.com',
+          JobTitleValue: 'job',
+          UserResearchInviteResponseValue: 'Yes',
+          created: '2026-02-19T15:53:53.895Z',
+          updated: '2026-02-19T15:53:53.895Z',
+          auditEvents: [
+            {
+              when: '2026-07-10T15:03:00.281Z',
+              event: {
+                current: 'No',
+                new: 'Yes',
+              },
+            },
+          ],
+          establishment: {
+            dataValues: {
+              nmdsId: 'G1005301',
+              NumberOfStaffValue: 10,
+              mainService: {
+                dataValues: {
+                  name: 'Carers support',
+                },
+              },
+            },
+          },
+        };
+
+        const addRowSpy = sinon.spy(mockWorksheet, 'addRow');
+
+        printRow(mockWorksheet, data);
+
+        expect(addRowSpy.calledOnce).to.equal(true);
+        expect(addRowSpy.args[0][0].previousResponse).to.equal('No');
+        expect(addRowSpy.args[0][0].latestResponse).to.equal('Yes');
+        expect(addRowSpy.args[0][0].changeDate).to.equal('2026-07-10T15:03:00.281Z');
+      });
+    });
+
+    describe('When audit current value is empty', () => {
+      it('leaves audit columns blank', async () => {
+        const mockWorksheet = {
+          addRow: () => {},
+        };
+
+        const data = {
+          auditEvents: [
+            {
+              when: '2026-07-10T15:03:00.281Z',
+              event: {
+                current: {},
+                new: 'Yes',
+              },
+            },
+          ],
+        };
+
+        const addRowSpy = sinon.spy(mockWorksheet, 'addRow');
+
+        printRow(mockWorksheet, data);
+
+        expect(addRowSpy.args[0][0].previousResponse).to.equal('');
+        expect(addRowSpy.args[0][0].latestResponse).to.equal('');
+        expect(addRowSpy.args[0][0].changeDate).to.equal('');
       });
     });
   });
