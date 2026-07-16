@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 
 enum FlagType {
   Red = 'RedFlag',
-  Amber = 'AmberFlag',
+  Orange = 'OrangeFlag',
   Green = 'GreenTick',
   None = 'NoFlag',
 }
@@ -15,7 +15,6 @@ interface Section {
   showLink: boolean;
   showFlag: FlagType;
 }
-
 @Component({
   selector: 'app-wdf-summary-panel',
   templateUrl: './wdf-summary-panel.component.html',
@@ -40,6 +39,7 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
   public meetingMessage: string;
   public notMeetingMessage: string;
   public someSubsMeetingMessage: string;
+  public noSubsidiariesMessage: string;
   readonly FlagType = FlagType;
 
   constructor(
@@ -63,6 +63,7 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
     this.meetingMessage = `Your data has met the funding requirements for ${formattedStartDate} to ${formattedEndDate}`;
     this.notMeetingMessage = `Your data does not meet the funding requirements for ${formattedStartDate} to ${formattedEndDate}`;
     this.someSubsMeetingMessage = `Some data does not meet the funding requirements for ${formattedStartDate} to ${formattedEndDate}`;
+    this.noSubsidiariesMessage = `You've not added any other workplaces yet`;
   }
 
   public getSections(): void {
@@ -80,24 +81,31 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
     title: string,
     fragment: string,
     specificEligibility: boolean,
-    getNotMeetingMessage?: () => string,
+    getOverrides?: () => Partial<Section>,
   ): void {
-    const meetRequirements = specificEligibility || this.overallWdfEligibility;
     const showLink = this.activatedFragment !== fragment;
-
-    getNotMeetingMessage = getNotMeetingMessage ?? (() => this.notMeetingMessage);
+    const meetRequirements = specificEligibility || this.overallWdfEligibility;
+    const message = meetRequirements ? this.meetingMessage : this.notMeetingMessage;
+    const overrides = getOverrides ? getOverrides() : {};
 
     this.sections.push({
       title,
       fragment,
       showLink,
       showFlag: meetRequirements ? FlagType.Green : FlagType.Red,
-      message: meetRequirements ? this.meetingMessage : getNotMeetingMessage(),
+      message,
+      ...overrides,
     });
   }
 
   private getWorkplaceSection(): void {
-    this.addSection('Workplace', 'workplace', this.workplaceWdfEligibilityStatus);
+    const getOverrides = () => {
+      if (this.overallWdfEligibility && !this.workplaceWdfEligibilityStatus) {
+        return { message: 'Check your workplace data', showFlag: FlagType.Orange };
+      }
+      return {};
+    };
+    this.addSection('Workplace', 'workplace', this.workplaceWdfEligibilityStatus, getOverrides);
   }
 
   private getStaffSection(): void {
@@ -105,19 +113,20 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
   }
 
   private getOtherWorkplacesSection(): void {
-    const getNotMeetingMessage = () => {
-      if (!this.subsidiariesOverallWdfEligibility && this.someSubsidiariesMeetingRequirements) {
-        return this.someSubsMeetingMessage;
+    const getOverrides = () => {
+      if (!this.subsidiariesCount) {
+        return { message: this.noSubsidiariesMessage, showLink: false, showFlag: FlagType.None };
       }
-      return this.notMeetingMessage;
+      if (this.subsidiariesOverallWdfEligibility) {
+        return { message: this.meetingMessage };
+      }
+      if (!this.subsidiariesOverallWdfEligibility && this.someSubsidiariesMeetingRequirements) {
+        return { message: this.someSubsMeetingMessage };
+      }
+      return { message: this.notMeetingMessage };
     };
 
-    this.addSection(
-      'Your other workplaces',
-      'workplaces',
-      this.subsidiariesOverallWdfEligibility,
-      getNotMeetingMessage,
-    );
+    this.addSection('Your other workplaces', 'workplaces', this.subsidiariesOverallWdfEligibility, getOverrides);
   }
 
   public onClick(event: Event, fragment: string): void {

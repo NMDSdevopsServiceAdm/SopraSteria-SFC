@@ -14,6 +14,14 @@
               data-testid="red-flag"
             />
           }
+          @case (FlagType.Orange) {
+            <img
+              src="/assets/images/large-orange-flag.svg"
+              alt="orange-flag"
+              class="govuk-!-margin-right-2"
+              data-testid="orange-flag"
+            />
+          }
           @case (FlagType.Green) {
             <img
               src="/assets/images/large-green-tick.svg"
@@ -32,6 +40,7 @@
         }
       </div>
     </div>
+
     @if (!last) {
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-left-4 govuk-!-margin-right-4" />
     }

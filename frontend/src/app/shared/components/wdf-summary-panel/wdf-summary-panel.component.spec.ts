@@ -59,22 +59,6 @@ fdescribe('WdfSummaryPanel', () => {
       expect(within(workplaceRow).getByTestId('green-tick')).toBeTruthy();
     });
 
-    it('should display the correct message with timeframe for meeting funding requirements for the workplace if overall has met but workplace hasn\t', async () => {
-      const overrides = {
-        workplaceWdfEligibilityStatus: false,
-        overallWdfEligibility: true,
-      };
-
-      const { getByTestId } = await setup(overrides);
-
-      const workplaceRow = getByTestId('workplace-row');
-
-      expect(workplaceRow).toBeTruthy();
-      expect(within(workplaceRow).queryByText(messages.fundingNotMet)).toBeFalsy();
-      expect(within(workplaceRow).getByText(messages.fundingMet)).toBeTruthy();
-      expect(within(workplaceRow).getByTestId('green-tick')).toBeTruthy();
-    });
-
     it('should display the correct message with timeframe for meeting funding requirements for staff', async () => {
       const overrides = {
         staffWdfEligibilityStatus: true,
@@ -111,6 +95,7 @@ fdescribe('WdfSummaryPanel', () => {
       const overrides = {
         subsidiariesOverallWdfEligibility: true,
         isParent: true,
+        subsidiariesCount: 2,
       };
 
       const { getByTestId } = await setup(overrides);
@@ -188,6 +173,7 @@ fdescribe('WdfSummaryPanel', () => {
           staffWdfEligibilityStatus: true,
           subsidiariesOverallWdfEligibility: true,
           isParent: true,
+          subsidiariesCount: 2,
         };
 
         const { getByTestId } = await setup(overrides);
@@ -212,6 +198,7 @@ fdescribe('WdfSummaryPanel', () => {
           subsidiariesOverallWdfEligibility: true,
           isParent: true,
           activatedFragment: 'workplaces',
+          subsidiariesCount: 2,
         };
 
         const { getByTestId } = await setup(overrides);
@@ -229,7 +216,7 @@ fdescribe('WdfSummaryPanel', () => {
         expect(allWorkplacesFundingMessage).toBeFalsy();
       });
 
-      xit(`should show "You've not added any other workplaces yet" without a link when no other workplaces has been added`, async () => {
+      it(`should show "You've not added any other workplaces yet" without a link when no other workplaces has been added`, async () => {
         const overrides = {
           workplaceWdfEligibilityStatus: true,
           staffWdfEligibilityStatus: true,
@@ -239,13 +226,13 @@ fdescribe('WdfSummaryPanel', () => {
         };
         const { getByTestId } = await setup(overrides);
 
-        const allWorkplacesRow = getByTestId('workplaces-row');
+        const otherWorkplacesRow = getByTestId('workplaces-row');
 
-        const allWorkplacesFundingMessage = within(allWorkplacesRow).queryByRole('link');
+        const otherWorkplacesFundingMessage = within(otherWorkplacesRow).queryByRole('link');
+        expect(within(otherWorkplacesRow).getByText(`You've not added any other workplaces yet`)).toBeTruthy();
 
-        expect(allWorkplacesFundingMessage).toBeFalsy();
-
-        expect(within(allWorkplacesRow).getByText(`You've not added any other workplaces yet`)).toBeTruthy();
+        expect(otherWorkplacesFundingMessage).toBeFalsy();
+        expect(within(otherWorkplacesRow).queryByTestId('red-flag')).toBeFalsy();
       });
     });
   });
@@ -292,6 +279,7 @@ fdescribe('WdfSummaryPanel', () => {
         subsidiariesOverallWdfEligibility: false,
         isParent: true,
         overallWdfEligibility: false,
+        subsidiariesCount: 2,
       };
 
       const { getByTestId } = await setup(overrides);
@@ -312,6 +300,7 @@ fdescribe('WdfSummaryPanel', () => {
         someSubsidiariesMeetingRequirements: true,
         isParent: true,
         overallWdfEligibility: false,
+        subsidiariesCount: 2,
       };
 
       const { getByTestId } = await setup(overrides);
@@ -323,6 +312,28 @@ fdescribe('WdfSummaryPanel', () => {
 
       expect(within(workplacesRow).queryByText(messages.fundingMet)).toBeFalsy();
       expect(within(workplacesRow).queryByText(messages.fundingNotMet)).toBeFalsy();
+    });
+  });
+
+  describe('Orange flag (met overall requirements before but data changed)', () => {
+    it('should display "Check your workplace data" when met overall requirements but workplace become not eligible', async () => {
+      const overrides = {
+        workplaceWdfEligibilityStatus: false,
+        staffWdfEligibilityStatus: false,
+        overallWdfEligibility: true,
+      };
+
+      const { getByTestId } = await setup(overrides);
+
+      const workplaceRow = getByTestId('workplace-row');
+
+      expect(within(workplaceRow).getByText('Check your workplace data')).toBeTruthy();
+      expect(within(workplaceRow).queryByTestId('orange-flag')).toBeTruthy();
+
+      expect(within(workplaceRow).queryByTestId('red-flag')).toBeFalsy();
+      expect(within(workplaceRow).queryByTestId('green-tick')).toBeFalsy();
+      expect(within(workplaceRow).queryByText(messages.fundingMet)).toBeFalsy();
+      expect(within(workplaceRow).queryByText(messages.fundingNotMet)).toBeFalsy();
     });
   });
 
@@ -385,6 +396,7 @@ fdescribe('WdfSummaryPanel', () => {
           const overrides = {
             subsidiariesOverallWdfEligibility: isEligible,
             isParent: true,
+            subsidiariesCount: 2,
             onDataPage,
           };
 
