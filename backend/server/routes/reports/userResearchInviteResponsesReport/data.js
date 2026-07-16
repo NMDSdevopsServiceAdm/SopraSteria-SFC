@@ -24,6 +24,12 @@ class UserResearchInviteResponsesDataService {
           model: models.establishment,
           as: 'establishment',
           attributes: ['nmdsId', 'NumberOfStaffValue'],
+          where: {
+            Archived: false,
+            Status: {
+              [Op.is]: null,
+            },
+          },
           include: [
             {
               model: models.services,
