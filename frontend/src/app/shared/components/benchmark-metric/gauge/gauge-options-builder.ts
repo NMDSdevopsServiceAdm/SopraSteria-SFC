@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
 import * as Highcharts from 'highcharts';
+import Accessibility from 'highcharts/modules/accessibility';
 import ArrowSymbolsModule from 'highcharts/modules/arrow-symbols';
 import cloneDeep from 'lodash/cloneDeep';
 import merge from 'lodash/merge';
 
 ArrowSymbolsModule(Highcharts);
+Accessibility(Highcharts);
+
+Highcharts.AST.allowedAttributes.push('data-testid');
 
 @Injectable({
   providedIn: 'root',
