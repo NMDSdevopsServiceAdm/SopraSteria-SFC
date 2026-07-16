@@ -6,6 +6,7 @@ class UserResearchInviteResponsesDataService {
   static async getReportData() {
     return await models.user.findAll({
       attributes: [
+        'id',
         'FullNameValue',
         'EmailValue',
         'JobTitleValue',
@@ -16,7 +17,7 @@ class UserResearchInviteResponsesDataService {
       where: {
         UserResearchInviteResponseValue: { [Op.or]: ['Yes', 'No'] },
         Archived: false,
-        created: { [Op.gt]: moment().subtract(6, 'months').startOf('day').toDate() },
+        updated: { [Op.gt]: moment().subtract(6, 'months').startOf('day').toDate() },
       },
       include: [
         {
@@ -38,8 +39,14 @@ class UserResearchInviteResponsesDataService {
           where: {
             property: 'UserResearchInviteResponse',
             type: 'changed',
+            when: {
+              [Op.gt]: moment().subtract(6, 'months').startOf('day').toDate(),
+            },
           },
           required: false,
+          separate: true,
+          order: [['when', 'DESC']],
+          limit: 1,
         },
       ],
     });

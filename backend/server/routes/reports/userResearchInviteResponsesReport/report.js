@@ -6,8 +6,15 @@ const router = express.Router();
 const { UserResearchInviteResponsesDataService } = require('./data');
 
 const printRow = (worksheet, result) => {
-  const latestChangedEvent = result?.auditEvents?.sort((a, b) => new Date(b.when) - new Date(a.when))[0];
-  const previousResponse = latestChangedEvent?.event?.current;
+  const latestChangedEvent = result?.auditEvents?.[0];
+
+  const auditEvent = latestChangedEvent?.dataValues?.event ?? latestChangedEvent?.event;
+
+  const changeDate = latestChangedEvent?.dataValues?.when ?? latestChangedEvent?.when;
+
+  const previousResponse = auditEvent?.current;
+
+  const hasRealChange = typeof previousResponse === 'string';
 
   worksheet.addRow({
     workplaceID: result?.establishment?.dataValues?.nmdsId ?? '',
@@ -19,11 +26,10 @@ const printRow = (worksheet, result) => {
     userResearchInviteResponse: result?.UserResearchInviteResponseValue ?? '',
     createdDate: result?.created ?? '',
     updatedDate: result?.updated ?? '',
-    previousResponse: typeof previousResponse === 'string' ? previousResponse : '',
 
-    latestResponse: typeof previousResponse === 'string' ? latestChangedEvent?.event?.new : '',
-
-    changeDate: typeof previousResponse === 'string' ? latestChangedEvent?.when : '',
+    previousResponse: hasRealChange ? previousResponse : '',
+    latestResponse: hasRealChange ? auditEvent?.new : '',
+    changeDate: hasRealChange ? changeDate : '',
   });
 };
 
@@ -55,7 +61,10 @@ const generateUserResearchInviteResponsesReport = async (_req, res) => {
   headerRow.font = { bold: true, name: 'Calibri' };
 
   reportData.forEach((response) => {
-    printRow(worksheet, response.dataValues);
+    printRow(worksheet, {
+      ...response.dataValues,
+      auditEvents: response.auditEvents,
+    });
   });
 
   excelUtils.fitColumnsToSize(worksheet);
