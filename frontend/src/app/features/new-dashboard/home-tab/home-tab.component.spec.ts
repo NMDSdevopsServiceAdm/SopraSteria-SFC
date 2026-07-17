@@ -1,12 +1,13 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
+import { CancelOwnerShip } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
+import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -20,8 +21,12 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
+import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
-import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import { NewDashboardHeaderComponent } from '@shared/components/new-dashboard-header/dashboard-header.component';
+import {
+  OwnershipChangeMessageDialogComponent,
+} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -29,11 +34,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
-import { NewDashboardHeaderComponent } from '@shared/components/new-dashboard-header/dashboard-header.component';
 import { NewHomeTabComponent } from './home-tab.component';
-import { workerBuilder } from '@core/test-utils/MockWorkerService';
-import { Worker } from '@core/model/worker.model';
-import { CancelOwnerShip } from '@core/model/establishment.model';
 
 describe('NewHomeTabComponent', () => {
   const setup = async (overrides: any = {}) => {
@@ -184,7 +185,7 @@ describe('NewHomeTabComponent', () => {
       });
     });
 
-    describe('Does your data meet funding requirements card', () => {
+    describe('LDSS funding card', () => {
       it('should render the funding card with link to wdf section', async () => {
         const overrides = {
           cqcStatusMatch: false,
@@ -194,17 +195,20 @@ describe('NewHomeTabComponent', () => {
           permissions: ['canViewEstablishment', 'canViewListOfWorkers', 'canViewWdfReport'],
         };
 
-        const { getByText } = await setup(overrides);
+        const { getByText, component } = await setup(overrides);
 
-        const link = getByText('Does your data meet funding requirements?');
+        const link = getByText(`LDSS funding ${component.fundingYear}`);
+
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual('/funding');
+
+        expect(getByText('Check your eligibility to claim funding for staff training.')).toBeTruthy();
       });
 
       it('should not render the funding card or link when view reports is false', async () => {
         const { queryByText } = await setup();
 
-        expect(queryByText('Does your data meet funding requirements?')).toBeFalsy();
+        expect(queryByText(/LDSS funding/)).toBeFalsy();
       });
     });
 
@@ -591,9 +595,7 @@ describe('NewHomeTabComponent', () => {
             const overrides = { cqcStatusMatch: false, establishment, comparisonDataAvailable: true };
             const { getByText, tabsServiceSpy } = await setup(overrides);
 
-            const benchmarksLink = getByText(
-              'See how your pay, recruitment and retention compares against other workplaces',
-            );
+            const benchmarksLink = getByText(/Compare your workplace/);
             const benchmarksCardText = getByText(
               'There are 9 workplaces providing day care and day services in Test LA.',
             );

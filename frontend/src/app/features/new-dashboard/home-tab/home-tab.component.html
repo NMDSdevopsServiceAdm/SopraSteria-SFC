@@ -25,32 +25,29 @@
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-grid-row">
         <div *ngIf="canViewReports" class="govuk-grid-column-one-half govuk-!-padding-right-1">
-          <app-card [image]="'/assets/images/wdf.svg'">
-            <a
-              class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
-              routerLink="/funding"
-              href="#"
-              >Does your data meet funding requirements?</a
+          <app-card [image]="'/assets/images/access-funding.svg'" title="Access funding">
+            <a class="govuk-link govuk-link--no-visited-state asc-card-link" routerLink="/funding" href="#">
+              LDSS funding {{ fundingYear }}</a
             >
-            <p class="govuk-!-margin-top-5">
-              Update your data so that you can claim money back against the costs of training your staff.
+            <p class="govuk-!-margin-0 asc-card-description">
+              Check your eligibility to claim funding for staff training.
             </p></app-card
           >
         </div>
 
         <div class="govuk-grid-column-one-half govuk-!-padding-left-1">
-          <app-card [image]="'/assets/images/benchmarks.svg'">
+          <app-card [image]="'/assets/images/benchmarks.svg'" title="Benchmarks">
             <a
               (click)="navigateToTab($event, 'benchmarks')"
-              class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
+              class="govuk-link govuk-link--no-visited-state asc-card-link"
               href="#"
             >
               <ng-container *ngIf="bigThreeServices && hasBenchmarkComparisonData; else notBigThreeServices">
-                See how your pay, recruitment and retention compares against other workplaces</ng-container
+                Compare your workplace<span class="asc-card-break"><br /></span>on staff pay and retention</ng-container
               >
               <ng-template #notBigThreeServices> See how you compare against other workplaces</ng-template>
             </a>
-            <p class="govuk-!-margin-top-5">
+            <p class="govuk-!-margin-0 asc-card-description">
               {{ benchmarksMessage }}
             </p>
           </app-card>

@@ -16,10 +16,10 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-view-subsidiary-home',
-    templateUrl: './view-subsidiary-home.component.html',
-    providers: [ServiceNamePipe],
-    standalone: false
+  selector: 'app-view-subsidiary-home',
+  templateUrl: './view-subsidiary-home.component.html',
+  providers: [ServiceNamePipe],
+  standalone: false,
 })
 export class ViewSubsidiaryHomeComponent implements OnInit {
   public subId: string;

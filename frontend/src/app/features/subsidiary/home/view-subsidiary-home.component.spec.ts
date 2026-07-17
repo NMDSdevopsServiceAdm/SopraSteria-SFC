@@ -1,7 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
-import { of } from 'rxjs';
-
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed, TestBed } from '@angular/core/testing';
@@ -29,6 +26,7 @@ import { SummarySectionComponent } from '@shared/components/summary-section/summ
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { ViewSubsidiaryHomeComponent } from './view-subsidiary-home.component';
@@ -107,7 +105,9 @@ describe('ViewSubsidiaryHomeComponent', () => {
           useClass: MockEstablishmentService,
         },
         { provide: WindowToken, useValue: MockWindow },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
       componentProperties: {
         subsidiaryWorkplace: establishment,
@@ -250,10 +250,7 @@ describe('ViewSubsidiaryHomeComponent', () => {
 
           it('with comparison data, should show a card with a link that takes you to the benchmarks tab', async () => {
             const { getByText, tabsServiceSpy } = await setup({ cqcStatusMatch: false, establishment });
-
-            const benchmarksLink = getByText(
-              'See how your pay, recruitment and retention compares against other workplaces',
-            );
+            const benchmarksLink = getByText(/Compare your workplace/);
             const benchmarksCardText = getByText(
               'There are 9 workplaces providing day care and day services in Test LA.',
             );
@@ -318,7 +315,7 @@ describe('ViewSubsidiaryHomeComponent', () => {
     it('should show a card with a link that takes you to the benefits bundle page', async () => {
       const { getByText } = await setup();
 
-      const benefitsBundleLink = getByText('View the ASC-WDS Benefits Bundle');
+      const benefitsBundleLink = getByText(/View the ASC-WDS/);
 
       expect(benefitsBundleLink).toBeTruthy();
       expect(benefitsBundleLink.getAttribute('href')).toBe('/benefits-bundle');
