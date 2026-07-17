@@ -73,6 +73,9 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
       case 'staff': {
         return 'Check your staff records';
       }
+      case 'workplaces': {
+        return 'Check your other workplaces';
+      }
     }
     return '';
   }
@@ -138,15 +141,15 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
         return { message: `You've not added any other workplaces yet`, showLink: false, showFlag: FlagType.None };
       }
       if (this.subsidiariesOverallWdfEligibility && this.someSubsidiariesNeedCheckAgain) {
-        return { message: 'Check your other workplaces', showFlag: FlagType.Orange };
+        return { message: this.getOrangeFlagMessage('workplaces'), showFlag: FlagType.Orange };
       }
       if (this.subsidiariesOverallWdfEligibility) {
-        return { message: this.meetingMessage };
+        return { message: this.meetingMessage, showFlag: FlagType.Green };
       }
       if (!this.subsidiariesOverallWdfEligibility && this.someSubsidiariesMeetingRequirements) {
-        return { message: this.someSubsMeetingMessage };
+        return { message: this.someSubsMeetingMessage, showFlag: FlagType.Red };
       }
-      return { message: this.notMeetingMessage };
+      return { message: this.notMeetingMessage, showFlag: FlagType.Red };
     };
 
     this.addSection('Your other workplaces', 'workplaces', this.subsidiariesOverallWdfEligibility, getOverrides);
