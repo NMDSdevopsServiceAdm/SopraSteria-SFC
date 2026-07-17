@@ -23,7 +23,7 @@ describe('Home page', { tags: '@home' }, () => {
   });
 
   it('should show funding requirements link', () => {
-    cy.get('[data-cy="cards-and-links"]').contains('Does your data meet funding requirements?').click();
+    cy.get('[data-cy="cards-and-links"]').contains('LDSS funding').click();
     cy.url().should('include', 'funding');
     cy.get('h1').should('contain', 'Does your data meet funding requirements');
   });
