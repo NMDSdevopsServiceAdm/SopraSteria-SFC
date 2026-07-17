@@ -30,6 +30,9 @@
               data-testid="green-tick"
             />
           }
+          @case (FlagType.None) {
+            <span class="asc-placeholder-for-no-flags"></span>
+          }
         }
         @if (section.showLink) {
           <a (click)="onClick($event, section.fragment)" href="#" class="govuk-link--no-visited-state">
