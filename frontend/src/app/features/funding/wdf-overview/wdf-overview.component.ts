@@ -101,10 +101,11 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     this.subsidiariesOverallWdfEligibility = subsidiaryWorkplaces.every((workplace) => workplace.wdf.overall === true);
     this.someSubsidiariesMeetingRequirements = subsidiaryWorkplaces.some((workplace) => workplace.wdf.overall === true);
 
-    this.someSubsidiariesNeedCheckAgain = subsidiaryWorkplaces.some(
-      (workplace) =>
-        (workplace?.wdf?.overall === true && workplace?.wdf?.workplace === false) || workplace?.wdf?.staff === false,
-    );
+    this.someSubsidiariesNeedCheckAgain = subsidiaryWorkplaces.some((workplace) => {
+      return (
+        workplace?.wdf?.overall === true && (workplace?.wdf?.workplace === false || workplace?.wdf?.staff === false)
+      );
+    });
   }
 
   private setEligibilityStatus(): void {

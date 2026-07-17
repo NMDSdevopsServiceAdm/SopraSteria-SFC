@@ -193,10 +193,11 @@ export class WdfDataComponent implements OnInit {
     this.someSubsidiariesMeetingRequirements = this.subsidiaryWorkplaces.some(
       (workplace) => workplace.wdf.overall === true,
     );
-    this.someSubsidiariesNeedCheckAgain = this.subsidiaryWorkplaces.some(
-      (workplace) =>
-        (workplace?.wdf?.overall === true && workplace?.wdf?.workplace === false) || workplace?.wdf?.staff === false,
-    );
+    this.someSubsidiariesNeedCheckAgain = this.subsidiaryWorkplaces.some((workplace) => {
+      return (
+        workplace?.wdf?.overall === true && (workplace?.wdf?.workplace === false || workplace?.wdf?.staff === false)
+      );
+    });
   }
 
   ngOnDestroy() {
