@@ -90,10 +90,8 @@ class Establishment extends EntityValidator {
     this._showSharingPermissionsBanner = null;
     this._expiresSoonAlertDate = null;
     this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
-    this._wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
     this._showAddWorkplaceDetailsBanner = true;
     this._careWorkersLeaveDaysPerYear = null;
-    this._careWorkersCashLoyaltyForFirstTwoYears = null;
     this._pensionContribution = null;
     this._pensionContributionPercentage = null;
     this._sickPay = null;
@@ -371,20 +369,12 @@ class Establishment extends EntityValidator {
     return this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
   }
 
-  get wouldYouAcceptCareCertificatesFromPreviousEmployment() {
-    return this._wouldYouAcceptCareCertificatesFromPreviousEmployment;
-  }
-
   get showAddWorkplaceDetailsBanner() {
     return this._showAddWorkplaceDetailsBanner;
   }
 
   get careWorkersLeaveDaysPerYear() {
     return this._careWorkersLeaveDaysPerYear;
-  }
-
-  get careWorkersCashLoyaltyForFirstTwoYears() {
-    return this._careWorkersCashLoyaltyForFirstTwoYears;
   }
 
   get pensionContribution() {
@@ -644,21 +634,12 @@ class Establishment extends EntityValidator {
             document.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
         }
 
-        if ('wouldYouAcceptCareCertificatesFromPreviousEmployment' in document) {
-          this._wouldYouAcceptCareCertificatesFromPreviousEmployment =
-            document.wouldYouAcceptCareCertificatesFromPreviousEmployment;
-        }
-
         if ('showAddWorkplaceDetailsBanner' in document) {
           this._showAddWorkplaceDetailsBanner = document.showAddWorkplaceDetailsBanner;
         }
 
         if ('careWorkersLeaveDaysPerYear' in document) {
           this._careWorkersLeaveDaysPerYear = document.careWorkersLeaveDaysPerYear;
-        }
-
-        if ('careWorkersCashLoyaltyForFirstTwoYears' in document) {
-          this._careWorkersCashLoyaltyForFirstTwoYears = document.careWorkersCashLoyaltyForFirstTwoYears;
         }
 
         if ('pensionContribution' in document) {
@@ -923,10 +904,7 @@ class Establishment extends EntityValidator {
           expiresSoonAlertDate: '90',
           doNewStartersRepeatMandatoryTrainingFromPreviousEmployment:
             this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
-          wouldYouAcceptCareCertificatesFromPreviousEmployment:
-            this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
           showAddWorkplaceDetailsBanner: bulkUploaded ? false : this._showAddWorkplaceDetailsBanner,
-          careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
           sickPay: this._sickPay,
           pensionContribution: this._pensionContribution,
           pensionContributionPercentage: this._pensionContributionPercentage,
@@ -1165,10 +1143,7 @@ class Establishment extends EntityValidator {
             showSharingPermissionsBanner: bulkUploaded ? false : this._showSharingPermissionsBanner,
             doNewStartersRepeatMandatoryTrainingFromPreviousEmployment:
               this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
-            wouldYouAcceptCareCertificatesFromPreviousEmployment:
-              this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
             showAddWorkplaceDetailsBanner: bulkUploaded ? false : this._showAddWorkplaceDetailsBanner,
-            careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
             sickPay: this._sickPay,
             pensionContribution: this._pensionContribution,
             pensionContributionPercentage: this._pensionContributionPercentage,
@@ -1492,15 +1467,11 @@ class Establishment extends EntityValidator {
         this._showSharingPermissionsBanner = fetchResults.showSharingPermissionsBanner;
         this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
           fetchResults.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-        this._wouldYouAcceptCareCertificatesFromPreviousEmployment =
-          fetchResults.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         this._showAddWorkplaceDetailsBanner = fetchResults.showAddWorkplaceDetailsBanner;
-        this._careWorkersCashLoyaltyForFirstTwoYears = fetchResults.careWorkersCashLoyaltyForFirstTwoYears;
         this._sickPay = fetchResults.sickPay;
         this._pensionContribution = fetchResults.pensionContribution;
         this._pensionContributionPercentage = fetchResults.pensionContributionPercentage;
         this._careWorkersLeaveDaysPerYear = fetchResults.careWorkersLeaveDaysPerYear;
-        this._careWorkersCashLoyaltyForFirstTwoYears = fetchResults.careWorkersCashLoyaltyForFirstTwoYears;
         this._isParentApprovedBannerViewed = fetchResults.isParentApprovedBannerViewed;
         this._primaryAuthorityCssr = this.primaryAuthorityCssr;
         this._CWPAwarenessQuestionViewed = fetchResults.CWPAwarenessQuestionViewed;
@@ -1973,15 +1944,11 @@ class Establishment extends EntityValidator {
         myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
         myDefaultJSON.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
           this.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-        myDefaultJSON.wouldYouAcceptCareCertificatesFromPreviousEmployment =
-          this.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         myDefaultJSON.showAddWorkplaceDetailsBanner = this.showAddWorkplaceDetailsBanner;
-        myDefaultJSON.careWorkersCashLoyaltyForFirstTwoYears = this.careWorkersCashLoyaltyForFirstTwoYears;
         myDefaultJSON.sickPay = this.sickPay;
         myDefaultJSON.pensionContribution = this.pensionContribution;
         myDefaultJSON.pensionContributionPercentage = this.pensionContributionPercentage;
         myDefaultJSON.careWorkersLeaveDaysPerYear = this.careWorkersLeaveDaysPerYear;
-        myDefaultJSON.careWorkersCashLoyaltyForFirstTwoYears = this.careWorkersCashLoyaltyForFirstTwoYears;
         myDefaultJSON.isParentApprovedBannerViewed = this.isParentApprovedBannerViewed;
         myDefaultJSON.CWPAwarenessQuestionViewed = this.CWPAwarenessQuestionViewed;
         myDefaultJSON.staffDoDelegatedHealthcareActivities = this.staffDoDelegatedHealthcareActivities;

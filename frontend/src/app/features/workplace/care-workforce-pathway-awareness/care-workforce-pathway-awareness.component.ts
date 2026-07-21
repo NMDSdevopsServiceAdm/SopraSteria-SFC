@@ -46,7 +46,7 @@ export class CareWorkforcePathwayAwarenessComponent extends WorkplaceQuestion im
   }
 
   private setPreviousRoute(): void {
-    this.previousQuestionPage = 'accept-previous-care-certificate';
+    this.previousQuestionPage = 'staff-recruitment-capture-training-requirement';
   }
 
   private setupForm(): void {

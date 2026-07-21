@@ -79,10 +79,10 @@ describe('NursingCategoryComponent', () => {
       expect(getByText('Skip this question')).toBeTruthy();
     });
 
-    it(`should show 'Save' cta button and 'Cancel' link if not in the flow`, async () => {
+    it(`should show 'Save and return' cta button and 'Cancel' link if not in the flow`, async () => {
       const { getByText } = await setup(false);
 
-      expect(getByText('Save')).toBeTruthy();
+      expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
   });
@@ -98,11 +98,11 @@ describe('NursingCategoryComponent', () => {
       'mocked-uid',
       'staff-record',
       component.worker.uid,
-      'nursing-specialism',
+      'recruited-from',
     ]);
   });
 
-  it(`should navigate to 'nursing-specialism' page when skipping the question in the flow`, async () => {
+  it(`should navigate to 'recruited-from' page when skipping the question in the flow`, async () => {
     const { component, routerSpy, getByText } = await setup();
 
     const workerId = component.worker.uid;
@@ -111,7 +111,7 @@ describe('NursingCategoryComponent', () => {
     const skipButton = getByText('Skip this question');
     fireEvent.click(skipButton);
 
-    expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'nursing-specialism']);
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'staff-record', workerId, 'recruited-from']);
   });
 
   it(`should navigate to 'staff-summary-page' page when clicking 'View this staff record' link `, async () => {
@@ -132,13 +132,13 @@ describe('NursingCategoryComponent', () => {
     ]);
   });
 
-  it('should navigate to nursing-specialism page when pressing Save button outside of the flow', async () => {
+  it('should navigate to summary page when pressing Save button outside of the flow', async () => {
     const { component, routerSpy, getByText } = await setup(false);
 
     const workerId = component.worker.uid;
     const workplaceId = component.workplace.uid;
 
-    const link = getByText('Save');
+    const link = getByText('Save and return');
     fireEvent.click(link);
 
     expect(routerSpy).toHaveBeenCalledWith([
@@ -147,7 +147,6 @@ describe('NursingCategoryComponent', () => {
       'staff-record',
       workerId,
       'staff-record-summary',
-      'nursing-specialism',
     ]);
   });
 

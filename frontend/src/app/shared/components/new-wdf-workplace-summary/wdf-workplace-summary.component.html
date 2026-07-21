@@ -681,35 +681,6 @@
           </dd>
         }
       </div>
-
-      <div class="govuk-summary-list__row" data-testid="cash-loyalty-bonus-spend">
-        <dt class="govuk-summary-list__key">Cash loyalty bonus</dt>
-        <dd class="govuk-summary-list__value">
-          @if (!workplace.careWorkersCashLoyaltyForFirstTwoYears) {
-            -
-          } @else {
-            @if (
-              workplace.careWorkersCashLoyaltyForFirstTwoYears === 'No' ||
-              workplace.careWorkersCashLoyaltyForFirstTwoYears === "Don't know" ||
-              workplace.careWorkersCashLoyaltyForFirstTwoYears === 'Yes'
-            ) {
-              {{ workplace.careWorkersCashLoyaltyForFirstTwoYears }}
-            } @else {
-              £{{ this.formatMonetaryValue(workplace.careWorkersCashLoyaltyForFirstTwoYears) }}
-            }
-          }
-        </dd>
-        @if (canEditEstablishment) {
-          <dd class="govuk-summary-list__actions">
-            <app-summary-record-change
-              [explanationText]="' loyalty bonus'"
-              [link]="['/workplace', workplace.uid, 'cash-loyalty']"
-              [hasData]="workplace.careWorkersCashLoyaltyForFirstTwoYears"
-              (setReturnClicked)="this.setReturn()"
-            ></app-summary-record-change>
-          </dd>
-        }
-      </div>
     </ng-container>
 
     <ng-container>
@@ -732,23 +703,6 @@
               [explanationText]="' repeat training'"
               [link]="['/workplace', workplace.uid, 'staff-recruitment-capture-training-requirement']"
               [hasData]="workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment"
-              (setReturnClicked)="this.setReturn()"
-            ></app-summary-record-change>
-          </dd>
-        }
-      </div>
-
-      <div class="govuk-summary-list__row" data-testid="accept-care-certificate">
-        <dt class="govuk-summary-list__key">Accept Care Certificate</dt>
-        <dd class="govuk-summary-list__value">
-          {{ workplace?.wouldYouAcceptCareCertificatesFromPreviousEmployment ?? '-' }}
-        </dd>
-        @if (canEditEstablishment) {
-          <dd class="govuk-summary-list__actions">
-            <app-summary-record-change
-              [explanationText]="' accept care certificate'"
-              [link]="['/workplace', workplace.uid, 'accept-previous-care-certificate']"
-              [hasData]="workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment"
               (setReturnClicked)="this.setReturn()"
             ></app-summary-record-change>
           </dd>

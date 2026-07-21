@@ -140,7 +140,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
         'mocked-uid',
         'workplace-data',
         'add-workplace-details',
-        'accept-previous-care-certificate',
+        'care-workforce-pathway-awareness',
       ]);
     });
 
@@ -274,7 +274,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     });
   });
 
-  it('should set the back link to cash-loyalty page', async () => {
+  it('should set the back link to staff-benefit-holiday-leave page', async () => {
     const { component } = await setup({
       returnTo: null,
     });
@@ -284,7 +284,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
       component.establishment.uid,
       'workplace-data',
       'add-workplace-details',
-      'cash-loyalty',
+      'staff-benefit-holiday-leave',
     ]);
   });
 });

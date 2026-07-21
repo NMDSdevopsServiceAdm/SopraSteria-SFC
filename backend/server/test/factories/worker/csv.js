@@ -35,7 +35,6 @@ module.exports = build('WorkerCSV', {
     AVGHOURS: '',
     OTHERJRDESC: '',
     NMCREG: '',
-    NURSESPEC: '',
     AMHP: '',
     SCQUAL: '1;3',
     NONSCQUAL: '1;3',

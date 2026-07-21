@@ -712,12 +712,6 @@ module.exports = function (sequelize, DataTypes) {
         values: ['Yes, always', 'Yes, very often', 'Yes, but not very often', 'No, never'],
         field: '"DoNewStartersRepeatMandatoryTrainingFromPreviousEmployment"',
       },
-      wouldYouAcceptCareCertificatesFromPreviousEmployment: {
-        type: DataTypes.ENUM,
-        allowNull: true,
-        values: ['Yes, always', 'Yes, very often', 'Yes, but not very often', 'No, never'],
-        field: '"WouldYouAcceptCareCertificatesFromPreviousEmployment"',
-      },
       showAddWorkplaceDetailsBanner: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
@@ -728,11 +722,6 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
         field: 'CareWorkersLeaveDaysPerYear',
-      },
-      careWorkersCashLoyaltyForFirstTwoYears: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: 'CareWorkersCashLoyaltyForFirstTwoYears',
       },
 
       pensionContribution: {
@@ -1670,9 +1659,7 @@ module.exports = function (sequelize, DataTypes) {
         'LeaversValue',
         'reasonsForLeaving',
         'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment',
-        'wouldYouAcceptCareCertificatesFromPreviousEmployment',
         'careWorkersLeaveDaysPerYear',
-        'careWorkersCashLoyaltyForFirstTwoYears',
         'sickPay',
         'pensionContribution',
         'pensionContributionPercentage',
@@ -1825,7 +1812,6 @@ module.exports = function (sequelize, DataTypes) {
             'WeeklyHoursContractedHours',
             'WeeklyHoursAverageValue',
             'WeeklyHoursAverageHours',
-            'NurseSpecialismsValue',
             'RegisteredNurseValue',
             'ApprovedMentalHealthWorkerValue',
             'QualificationInSocialCareValue',
@@ -1867,10 +1853,6 @@ module.exports = function (sequelize, DataTypes) {
             {
               model: sequelize.models.qualification,
               as: 'socialCareQualification',
-            },
-            {
-              model: sequelize.models.workerNurseSpecialism,
-              as: 'nurseSpecialisms',
             },
             {
               model: sequelize.models.workerQualifications,

@@ -88,8 +88,6 @@ class WorkplaceCSVValidator {
     this._leavers = null;
     this._reasonsForLeaving = null;
     this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
-    this._wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
-    this._careWorkersCashLoyaltyForFirstTwoYears = null;
     this._sickPay = null;
     this._pensionContribution = null;
     this._pensionContributionPercentage = null;
@@ -278,9 +276,6 @@ class WorkplaceCSVValidator {
   }
   static get ACCEPT_CARE_CERT_WARNING() {
     return 2430;
-  }
-  static get BENEFITS_WARNING() {
-    return 2440;
   }
   static get SICKPAY_WARNING() {
     return 2450;
@@ -510,16 +505,8 @@ class WorkplaceCSVValidator {
     return this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
   }
 
-  get wouldYouAcceptCareCertificatesFromPreviousEmployment() {
-    return this._wouldYouAcceptCareCertificatesFromPreviousEmployment;
-  }
-
   get careWorkersLeaveDaysPerYear() {
     return this._careWorkersLeaveDaysPerYear;
-  }
-
-  get careWorkersCashLoyaltyForFirstTwoYears() {
-    return this._careWorkersCashLoyaltyForFirstTwoYears;
   }
 
   get pensionContribution() {
@@ -2136,30 +2123,6 @@ class WorkplaceCSVValidator {
     }
   }
 
-  _validateAcceptCareCertificate() {
-    const ALLOWED_VALUES = ['1', '2', '3', '4', ''];
-
-    if (!ALLOWED_VALUES.includes(this._currentLine.ACCEPTCARECERT)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        warnCode: WorkplaceCSVValidator.ACCEPT_CARE_CERT_WARNING,
-        warnType: 'ACCEPT_CARE_CERT_WARNING',
-        warning: 'The code you have entered for ACCEPTCARECERT is incorrect and will be ignored',
-        source: this._currentLine.ACCEPTCARECERT,
-        column: 'ACCEPTCARECERT',
-        name: this._currentLine.LOCALESTID,
-      });
-      return false;
-    } else {
-      const acceptCareCertAsInt = parseInt(this._currentLine.ACCEPTCARECERT, 10);
-
-      this._wouldYouAcceptCareCertificatesFromPreviousEmployment = Number.isNaN(acceptCareCertAsInt)
-        ? this._currentLine.ACCEPTCARECERT
-        : acceptCareCertAsInt;
-      return true;
-    }
-  }
-
   _validateCwpAwareness() {
     const cwpAwarenessBulkUploadCodes = this.mappings.cwpAwareness.map((mapping) => mapping.bulkUploadCode.toString());
     const ALLOWED_VALUES = ['', ...cwpAwarenessBulkUploadCodes];
@@ -2253,28 +2216,6 @@ class WorkplaceCSVValidator {
     this._careWorkforcePathwayUseDescription = this._currentLine.CWPUSEDESC;
 
     return true;
-  }
-
-  _validateBenefits() {
-    const benefitsRegex = /^\d*(\.\d{1,2})?$/;
-    const benefits = this._currentLine.BENEFITS.split(';').join('');
-
-    if (!benefitsRegex.test(benefits) && benefits.toLowerCase() !== 'unknown') {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        warnCode: WorkplaceCSVValidator.BENEFITS_WARNING,
-        warnType: 'BENEFITS_WARNING',
-        warning: 'The code you have entered for BENEFITS is incorrect and will be ignored',
-        source: benefits,
-        column: 'BENEFITS',
-        name: this.currentLine.LOCALESTID,
-      });
-      return false;
-    } else {
-      this._careWorkersCashLoyaltyForFirstTwoYears = this._currentLine.BENEFITS;
-
-      return true;
-    }
   }
 
   _validateSickPay() {
@@ -3159,8 +3100,6 @@ class WorkplaceCSVValidator {
     };
     const repeatTraining = this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
     this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = mapping[repeatTraining];
-    const acceptCareCert = this._wouldYouAcceptCareCertificatesFromPreviousEmployment;
-    this._wouldYouAcceptCareCertificatesFromPreviousEmployment = mapping[acceptCareCert];
   }
 
   _transformCareWorkforcePathwayAwareness() {
@@ -3194,29 +3133,6 @@ class WorkplaceCSVValidator {
 
     if (description && somethingElseReason) {
       somethingElseReason.other = description;
-    }
-  }
-
-  _transformCashLoyaltyForFirstTwoYears() {
-    const YES = '1';
-    const YES_COMMA = '1;';
-    const NO = '0';
-    const DONT_KNOW = 'unknown';
-
-    const benefit = this._careWorkersCashLoyaltyForFirstTwoYears;
-
-    if (benefit !== null) {
-      if (benefit === YES) {
-        this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
-      } else if (benefit === YES_COMMA) {
-        this._careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
-      } else if (benefit === NO) {
-        this._careWorkersCashLoyaltyForFirstTwoYears = 'No';
-      } else if (benefit.toLowerCase() === DONT_KNOW) {
-        this._careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
-      } else if (benefit.includes(';')) {
-        this._careWorkersCashLoyaltyForFirstTwoYears = benefit.split(';')[1];
-      }
     }
   }
 
@@ -3410,11 +3326,9 @@ class WorkplaceCSVValidator {
 
       this._validateReasonsForLeaving();
       this._validateRepeatTraining();
-      this._validateAcceptCareCertificate();
       this._validateCwpAwareness();
       this._validateCwpUse();
       this._validateCwpUseDesc();
-      this._validateBenefits();
       this._validateSickPay();
       this._validateHoliday();
       this._validatePensionContribution();
@@ -3514,7 +3428,6 @@ class WorkplaceCSVValidator {
       status = !this._transformCareWorkforcePathwayAwareness() ? false : status;
       status = !this._transformCareWorkforcePathwayUse() ? false : status;
       status = !this._transformCareWorkforcePathwayUseDesc() ? false : status;
-      status = !this._transformCashLoyaltyForFirstTwoYears() ? false : status;
 
       status = !!this._transformPensionAndSickPay() && status;
       status = !!this._transformStaffOptOutOfWorkplacePension() && status;
@@ -3654,10 +3567,8 @@ class WorkplaceCSVValidator {
       leavers: this._leavers,
       doNewStartersRepeatMandatoryTrainingFromPreviousEmployment:
         this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
-      wouldYouAcceptCareCertificatesFromPreviousEmployment: this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
       careWorkforcePathwayWorkplaceAwareness: this._careWorkforcePathwayAwareness,
       careWorkforcePathwayUse: this._careWorkforcePathwayUse,
-      careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
       sickPay: this._sickPay,
       pensionContribution: this._pensionContribution,
       pensionContributionPercentage: this._pensionContributionPercentage,
@@ -3918,7 +3829,6 @@ class WorkplaceCSVValidator {
     };
 
     columns.push(repeatTrainingAndCareCertMapping(entity.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment));
-    columns.push(repeatTrainingAndCareCertMapping(entity.wouldYouAcceptCareCertificatesFromPreviousEmployment));
 
     // CWP awareness
 
@@ -3945,30 +3855,6 @@ class WorkplaceCSVValidator {
     } else {
       columns.push('');
     }
-
-    // cash Loyalty
-    const cashLoyaltyMapping = (value) => {
-      if (value === "Don't know") {
-        return 'unknown';
-      } else if (value === 'No') {
-        return 0;
-      } else if (value === 'Yes') {
-        return '1;';
-      } else if (!value) {
-        return '';
-      } else {
-        return value;
-      }
-    };
-    const whenValue = '1;';
-
-    columns.push(
-      cashLoyaltyMapping(
-        Number(entity.careWorkersCashLoyaltyForFirstTwoYears)
-          ? whenValue.concat(entity.careWorkersCashLoyaltyForFirstTwoYears)
-          : entity.careWorkersCashLoyaltyForFirstTwoYears,
-      ),
-    );
 
     const sickPay = sickPayHolidayAndPensionMapping(entity.sickPay);
     const pensionContribution = sickPayHolidayAndPensionMapping(entity.pensionContribution);

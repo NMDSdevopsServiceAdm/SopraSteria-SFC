@@ -27,7 +27,6 @@ describe('workerCSV', () => {
       sandbox.stub(BUDI, 'country').callsFake((method, value) => value);
       sandbox.stub(BUDI, 'recruitment').callsFake((method, value) => value);
       sandbox.stub(BUDI, 'jobRoles').callsFake((method, value) => value);
-      sandbox.stub(BUDI, 'nursingSpecialist').callsFake((method, value) => value);
       sandbox.stub(BUDI, 'qualificationLevels').callsFake((method, value) => value);
       sandbox.stub(BUDI, 'qualifications').callsFake((method, value) => value);
       sandbox.stub(BUDI, 'careWorkforcePathwayRoleCategory').callsFake((method, value) => value);
@@ -718,52 +717,6 @@ describe('workerCSV', () => {
           expect(csvAsArray[getWorkerColumnIndex('NMCREG')]).to.equal('');
         });
 
-        yesNoDontKnow.forEach((value) => {
-          it('should return the correct code nurse specialism ' + value.value, async () => {
-            worker.mainJob = {
-              id: 23,
-            };
-            worker.NurseSpecialismsValue = value.value;
-            worker.nurseSpecialisms = [
-              {
-                id: '138',
-              },
-              {
-                id: '23',
-              },
-            ];
-            let nurseSpec = '';
-            switch (worker.NurseSpecialismsValue) {
-              case 'Yes':
-                nurseSpec = `${worker.nurseSpecialisms[0].id};${worker.nurseSpecialisms[1].id}`;
-                break;
-
-              case 'No':
-                nurseSpec = '7';
-                break;
-
-              case "Don't know":
-                nurseSpec = '8';
-                break;
-            }
-
-            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-            const csvAsArray = csv.split(',');
-
-            expect(csvAsArray[getWorkerColumnIndex('NURSESPEC')]).to.equal(nurseSpec);
-          });
-        });
-        it('should not return a code for nurse specialism if not a nurse', async () => {
-          worker.NurseSpecialismsValue = 'No';
-          worker.mainJob = {
-            id: 24,
-          };
-
-          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-          const csvAsArray = csv.split(',');
-
-          expect(csvAsArray[getWorkerColumnIndex('NURSESPEC')]).to.equal('');
-        });
         yesNoDontKnow.forEach((value) => {
           it('should return the correct code for approved mental health worker ' + value.value, async () => {
             worker.ApprovedMentalHealthWorkerValue = value.value;

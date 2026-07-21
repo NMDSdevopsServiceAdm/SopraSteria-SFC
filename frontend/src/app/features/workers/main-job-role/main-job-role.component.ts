@@ -12,9 +12,9 @@ import { NewWorkerMandatoryInfo, WorkerService } from '@core/services/worker.ser
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-    selector: 'app-main-job-role.component',
-    templateUrl: './main-job-role.component.html',
-    standalone: false
+  selector: 'app-main-job-role.component',
+  templateUrl: './main-job-role.component.html',
+  standalone: false,
 })
 export class MainJobRoleComponent extends QuestionComponent implements OnInit, OnDestroy {
   public jobsAvailable: Job[] = [];
@@ -96,9 +96,6 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
 
     if (this.worker && mainJob.value !== 23) {
       this.worker.registeredNurse = null;
-      if (this.worker.nurseSpecialism) {
-        this.worker.nurseSpecialism.specialism = null;
-      }
     }
     return props;
   }

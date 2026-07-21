@@ -52,7 +52,6 @@ export const workerBuilder = build('Worker', {
     socialCareQualification: {
       qualificationId: 1,
     },
-    nurseSpecialism: null,
     wdfEligible: perBuild(() => false),
     wdf: {
       isEligible: perBuild(() => false),
