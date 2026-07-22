@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
+import { GetWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
 import { WDFReport } from '@core/model/reports.model';
 import { WdfEligibilityStatus } from '@core/model/wdf.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -13,10 +13,10 @@ import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-wdf-overview',
-    templateUrl: './wdf-overview.component.html',
-    styleUrls: ['../../../shared/components/summary-section/summary-section.component.scss'],
-    standalone: false
+  selector: 'app-wdf-overview',
+  templateUrl: './wdf-overview.component.html',
+  styleUrls: ['../../../shared/components/summary-section/summary-section.component.scss'],
+  standalone: false,
 })
 export class WdfOverviewComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
@@ -27,6 +27,7 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
   public parentOverallWdfEligibility: boolean;
   public subsidiariesOverallWdfEligibility: boolean;
   public someSubsidiariesMeetingRequirements: boolean;
+  public someSubsidiariesNeedCheckAgain: boolean;
   public overallEligibilityDate: string;
   public parentOverallEligibilityDate: string;
   public isParent: boolean;
@@ -36,6 +37,7 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
   public sections: any = [];
   public staffOverallWdfEligibility: boolean;
   public wdfEligibilityStatus: WdfEligibilityStatus = {};
+  public activeSubsidiaryWorkplaces: Workplace[] = [];
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -73,6 +75,7 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
 
           this.workplaces = [...activeSubsidiaryWorkplaces, workplaces.primary];
           this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'wdf.overallWdfEligibility'], ['desc', 'desc']);
+          this.activeSubsidiaryWorkplaces = activeSubsidiaryWorkplaces;
 
           this.getParentOverallWdfEligibility();
           this.getLastOverallEligibilityDate();
@@ -97,6 +100,12 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
   public setSubsidiariesEligibility(subsidiaryWorkplaces): void {
     this.subsidiariesOverallWdfEligibility = subsidiaryWorkplaces.every((workplace) => workplace.wdf.overall === true);
     this.someSubsidiariesMeetingRequirements = subsidiaryWorkplaces.some((workplace) => workplace.wdf.overall === true);
+
+    this.someSubsidiariesNeedCheckAgain = subsidiaryWorkplaces.some((workplace) => {
+      return (
+        workplace?.wdf?.overall === true && (workplace?.wdf?.workplace === false || workplace?.wdf?.staff === false)
+      );
+    });
   }
 
   private setEligibilityStatus(): void {
