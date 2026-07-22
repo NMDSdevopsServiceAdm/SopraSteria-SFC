@@ -1,5 +1,6 @@
 var axios = require('axios');
 var express = require('express');
+const cacheCMSReponse = require('../../utils/cacheCMSReponse');
 
 const router = express.Router();
 
@@ -33,10 +34,21 @@ const getContentFromCms = async (req, res) => {
       params: queryParams,
     });
 
+    const url = req.originalUrl;
+
+    await cacheCMSReponse.cacheCMSResponse(url, cmsResponse.data);
+
     return res.status(200).json(cmsResponse.data);
   } catch (err) {
-    console.error('CMS fetch error:', err.response?.data || err.message);
-    res.status(500).json({ error: 'Failed to fetch content from CMS' });
+    console.error('CMS fetch error:', err.response?.data || err.message || err);
+
+    const url = req.originalUrl;
+    const dataFromCache = await cacheCMSReponse.getCMSResponseFromCache(url);
+    if (dataFromCache) {
+      console.log('respond to frontend with data from cache');
+      return res.status(200).json(dataFromCache);
+    }
+    res.status(500).json({ error: 'Failed to fetch content from CMS', action: 'NO_REDIRECT' });
   }
 };
 

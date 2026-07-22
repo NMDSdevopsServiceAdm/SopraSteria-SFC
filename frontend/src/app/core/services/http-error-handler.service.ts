@@ -26,7 +26,9 @@ export class HttpErrorHandler {
     }
 
     if (error.status >= 500) {
-      this.router.navigate(['/problem-with-the-service']);
+      if (error?.error?.action !== 'NO_REDIRECT') {
+        this.router.navigate(['/problem-with-the-service']);
+      }
     }
 
     const message = error.error ? error.error.message : 'Server error. Please try again later, sorry.';
