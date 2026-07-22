@@ -307,6 +307,14 @@ const config = convict({
       env: 'CQC_SUBSCRIPTION_KEY',
     },
   },
+  cms: {
+    url: {
+      doc: 'The API base endpoint for CMS (Directus)',
+      format: 'url',
+      default: 'https://asc-wds-test.directus.app',
+      env: 'CMS_URL',
+    },
+  },
   aws: {
     region: {
       doc: 'AWS region',

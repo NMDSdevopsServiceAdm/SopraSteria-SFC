@@ -44,3 +44,6 @@ public:
   download:
     baseurl: https://sfc-public-dev.s3.eu-west-2.amazonaws.com/public/download
 # no notify definition - not used in development
+
+cms:
+  url: https://asc-wds-test.directus.app
