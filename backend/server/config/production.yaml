@@ -60,3 +60,6 @@ locks:
 public:
   download:
     baseurl: https://sfc-public-prod.s3.eu-west-2.amazonaws.com/public/download
+
+cms:
+  url: https://asc-wds-cms.directus.app

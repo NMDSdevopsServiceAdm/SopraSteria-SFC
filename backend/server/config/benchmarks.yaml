@@ -42,3 +42,6 @@ locks:
     bucketname: sfc-locks-dev
 
 # no notify definition - not used in development
+
+cms:
+    url: https://asc-wds-test.directus.app
