@@ -1121,8 +1121,14 @@ class Establishment extends EntityValidator {
           const thisTransaction = externalTransaction || t;
           const buChanged = this._status === 'NOCHANGE';
           // now append the extendable properties
-          const modifiedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {}, buChanged);
+          let modifiedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {}, buChanged);
           // note - if the establishment was created online, but then updated via bulk upload, the source become bulk and vice-versa.
+          if (!Object.prototype.hasOwnProperty.call(modifiedUpdateDocument, 'shareWithCQC')) {
+            modifiedUpdateDocument = {
+              ...modifiedUpdateDocument,
+              shareWithCQC: this.shareWith?.cqc,
+            };
+          }
           const updateDocument = {
             ...modifiedUpdateDocument,
             source: bulkUploaded ? 'Bulk' : 'Online',
