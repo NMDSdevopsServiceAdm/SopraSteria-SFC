@@ -29,9 +29,7 @@ describe('BulkUploadTroubleshootingPagesService', () => {
       service.getBulkUploadTroubleshootingPage().subscribe();
 
       const http = TestBed.inject(HttpTestingController);
-      const req = http.expectOne(
-        `${environment.appRunnerEndpoint}/api/cms/items/troubleshooting?fields=title,content&env=${environment.environmentName}`,
-      );
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/cms/items/troubleshooting?fields=title,content`);
 
       expect(req.request.method).toBe('GET');
     });

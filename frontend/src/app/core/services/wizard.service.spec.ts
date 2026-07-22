@@ -36,7 +36,7 @@ describe('WizardService', () => {
           environment.appRunnerEndpoint
         }/api/cms/items/wizard?sort=order&fields=content,title,image,video&_filter=${encodeURI(
           JSON.stringify(filter),
-        )}&env=${environment.environmentName}`,
+        )}`,
       );
       expect(req.request.method).toBe('GET');
     });
@@ -55,7 +55,7 @@ describe('WizardService', () => {
           environment.appRunnerEndpoint
         }/api/cms/items/wizard?sort=order&fields=content,title,image,video&_filter=${encodeURI(
           JSON.stringify(filter),
-        )}&env=${environment.environmentName}`,
+        )}`,
       );
       expect(req.request.method).toBe('GET');
     });
