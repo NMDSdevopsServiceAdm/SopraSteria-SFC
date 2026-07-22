@@ -32,7 +32,7 @@ describe('ArticlesService', () => {
       const req = http.expectOne(
         `${environment.appRunnerEndpoint}/api/cms/items/articles?filter=${encodeURI(
           JSON.stringify(filter),
-        )}&limit=1&fields=content,title,slug&env=${environment.environmentName}`,
+        )}&limit=1&fields=content,title,slug`,
       );
       expect(req.request.method).toBe('GET');
     });
@@ -51,7 +51,7 @@ describe('ArticlesService', () => {
           environment.appRunnerEndpoint
         }/api/cms/items/articles?sort=-publish_date&limit=3&fields=title,slug&filter=${encodeURI(
           JSON.stringify(filter),
-        )}&env=${environment.environmentName}`,
+        )}`,
       );
       expect(req.request.method).toBe('GET');
     });

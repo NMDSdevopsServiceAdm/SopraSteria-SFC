@@ -20,8 +20,7 @@ export class ArticlesService {
     const params = new HttpParams()
       .set('filter', JSON.stringify(slugFilter))
       .set('limit', '1')
-      .set('fields', 'content,title,slug')
-      .set('env', environment.environmentName);
+      .set('fields', 'content,title,slug');
 
     return this.http.get<Articles>(`${environment.appRunnerEndpoint}/api/cms/items/${this.path}`, { params });
   }
@@ -35,8 +34,7 @@ export class ArticlesService {
       .set('sort', '-publish_date')
       .set('limit', '3')
       .set('fields', 'title,slug')
-      .set('filter', JSON.stringify(statusFilter))
-      .set('env', environment.environmentName);
+      .set('filter', JSON.stringify(statusFilter));
 
     return this.http.get<Articles>(`${environment.appRunnerEndpoint}/api/cms/items/${this.path}`, { params });
   }

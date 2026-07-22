@@ -27,7 +27,7 @@ describe('UsefulLinksService', () => {
       service.getUsefulLinksForPay().subscribe();
 
       const req = http.expectOne(
-        `${environment.appRunnerEndpoint}/api/cms/items/useful_link_pay?limit=1&fields=content,title&env=${environment.environmentName}`,
+        `${environment.appRunnerEndpoint}/api/cms/items/useful_link_pay?limit=1&fields=content,title`,
       );
       expect(req.request.method).toBe('GET');
     });
@@ -38,7 +38,7 @@ describe('UsefulLinksService', () => {
       service.getUsefulLinksForRecruitment().subscribe();
 
       const req = http.expectOne(
-        `${environment.appRunnerEndpoint}/api/cms/items/useful_link_recruitment?limit=1&fields=content,title&env=${environment.environmentName}`,
+        `${environment.appRunnerEndpoint}/api/cms/items/useful_link_recruitment?limit=1&fields=content,title`,
       );
       expect(req.request.method).toBe('GET');
     });

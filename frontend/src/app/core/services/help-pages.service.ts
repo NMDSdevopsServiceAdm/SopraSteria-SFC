@@ -21,8 +21,7 @@ export class HelpPagesService {
     const params = new HttpParams()
       .set('filter', JSON.stringify(filter))
       .set('limit', '1')
-      .set('fields', 'content,title,Status')
-      .set('env', environment.environmentName);
+      .set('fields', 'content,title,Status');
 
     return this.http.get<HelpPages>(`${environment.appRunnerEndpoint}/api/cms/items/${this.path}`, { params });
   }
@@ -47,8 +46,7 @@ export class HelpPagesService {
     };
     const params = new HttpParams()
       .set('deep', JSON.stringify(filter))
-      .set('fields', 'section_heading,q_and_a_pages.*,sub_sections.*,sub_sections.q_and_a_pages.*')
-      .set('env', environment.environmentName);
+      .set('fields', 'section_heading,q_and_a_pages.*,sub_sections.*,sub_sections.q_and_a_pages.*');
 
     return this.http.get<QuestionsAndAnswersResponse>(
       `${environment.appRunnerEndpoint}/api/cms/items/q_and_a_sections`,
@@ -62,7 +60,7 @@ export class HelpPagesService {
       status: { _eq: 'published' },
     };
 
-    const params = new HttpParams().set('filter', JSON.stringify(filter)).set('env', environment.environmentName);
+    const params = new HttpParams().set('filter', JSON.stringify(filter));
 
     return this.http.get<QuestionAndAnswerPage[]>(`${environment.appRunnerEndpoint}/api/cms/items/Q_and_A_pages`, {
       params,
