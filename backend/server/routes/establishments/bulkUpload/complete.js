@@ -68,6 +68,13 @@ const completeUpdateEstablishment = async (
       delete thisEstablishmentJSON.localIdentifier;
 
       await foundCurrentEstablishment.load(thisEstablishmentJSON, true, true);
+      Object.values(foundCurrentEstablishment._workerEntities || {}).forEach((worker) => {
+        const targetEstablishment = onloadEstablishments.find((e) => e.name === worker.transferStaffRecord);
+
+        if (targetEstablishment) {
+          worker._newWorkplaceId = targetEstablishment._id;
+        }
+      });
       await foundCurrentEstablishment.save(theLoggedInUser, true, transaction, true);
       await foundCurrentEstablishment.bulkUploadWdf(theLoggedInUser, transaction);
 
