@@ -96,8 +96,9 @@ const crossValidateTransferStaffRecord = async (
       myEstablishments,
       JSONWorker,
     );
-
-    _addNewWorkplaceIdToWorkerEntity(myAPIEstablishments, JSONWorker, newWorkplaceId);
+    if (_workerPassedAllValidations(csvWorkerSchemaErrors, JSONWorker)) {
+      _addNewWorkplaceIdToWorkerEntity(myAPIEstablishments, JSONWorker, newWorkplaceId);
+    }
   }
 };
 
