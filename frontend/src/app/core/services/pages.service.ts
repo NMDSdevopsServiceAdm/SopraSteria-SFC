@@ -21,8 +21,7 @@ export class PagesService {
     const params = new HttpParams()
       .set('filter', JSON.stringify(filter))
       .set('limit', '1')
-      .set('fields', 'content,title,status')
-      .set('env', environment.environmentName);
+      .set('fields', 'content,title,status');
 
     return this.http.get<Pages>(`${environment.appRunnerEndpoint}/api/cms/items/${this.path}`, { params });
   }

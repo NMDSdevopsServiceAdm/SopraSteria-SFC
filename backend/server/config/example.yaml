@@ -42,3 +42,6 @@ sentry:
 satisfactionSurvey:
   timeSpan: 1
   unit: m
+
+cms:
+  url: https://asc-wds-test.directus.app

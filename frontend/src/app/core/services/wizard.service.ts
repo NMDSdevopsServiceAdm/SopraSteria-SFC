@@ -22,8 +22,7 @@ export class WizardService {
     const params = new HttpParams()
       .set('sort', 'order')
       .set('fields', 'content,title,image,video')
-      .set('_filter', JSON.stringify(benchmarkFilter))
-      .set('env', environment.environmentName);
+      .set('_filter', JSON.stringify(benchmarkFilter));
 
     return this.http.get<Wizard>(`${environment.appRunnerEndpoint}/api/cms/items/${this.path}`, { params });
   }

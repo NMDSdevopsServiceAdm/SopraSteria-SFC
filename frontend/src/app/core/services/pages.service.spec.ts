@@ -32,7 +32,7 @@ describe('PagesService', () => {
     const req = http.expectOne(
       `${environment.appRunnerEndpoint}/api/cms/items/${path}?filter=${encodeURI(
         JSON.stringify(filter),
-      )}&limit=1&fields=content,title,status&env=${environment.environmentName}`,
+      )}&limit=1&fields=content,title,status`,
     );
     expect(req.request.method).toBe('GET');
   });

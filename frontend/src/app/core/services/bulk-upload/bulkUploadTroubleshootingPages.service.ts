@@ -13,7 +13,7 @@ export class BulkUploadTroubleshootingPagesService {
   constructor(private http: HttpClient) {}
 
   public getBulkUploadTroubleshootingPage(): Observable<BulkUploadTroubleshootingPages> {
-    const params = new HttpParams().set('fields', 'title,content').set('env', environment.environmentName);
+    const params = new HttpParams().set('fields', 'title,content');
 
     return this.http.get<BulkUploadTroubleshootingPages>(
       `${environment.appRunnerEndpoint}/api/cms/items/${this.path}`,

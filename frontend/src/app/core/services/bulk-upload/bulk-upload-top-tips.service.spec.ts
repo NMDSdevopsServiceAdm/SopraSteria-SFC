@@ -30,7 +30,7 @@ describe('BulkUploadTopTipsService', () => {
 
       const http = TestBed.inject(HttpTestingController);
       const req = http.expectOne(
-        `${environment.appRunnerEndpoint}/api/cms/items/bulk_upload_top_tips?fields=title,slug,link_title&env=${environment.environmentName}`,
+        `${environment.appRunnerEndpoint}/api/cms/items/bulk_upload_top_tips?fields=title,slug,link_title`,
       );
 
       expect(req.request.method).toBe('GET');
@@ -47,7 +47,7 @@ describe('BulkUploadTopTipsService', () => {
       const http = TestBed.inject(HttpTestingController);
 
       const req = http.expectOne(
-        `${environment.appRunnerEndpoint}/api/cms/items/bulk_upload_top_tips?filter=${slugFilter}&limit=1&fields=${fields}&env=${environment.environmentName}`,
+        `${environment.appRunnerEndpoint}/api/cms/items/bulk_upload_top_tips?filter=${slugFilter}&limit=1&fields=${fields}`,
       );
 
       expect(req.request.method).toBe('GET');

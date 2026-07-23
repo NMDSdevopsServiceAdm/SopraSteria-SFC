@@ -13,10 +13,7 @@ export class DataChangeService {
   constructor(private http: HttpClient) {}
 
   public getDataChange(): Observable<DataChange> {
-    const params = new HttpParams()
-      .set('limit', '1')
-      .set('fields', 'content,title,last_updated')
-      .set('env', environment.environmentName);
+    const params = new HttpParams().set('limit', '1').set('fields', 'content,title,last_updated');
 
     return this.http.get<DataChange>(`${environment.appRunnerEndpoint}/api/cms/items/${this.path}`, { params });
   }
