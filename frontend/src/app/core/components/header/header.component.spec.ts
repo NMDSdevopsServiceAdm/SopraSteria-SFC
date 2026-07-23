@@ -1,8 +1,11 @@
-import { HttpClient } from '@angular/common/http';
-import { provideHttpClient } from '@angular/common/http';
+import lodash from 'lodash';
+import { of } from 'rxjs';
+
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { provideRouter, Router, RouterModule } from '@angular/router';
+import { PermissionType } from '@core/model/permissions.model';
 import { Roles } from '@core/model/roles.enum';
 import { InviteResponse, UserDetails } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
@@ -13,13 +16,12 @@ import { UserService } from '@core/services/user.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockNotificationsService } from '@core/test-utils/MockNotificationsService';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { EditUser, mockLoggedInUser, MockUserService } from '@core/test-utils/MockUserService';
 import { render } from '@testing-library/angular';
-import { of } from 'rxjs';
-import lodash from 'lodash';
+import { within } from '@testing-library/dom';
 
 import { HeaderComponent } from './header.component';
-import { within } from '@testing-library/dom';
 
 describe('HeaderComponent', () => {
   async function setup(overrides: any = {}) {
@@ -29,6 +31,15 @@ describe('HeaderComponent', () => {
 
     const loggedInUser = lodash.merge({}, mockLoggedInUser, overrides.loggedInUser, { role });
     const showNotificationsLink = overrides.showNotificationsLink ?? true;
+    const defaultPermissions = [
+      'canViewBenchmarks',
+      'canViewListOfUsers',
+      'canViewListOfWorkers',
+      'canViewEstablishment',
+    ];
+    const permissions = overrides?.permissions ?? defaultPermissions;
+    const getAllUsersForEstablishmentSpy = jasmine.createSpy();
+    getAllUsersForEstablishmentSpy.and.returnValue(of([EditUser()]));
 
     const setupTools = await render(HeaderComponent, {
       imports: [RouterModule],
@@ -36,8 +47,15 @@ describe('HeaderComponent', () => {
       providers: [
         {
           provide: UserService,
-          useFactory: MockUserService.factoryWithOverrides({ loggedInUser }),
+          useFactory: MockUserService.factoryWithOverrides({
+            loggedInUser,
+            getAllUsersForEstablishment: getAllUsersForEstablishmentSpy,
+          }),
           deps: [HttpClient],
+        },
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
         },
         {
           provide: AuthService,
@@ -72,6 +90,7 @@ describe('HeaderComponent', () => {
       component,
       router,
       userService,
+      getAllUsersForEstablishmentSpy,
     };
   }
 
@@ -197,7 +216,9 @@ describe('HeaderComponent', () => {
     });
 
     it('should render users link with the correct href and a notification flag when on a workplace and only one user is registered', async () => {
-      const { component, getByText, getByTestId } = await setup({ isLoggedIn: true });
+      const { fixture, component, getByText, getByTestId } = await setup({
+        isLoggedIn: true,
+      });
 
       const workplaceId = component.workplaceId;
       const usersLink = getByText('Users');
@@ -207,9 +228,11 @@ describe('HeaderComponent', () => {
     });
 
     it('should render users link with the correct href and no notification flag when on a workplace and more than one user is registered', async () => {
-      const { component, fixture, getByText, queryByTestId, userService } = await setup({ isLoggedIn: true });
+      const { component, fixture, getByText, queryByTestId, getAllUsersForEstablishmentSpy } = await setup({
+        isLoggedIn: true,
+      });
 
-      spyOn(userService, 'getAllUsersForEstablishment').and.returnValue(of([EditUser(), EditUser()] as UserDetails[]));
+      getAllUsersForEstablishmentSpy.and.returnValue(of([EditUser(), EditUser()] as UserDetails[]));
       component.getUsers();
       fixture.detectChanges();
 
@@ -218,6 +241,15 @@ describe('HeaderComponent', () => {
 
       expect(usersLink.getAttribute('href')).toEqual(`/workplace/${workplaceId}/users`);
       expect(queryByTestId('singleUserNotification')).toBeFalsy();
+    });
+
+    it('should not try to get user list if current user does not have canViewListOfUsers permission', async () => {
+      const { getAllUsersForEstablishmentSpy } = await setup({
+        isLoggedIn: true,
+        permissions: [],
+      });
+
+      expect(getAllUsersForEstablishmentSpy).not.toHaveBeenCalled();
     });
 
     it('should not show a users link when logged in and on the admin pages', async () => {
