@@ -9,6 +9,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { UserService } from '@core/services/user.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 
 @Component({
   selector: 'app-header',
@@ -46,6 +47,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private establishmentService: EstablishmentService,
     private notificationsService: NotificationsService,
+    private permissionsService: PermissionsService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -79,9 +81,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   public getUsers(): void {
-    this.userService
-      .getAllUsersForEstablishment(this.workplaceId)
-      .subscribe((users) => this.userService.updateUsers(users));
+    const canViewListOfUsers = this.permissionsService.can(this.workplaceId, 'canViewListOfUsers');
+    if (!canViewListOfUsers) {
+      return;
+    }
+
+    this.userService.getAllUsersForEstablishment(this.workplaceId).subscribe((users) => {
+      this.userService.updateUsers(users);
+    });
   }
 
   public isLoggedIn(): boolean {
