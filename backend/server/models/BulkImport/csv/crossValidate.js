@@ -93,10 +93,10 @@ const crossValidateTransferStaffRecord = async (
     const newWorkplaceId = await _validateTransferIsPossible(
       csvWorkerSchemaErrors,
       relatedEstablishmentIds,
+      myEstablishments,
       JSONWorker,
     );
-
-    if (newWorkplaceId) {
+    if (_workerPassedAllValidations(csvWorkerSchemaErrors, JSONWorker)) {
       _addNewWorkplaceIdToWorkerEntity(myAPIEstablishments, JSONWorker, newWorkplaceId);
     }
   }
@@ -106,11 +106,20 @@ const isMovingToNewWorkplace = (JSONWorker) => {
   return JSONWorker.status === 'UPDATE' && JSONWorker.transferStaffRecord;
 };
 
-const _validateTransferIsPossible = async (csvWorkerSchemaErrors, relatedEstablishmentIds, JSONWorker) => {
+const _validateTransferIsPossible = async (
+  csvWorkerSchemaErrors,
+  relatedEstablishmentIds,
+  myEstablishments,
+  JSONWorker,
+) => {
   const newWorkplaceLocalRef = JSONWorker.transferStaffRecord;
   const newWorkplaceId = await _getNewWorkplaceId(newWorkplaceLocalRef, relatedEstablishmentIds);
 
-  if (newWorkplaceId === null) {
+  const uploadedWorkplace = myEstablishments.find(
+    (e) => e.localId === newWorkplaceLocalRef || e._localId === newWorkplaceLocalRef,
+  );
+
+  if (newWorkplaceId === null && uploadedWorkplace?.status !== 'NEW') {
     addCrossValidateError(csvWorkerSchemaErrors, TRANSFER_STAFF_RECORD_ERRORS.NewWorkplaceNotFound, JSONWorker);
     return;
   }
