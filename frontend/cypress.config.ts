@@ -20,7 +20,7 @@ interface DbQueryType {
 }
 
 export default defineConfig({
-  env: {
+  expose: {
     userPassword: 'Password00!',
     adminUser: 'admin',
     editParentUser: 'editparent',
@@ -41,6 +41,7 @@ export default defineConfig({
   video: false,
   viewportWidth: 1000,
   viewportHeight: 1000,
+  allowCypressEnv: false,
 
   e2e: {
     baseUrl: 'http://localhost:8080',

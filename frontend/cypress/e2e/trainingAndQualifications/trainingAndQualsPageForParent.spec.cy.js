@@ -3,6 +3,7 @@
 
 const { ParentEstablishment } = require('../../support/mockEstablishmentData');
 const { onHomePage } = require('../../support/page_objects/onHomePage');
+import { userPassword } from '../../support/configData';
 
 describe('Parent training and quals page as edit user', { tags: '@trainingAndQualifications' }, () => {
   const workerName = 'test worker for training & quals';
@@ -22,7 +23,7 @@ describe('Parent training and quals page as edit user', { tags: '@trainingAndQua
 
   beforeEach(() => {
     cy.reload();
-    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
     onHomePage.clickTab('Training and qualifications');
   });
 

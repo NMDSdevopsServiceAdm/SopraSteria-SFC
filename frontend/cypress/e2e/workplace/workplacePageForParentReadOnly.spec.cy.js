@@ -1,10 +1,12 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
+import { userPassword } from '../../support/configData';
+import { ParentEstablishment } from '../../support/mockEstablishmentData';
 
 describe('Parent workplace page as read only user', { tags: '@workplace' }, () => {
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('readOnlyParentUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(ParentEstablishment.readOnlyUserLoginName, userPassword);
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();
     cy.reload();
   });

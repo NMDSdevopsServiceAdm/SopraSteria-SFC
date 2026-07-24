@@ -1,9 +1,12 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 
+import { userPassword } from '../../support/configData';
+import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
+
 describe('Help pages', { tags: '@others' }, () => {
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
   });
 
   it('should navigate to the Get Started page after clicking the Get Help button', () => {

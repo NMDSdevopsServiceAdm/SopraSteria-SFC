@@ -3,6 +3,7 @@
 import { ParentEstablishment, SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
 import { onStaffRecordsPage, onStaffRecordSummaryPage } from '../../support/page_objects/onStaffRecordsPage';
+import { userPassword } from '../../support/configData';
 
 describe('Parent staff records page as edit user', { tags: '@staffRecords' }, () => {
   const workerName = 'test worker for staff record page';
@@ -17,7 +18,7 @@ describe('Parent staff records page as edit user', { tags: '@staffRecords' }, ()
   });
 
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
     onHomePage.clickTab('Staff records');
   });
 

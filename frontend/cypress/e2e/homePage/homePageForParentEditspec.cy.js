@@ -2,10 +2,11 @@
 /// <reference types="cypress" />
 import { ParentEstablishment } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
+import { userPassword } from '../../support/configData';
 
 describe('Parent home page as edit user', { tags: '@home' }, () => {
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
   });
 
   it('should see the parent establishment home page', () => {

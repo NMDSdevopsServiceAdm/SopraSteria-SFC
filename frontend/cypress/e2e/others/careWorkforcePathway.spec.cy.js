@@ -1,4 +1,5 @@
 import { CWPAwarenessAnswers, CWPUseReasons } from '../../support/careWorkforcePathwayData';
+import { userPassword } from '../../support/configData';
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
 import { answerCWPAwarenessQuestion, answerCWPUseQuestion } from '../../support/page_objects/workplaceQuestionPages';
@@ -30,7 +31,7 @@ describe('Care workforce pathway journey', { tags: '@others' }, () => {
         '/api/establishment/*/careWorkforcePathway/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer',
       ).as('careWorkforcePathway');
 
-      cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+      cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
 
       cy.url().should('contain', 'dashboard');
     });
@@ -109,7 +110,7 @@ describe('Care workforce pathway journey', { tags: '@others' }, () => {
         'GET',
         '/api/establishment/*/careWorkforcePathway/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer',
       ).as('careWorkforcePathway');
-      cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+      cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
 
       cy.wait('@careWorkforcePathway');
 

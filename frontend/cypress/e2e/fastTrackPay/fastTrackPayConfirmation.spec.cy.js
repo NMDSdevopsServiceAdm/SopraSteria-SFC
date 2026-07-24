@@ -3,6 +3,7 @@
 
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
+import { userPassword } from '../../support/configData';
 
 describe('Fast-track pay updates by job roles', { tags: '@staffRecords' }, () => {
   const establishmentID = StandAloneEstablishment.id;
@@ -24,7 +25,7 @@ describe('Fast-track pay updates by job roles', { tags: '@staffRecords' }, () =>
   });
 
   beforeEach(() => {
-    cy.loginAsUser(StandAloneEstablishment.editUserLoginName, Cypress.env('userPassword'));
+    cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
 
     cy.intercept('GET', '**/worker/groupedByJobRole', {
       statusCode: 200,

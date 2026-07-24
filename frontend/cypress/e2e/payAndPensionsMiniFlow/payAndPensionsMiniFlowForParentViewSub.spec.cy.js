@@ -1,3 +1,4 @@
+import { userPassword } from '../../support/configData';
 import { ParentEstablishment, SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentData';
 import { runTestsForPayAndPensionsMiniFlow } from './runTestsForPayAndPensionsMiniFlow';
 
@@ -5,7 +6,7 @@ describe('Pay and pensions mini flow from home summary flag', { tags: '@payAndPe
   const subsidaryToView = SubEstablishmentNotDataOwner;
 
   beforeEach(() => {
-    cy.loginAsUser(ParentEstablishment.editUserLoginName, Cypress.env('userPassword'));
+    cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
 
     cy.get('app-navigate-to-workplace-dropdown select').select(subsidaryToView.name);
 

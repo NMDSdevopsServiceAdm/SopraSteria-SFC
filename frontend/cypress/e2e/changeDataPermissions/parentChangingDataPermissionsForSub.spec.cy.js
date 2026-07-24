@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+import { userPassword } from '../../support/configData';
 import { ParentEstablishment, MockNewEstablishment } from '../../support/mockEstablishmentData';
 import {
   approveRegistrationRequestAsAdmin,
@@ -13,7 +14,7 @@ describe('Parent changing data permissions for a subsidiary', { tags: '@changeDa
   before(() => {
     cy.deleteTestWorkplaceFromDb(subsidiaryWorkplaceName);
 
-    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
     cy.get('[data-cy="tab-list"]').contains('Home').click();
     cy.get('a').contains('Your other workplaces').click();
 
@@ -47,7 +48,7 @@ describe('Parent changing data permissions for a subsidiary', { tags: '@changeDa
   });
 
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
     cy.get('a').contains('Your other workplaces').click();
   });
 
