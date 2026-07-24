@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
-import { HelpPage } from '@core/model/help-pages.model';
+import { HelpPage, HelpPages } from '@core/model/help-pages.model';
 import { HelpPagesService } from '@core/services/help-pages.service';
 import { Observable, of } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
@@ -9,7 +9,7 @@ import { catchError, take } from 'rxjs/operators';
 export class HelpPageResolver implements Resolve<any> {
   constructor(private helpPagesService: HelpPagesService) {}
 
-  resolve(route: ActivatedRouteSnapshot): Observable<null | HelpPage[]> {
+  resolve(route: ActivatedRouteSnapshot): Observable<null | HelpPages> | undefined {
     const lastUrlSegmentIndex = route.url.length - 1;
     const slug = route.url[lastUrlSegmentIndex].path;
 

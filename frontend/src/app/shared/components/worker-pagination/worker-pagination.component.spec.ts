@@ -8,7 +8,7 @@ import { provideActivatedRouteWithRouterLink } from '@core/test-utils/MockActiva
 import { WorkerPaginationComponent } from '@shared/components/worker-pagination/worker-pagination.component';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-import { Observable, Subject } from 'rxjs';
+import { from, Observable, Subject } from 'rxjs';
 
 describe('WorkerPagination', () => {
   const setup = async (overrides: any = {}) => {
@@ -16,7 +16,7 @@ describe('WorkerPagination', () => {
       imports: [BrowserModule, SharedModule],
       providers: [
         provideActivatedRouteWithRouterLink({
-          params: Observable.from([{ id: overrides.id ?? '123' }]),
+          params: from([{ id: overrides.id ?? '123' }]),
 
           snapshot: {
             params: {

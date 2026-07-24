@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 
-import { BulkUploadTopTip } from '@core/model/bulk-upload-top-tips.model';
+import { BulkUploadTopTip, BulkUploadTopTips } from '@core/model/bulk-upload-top-tips.model';
 import { BulkUploadTopTipsService } from '@core/services/bulk-upload/bulk-upload-top-tips.service';
 import { Observable, of } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 
 @Injectable()
-export class BulkUploadTopTipsListResolver  {
+export class BulkUploadTopTipsListResolver {
   constructor(private bulkUploadTopTipsService: BulkUploadTopTipsService) {}
 
-  resolve(): Observable<null | BulkUploadTopTip[]> {
+  resolve(): Observable<null | BulkUploadTopTips> {
     return this.bulkUploadTopTipsService.getTopTipsTitles().pipe(
       take(1),
       catchError(() => {

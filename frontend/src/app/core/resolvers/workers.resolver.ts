@@ -11,8 +11,8 @@ import { catchError, map, mergeMap } from 'rxjs/operators';
 type ResolvedData = WorkersResponse & {
   paginatedWorkerCount: number;
   workerCount: number;
-  workersCreatedDate: string;
-  trainingCounts: number;
+  workersCreatedDate: number[];
+  trainingCounts: Record<string, number>;
   tAndQsLastUpdated: string;
   workersNotCompleted: Worker[];
   listOfAllWorkers: Worker[];
@@ -51,10 +51,10 @@ export class WorkersResolver {
       missingMandatoryTraining: 0,
       staffMissingMandatoryTraining: 0,
     };
-    let tAndQsLastUpdated;
+    let tAndQsLastUpdated: string;
 
-    const workersNotCompleted = [];
-    const workersCreatedDate = [];
+    const workersNotCompleted: Worker[] = [];
+    const workersCreatedDate: number[] = [];
 
     const { staffSummarySortValue, staffSummarySearchTerm, staffSummaryIndex } =
       this.sortByService.returnLocalStorageForSort();

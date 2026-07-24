@@ -1,5 +1,4 @@
 import { provideHttpClient } from '@angular/common/http';
-import 'rxjs/add/observable/from';
 
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
@@ -23,7 +22,7 @@ import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
 import { BulkUploadModule } from '@features/bulk-upload/bulk-upload.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import { Observable } from 'rxjs';
+import { from } from 'rxjs';
 
 import { MissingStaffReferencesComponent } from './missing-staff-references-page.component';
 
@@ -59,7 +58,7 @@ describe('MissingStaffReferencesComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            params: Observable.from([{ uid: 123 }]),
+            params: from([{ uid: 123 }]),
             snapshot: {
               data: {
                 references: references,
