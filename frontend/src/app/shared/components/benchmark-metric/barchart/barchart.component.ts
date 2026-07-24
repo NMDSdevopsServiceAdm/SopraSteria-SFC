@@ -1,14 +1,19 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Metric, NoData, Tile } from '@core/model/benchmarks.model';
 import * as Highcharts from 'highcharts';
+import Accessibility from 'highcharts/modules/accessibility';
 
 import { BarchartOptionsBuilder } from './barchart-options-builder';
 
+Accessibility(Highcharts);
+
+Highcharts.AST.allowedAttributes.push('data-testid');
+
 @Component({
-    selector: 'app-barchart',
-    templateUrl: './barchart.component.html',
-    styleUrls: ['./barchart.component.scss'],
-    standalone: false
+  selector: 'app-barchart',
+  templateUrl: './barchart.component.html',
+  styleUrls: ['./barchart.component.scss'],
+  standalone: false,
 })
 export class BarchartComponent implements OnInit {
   Highcharts: typeof Highcharts = Highcharts;

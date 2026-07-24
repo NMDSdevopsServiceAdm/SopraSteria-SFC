@@ -4,8 +4,6 @@ import { build, fake } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { HighchartsChartModule } from 'highcharts-angular';
-import * as Highcharts from 'highcharts';
-import Accessibility from 'highcharts/modules/accessibility';
 
 import { BarchartOptionsBuilder } from './barchart-options-builder';
 import { BarchartComponent } from './barchart.component';
@@ -32,17 +30,7 @@ const getBarchartComponent = async (type: Metric, tile: Tile) => {
   });
 };
 
-const suppressHighchartWarnings = () => {
-  const allowedAttr = Highcharts.AST.allowedAttributes;
-  allowedAttr.push('data-testid');
-  Accessibility(Highcharts);
-};
-
 describe('BarchartComponent', () => {
-  beforeAll(() => {
-    suppressHighchartWarnings();
-  });
-
   it('should display a bar for each column', async () => {
     const benchmarks = benchmarksBuilder();
 
