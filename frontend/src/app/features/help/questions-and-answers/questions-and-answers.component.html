@@ -22,11 +22,15 @@
       </form>
     </div>
 
-    <ng-container *ngIf="isSearchIconClicked; else default">
+    @if (isSearchIconClicked) {
       <div class="govuk-!-padding-bottom-7">
         <div class="govuk-util__float-left">
-          <h3 *ngIf="hasMatchingResults" class="govuk-heading-s">Showing search results</h3>
-          <h3 *ngIf="!hasMatchingResults" class="govuk-heading-s">There are no matching results</h3>
+          @if (hasMatchingResults) {
+            <h3 class="govuk-heading-s">Showing search results</h3>
+          }
+          @if (!hasMatchingResults) {
+            <h3 class="govuk-heading-s">There are no matching results</h3>
+          }
         </div>
         <a
           href="#"
@@ -35,42 +39,49 @@
           >Show all questions and answers</a
         >
       </div>
-      <ng-container *ngIf="hasMatchingResults; else noMatchingResults">
+      @if (hasMatchingResults) {
         <div data-testid="matching-results">
           <hr class="govuk-!-margin-bottom-6" />
           <ul class="govuk-list">
-            <li *ngFor="let page of searchResults" class="govuk-!-margin-bottom-3">
-              <a [routerLink]="[page.slug]" class="govuk-link">{{ page.title }}</a>
-            </li>
+            @for (page of searchResults; track page.slug) {
+              <li class="govuk-!-margin-bottom-3">
+                <a [routerLink]="[page.slug]" class="govuk-link">{{ page.title }}</a>
+              </li>
+            }
           </ul>
         </div>
-      </ng-container>
-      <ng-template #noMatchingResults>
+      } @else {
         <div class="govuk-!-margin-top-1 govuk-!-font-size-19" data-testid="no-matching-results">
           {{ noResultsMessage }}
         </div>
-      </ng-template>
-    </ng-container>
-    <ng-template #default>
+      }
+    } @else {
       <div data-testid="all-questions-and-answers">
-        <div *ngFor="let section of sections" class="govuk-!-margin-bottom-7">
-          <h2 class="govuk-heading-m">{{ section.section_heading }}</h2>
-          <ul class="govuk-list">
-            <li *ngFor="let page of section.q_and_a_pages" class="govuk-!-margin-bottom-3">
-              <a [routerLink]="[page.slug]" class="govuk-link">{{ page.title }}</a>
-            </li>
-          </ul>
-          <div *ngFor="let subSection of section.sub_sections" class="govuk-!-margin-bottom-7">
-            <p class="govuk-heading-s govuk-!-margin-bottom-3">{{ subSection.sub_section_heading }}</p>
-
+        @for (section of sections; track section.section_heading) {
+          <div class="govuk-!-margin-bottom-7">
+            <h2 class="govuk-heading-m">{{ section.section_heading }}</h2>
             <ul class="govuk-list">
-              <li *ngFor="let subSectionPage of subSection.q_and_a_pages" class="govuk-!-margin-bottom-3">
-                <a [routerLink]="[subSectionPage.slug]" class="govuk-link">{{ subSectionPage.title }}</a>
-              </li>
+              @for (page of section.q_and_a_pages; track page.slug) {
+                <li class="govuk-!-margin-bottom-3">
+                  <a [routerLink]="[page.slug]" class="govuk-link">{{ page.title }}</a>
+                </li>
+              }
             </ul>
+            @for (subSection of section.sub_sections; track subSection.sub_section_heading) {
+              <div class="govuk-!-margin-bottom-7">
+                <p class="govuk-heading-s govuk-!-margin-bottom-3">{{ subSection.sub_section_heading }}</p>
+                <ul class="govuk-list">
+                  @for (subSectionPage of subSection.q_and_a_pages; track subSectionPage.slug) {
+                    <li class="govuk-!-margin-bottom-3">
+                      <a [routerLink]="[subSectionPage.slug]" class="govuk-link">{{ subSectionPage.title }}</a>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
           </div>
-        </div>
+        }
       </div>
-    </ng-template>
+    }
   </div>
 </div>

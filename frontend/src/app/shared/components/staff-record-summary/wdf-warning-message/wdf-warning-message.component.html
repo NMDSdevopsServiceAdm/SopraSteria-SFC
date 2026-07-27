@@ -2,20 +2,19 @@
   <dt class="govuk-summary-list__key"></dt>
   <dd class="govuk-summary-list__value govuk-summary-list__message">
     <div class="message-content">
-      <ng-container *ngIf="!overallWdfEligibility; else orange">
-        <img
-          alt="Red flag icon"
-          src="/assets/images/red-flag-wdf-table.svg"
-          class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-        />
-      </ng-container>
-      <ng-template #orange>
-        <img
-          alt="Orange flag icon"
-          src="/assets/images/flag-orange.svg"
-          class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-        />
-      </ng-template>
+      @if (!overallWdfEligibility) {
+      <img
+        alt="Red flag icon"
+        src="/assets/images/red-flag-wdf-table.svg"
+        class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+      />
+      } @else {
+      <img
+        alt="Orange flag icon"
+        src="/assets/images/flag-orange.svg"
+        class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+      />
+      }
       {{ warningMessage ?? 'Add this information' }}
     </div>
   </dd>

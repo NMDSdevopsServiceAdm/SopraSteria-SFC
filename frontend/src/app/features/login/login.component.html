@@ -1,11 +1,12 @@
+@if ((form.invalid || serverError) && submitted) {
 <app-error-summary
-  *ngIf="(form.invalid || serverError) && submitted"
   [formErrorsMap]="formErrorsMap"
   [serverError]="serverError"
   [form]="form"
   [showServerErrorAsLink]="showServerErrorAsLink"
 >
 </app-error-summary>
+}
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
@@ -22,23 +23,19 @@
         You cannot use an email address to sign in
       </div>
 
-      <span
-        id="username-error"
-        class="govuk-error-message"
-        *ngIf="form.get('username').errors && submitted"
-        data-cy="username-error"
-      >
-        <ng-container *ngIf="form.get('username').hasError('required')">
-          <span class="govuk-visually-hidden">Error:</span>
-          {{ getFormErrorMessage('username', 'required') }}
-        </ng-container>
-
-        <ng-container *ngIf="form.get('username').hasError('atSignInUsername')">
-          <span class="govuk-visually-hidden">Error:</span>
-          {{ getFormErrorMessage('username', 'atSignInUsername') }}
-        </ng-container>
+      @if (form.get('username').errors && submitted) {
+      <span id="username-error" class="govuk-error-message" data-cy="username-error">
+        @if (form.get('username').hasError('required')) {
+        <span class="govuk-visually-hidden">Error:</span>
+        {{ getFormErrorMessage('username', 'required') }}
+        } @if (form.get('username').hasError('atSignInUsername')) {
+        <span class="govuk-visually-hidden">Error:</span>
+        {{ getFormErrorMessage('username', 'atSignInUsername') }}
+        }
       </span>
-      <span id="server-error" *ngIf="serverError"></span>
+      } @if (serverError) {
+      <span id="server-error"></span>
+      }
       <input
         data-cy="username"
         class="govuk-input govuk-input--width-20"
@@ -55,14 +52,11 @@
       [class.govuk-form-group--error]="(form.get('password').errors || serverError) && submitted"
     >
       <label class="govuk-label" for="password"> Password </label>
-      <span
-        id="password-error"
-        class="govuk-error-message"
-        *ngIf="form.get('password').errors && submitted"
-        data-cy="password-error"
-      >
+      @if (form.get('password').errors && submitted) {
+      <span id="password-error" class="govuk-error-message" data-cy="password-error">
         <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('password', 'required') }}
       </span>
+      }
 
       <input
         data-cy="password"

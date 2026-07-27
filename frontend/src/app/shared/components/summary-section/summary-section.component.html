@@ -15,56 +15,55 @@
 }
 
 <div class="govuk-width-container govuk-!-margin-top-4 govuk-!-margin-bottom-4 summary-box" data-testid="summaryBox">
-  <ng-container *ngFor="let section of sections; index as index">
+  @for (section of sections; track $index; let index = $index) {
     <div class="summary-section" [attr.data-testid]="section.fragment + '-row'">
       <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3 govuk-body-l summary-section__links">
-        <ng-container *ngIf="section.link; else noLinkForText">
+        @if (section.link) {
           <a (click)="navigateToTab($event, section.fragment)" class="govuk-link--no-visited-state" href="#">
             {{ section.linkText }}
           </a>
-        </ng-container>
-        <ng-template #noLinkForText>{{ section.linkText }}</ng-template>
+        } @else {
+          {{ section.linkText }}
+        }
       </div>
       <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3 govuk-body summary-section__summary-text">
-        <ng-container *ngIf="section.message; else noMessage">
-          <ng-container *ngIf="section.redFlag; else orangeFlag">
+        @if (section.message) {
+          @if (section.redFlag) {
             <img
               src="/assets/images/flag-red.svg"
               alt="action-required-red-flag"
               class="govuk-!-margin-right-2"
               data-testid="red-flag"
             />
-          </ng-container>
-          <ng-template #orangeFlag>
+          } @else {
             <img
               src="/assets/images/flag-orange.svg"
               alt="action-required-orange-flag"
               class="govuk-!-margin-right-2"
               data-testid="orange-flag"
             />
-          </ng-template>
-          <ng-container *ngIf="section.link && !section.showMessageAsText; else noLink">
+          }
+          @if (section.link && !section.showMessageAsText) {
             <a (click)="onClick($event, section)" href="#"> {{ section.message }}</a>
-          </ng-container>
-          <ng-template #noLink>
+              {{ section.message }}</a
+            >
+          } @else {
             <span>{{ section.message }}</span>
-          </ng-template>
-        </ng-container>
-        <ng-template #noMessage>
-          <ng-container *ngIf="!canViewListOfWorkers && section.fragment !== 'workplace'; else defaultMessage">
+          }
+        } @else {
+          @if (!canViewListOfWorkers && section.fragment !== 'workplace') {
             <span> You do not have permission to view this data </span>
-          </ng-container>
-          <ng-template #defaultMessage>
+          } @else {
             <span>Remember to check and update this data often</span>
-          </ng-template>
-        </ng-template>
+          }
+        }
       </div>
     </div>
-    <ng-container *ngIf="index < sections.length - 1">
+    @if (index < sections.length - 1) {
       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-left-4 govuk-!-margin-right-4" />
-    </ng-container>
-  </ng-container>
-  <ng-container *ngIf="isParent">
+    }
+  }
+  @if (isParent) {
     <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-left-4 govuk-!-margin-right-4" />
     <div class="summary-section" data-testid="workplaces-row">
       <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3 govuk-body-l summary-section__links">
@@ -78,21 +77,23 @@
         </a>
       </div>
       <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3 govuk-body summary-section__summary-text">
-        <ng-container *ngIf="otherWorkplacesSection.link; else noWorkplacesLink">
-          <img
-            src="/assets/images/flag-orange.svg"
-            alt="action-required-orange-flag"
-            class="govuk-!-margin-right-2"
-            data-testid="workplaces-orange-flag"
-            *ngIf="otherWorkplacesSection.orangeFlag"
-          />
-          <img
-            src="/assets/images/flag-red.svg"
-            alt="action-required-red-flag"
-            class="govuk-!-margin-right-2"
-            data-testid="red-flag"
-            *ngIf="otherWorkplacesSection.redFlag"
-          />
+        @if (otherWorkplacesSection.link) {
+          @if (otherWorkplacesSection.orangeFlag) {
+            <img
+              src="/assets/images/flag-orange.svg"
+              alt="action-required-orange-flag"
+              class="govuk-!-margin-right-2"
+              data-testid="workplaces-orange-flag"
+            />
+          }
+          @if (otherWorkplacesSection.redFlag) {
+            <img
+              src="/assets/images/flag-red.svg"
+              alt="action-required-red-flag"
+              class="govuk-!-margin-right-2"
+              data-testid="red-flag"
+            />
+          }
           <a
             (click)="navigateToYourOtherWorkplaces($event, 'workplaceToCheckAsc')"
             href="#"
@@ -100,11 +101,10 @@
           >
             {{ otherWorkplacesSection.message }}</a
           >
-        </ng-container>
-        <ng-template #noWorkplacesLink>
+        } @else {
           {{ otherWorkplacesSection.message }}
-        </ng-template>
+        }
       </div>
     </div>
-  </ng-container>
+  }
 </div>

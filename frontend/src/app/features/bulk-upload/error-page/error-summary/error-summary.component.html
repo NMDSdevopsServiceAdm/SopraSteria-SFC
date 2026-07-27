@@ -1,4 +1,5 @@
-<table *ngIf="numberOfErrorsAndWarnings" class="govuk-table">
+@if (numberOfErrorsAndWarnings) {
+<table class="govuk-table">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th scope="col" class="govuk-table__header">File type</th>
@@ -34,3 +35,4 @@
     </tr>
   </tbody>
 </table>
+}

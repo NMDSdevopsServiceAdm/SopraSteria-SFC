@@ -1,10 +1,6 @@
-<app-error-summary
-  *ngIf="(submitted && form.invalid) || serverError"
-  [form]="form"
-  [formErrorsMap]="formErrorsMap"
-  [serverError]="serverError"
->
-</app-error-summary>
+@if ((submitted && form.invalid) || serverError) {
+  <app-error-summary [form]="form" [formErrorsMap]="formErrorsMap" [serverError]="serverError"> </app-error-summary>
+}
 <form #formEl (ngSubmit)="onSubmit()" novalidate [formGroup]="form" id="server-error">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -45,73 +41,74 @@
                 <div class="govuk-!-margin-bottom-3">
                   <p><span id="otherJobRoles-hint"> Select all that apply. </span></p>
                 </div>
-                <span
-                  *ngIf="submitted && form.get('otherServices').errors"
-                  id="otherServices-error"
-                  class="govuk-error-message"
-                >
-                  <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('otherServices') }}
-                </span>
+                @if (submitted && form.get('otherServices').errors) {
+                  <span id="otherServices-error" class="govuk-error-message">
+                    <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('otherServices') }}
+                  </span>
+                }
                 <div class="govuk-checkboxes">
-                  <div class="govuk-form-group" *ngFor="let serviceGroup of serviceGroups">
-                    <fieldset class="govuk-fieldset">
-                      <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-                        <h2 class="govuk-fieldset__heading">
-                          {{ serviceGroup.category }}
-                        </h2>
-                      </legend>
-                      <div class="govuk-checkboxes" id="otherServices">
-                        <ng-container *ngFor="let service of serviceGroup.services | orderOther; let i = index">
-                          <div class="govuk-checkboxes__item">
-                            <input
-                              [attr.aria-controls]="'otherServices-conditional-' + i"
-                              class="govuk-checkboxes__input"
-                              id="otherServices-{{ service.id }}"
-                              name="otherServices"
-                              type="checkbox"
-                              [value]="service.id"
-                              [checked]="form.get('otherServices').value.includes(service.id)"
-                              (change)="toggle($event.target, 'additionalOtherService' + service.id)"
-                            />
-                            <label class="govuk-label govuk-checkboxes__label" for="otherServices-{{ service.id }}">
-                              {{ service.name }}
-                            </label>
-                          </div>
-                          <div
-                            *ngIf="service.other"
-                            class="govuk-checkboxes__conditional"
-                            [class.govuk-checkboxes__conditional--hidden]="
-                              !form.value['otherServices'].includes(service.id)
-                            "
-                            id="otherServices-conditional-{{ i }}"
-                          >
-                            <div class="govuk-form-group govuk-!-margin-bottom-2">
-                              <label class="govuk-label" for="additionalOtherService{{ service.id }}"> Service </label>
-                              <span
-                                id="additionalOtherService{{ service.id }}-error"
-                                class="govuk-error-message"
-                                *ngIf="submitted && form.get('additionalOtherService' + service.id).errors"
-                              >
-                                <span class="govuk-visually-hidden">Error:</span>
-                                {{ getFormErrorMessage('additionalOtherService' + service.id, 'maxlength') }}
-                              </span>
+                  @for (serviceGroup of serviceGroups; track serviceGroup.category) {
+                    <div class="govuk-form-group">
+                      <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                          <h2 class="govuk-fieldset__heading">
+                            {{ serviceGroup.category }}
+                          </h2>
+                        </legend>
+                        <div class="govuk-checkboxes" id="otherServices">
+                          @for (service of serviceGroup.services | orderOther; track service.id; let i = $index) {
+                            <div class="govuk-checkboxes__item">
                               <input
-                                class="govuk-input govuk-!-width-one-third"
-                                id="additionalOtherService{{ service.id }}"
-                                name="'additionalOtherService' + service.id"
-                                type="text"
-                                [formControlName]="'additionalOtherService' + service.id"
-                                [class.govuk-input--error]="
-                                  submitted && form.get('additionalOtherService' + service.id).errors
-                                "
-                                spellcheck="false"
+                                [attr.aria-controls]="'otherServices-conditional-' + i"
+                                class="govuk-checkboxes__input"
+                                id="otherServices-{{ service.id }}"
+                                name="otherServices"
+                                type="checkbox"
+                                [value]="service.id"
+                                [checked]="form.get('otherServices').value.includes(service.id)"
+                                (change)="toggle($event.target, 'additionalOtherService' + service.id)"
                               />
+                              <label class="govuk-label govuk-checkboxes__label" for="otherServices-{{ service.id }}">
+                                {{ service.name }}
+                              </label>
                             </div>
-                          </div>
-                        </ng-container>
-                      </div>
-                    </fieldset>
-                  </div>
+                            @if (service.other) {
+                              <div
+                                class="govuk-checkboxes__conditional"
+                                [class.govuk-checkboxes__conditional--hidden]="
+                                  !form.value['otherServices'].includes(service.id)
+                                "
+                                id="otherServices-conditional-{{ i }}"
+                              >
+                                <div class="govuk-form-group govuk-!-margin-bottom-2">
+                                  <label class="govuk-label" for="additionalOtherService{{ service.id }}">
+                                    Service
+                                  </label>
+                                  @if (submitted && form.get('additionalOtherService' + service.id).errors) {
+                                    <span id="additionalOtherService{{ service.id }}-error" class="govuk-error-message">
+                                      <span class="govuk-visually-hidden">Error:</span>
+                                      {{ getFormErrorMessage('additionalOtherService' + service.id, 'maxlength') }}
+                                    </span>
+                                  }
+                                  <input
+                                    class="govuk-input govuk-!-width-one-third"
+                                    id="additionalOtherService{{ service.id }}"
+                                    name="'additionalOtherService' + service.id"
+                                    type="text"
+                                    [formControlName]="'additionalOtherService' + service.id"
+                                    [class.govuk-input--error]="
+                                      submitted && form.get('additionalOtherService' + service.id).errors
+                                    "
+                                    spellcheck="false"
+                                  />
+                                </div>
+                              </div>
+                            }
+                          }
+                        </div>
+                      </fieldset>
+                    </div>
+                  }
                 </div>
               </div>
             </div>
@@ -134,13 +131,15 @@
       </app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
-      <div *ngIf="!return" class="govuk-util__float-right">
-        <app-progress-bar
-          data-testid="progress-bar"
-          [sections]="workplaceFlowSections"
-          [currentSection]="section"
-        ></app-progress-bar>
-      </div>
+      @if (!return) {
+        <div class="govuk-util__float-right">
+          <app-progress-bar
+            data-testid="progress-bar"
+            [sections]="workplaceFlowSections"
+            [currentSection]="section"
+          ></app-progress-bar>
+        </div>
+      }
     </div>
   </div>
 </form>

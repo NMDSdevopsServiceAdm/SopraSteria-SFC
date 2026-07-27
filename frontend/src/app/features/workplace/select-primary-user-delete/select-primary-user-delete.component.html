@@ -1,10 +1,6 @@
-<app-error-summary
-  *ngIf="submitted && (form.invalid || serverError)"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
-  [serverError]="serverError"
->
-</app-error-summary>
+@if (submitted && (form.invalid || serverError)) {
+  <app-error-summary [formErrorsMap]="formErrorsMap" [form]="form" [serverError]="serverError"> </app-error-summary>
+}
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -15,24 +11,28 @@
           </h1>
         </legend>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
-          <span *ngIf="submitted && form.get('user').errors" id="user-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('user') }}
-          </span>
+          @if (submitted && form.get('user').errors) {
+            <span id="user-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('user') }}
+            </span>
+          }
           <div class="govuk-radios">
-            <div class="govuk-radios__item" *ngFor="let user of users; let i = index">
-              <input
-                [attr.aria-controls]="'user-conditional-' + i"
-                class="govuk-radios__input"
-                id="user-{{ i }}"
-                [value]="user.uid"
-                name="user"
-                type="radio"
-                [formControlName]="'user'"
-              />
-              <label class="govuk-label govuk-radios__label" for="user-{{ i }}">
-                {{ user.fullname }}
-              </label>
-            </div>
+            @for (user of users; track user.uid; let i = $index) {
+              <div class="govuk-radios__item">
+                <input
+                  [attr.aria-controls]="'user-conditional-' + i"
+                  class="govuk-radios__input"
+                  id="user-{{ i }}"
+                  [value]="user.uid"
+                  name="user"
+                  type="radio"
+                  [formControlName]="'user'"
+                />
+                <label class="govuk-label govuk-radios__label" for="user-{{ i }}">
+                  {{ user.fullname }}
+                </label>
+              </div>
+            }
           </div>
         </div>
       </fieldset>

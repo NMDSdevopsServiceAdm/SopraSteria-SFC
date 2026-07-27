@@ -6,18 +6,17 @@
 ></app-new-dashboard-header>
 <div class="govuk-width-container govuk-!-padding-top-2">
   <app-alert></app-alert>
-  <ng-container *ngIf="canEditEstablishment && addWorkplaceDetailsBanner">
-    <app-inset-text [color]="'todo'">
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-          <a [routerLink]="addWorkplaceDetailsStartLink">Start to add more details about your workplace</a>
-        </div>
+  @if (canEditEstablishment && addWorkplaceDetailsBanner) {
+  <app-inset-text [color]="'todo'">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <a [routerLink]="addWorkplaceDetailsStartLink">Start to add more details about your workplace</a>
       </div>
-    </app-inset-text>
-  </ng-container>
-  <ng-container *ngIf="canEditEstablishment && showCqcDetailsBanner">
-    <app-check-cqc-details data-testid="check-cqc-details-banner"></app-check-cqc-details>
-  </ng-container>
+    </div>
+  </app-inset-text>
+  } @if (canEditEstablishment && showCqcDetailsBanner) {
+  <app-check-cqc-details data-testid="check-cqc-details-banner"></app-check-cqc-details>
+  }
 
   <app-new-workplace-summary
     [workplace]="workplace"

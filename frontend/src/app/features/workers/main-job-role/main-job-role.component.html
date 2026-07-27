@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+@if (submitted && form.invalid) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
@@ -20,7 +22,8 @@
         ></app-grouped-radio-button-accordion>
       </fieldset>
     </div>
-    <div class="govuk-grid-column-one-third" *ngIf="!editFlow">
+    @if (!editFlow) {
+    <div class="govuk-grid-column-one-third">
       <div class="govuk-!-margin-left-8">
         <app-progress-bar
           data-testid="progress-bar-1"
@@ -29,6 +32,7 @@
         ></app-progress-bar>
       </div>
     </div>
+    }
   </div>
   <app-submit-button
     [summaryContinue]="summaryContinue"

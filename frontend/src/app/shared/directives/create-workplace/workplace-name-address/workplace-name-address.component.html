@@ -1,23 +1,27 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+@if (submitted && form.invalid) {
+  <app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <span class="govuk-caption-l">Workplace</span>
-    <h1 *ngIf="isWorkPlaceUpdate" class="govuk-heading-l">Workplace details</h1>
-    <h1 *ngIf="!isWorkPlaceUpdate" class="govuk-heading-l">{{ title }}</h1>
+    @if (isWorkPlaceUpdate) {
+      <h1 class="govuk-heading-l">Workplace details</h1>
+    }
+    @if (!isWorkPlaceUpdate) {
+      <h1 class="govuk-heading-l">{{ title }}</h1>
+    }
 
     <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
       <fieldset class="govuk-fieldset">
-        <ng-container *ngFor="let item of formControlsMap">
+        @for (item of formControlsMap; track item.name) {
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get(item.name).errors">
             <label class="govuk-label" for="{{ item.name }}" [innerHTML]="item.label"></label>
-            <span
-              *ngIf="submitted && form.get(item.name).errors"
-              id="{{ item.name }}-error"
-              class="govuk-error-message"
-            >
-              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(item.name) }}
-            </span>
+            @if (submitted && form.get(item.name).errors) {
+              <span id="{{ item.name }}-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(item.name) }}
+              </span>
+            }
             <input
               class="govuk-input govuk-input--width-{{ item.width }}"
               [formControlName]="item.name"
@@ -27,40 +31,42 @@
               type="text"
             />
           </div>
-        </ng-container>
+        }
         <div class="govuk-!-margin-top-8">
-          <ng-container *ngIf="isWorkPlaceUpdate; else workplaceAdd">
+          @if (isWorkPlaceUpdate) {
             <app-workplace-submit-button
               [return]="!!return"
               (clicked)="setSubmitAction($event)"
               [isExistingStaffRecord]="false"
             ></app-workplace-submit-button>
-          </ng-container>
-          <ng-template #workplaceAdd>
+          } @else {
             <app-registration-submit-buttons
               [insideFlow]="insideFlow"
               [returnRoute]="flow"
             ></app-registration-submit-buttons>
-          </ng-template>
+          }
         </div>
       </fieldset>
     </form>
   </div>
-  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
-    <div class="govuk-!-margin-left-8">
-      <app-progress-bar
-        data-testid="progress-bar-1"
-        [header]="'Workplace'"
-        [sections]="workplaceSections"
-        [currentSection]="'Confirm workplace'"
-      ></app-progress-bar>
-      <app-progress-bar
-        *ngIf="this.flow.includes('registration')"
-        data-testid="progress-bar-2"
-        [header]="'User account'"
-        [sections]="userAccountSections"
-        [currentSection]="'Confirm workplace'"
-      ></app-progress-bar>
+  @if (insideFlow) {
+    <div class="govuk-grid-column-one-third">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar-1"
+          [header]="'Workplace'"
+          [sections]="workplaceSections"
+          [currentSection]="'Confirm workplace'"
+        ></app-progress-bar>
+        @if (this.flow.includes('registration')) {
+          <app-progress-bar
+            data-testid="progress-bar-2"
+            [header]="'User account'"
+            [sections]="userAccountSections"
+            [currentSection]="'Confirm workplace'"
+          ></app-progress-bar>
+        }
+      </div>
     </div>
-  </div>
+  }
 </div>

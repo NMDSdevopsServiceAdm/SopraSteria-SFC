@@ -32,60 +32,61 @@
             </p>
           </app-details>
 
-          <div class="govuk-!-margin-bottom-6" *ngIf="cameFromCWPSummaryPage">
-            <h2 class="govuk-heading-s govuk-!-margin-bottom-1">Name or ID number</h2>
-            <p class="govuk-body">{{ worker.nameOrId }}</p>
-          </div>
+          @if (cameFromCWPSummaryPage) {
+            <div class="govuk-!-margin-bottom-6">
+              <h2 class="govuk-heading-s govuk-!-margin-bottom-1">Name or ID number</h2>
+              <p class="govuk-body">{{ worker.nameOrId }}</p>
+            </div>
+          }
 
           <h2 class="govuk-heading-s">Care workforce pathway role categories</h2>
           <div class="govuk-radios" data-module="govuk-radios">
-            <div
-              class="govuk-radios__item"
-              *ngFor="let careWorkforcePathwayCategory of careWorkforcePathwayCategories; let idx = index"
-            >
-              <input
-                class="govuk-radios__input"
-                id="careWorkforcePathwayRoleCategory-{{ idx }}"
-                [formControlName]="'careWorkforcePathwayRoleCategory'"
-                name="careWorkforcePathwayRoleCategory"
-                type="radio"
-                [value]="careWorkforcePathwayCategory.id"
-                aria-describedby="careWorkforcePathwayCategory-description"
-              />
-              <label class="govuk-label govuk-radios__label" for="careWorkforcePathwayRoleCategory-{{ idx }}">
-                {{ careWorkforcePathwayCategory.title }}
-              </label>
-              <div
-                id="careWorkforcePathwayCategory-description"
-                class="govuk-hint govuk-radios__hint"
-                [innerHTML]="careWorkforcePathwayCategory.description"
-              ></div>
-            </div>
+            @for (careWorkforcePathwayCategory of careWorkforcePathwayCategories; track $index; let idx = $index) {
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  id="careWorkforcePathwayRoleCategory-{{ idx }}"
+                  [formControlName]="'careWorkforcePathwayRoleCategory'"
+                  name="careWorkforcePathwayRoleCategory"
+                  type="radio"
+                  [value]="careWorkforcePathwayCategory.id"
+                  aria-describedby="careWorkforcePathwayCategory-description"
+                />
+                <label class="govuk-label govuk-radios__label" for="careWorkforcePathwayRoleCategory-{{ idx }}">
+                  {{ careWorkforcePathwayCategory.title }}
+                </label>
+                <div
+                  id="careWorkforcePathwayCategory-description"
+                  class="govuk-hint govuk-radios__hint"
+                  [innerHTML]="careWorkforcePathwayCategory.description"
+                ></div>
+              </div>
+            }
           </div>
         </fieldset>
       </div>
     </div>
-    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
-      <div class="govuk-!-margin-left-8">
-        <app-progress-bar
-          data-testid="progress-bar"
-          [sections]="staffRecordSections"
-          [currentSection]="section"
-        ></app-progress-bar>
+    @if (insideFlow) {
+      <div class="govuk-grid-column-one-third">
+        <div class="govuk-!-margin-left-8">
+          <app-progress-bar
+            data-testid="progress-bar"
+            [sections]="staffRecordSections"
+            [currentSection]="section"
+          ></app-progress-bar>
+        </div>
       </div>
-    </div>
+    }
   </div>
 
-  <ng-container *ngIf="cameFromCWPSummaryPage; else normalSubmitButton">
+  @if (cameFromCWPSummaryPage) {
     <app-submit-button
       [overrideCallToActionLabel]="true"
       [callToAction]="'Save'"
       [return]="!insideFlow"
       (clicked)="setSubmitAction($event)"
     ></app-submit-button>
-  </ng-container>
-
-  <ng-template #normalSubmitButton>
+  } @else {
     <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
-  </ng-template>
+  }
 </form>

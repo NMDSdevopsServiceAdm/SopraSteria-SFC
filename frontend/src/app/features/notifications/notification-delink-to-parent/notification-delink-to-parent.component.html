@@ -1,33 +1,32 @@
-<ng-container *ngIf="notification">
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <div>
-        <p>{{ notificationRequestedFrom }} has removed their link to you.</p>
-        <p>The following permissions will be set.</p>
-      </div>
-
-      <table class="govuk-table govuk-table__with-action">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header">Workplace</th>
-            <th scope="col" class="govuk-table__header">Permissions</th>
-          </tr>
-        </thead>
-        <tbody class="govuk-tab">
-          <tr class="govuk-table__row govuk-error-table__row--no-border">
-            <td class="govuk-table__cell">
-              {{ notificationRequestedTo }}
-            </td>
-            <td class="govuk-table__cell">No access to data</td>
-          </tr>
-          <tr class="govuk-table__row govuk-error-table__row--no-border">
-            <td class="govuk-table__cell">
-              {{ notificationRequestedFrom }}
-            </td>
-            <td class="govuk-table__cell">Edit workplace and staff records</td>
-          </tr>
-        </tbody>
-      </table>
+@if (notification) {
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div>
+      <p>{{ notificationRequestedFrom }} has removed their link to you.</p>
+      <p>The following permissions will be set.</p>
     </div>
+    <table class="govuk-table govuk-table__with-action">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Workplace</th>
+          <th scope="col" class="govuk-table__header">Permissions</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-tab">
+        <tr class="govuk-table__row govuk-error-table__row--no-border">
+          <td class="govuk-table__cell">
+            {{ notificationRequestedTo }}
+          </td>
+          <td class="govuk-table__cell">No access to data</td>
+        </tr>
+        <tr class="govuk-table__row govuk-error-table__row--no-border">
+          <td class="govuk-table__cell">
+            {{ notificationRequestedFrom }}
+          </td>
+          <td class="govuk-table__cell">Edit workplace and staff records</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-</ng-container>
+</div>
+}

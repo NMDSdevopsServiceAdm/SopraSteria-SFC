@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+@if (submitted && form.invalid) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
@@ -32,24 +34,23 @@
             >
               <div class="govuk-form-group">
                 <label class="govuk-label" for="year"> Year </label>
-                <span *ngIf="submitted && form.get('year').errors" id="year-error" class="govuk-error-message">
-                  <ng-container *ngIf="form.get('year').hasError('required')">
-                    <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFormErrorMessage('year', 'required') }}
-                  </ng-container>
-                  <ng-container *ngIf="form.get('year').hasError('min')">
-                    <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFormErrorMessage('year', 'min') }}
-                  </ng-container>
-                  <ng-container *ngIf="form.get('year').hasError('max')">
-                    <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFormErrorMessage('year', 'max') }}
-                  </ng-container>
-                  <ng-container *ngIf="form.get('year').hasError('pattern')">
-                    <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFormErrorMessage('year', 'pattern') }}
-                  </ng-container>
+                @if (submitted && form.get('year').errors) {
+                <span id="year-error" class="govuk-error-message">
+                  @if (form.get('year').hasError('required')) {
+                  <span class="govuk-visually-hidden">Error:</span>
+                  {{ getFormErrorMessage('year', 'required') }}
+                  } @if (form.get('year').hasError('min')) {
+                  <span class="govuk-visually-hidden">Error:</span>
+                  {{ getFormErrorMessage('year', 'min') }}
+                  } @if (form.get('year').hasError('max')) {
+                  <span class="govuk-visually-hidden">Error:</span>
+                  {{ getFormErrorMessage('year', 'max') }}
+                  } @if (form.get('year').hasError('pattern')) {
+                  <span class="govuk-visually-hidden">Error:</span>
+                  {{ getFormErrorMessage('year', 'pattern') }}
+                  }
                 </span>
+                }
                 <input
                   class="govuk-input govuk-date-input__input govuk-input--width-4"
                   [class.govuk-input--error]="submitted && form.get('year').invalid"
@@ -77,7 +78,8 @@
         </fieldset>
       </div>
     </div>
-    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+    @if (insideFlow) {
+    <div class="govuk-grid-column-one-third">
       <div class="govuk-!-margin-left-8">
         <app-progress-bar
           data-testid="progress-bar"
@@ -86,6 +88,7 @@
         ></app-progress-bar>
       </div>
     </div>
+    }
   </div>
 
   <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>

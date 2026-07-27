@@ -55,7 +55,7 @@
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend">Is the training course accredited?</legend>
           <div class="govuk-radios">
-            @for (option of accreditedOptions; track option) {
+            @for (option of accreditedOptions; track option.value) {
               <div class="govuk-radios__item">
                 <input
                   class="govuk-radios__input"

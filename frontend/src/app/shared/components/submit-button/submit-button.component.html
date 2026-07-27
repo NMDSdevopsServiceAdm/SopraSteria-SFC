@@ -1,50 +1,50 @@
 <div class="govuk-button-group govuk__align-items-unset">
-  <ng-container *ngIf="!return; else summary">
-    <div class="govuk-grid-column-two-thirds govuk__flex govuk-!-padding-left-0">
-      <div style="min-width: 250px">
-        <button
-          type="submit"
-          class="govuk-button govuk-!-margin-right-9"
-          [ngClass]="{ additionalHorizontalPadding: callToAction.length < 5 }"
-          (click)="onButtonClick('continue', true)"
-        >
-          {{ callToAction }}
-        </button>
-      </div>
-
-      <div *ngIf="recordSummary" class="govuk-!-margin-left-9">
-        <span class="govuk-visually-hidden">or</span>
-        <a class="govuk-button govuk-button--link" (click)="onLinkClick($event, 'continue', false)"
-          >Skip this question</a
-        >
-      </div>
-      <div *ngIf="canExit" class="govuk-!-margin-left-9">
-        <span class="govuk-visually-hidden">or</span>
-        <a class="govuk-button govuk-button--link" (click)="onLinkClick($event, 'exit', false)">{{ exitText }}</a>
-      </div>
+  @if (!return) {
+  <div class="govuk-grid-column-two-thirds govuk__flex govuk-!-padding-left-0">
+    <div style="min-width: 250px">
+      <button
+        type="submit"
+        class="govuk-button govuk-!-margin-right-9"
+        [ngClass]="{ additionalHorizontalPadding: callToAction.length < 5 }"
+        (click)="onButtonClick('continue', true)"
+      >
+        {{ callToAction }}
+      </button>
     </div>
-    <div class="govuk-grid-column-one-third">
-      <div *ngIf="recordSummary" class="govuk-!-margin-left-7">
-        <span class="govuk-visually-hidden">or</span>
-        <a class="govuk-button govuk-button--link" (click)="onLinkClick($event, 'summary', false)"
-          >View this staff record</a
-        >
-      </div>
+    @if (recordSummary) {
+    <div class="govuk-!-margin-left-9">
+      <span class="govuk-visually-hidden">or</span>
+      <a class="govuk-button govuk-button--link" (click)="onLinkClick($event, 'continue', false)">Skip this question</a>
     </div>
-  </ng-container>
-  <ng-template #summary>
-    <button
-      type="submit"
-      class="govuk-button govuk-!-margin-right-9"
-      (click)="onButtonClick(summaryActionType, true)"
-      [ngClass]="{ additionalHorizontalPadding: summaryContinue && !overrideCallToActionLabel }"
-    >
-      {{ overrideCallToActionLabel ? callToAction : summaryContinue ? 'Save' : 'Save and return' }}
-    </button>
-
-    <span class="govuk-visually-hidden">or</span>
-    <a class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onLinkClick($event, 'return', false)">{{
-      exitText
-    }}</a>
-  </ng-template>
+    } @if (canExit) {
+    <div class="govuk-!-margin-left-9">
+      <span class="govuk-visually-hidden">or</span>
+      <a class="govuk-button govuk-button--link" (click)="onLinkClick($event, 'exit', false)">{{ exitText }}</a>
+    </div>
+    }
+  </div>
+  <div class="govuk-grid-column-one-third">
+    @if (recordSummary) {
+    <div class="govuk-!-margin-left-7">
+      <span class="govuk-visually-hidden">or</span>
+      <a class="govuk-button govuk-button--link" (click)="onLinkClick($event, 'summary', false)"
+        >View this staff record</a
+      >
+    </div>
+    }
+  </div>
+  } @else {
+  <button
+    type="submit"
+    class="govuk-button govuk-!-margin-right-9"
+    (click)="onButtonClick(summaryActionType, true)"
+    [ngClass]="{ additionalHorizontalPadding: summaryContinue && !overrideCallToActionLabel }"
+  >
+    {{ overrideCallToActionLabel ? callToAction : summaryContinue ? 'Save' : 'Save and return' }}
+  </button>
+  <span class="govuk-visually-hidden">or</span>
+  <a class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onLinkClick($event, 'return', false)">{{
+    exitText
+  }}</a>
+  }
 </div>

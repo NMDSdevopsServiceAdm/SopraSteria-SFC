@@ -9,30 +9,29 @@
     <div class="govuk-form-group govuk-!-margin-top-6">
       <form #formEl [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="govuk-checkboxes">
-          <ng-container
-            *ngFor="let control of howDidYouHearAboutArray.controls; let i = index"
-            formArrayName="howDidYouHearAbout"
-          >
-            <div class="govuk-checkboxes__item">
-              <input
-                class="govuk-checkboxes__input"
-                type="checkbox"
-                id="howDidYouHearAbout-{{ i }}"
-                name="howDidYouHearAbout-{{ i }}"
-                (change)="control.value.checked = !control.value.checked"
-                (change)="updateState()"
-                [checked]="control.value.checked"
-                [value]="control.value.response"
-              />
-              <label
-                for="howDidYouHearAbout-{{ i }}"
-                class="govuk-label govuk-checkboxes__label"
-                for="how-did-you-hear-about"
-              >
-                {{ control.value.response }}
-              </label>
-            </div>
-          </ng-container>
+          @for (control of howDidYouHearAboutArray.controls; track $index; let i = $index) {
+            <ng-container formArrayName="howDidYouHearAbout">
+              <div class="govuk-checkboxes__item">
+                <input
+                  class="govuk-checkboxes__input"
+                  type="checkbox"
+                  id="howDidYouHearAbout-{{ i }}"
+                  name="howDidYouHearAbout-{{ i }}"
+                  (change)="control.value.checked = !control.value.checked"
+                  (change)="updateState()"
+                  [checked]="control.value.checked"
+                  [value]="control.value.response"
+                />
+                <label
+                  for="howDidYouHearAbout-{{ i }}"
+                  class="govuk-label govuk-checkboxes__label"
+                  for="how-did-you-hear-about"
+                >
+                  {{ control.value.response }}
+                </label>
+              </div>
+            </ng-container>
+          }
         </div>
 
         <button type="submit" class="govuk-button govuk-!-margin-top-7">Finish</button>

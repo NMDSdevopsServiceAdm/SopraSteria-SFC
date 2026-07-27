@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+@if (submitted && form.invalid) {
+  <app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
@@ -13,10 +15,12 @@
           [class.govuk-form-group--error]="submitted && (form.get('nameOrId').invalid || serverError)"
         >
           <label class="govuk-label" for="nameOrId"> Name or ID number </label>
-          <span *ngIf="submitted && form.get('nameOrId').errors" id="nameOrId-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span>
-            {{ getFormErrorMessage('nameOrId', 'required') }}
-          </span>
+          @if (submitted && form.get('nameOrId').errors) {
+            <span id="nameOrId-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFormErrorMessage('nameOrId', 'required') }}
+            </span>
+          }
           <input
             class="govuk-input govuk-!-width-two-thirds"
             [class.govuk-input--error]="submitted && form.get('nameOrId').invalid"
@@ -34,40 +38,46 @@
                 <b> Type of contract </b>
               </h1>
             </legend>
-            <span *ngIf="submitted && form.get('contract').errors" id="contract-error" class="govuk-error-message">
-              <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('contract', 'required') }}
-            </span>
+            @if (submitted && form.get('contract').errors) {
+              <span id="contract-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span>
+                {{ getFormErrorMessage('contract', 'required') }}
+              </span>
+            }
             <div class="govuk-radios">
-              <div *ngFor="let contract of contractsAvailable; let idx = index" class="govuk-radios__item">
-                <input
-                  class="govuk-radios__input"
-                  [class.govuk-input--error]="submitted && form.get('contract').invalid"
-                  [formControlName]="'contract'"
-                  id="contract-{{ idx }}"
-                  name="contract"
-                  type="radio"
-                  [value]="contract.value"
-                />
-                <label class="govuk-label govuk-radios__label" for="contract-{{ idx }}">
-                  {{ contract.tag }}
-                </label>
-              </div>
+              @for (contract of contractsAvailable; track $index; let idx = $index) {
+                <div class="govuk-radios__item">
+                  <input
+                    class="govuk-radios__input"
+                    [class.govuk-input--error]="submitted && form.get('contract').invalid"
+                    [formControlName]="'contract'"
+                    id="contract-{{ idx }}"
+                    name="contract"
+                    type="radio"
+                    [value]="contract.value"
+                  />
+                  <label class="govuk-label govuk-radios__label" for="contract-{{ idx }}">
+                    {{ contract.tag }}
+                  </label>
+                </div>
+              }
             </div>
           </fieldset>
         </div>
       </fieldset>
     </div>
 
-    <div class="govuk-grid-column-one-third" *ngIf="!editFlow">
-      <div class="govuk-!-margin-left-8">
-        <app-progress-bar
-          data-testid="progress-bar-1"
-          [sections]="staffRecordSections"
-          [currentSection]="'Mandatory information'"
-        ></app-progress-bar>
+    @if (!editFlow) {
+      <div class="govuk-grid-column-one-third">
+        <div class="govuk-!-margin-left-8">
+          <app-progress-bar
+            data-testid="progress-bar-1"
+            [sections]="staffRecordSections"
+            [currentSection]="'Mandatory information'"
+          ></app-progress-bar>
+        </div>
       </div>
-    </div>
+    }
   </div>
   <app-submit-button
     [summaryContinue]="false"

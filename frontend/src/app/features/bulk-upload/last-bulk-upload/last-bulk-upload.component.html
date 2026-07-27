@@ -21,7 +21,7 @@
         </tr>
       </thead>
       <tbody class="govuk-table__body">
-        <ng-container *ngFor="let file of files">
+        @for (file of files; track file.data.key) {
           <tr>
             <td class="govuk-table__cell">{{ file.data.fileType | bulkUploadFileTypePipe }}</td>
             <td class="govuk-table__cell">{{ file.data.records }}</td>
@@ -41,7 +41,7 @@
               </div>
             </td>
           </tr>
-        </ng-container>
+        }
       </tbody>
     </table>
     <div class="govuk-grid-row">
@@ -54,15 +54,16 @@
         >
           Return to bulk upload
         </a>
-        <button
-          *ngIf="locked"
-          role="button"
-          draggable="false"
-          class="govuk-button govuk-button--warning govuk-!-margin-left-9"
-          (click)="unlockBulkUpload()"
-        >
-          Unlock bulk upload
-        </button>
+        @if (locked) {
+          <button
+            role="button"
+            draggable="false"
+            class="govuk-button govuk-button--warning govuk-!-margin-left-9"
+            (click)="unlockBulkUpload()"
+          >
+            Unlock bulk upload
+          </button>
+        }
       </div>
     </div>
   </div>

@@ -1,11 +1,12 @@
+@if (!isParentViewingSubsidiary) {
 <app-new-dashboard-header
-  *ngIf="!isParentViewingSubsidiary"
   [tab]="'benchmarks'"
   [workplace]="workplace"
   [updatedDate]="tilesData?.meta.lastUpdated"
   data-html2canvas-ignore
   data-testid="dashboardHeader"
 ></app-new-dashboard-header>
+}
 
 <div class="govuk-width-container govuk-!-margin-top-7">
   <!-- <div id="benchmarks-tiles"> -->
@@ -50,7 +51,7 @@
       #aboutData
       class="govuk-visually-hidden"
       [workplace]="workplace"
-      [isParentViewingSubsidiary]=isParentViewingSubsidiary
+      [isParentViewingSubsidiary]="isParentViewingSubsidiary"
     ></app-benchmarks-about-the-data>
   </div>
 </div>

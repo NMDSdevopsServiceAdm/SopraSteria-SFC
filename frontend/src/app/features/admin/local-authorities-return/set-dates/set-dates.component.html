@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+@if (submitted && form.invalid) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
@@ -14,24 +16,20 @@
           [class.govuk-form-group--error]="submitted && (form.invalid || serverError)"
         >
           <span id="laReturnStartDate-hint" class="govuk-hint"> Start date </span>
-          <span
-            *ngIf="submitted && form.get('laReturnStartDate').errors"
-            id="laReturnStartDate-error"
-            class="govuk-error-message"
-          >
-            <ng-container *ngIf="form.get('laReturnStartDate').hasError('required')">
-              <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('laReturnStartDate', 'required') }}
-            </ng-container>
-            <ng-container *ngIf="form.get('laReturnStartDate').hasError('dateValid')">
-              <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('laReturnStartDate', 'dateValid') }}
-            </ng-container>
-            <ng-container *ngIf="form.get('laReturnStartDate').hasError('afterEndDate')">
-              <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('laReturnStartDate', 'afterEndDate') }}
-            </ng-container>
+          @if (submitted && form.get('laReturnStartDate').errors) {
+          <span id="laReturnStartDate-error" class="govuk-error-message">
+            @if (form.get('laReturnStartDate').hasError('required')) {
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage('laReturnStartDate', 'required') }}
+            } @if (form.get('laReturnStartDate').hasError('dateValid')) {
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage('laReturnStartDate', 'dateValid') }}
+            } @if (form.get('laReturnStartDate').hasError('afterEndDate')) {
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage('laReturnStartDate', 'afterEndDate') }}
+            }
           </span>
+          }
           <app-date-picker
             [formGroup]="form"
             [formGroupName]="'laReturnStartDate'"
@@ -40,24 +38,20 @@
         </div>
         <div class="govuk-grid-column-one-half-from-desktop">
           <span id="laReturnEndDate-hint" class="govuk-hint"> End date </span>
-          <span
-            *ngIf="submitted && form.get('laReturnEndDate').errors"
-            id="laReturnEndDate-error"
-            class="govuk-error-message"
-          >
-            <ng-container *ngIf="form.get('laReturnEndDate').hasError('required')">
-              <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('laReturnEndDate', 'required') }}
-            </ng-container>
-            <ng-container *ngIf="form.get('laReturnEndDate').hasError('dateValid')">
-              <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('laReturnEndDate', 'dateValid') }}
-            </ng-container>
-            <ng-container *ngIf="form.get('laReturnEndDate').hasError('beforeStartDate')">
-              <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('laReturnEndDate', 'beforeStartDate') }}
-            </ng-container>
+          @if (submitted && form.get('laReturnEndDate').errors) {
+          <span id="laReturnEndDate-error" class="govuk-error-message">
+            @if (form.get('laReturnEndDate').hasError('required')) {
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage('laReturnEndDate', 'required') }}
+            } @if (form.get('laReturnEndDate').hasError('dateValid')) {
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage('laReturnEndDate', 'dateValid') }}
+            } @if (form.get('laReturnEndDate').hasError('beforeStartDate')) {
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage('laReturnEndDate', 'beforeStartDate') }}
+            }
           </span>
+          }
           <app-date-picker
             [formGroup]="form"
             [formGroupName]="'laReturnEndDate'"

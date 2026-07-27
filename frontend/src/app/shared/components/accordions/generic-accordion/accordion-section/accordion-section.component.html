@@ -16,9 +16,11 @@
           </span></span
         >
 
-        <span *ngIf="description?.length > 0" class="govuk-accordion__section-summary govuk-body">
+        @if (description?.length > 0) {
+        <span class="govuk-accordion__section-summary govuk-body">
           <span class="govuk-accordion__section-summary-focus"> {{ description }} </span>
         </span>
+        }
 
         <span class="govuk-accordion__section-toggle" data-nosnippet="">
           <span class="govuk-accordion__section-toggle-focus">

@@ -1,9 +1,6 @@
-<app-error-summary
-  *ngIf="submitted && form.invalid"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
-  [serverError]="serverError"
-></app-error-summary>
+@if (submitted && form.invalid) {
+  <app-error-summary [formErrorsMap]="formErrorsMap" [form]="form" [serverError]="serverError"></app-error-summary>
+}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
@@ -20,7 +17,7 @@
             <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Select why you want to delete this staff record</h2>
           </legend>
           <div class="govuk-radios">
-            <ng-container *ngFor="let reason of reasons; index as index">
+            @for (reason of reasons; track $index; let index = $index) {
               <div class="govuk-radios__item">
                 <input
                   class="govuk-radios__input"
@@ -32,38 +29,41 @@
                 />
                 <label class="govuk-label govuk-radios__label" [for]="'reason-' + index"> {{ reason.reason }} </label>
               </div>
-              <div
-                *ngIf="reason.id === otherReasonId"
-                class="govuk-radios__conditional"
-                [class.govuk-radios__conditional--hidden]="selectedReasonId !== otherReasonId"
-                id="detailForOtherReason"
-                data-testid="other-reason-details"
-              >
+              @if (reason.id === otherReasonId) {
                 <div
-                  class="govuk-form-group"
-                  [class.govuk-form-group--error]="submitted && form.get('details').invalid"
+                  class="govuk-radios__conditional"
+                  [class.govuk-radios__conditional--hidden]="selectedReasonId !== otherReasonId"
+                  id="detailForOtherReason"
+                  data-testid="other-reason-details"
                 >
-                  <label class="govuk-label" for="details"> Provide details (optional) </label>
-                  <span *ngIf="submitted && form.get('details').invalid" id="details-error" class="govuk-error-message">
-                    <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFirstErrorMessage('details') }}
-                  </span>
-                  <textarea
-                    class="govuk-textarea govuk-!-margin-bottom-1"
-                    [class.govuk-input--error]="submitted && form.get('details').invalid"
-                    rows="5"
-                    id="details"
-                    name="details"
-                    formControlName="details"
-                    (input)="onInputDetails($event)"
-                  ></textarea>
-                  <app-character-count
-                    [textToCount]="detailsText"
-                    [max]="otherReasonDetailMaxLength"
-                  ></app-character-count>
+                  <div
+                    class="govuk-form-group"
+                    [class.govuk-form-group--error]="submitted && form.get('details').invalid"
+                  >
+                    <label class="govuk-label" for="details"> Provide details (optional) </label>
+                    @if (submitted && form.get('details').invalid) {
+                      <span id="details-error" class="govuk-error-message">
+                        <span class="govuk-visually-hidden">Error:</span>
+                        {{ getFirstErrorMessage('details') }}
+                      </span>
+                    }
+                    <textarea
+                      class="govuk-textarea govuk-!-margin-bottom-1"
+                      [class.govuk-input--error]="submitted && form.get('details').invalid"
+                      rows="5"
+                      id="details"
+                      name="details"
+                      formControlName="details"
+                      (input)="onInputDetails($event)"
+                    ></textarea>
+                    <app-character-count
+                      [textToCount]="detailsText"
+                      [max]="otherReasonDetailMaxLength"
+                    ></app-character-count>
+                  </div>
                 </div>
-              </div>
-            </ng-container>
+              }
+            }
           </div>
         </fieldset>
       </div>
@@ -74,14 +74,12 @@
         class="govuk-form-group govuk-!-margin-top-6"
         [class.govuk-form-group--error]="submitted && form.get('confirmDelete').invalid"
       >
-        <span
-          *ngIf="submitted && form.get('confirmDelete').invalid"
-          id="confirmDelete-error"
-          class="govuk-error-message"
-        >
-          <span class="govuk-visually-hidden">Error:</span>
-          {{ getFirstErrorMessage('confirmDelete') }}
-        </span>
+        @if (submitted && form.get('confirmDelete').invalid) {
+          <span id="confirmDelete-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFirstErrorMessage('confirmDelete') }}
+          </span>
+        }
         <div class="govuk-checkboxes__item govuk-checkboxes__item-align-middle">
           <input
             class="govuk-checkboxes__input"

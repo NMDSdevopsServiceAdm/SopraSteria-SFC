@@ -10,20 +10,24 @@
       </button>
     </div>
 
-    <p *ngIf="hasError" id="{{ formControlName }}-error" class="govuk-error-message">
-      <span class="govuk-visually-hidden">Error:</span> {{ errorMessage }}
-    </p>
-    <div *ngFor="let accordion of accordions">
-      <app-radio-button-accordion
-        [controlName]="formControlName"
-        [title]="accordion.title"
-        [description]="accordion.descriptionText"
-        [items]="accordion.items"
-        [open]="accordion.open"
-        (toggleEmitter)="toggleAccordion(accordion.index)"
-        (selectedValueEmitter)="onClick($event)"
-        [preFilledId]="preFilledId"
-      ></app-radio-button-accordion>
-    </div>
+    @if (hasError) {
+      <p id="{{ formControlName }}-error" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span> {{ errorMessage }}
+      </p>
+    }
+    @for (accordion of accordions; track accordion.index) {
+      <div>
+        <app-radio-button-accordion
+          [controlName]="formControlName"
+          [title]="accordion.title"
+          [description]="accordion.descriptionText"
+          [items]="accordion.items"
+          [open]="accordion.open"
+          (toggleEmitter)="toggleAccordion(accordion.index)"
+          (selectedValueEmitter)="onClick($event)"
+          [preFilledId]="preFilledId"
+        ></app-radio-button-accordion>
+      </div>
+    }
   </div>
 </div>

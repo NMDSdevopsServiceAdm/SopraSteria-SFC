@@ -8,15 +8,14 @@
   (click)="downloadAsPDF($event)"
 >
   <img alt="" src="/assets/images/icon-download.svg" />
-  <ng-container *ngIf="viewBenchmarksByCategory; else benchmarksPayDownload">
-    <span class="govuk-!-margin-left-1" data-testid="rAndRDownloadLink"
-      >Download recruitment and retention benchmarks <br />
-      (PDF, 385KB, 2 pages)</span
-    >
-  </ng-container>
-  <ng-template #benchmarksPayDownload>
-    <span class="govuk-!-margin-left-1" data-testid="payDownloadLink">
-      Download pay benchmarks (PDF, 430KB, 2 pages)
-    </span>
-  </ng-template>
+  @if (viewBenchmarksByCategory) {
+  <span class="govuk-!-margin-left-1" data-testid="rAndRDownloadLink"
+    >Download recruitment and retention benchmarks <br />
+    (PDF, 385KB, 2 pages)</span
+  >
+  } @else {
+  <span class="govuk-!-margin-left-1" data-testid="payDownloadLink">
+    Download pay benchmarks (PDF, 430KB, 2 pages)
+  </span>
+  }
 </a>

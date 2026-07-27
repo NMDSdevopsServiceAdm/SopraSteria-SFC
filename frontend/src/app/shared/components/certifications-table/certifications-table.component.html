@@ -1,11 +1,11 @@
-<ng-container *ngIf="certificates?.length > 0 || filesToUpload?.length > 0">
+@if (certificates?.length > 0 || filesToUpload?.length > 0) {
   <table class="govuk-table">
     <thead class="govuk-table__head" data-testid="certificationsTableHeader">
       <tr class="govuk-table__row">
         <th scope="col" class="govuk-table__header govuk-!-padding-bottom-1 filename-table-header">File name</th>
         <th scope="col" class="govuk-table__header govuk-!-padding-bottom-1">Upload date</th>
         <th scope="col" class="govuk-table__header govuk-!-font-weight-regular govuk-!-padding-bottom-1">
-          <ng-container *ngIf="certificates?.length > 1">
+          @if (certificates?.length > 1) {
             <a
               href="#"
               class="govuk-link govuk-link--no-visited-state"
@@ -16,13 +16,13 @@
                 >Download all</span
               ></a
             >
-          </ng-container>
+          }
         </th>
         <th scope="col" class="govuk-table__header govuk-!-padding-bottom-1"></th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      <ng-container *ngFor="let file of filesToUpload; let i = index">
+      @for (file of filesToUpload; track file; let i = $index) {
         <tr class="govuk-table__row" [attr.data-testid]="'upload-file-row-' + i">
           <td class="govuk-table__cell table__cell-file_name govuk-!-font-weight-regular">{{ file.name }}</td>
           <td class="govuk-table__cell table__cell-date">{{ dateToday | date: 'd MMM y' }}</td>
@@ -38,8 +38,8 @@
             </a>
           </td>
         </tr>
-      </ng-container>
-      <ng-container *ngFor="let certificate of certificates; let i = index">
+      }
+      @for (certificate of certificates; track certificate.uid; let i = $index) {
         <tr class="govuk-table__row" [attr.data-testid]="'certificate-row-' + i">
           <td class="govuk-table__cell table__cell-file_name govuk-!-font-weight-regular">
             {{ certificate.filename }}
@@ -66,7 +66,7 @@
             >
           </td>
         </tr>
-      </ng-container>
+      }
     </tbody>
   </table>
-</ng-container>
+}

@@ -3,22 +3,23 @@
     <div class="govuk-button-group">
       <a class="govuk-button" [routerLink]="exitUrl.url" [fragment]="exitUrl.fragment">Close this staff record</a>
       <span style="margin-left: auto">
+        @if (!isFirst && previousLink) {
         <a
-          *ngIf="!isFirst && previousLink"
           class="asc-chevron-before govuk-button--link govuk-link--no-visited-state govuk-!-margin-right-4"
           [routerLink]="previousLink"
           [relativeTo]="route"
           [fragment]=""
           >Previous staff record</a
         >
+        } @if (!isLast && nextLink) {
         <a
-          *ngIf="!isLast && nextLink"
           class="asc-chevron-after govuk-button--link govuk-link--no-visited-state govuk-!-margin-left-6 govuk-!-margin-right-4"
           [routerLink]="nextLink"
           [relativeTo]="route"
           [fragment]=""
           >Next staff record</a
         >
+        }
       </span>
     </div>
   </div>

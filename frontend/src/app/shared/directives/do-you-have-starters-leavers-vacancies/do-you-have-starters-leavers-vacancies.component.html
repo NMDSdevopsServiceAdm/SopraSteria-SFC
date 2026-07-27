@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
+@if (submitted && form.invalid) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
+}
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
@@ -6,7 +8,7 @@
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
-          <h1 class="govuk-fieldset__heading" style="width: 85%;">{{ heading }}</h1>
+          <h1 class="govuk-fieldset__heading" style="width: 85%">{{ heading }}</h1>
         </legend>
         <p data-testid="hint-text">
           {{ hintText }}
@@ -22,11 +24,14 @@
           class="govuk-form-group govuk-!-margin-bottom-3"
           [class.govuk-form-group--error]="submitted && form.invalid"
         >
-          <span id="startersLeaversVacanciesKnown-error" class="govuk-error-message" *ngIf="submitted && form.invalid"
+          @if (submitted && form.invalid) {
+          <span id="startersLeaversVacanciesKnown-error" class="govuk-error-message"
             >{{ requiredWarningMessage }}
           </span>
+          }
           <div class="govuk-radios">
-            <div class="govuk-radios__item" *ngFor="let option of knownOptions; let i = index">
+            @for (option of knownOptions; track option; let i = $index) {
+            <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
                 id="startersLeaversVacanciesKnown-{{ i }}"
@@ -39,6 +44,7 @@
                 {{ option.label }}
               </label>
             </div>
+            }
           </div>
         </div>
       </fieldset>
@@ -49,13 +55,15 @@
       ></app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
-      <div *ngIf="!return" class="govuk-util__float-right">
+      @if (!return) {
+      <div class="govuk-util__float-right">
         <app-progress-bar
           data-testid="progress-bar"
           [sections]="workplaceFlowSections"
           [currentSection]="section"
         ></app-progress-bar>
       </div>
+      }
     </div>
   </div>
 </form>

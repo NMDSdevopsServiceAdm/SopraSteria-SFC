@@ -1,9 +1,6 @@
-<app-error-summary
-  *ngIf="(submitted && form.invalid) || serverError"
-  [formErrorsMap]="formErrorsMap"
-  [serverError]="serverError"
-  [form]="form"
-></app-error-summary>
+@if ((submitted && form.invalid) || serverError) {
+  <app-error-summary [formErrorsMap]="formErrorsMap" [serverError]="serverError" [form]="form"></app-error-summary>
+}
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
@@ -16,11 +13,11 @@
             support workers?
           </h1>
         </legend>
-        @if(inPayAndPensionsMiniFlow){
-        <div class="govuk-details__text govuk-!-margin-bottom-4" data-testid="check-previous-response">
-          <p>Check your response to an older version of this question.</p>
-          <p>If you answered Yes, then we'd like to know the actual percentage contributed (optional).</p>
-        </div>
+        @if (inPayAndPensionsMiniFlow) {
+          <div class="govuk-details__text govuk-!-margin-bottom-4" data-testid="check-previous-response">
+            <p>Check your response to an older version of this question.</p>
+            <p>If you answered Yes, then we'd like to know the actual percentage contributed (optional).</p>
+          </div>
         }
         <div class="govuk-!-margin-bottom-6">
           <p>
@@ -36,7 +33,7 @@
         <div class="govuk-form-group">
           <div class="govuk-radios govuk-!-margin-bottom-4">
             <div class="govuk-radios govuk-radios--conditional">
-              <ng-container *ngFor="let option of pensionsOptions; let i = index">
+              @for (option of pensionsOptions; track option.value; let i = $index) {
                 <div class="govuk-radios__item">
                   <input
                     class="govuk-radios__input"
@@ -49,46 +46,44 @@
                   />
                   <label for="pensionsOption-{{ i }}" class="govuk-label govuk-radios__label">{{ option.label }}</label>
                 </div>
-                <div
-                  *ngIf="option.value === 'Yes'"
-                  class="govuk-radios__conditional"
-                  [class.govuk-radios__conditional--hidden]="!showPercentageTextBox"
-                  id="conditional-pensionPercentage-conditional-1"
-                  data-testid="pensionPercentageRadio-conditional"
-                >
-                  <div class="govuk-grid-row">
-                    <div class="govuk-grid-column-two-thirds">
-                      <div
-                        class="govuk-form-group"
-                        [class.govuk-form-group--error]="submitted && form.get('pensionPercentage').invalid"
-                      >
-                        <label class="govuk-label" for="pensionPercentage"> Actual contribution</label>
-                        <span id="pensionPercentage-hint" class="govuk-hint govuk-!-margin-bottom-4">
-                          Leave blank if not known
-                        </span>
-                        <span
-                          *ngIf="submitted && form.get('pensionPercentage').invalid"
-                          id="pensionPercentage-error"
-                          class="govuk-error-message"
+                @if (option.value === 'Yes') {
+                  <div
+                    class="govuk-radios__conditional"
+                    [class.govuk-radios__conditional--hidden]="!showPercentageTextBox"
+                    id="conditional-pensionPercentage-conditional-1"
+                    data-testid="pensionPercentageRadio-conditional"
+                  >
+                    <div class="govuk-grid-row">
+                      <div class="govuk-grid-column-two-thirds">
+                        <div
+                          class="govuk-form-group"
+                          [class.govuk-form-group--error]="submitted && form.get('pensionPercentage').invalid"
                         >
-                          <span class="govuk-visually-hidden">Error:</span>
-                          {{ getFirstErrorMessage('pensionPercentage') }}
-                        </span>
-
-                        <app-decimal-input-with-buttons
-                          [min]="minPercentage"
-                          [max]="maxPercentage"
-                          inputId="pensionPercentage"
-                          formControlName="pensionPercentage"
-                          [hasError]="submitted && form.get('pensionPercentage').invalid"
-                          [step]="0.05"
-                          suffix="%"
-                        ></app-decimal-input-with-buttons>
+                          <label class="govuk-label" for="pensionPercentage"> Actual contribution</label>
+                          <span id="pensionPercentage-hint" class="govuk-hint govuk-!-margin-bottom-4">
+                            Leave blank if not known
+                          </span>
+                          @if (submitted && form.get('pensionPercentage').invalid) {
+                            <span id="pensionPercentage-error" class="govuk-error-message">
+                              <span class="govuk-visually-hidden">Error:</span>
+                              {{ getFirstErrorMessage('pensionPercentage') }}
+                            </span>
+                          }
+                          <app-decimal-input-with-buttons
+                            [min]="minPercentage"
+                            [max]="maxPercentage"
+                            inputId="pensionPercentage"
+                            formControlName="pensionPercentage"
+                            [hasError]="submitted && form.get('pensionPercentage').invalid"
+                            [step]="0.05"
+                            suffix="%"
+                          ></app-decimal-input-with-buttons>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </ng-container>
+                }
+              }
             </div>
           </div>
         </div>
@@ -101,14 +96,14 @@
       </app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
-      @if(showProgressBar) {
-      <div class="govuk-util__float-right">
-        <app-progress-bar
-          data-testid="progress-bar"
-          [sections]="progressBarSections"
-          [currentSection]="section"
-        ></app-progress-bar>
-      </div>
+      @if (showProgressBar) {
+        <div class="govuk-util__float-right">
+          <app-progress-bar
+            data-testid="progress-bar"
+            [sections]="progressBarSections"
+            [currentSection]="section"
+          ></app-progress-bar>
+        </div>
       }
     </div>
   </div>

@@ -36,11 +36,19 @@
         <dt class="govuk-summary-list__key">Name and address</dt>
         <dl class="govuk-summary-list__value">
           {{ registration.establishment.name }}<br />
-          {{ registration.establishment.address1 }}<br *ngIf="registration.establishment.address2" />
-          {{ registration.establishment.address2 }}<br *ngIf="registration.establishment.address3" />
-          {{ registration.establishment.address3 }}<br *ngIf="registration.establishment.county" />
+          {{ registration.establishment.address1 }}@if (registration.establishment.address2) {
+          <br />
+          }
+          {{ registration.establishment.address2 }}@if (registration.establishment.address3) {
+          <br />
+          }
+          {{ registration.establishment.address3 }}@if (registration.establishment.county) {
+          <br />
+          }
           {{ registration.establishment.county }}<br />
-          {{ registration.establishment.town }}<span *ngIf="registration.establishment.town">,</span>
+          {{ registration.establishment.town }}@if (registration.establishment.town) {
+          <span>,</span>
+          }
           {{ registration.establishment.postcode }}
         </dl>
       </div>
@@ -84,10 +92,12 @@
         </button>
         <a [routerLink]="['/sfcadmin', 'cqc-main-service-change']" class="govuk-!-margin-left-9 govuk-list">Exit</a>
       </div>
-      <span *ngIf="approvalOrRejectionServerError" id="approvalOrRejectionServerError" class="govuk-error-message">
+      @if (approvalOrRejectionServerError) {
+      <span id="approvalOrRejectionServerError" class="govuk-error-message">
         <span class="govuk-visually-hidden">Error:</span>
         {{ approvalOrRejectionServerError }}
       </span>
+      }
     </div>
   </div>
 </div>

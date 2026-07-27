@@ -1,20 +1,33 @@
-<div *ngIf="success" class="alert alert-success">
-  <p *ngFor="let message of success">
-    {{message}}
+@if (success) {
+<div class="alert alert-success">
+  @for (message of success; track message) {
+  <p>
+    {{ message }}
   </p>
+  }
 </div>
-<div *ngIf="info" class="alert alert-info">
-  <p *ngFor="let message of info">
-    {{message}}
+} @if (info) {
+<div class="alert alert-info">
+  @for (message of info; track message) {
+  <p>
+    {{ message }}
   </p>
+  }
 </div>
-<div *ngIf="warning" class="alert alert-warning">
-  <p *ngFor="let message of warning">
-    {{message}}
+} @if (warning) {
+<div class="alert alert-warning">
+  @for (message of warning; track message) {
+  <p>
+    {{ message }}
   </p>
+  }
 </div>
-<div *ngIf="error" class="alert alert-danger">
-  <p *ngFor="let message of error">
-    {{message}}
+} @if (error) {
+<div class="alert alert-danger">
+  @for (message of error; track message) {
+  <p>
+    {{ message }}
   </p>
+  }
 </div>
+}

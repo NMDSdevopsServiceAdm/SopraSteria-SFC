@@ -1,10 +1,6 @@
-<app-error-summary
-  *ngIf="submitted && (form.invalid || serverError)"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
-  [serverError]="serverError"
->
-</app-error-summary>
+@if (submitted && (form.invalid || serverError)) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form" [serverError]="serverError"> </app-error-summary>
+}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
@@ -19,10 +15,12 @@
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
           <label class="govuk-label" for="postcode"> Postcode </label>
-          <span *ngIf="submitted && getPostcode.errors" id="postcode-error" class="govuk-error-message">
+          @if (submitted && getPostcode.errors) {
+          <span id="postcode-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             {{ getFirstErrorMessage('postcode') }}
           </span>
+          }
           <input
             class="govuk-input govuk-input--width-10"
             [formControlName]="'postcode'"
@@ -44,13 +42,14 @@
         [sections]="workplaceSections"
         [currentSection]="'Find workplace'"
       ></app-progress-bar>
+      @if (this.flow.includes('registration')) {
       <app-progress-bar
-        *ngIf="this.flow.includes('registration')"
         data-testid="progress-bar-2"
         [header]="'User account'"
         [sections]="userAccountSections"
         [currentSection]="'Find workplace'"
       ></app-progress-bar>
+      }
     </div>
   </div>
 </div>

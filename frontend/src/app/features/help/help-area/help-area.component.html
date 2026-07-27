@@ -9,18 +9,20 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-quarter govuk-!-margin-top-8">
     <nav>
-      <ul *ngFor="let tab of tabs; index as i">
-        <li>
-          <a
-            href="#"
-            (click)="onTabClick($event, i)"
-            [class.active]="i == currentTabIndex"
-            role="tab"
-            aria-selected="i == currentTabIndex"
-            >{{ tab.linkText }}</a
-          >
-        </li>
-      </ul>
+      @for (tab of tabs; track tab.linkText; let i = $index) {
+        <ul>
+          <li>
+            <a
+              href="#"
+              (click)="onTabClick($event, i)"
+              [class.active]="i == currentTabIndex"
+              role="tab"
+              aria-selected="i == currentTabIndex"
+              >{{ tab.linkText }}</a
+            >
+          </li>
+        </ul>
+      }
     </nav>
   </div>
 

@@ -35,15 +35,15 @@
 </div>
 <div class="govuk-grid-row govuk-!-margin-top-7">
   <div class="govuk-grid-column-three-quarters">
-    <ng-container *ngIf="(overallWdfEligibility && !isParent) || (parentOverallWdfEligibility && isParent)">
-      <div data-testid="dataMetFunding">
-        <p>
-          Your data met the funding requirements on {{ parentOverallEligibilityDate ?? overallEligibilityDate }} and
-          will continue to meet them until 31 March {{ wdfEndDate | date: 'yyyy' }}.
-          <a [routerLink]="['data']" [relativeTo]="route">Keep your data current</a>, it might save you time next year.
-        </p>
-      </div>
-    </ng-container>
+    @if ((overallWdfEligibility && !isParent) || (parentOverallWdfEligibility && isParent)) {
+    <div data-testid="dataMetFunding">
+      <p>
+        Your data met the funding requirements on {{ parentOverallEligibilityDate ?? overallEligibilityDate }} and will
+        continue to meet them until 31 March {{ wdfEndDate | date: 'yyyy' }}.
+        <a [routerLink]="['data']" [relativeTo]="route">Keep your data current</a>, it might save you time next year.
+      </p>
+    </div>
+    }
 
     <div>
       <p class="govuk-!-margin-bottom-7">

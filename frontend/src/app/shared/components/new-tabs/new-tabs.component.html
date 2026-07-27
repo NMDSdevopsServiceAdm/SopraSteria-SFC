@@ -1,10 +1,10 @@
 <div data-module="tabs" data-cy="tab-list">
   <ul role="tablist" #tablist class="govuk-tabs__list asc-tabs-bar">
-    <ng-container *ngFor="let tab of tabs; let i = index">
+    @for (tab of tabs; track tab.slug; let i = $index) {
       <li
         [ngClass]="{
           'govuk-subsidiary-tabs__list-item': isParentViewingSub,
-          'govuk-standalone-tabs__list-item': !isParentViewingSub
+          'govuk-standalone-tabs__list-item': !isParentViewingSub,
         }"
         [class.asc-active]="tab.active"
       >
@@ -25,6 +25,6 @@
           {{ tab.title }}
         </a>
       </li>
-    </ng-container>
+    }
   </ul>
 </div>

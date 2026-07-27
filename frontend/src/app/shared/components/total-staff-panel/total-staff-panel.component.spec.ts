@@ -15,15 +15,13 @@ describe('TotalStaffPanelComponent', () => {
   let fixture: ComponentFixture<TotalStaffPanelComponent>;
   let permissionsService: PermissionsService;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [TotalStaffPanelComponent],
-        imports: [SharedModule],
-        providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
-      }).compileComponents();
-    }),
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [TotalStaffPanelComponent],
+      imports: [SharedModule],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TotalStaffPanelComponent);

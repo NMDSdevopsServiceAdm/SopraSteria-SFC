@@ -24,10 +24,9 @@
       </span>
     </div>
     <div id="uploadCertificate-errors">
-      <app-validation-error-message
-        *ngFor="let errorMessage of certificateErrors"
-        [errorMessage]="errorMessage"
-      ></app-validation-error-message>
+      @for (errorMessage of certificateErrors; track errorMessage) {
+      <app-validation-error-message [errorMessage]="errorMessage"></app-validation-error-message>
+      }
     </div>
   </fieldset>
 </div>

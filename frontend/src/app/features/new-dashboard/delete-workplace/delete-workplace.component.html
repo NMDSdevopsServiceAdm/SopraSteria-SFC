@@ -1,11 +1,12 @@
+@if (submitted && form.invalid) {
 <app-error-summary
-  *ngIf="submitted && form.invalid"
   [formErrorsMap]="formErrorsMap"
   [form]="form"
   [serverError]="serverError"
   data-testid="deleteWorkplaceErrorSummary"
 >
 </app-error-summary>
+}
 
 <div class="govuk-grid-row govuk-!-padding-bottom-1 govuk-!-margin-top-1">
   <div class="govuk-grid-column-two-thirds">
@@ -29,14 +30,12 @@
               delete this workplace and all of its staff records.
             </p>
 
-            <span
-              *ngIf="submitted && form.get('deleteWorkplace').errors"
-              id="deleteWorkplace-error"
-              class="govuk-error-message"
-            >
+            @if (submitted && form.get('deleteWorkplace').errors) {
+            <span id="deleteWorkplace-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span>
               {{ getFormErrorMessage('deleteWorkplace', 'required') }}
             </span>
+            }
             <div class="govuk-radios" data-module="govuk-radios">
               <div class="govuk-radios__item">
                 <input

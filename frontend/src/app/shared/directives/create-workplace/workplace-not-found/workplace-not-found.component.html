@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+@if (submitted && form.invalid) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
@@ -16,15 +18,12 @@
           postcode?
         </h4>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
-          <span
-            *ngIf="submitted && this.form.get('useDifferentLocationIdOrPostcode').errors"
-            id="useDifferentLocationIdOrPostcode-error"
-            data-testid="errorMessage"
-            class="govuk-error-message"
-          >
+          @if (submitted && this.form.get('useDifferentLocationIdOrPostcode').errors) {
+          <span id="useDifferentLocationIdOrPostcode-error" data-testid="errorMessage" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             {{ getErrorMessage('useDifferentLocationIdOrPostcode') }}
           </span>
+          }
           <div class="govuk-radios govuk-radios--conditional">
             <div class="govuk-radios__item">
               <input
@@ -58,7 +57,8 @@
       <button class="govuk-button govuk-!-margin-top-5" type="submit">Continue</button>
     </form>
   </div>
-  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+  @if (insideFlow) {
+  <div class="govuk-grid-column-one-third">
     <div class="govuk-!-margin-left-8">
       <app-progress-bar
         data-testid="progress-bar-1"
@@ -66,13 +66,15 @@
         [sections]="workplaceSections"
         [currentSection]="'Confirm workplace'"
       ></app-progress-bar>
+      @if (!isParent) {
       <app-progress-bar
-        *ngIf="!isParent"
         data-testid="progress-bar-2"
         [header]="'User account'"
         [sections]="userAccountSections"
         [currentSection]="'Confirm workplace'"
       ></app-progress-bar>
+      }
     </div>
   </div>
+  }
 </div>

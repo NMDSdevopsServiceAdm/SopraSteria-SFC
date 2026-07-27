@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+@if (submitted && form.invalid) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
 
 <form #formEl (ngSubmit)="onSubmit($event)" [formGroup]="form" novalidate>
   <div class="govuk-grid-row">
@@ -19,7 +21,8 @@
           [errorMessage]="formErrorsMap[0].type[0].message"
         ></app-grouped-radio-button-accordion>
 
-        <div *ngIf="!hideOtherCheckbox" class="govuk-checkboxes govuk-!-padding-bottom-6">
+        @if (!hideOtherCheckbox) {
+        <div class="govuk-checkboxes govuk-!-padding-bottom-6">
           <div [class.govuk-form-group--error]="submitted && error">
             <div class="govuk-checkboxes__item">
               <input
@@ -36,6 +39,7 @@
             </div>
           </div>
         </div>
+        }
       </fieldset>
     </div>
   </div>

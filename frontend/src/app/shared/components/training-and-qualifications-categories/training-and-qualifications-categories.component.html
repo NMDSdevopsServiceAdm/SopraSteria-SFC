@@ -1,4 +1,4 @@
-<ng-container *ngIf="totalTraining > 0 || mandatoryTrainingCount > 0; else noRecords">
+@if (totalTraining > 0 || mandatoryTrainingCount > 0) {
   <div class="govuk-form-group govuk-!-margin-bottom-6">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-three-quarters govuk-!-padding-top-7 govuk-!-padding-bottom-2">
@@ -27,18 +27,21 @@
           [value]="sortByValue"
           (change)="orderTrainingCategories($event.target.value)"
         >
-          <option
-            *ngFor="let sortTrainingAndQualsOption of sortTrainingAndQualsOptions | keyvalue"
-            value="{{ sortTrainingAndQualsOption.key }}"
-            [selected]="sortTrainingAndQualsOption.key === sortByValue"
-          >
-            {{ sortTrainingAndQualsOption.value }}
-          </option>
+          @for (
+            sortTrainingAndQualsOption of sortTrainingAndQualsOptions | keyvalue;
+            track sortTrainingAndQualsOption.key
+          ) {
+            <option
+              value="{{ sortTrainingAndQualsOption.key }}"
+              [selected]="sortTrainingAndQualsOption.key === sortByValue"
+            >
+              {{ sortTrainingAndQualsOption.value }}
+            </option>
+          }
         </select>
       </div>
     </div>
   </div>
-
   <table class="govuk-table" data-testid="training-category-table">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
@@ -49,8 +52,8 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      <ng-container *ngFor="let trainingCategory of trainingCategories">
-        <ng-container *ngIf="showMandatoryTraining ? trainingCategory.isMandatory : true">
+      @for (trainingCategory of trainingCategories; track trainingCategory.id) {
+        @if (showMandatoryTraining ? trainingCategory.isMandatory : true) {
           <tr class="govuk-table__row govuk-util__vertical-align-top">
             <td class="govuk-table__cell govuk-!-font-weight-regular">
               {{ trainingCategory.category }}
@@ -59,65 +62,67 @@
               {{ totalTrainingRecords(trainingCategory.training) }}
             </td>
             <td class="govuk-table__cell">
-              <div
-                *ngIf="
-                  trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED) >
-                  0
-                "
-                class="govuk-!-margin-bottom-0"
-              >
-                <img
-                  src="/assets/images/flag-red.svg"
-                  alt=""
-                  class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-                />
-                {{
-                  trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED)
-                }}
-                expired
-              </div>
-              <div
-                *ngIf="
-                  trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING) >
-                  0
-                "
-                class="govuk-!-margin-bottom-0"
-              >
-                <img
-                  src="/assets/images/flag-red.svg"
-                  alt=""
-                  class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-                />
-                {{
-                  trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING)
-                }}
-                missing
-              </div>
-              <div
-                *ngIf="
-                  trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING) >
-                  0
-                "
-                class="govuk-!-margin-bottom-0"
-              >
-                <img
-                  src="/assets/images/flag-orange.svg"
-                  alt=""
-                  class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-                />
-                <ng-container
-                  [ngPlural]="
-                    trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING)
-                  "
-                >
+              @if (
+                trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED) > 0
+              ) {
+                <div class="govuk-!-margin-bottom-0">
+                  <img
+                    src="/assets/images/flag-red.svg"
+                    alt=""
+                    class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+                  />
                   {{
-                    trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING)
+                    trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRED)
                   }}
-                  <ng-template ngPluralCase="=1">expires soon</ng-template>
-                  <ng-template ngPluralCase="other">expire soon</ng-template>
-                </ng-container>
-              </div>
-              <div *ngIf="trainingIsComplete(trainingCategory.training)">OK</div>
+                  expired
+                </div>
+              }
+              @if (
+                trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING) > 0
+              ) {
+                <div class="govuk-!-margin-bottom-0">
+                  <img
+                    src="/assets/images/flag-red.svg"
+                    alt=""
+                    class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+                  />
+                  {{
+                    trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.MISSING)
+                  }}
+                  missing
+                </div>
+              }
+              @if (
+                trainingStatusService.trainingStatusCount(trainingCategory.training, trainingStatusService.EXPIRING) > 0
+              ) {
+                <div class="govuk-!-margin-bottom-0">
+                  <img
+                    src="/assets/images/flag-orange.svg"
+                    alt=""
+                    class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+                  />
+                  <ng-container
+                    [ngPlural]="
+                      trainingStatusService.trainingStatusCount(
+                        trainingCategory.training,
+                        trainingStatusService.EXPIRING
+                      )
+                    "
+                  >
+                    {{
+                      trainingStatusService.trainingStatusCount(
+                        trainingCategory.training,
+                        trainingStatusService.EXPIRING
+                      )
+                    }}
+                    <ng-template ngPluralCase="=1">expires soon</ng-template>
+                    <ng-template ngPluralCase="other">expire soon</ng-template>
+                  </ng-container>
+                </div>
+              }
+              @if (trainingIsComplete(trainingCategory.training)) {
+                <div>OK</div>
+              }
             </td>
             <td class="govuk-table__cell govuk-!-font-weight-regular">
               <a
@@ -129,22 +134,21 @@
                   this.workplace.uid,
                   'training-and-qualifications-record',
                   'view-training-category',
-                  trainingCategory.id
+                  trainingCategory.id,
                 ]"
               >
                 View
               </a>
             </td>
           </tr>
-        </ng-container>
-      </ng-container>
+        }
+      }
     </tbody>
   </table>
-</ng-container>
-<ng-template #noRecords>
+} @else {
   <div class="govuk-grid-row" data-testid="noRecords">
     <div class="govuk-grid-column-three-quarters">
       <p>You need to click on a name or ID number under 'Staff' to add a <br />training record.</p>
     </div>
   </div>
-</ng-template>
+}

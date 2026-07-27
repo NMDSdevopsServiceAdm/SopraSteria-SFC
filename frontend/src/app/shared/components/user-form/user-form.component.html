@@ -4,14 +4,16 @@
       <h1 class="govuk-fieldset__heading">{{ title }}</h1>
     </legend>
 
-    <ng-container *ngFor="let item of formControlsMap">
+    @for (item of formControlsMap; track item.name) {
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get(item.name).errors">
         <label class="govuk-label" for="{{ item.name }}">
           {{ item.label }}
         </label>
-        <span *ngIf="submitted && form.get(item.name).errors" id="{{ item.name }}-error" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(item.name) }}
-        </span>
+        @if (submitted && form.get(item.name).errors) {
+          <span id="{{ item.name }}-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(item.name) }}
+          </span>
+        }
         <input
           class="govuk-input govuk-input--width-20"
           [formControlName]="item.name"
@@ -21,7 +23,7 @@
           type="text"
         />
       </div>
-    </ng-container>
+    }
   </fieldset>
 
   <fieldset class="govuk-fieldset">
@@ -29,27 +31,27 @@
       <h2 class="govuk-fieldset__heading">Permissions</h2>
     </legend>
     <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('permissionsType').errors">
-      <span
-        *ngIf="submitted && form.get('permissionsType').errors"
-        id="permissionsType-error"
-        class="govuk-error-message"
-      >
-        <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('permissionsType') }}
-      </span>
+      @if (submitted && form.get('permissionsType').errors) {
+        <span id="permissionsType-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('permissionsType') }}
+        </span>
+      }
       <div class="govuk-radios govuk-!-margin-bottom-2">
-        <div class="govuk-radios__item" *ngFor="let item of permissionsTypeRadios; let i = index">
-          <input
-            class="govuk-radios__input"
-            [formControlName]="'permissionsType'"
-            id="permissionsType-{{ i }}"
-            name="permissionsType"
-            value="{{ item.permissionsQuestionValue }}"
-            type="radio"
-          />
-          <label class="govuk-label govuk-radios__label" for="permissionsType-{{ i }}">
-            {{ item.label }}
-          </label>
-        </div>
+        @for (item of permissionsTypeRadios; track item.permissionsQuestionValue; let i = $index) {
+          <div class="govuk-radios__item">
+            <input
+              class="govuk-radios__input"
+              [formControlName]="'permissionsType'"
+              id="permissionsType-{{ i }}"
+              name="permissionsType"
+              value="{{ item.permissionsQuestionValue }}"
+              type="radio"
+            />
+            <label class="govuk-label govuk-radios__label" for="permissionsType-{{ i }}">
+              {{ item.label }}
+            </label>
+          </div>
+        }
       </div>
     </div>
   </fieldset>

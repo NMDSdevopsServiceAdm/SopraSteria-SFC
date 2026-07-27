@@ -6,30 +6,33 @@
     </h1>
   </div>
 </div>
-<ng-container *ngIf="totalCount > 0; else noNotifications">
+@if (totalCount > 0) {
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third govuk-!-margin-top-7">
       <p class="govuk-body-m">Select which notifications to delete</p>
     </div>
     <div class="govuk-grid-column-one-third govuk-!-margin-top-6 govuk-!-padding-left-0">
-      <a
-        *ngIf="notificationsForDeletion.length > 0"
-        class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-margin-bottom-1"
-        draggable="false"
-        href="javascript:void(0)"
-        [attr.data-testid]="'deleteButton'"
-        (click)="deleteSelectedNotifications()"
-      >
-        <img src="/assets/images/bin.svg" alt="" />
-        <span class="govuk-!-margin-left-1"> Delete notifications </span></a
-      >
+      @if (notificationsForDeletion.length > 0) {
+        <a
+          class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-margin-bottom-1"
+          draggable="false"
+          href="javascript:void(0)"
+          [attr.data-testid]="'deleteButton'"
+          (click)="deleteSelectedNotifications()"
+        >
+          <img src="/assets/images/bin.svg" alt="" />
+          <span class="govuk-!-margin-left-1"> Delete notifications </span></a
+        >
+      }
     </div>
     <div class="govuk-grid-column-one-third">
       <label class="govuk-label" for="sortBy"> Sort by </label>
       <select class="govuk-select govuk-!-width-full" id="sortBy" name="sortBy" (change)="onSortChange($event)">
-        <option *ngFor="let option of sortOptions | keyvalue" value="{{ option.value }}">
-          {{ option.value }}
-        </option>
+        @for (option of sortOptions | keyvalue; track option.key) {
+          <option value="{{ option.value }}">
+            {{ option.value }}
+          </option>
+        }
       </select>
     </div>
   </div>
@@ -59,7 +62,7 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      <ng-container *ngFor="let notification of notifications; index as i">
+      @for (notification of notifications; track notification.notificationUid; let i = $index) {
         <tr
           class="govuk-table__row notification-list-row"
           [class.notification-list-row--unread]="!notification.isViewed"
@@ -80,10 +83,12 @@
           </td>
           <td class="govuk-table__cell">
             <span class="notification-list-item">
-              <div *ngIf="!notification.isViewed">
-                <span class="govuk-visually-hidden">Unread: </span>
-                <img src="/assets/images/new-icon.png" alt="" class="notification-list-item__icon" />
-              </div>
+              @if (!notification.isViewed) {
+                <div>
+                  <span class="govuk-visually-hidden">Unread: </span>
+                  <img src="/assets/images/new-icon.png" alt="" class="notification-list-item__icon" />
+                </div>
+              }
               <a [routerLink]="['/notifications', notification.notificationUid]" class="notification-list-item__link">
                 {{ notification.type | notificationType }}</a
               >
@@ -91,7 +96,7 @@
           </td>
           <td class="govuk-table__cell govuk-!-padding-top-3">{{ notification.created | longDate }}</td>
         </tr>
-      </ng-container>
+      }
     </tbody>
   </table>
   <app-pagination
@@ -100,11 +105,10 @@
     (currentPageIndexChange)="handlePageUpdate($event)"
     [currentPageIndex]="selectedPageIndex"
   ></app-pagination>
-</ng-container>
-<ng-template #noNotifications>
+} @else {
   <div class="govuk-grid-row govuk-!-margin-top-6">
     <div class="govuk-grid-column-two-thirds">
       <p class="govuk-body-m">You have no notifications</p>
     </div>
   </div>
-</ng-template>
+}

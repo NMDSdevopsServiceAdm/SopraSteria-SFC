@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && serverError" [serverError]="serverError" [form]="form"> </app-error-summary>
+@if (submitted && serverError) {
+  <app-error-summary [serverError]="serverError" [form]="form"> </app-error-summary>
+}
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
@@ -35,38 +37,39 @@
               </th>
               <td class="govuk-table__cell"></td>
             </tr>
-            <tr class="govuk-table__row" *ngFor="let worker of healthAndCareVisaRadioListValues; let i = index">
-              <th
-                scope="row"
-                class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-third"
-                style="vertical-align: middle"
-              >
-                <a href="#" (click)="navigateToStaffRecordSummary($event, workers[i].uid)">
-                  {{ workers[i].name }}
-                </a>
-              </th>
-              <td class="govuk-table__cell">
-                <div class="govuk-radios govuk-radios--inline asc-inline-radio-buttons" data-module="govuk-radios">
-                  <div
-                    *ngFor="let answer of healthCareAndVisaAnswers; let j = index"
-                    class="govuk-radios__item govuk-!-margin-bottom-0 asc-radios-with-spacing"
-                  >
-                    <input
-                      id="healthAndCareVisa-{{ i }}-{{ j }}"
-                      name="healthAndCareVisa-{{ i }}"
-                      class="govuk-radios__input"
-                      type="radio"
-                      [value]="answer.value"
-                      [checked]="worker.get('healthAndCareVisa').value === answer.value"
-                      (change)="radioChange(i, j)"
-                    />
-                    <label class="govuk-label govuk-radios__label" for="healthAndCareVisa-{{ i }}-{{ j }}">
-                      {{ answer.tag }}
-                    </label>
+            @for (worker of healthAndCareVisaRadioListValues; track worker.uid; let i = $index) {
+              <tr class="govuk-table__row">
+                <th
+                  scope="row"
+                  class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-third"
+                  style="vertical-align: middle"
+                >
+                  <a href="#" (click)="navigateToStaffRecordSummary($event, workers[i].uid)">
+                    {{ workers[i].name }}
+                  </a>
+                </th>
+                <td class="govuk-table__cell">
+                  <div class="govuk-radios govuk-radios--inline asc-inline-radio-buttons" data-module="govuk-radios">
+                    @for (answer of healthCareAndVisaAnswers; track answer.value; let j = $index) {
+                      <div class="govuk-radios__item govuk-!-margin-bottom-0 asc-radios-with-spacing">
+                        <input
+                          id="healthAndCareVisa-{{ i }}-{{ j }}"
+                          name="healthAndCareVisa-{{ i }}"
+                          class="govuk-radios__input"
+                          type="radio"
+                          [value]="answer.value"
+                          [checked]="worker.get('healthAndCareVisa').value === answer.value"
+                          (change)="radioChange(i, j)"
+                        />
+                        <label class="govuk-label govuk-radios__label" for="healthAndCareVisa-{{ i }}-{{ j }}">
+                          {{ answer.tag }}
+                        </label>
+                      </div>
+                    }
                   </div>
-                </div>
-              </td>
-            </tr>
+                </td>
+              </tr>
+            }
           </tbody>
         </table>
       </div>
