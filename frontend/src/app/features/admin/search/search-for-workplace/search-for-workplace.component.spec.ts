@@ -39,7 +39,9 @@ describe('SearchForWorkplaceComponent', () => {
         SearchService,
         WindowRef,
         AlertService,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const mockSearchResult = buildMockAdminSearchWorkplace(isLocked, isParent, hasSubs);
@@ -183,7 +185,8 @@ describe('SearchForWorkplaceComponent', () => {
 
     it('should show a message with the number of results returned pluralised when the search returns more than 1 workplace', async () => {
       const { fixture, getByText, searchWorkplaceSpy, mockSearchResult } = await setup();
-      searchWorkplaceSpy.and.returnValue(of([mockSearchResult, mockSearchResult]));
+      const mockSearchResult2 = { ...mockSearchResult, uid: 'mock-uid-2' };
+      searchWorkplaceSpy.and.returnValue(of([mockSearchResult, mockSearchResult2]));
 
       const searchButton = getByText('Search');
       fireEvent.click(searchButton);

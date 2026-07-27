@@ -12,7 +12,7 @@
     <ul class="govuk-list govuk-error-summary__list">
       @if (errors) {
         @if (getCurrentRoute(); as currentRoute) {
-          @for (i of errors; track i.item) {
+          @for (i of errors; track i?.item + i?.errors) {
             <li>
               <a
                 (click)="focusOnField(i.item)"

@@ -37,7 +37,7 @@
               </th>
               <td class="govuk-table__cell"></td>
             </tr>
-            @for (worker of healthAndCareVisaRadioListValues; track worker.uid; let i = $index) {
+            @for (worker of healthAndCareVisaRadioListValues; track worker; let i = $index) {
               <tr class="govuk-table__row">
                 <th
                   scope="row"

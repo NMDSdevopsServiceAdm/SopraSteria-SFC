@@ -129,7 +129,7 @@ describe('EmployedFromOutsideUkExistingWorkersComponent', () => {
     };
   }
 
-  fit('should render an EmployedFromOutsideUkExistingWorkersComponent', async () => {
+  it('should render an EmployedFromOutsideUkExistingWorkersComponent', async () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();

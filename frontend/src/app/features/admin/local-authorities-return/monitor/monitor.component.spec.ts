@@ -25,11 +25,36 @@ describe('MonitorComponent', () => {
             snapshot: {
               data: {
                 localAuthorities: {
-                  B: [{ name: 'B LA1', workplaceId: 'B1005115', notes: true, status: 'Not updated', workers: 0 }],
-                  C: [
-                    { name: 'C LA1', workplaceId: 'B1005116', notes: false, status: 'Update, complete', workers: 10 },
+                  B: [
+                    {
+                      name: 'B LA1',
+                      workplaceId: 'B1005115',
+                      notes: true,
+                      status: 'Not updated',
+                      workers: 0,
+                      localAuthorityUID: 'mock-localAuthorityUID-b',
+                    },
                   ],
-                  D: [{ name: 'D LA1', workplaceId: 'B1005117', notes: true, status: 'Not updated', workers: 10 }],
+                  C: [
+                    {
+                      name: 'C LA1',
+                      workplaceId: 'B1005116',
+                      notes: false,
+                      status: 'Update, complete',
+                      workers: 10,
+                      localAuthorityUID: 'mock-localAuthorityUID-c',
+                    },
+                  ],
+                  D: [
+                    {
+                      name: 'D LA1',
+                      workplaceId: 'B1005117',
+                      notes: true,
+                      status: 'Not updated',
+                      workers: 10,
+                      localAuthorityUID: 'mock-localAuthorityUID-d',
+                    },
+                  ],
                   E: [
                     {
                       name: 'E LA1',
@@ -37,13 +62,37 @@ describe('MonitorComponent', () => {
                       notes: false,
                       status: 'Update, not complete',
                       workers: 0,
+                      localAuthorityUID: 'mock-localAuthorityUID-e',
                     },
                   ],
                   F: [
-                    { name: 'F LA1', workplaceId: 'B1005119', notes: true, status: 'Confirmed, complete', workers: 10 },
-                    { name: 'F LA2', workplaceId: 'B100511', notes: false, status: 'Not updated', workers: 0 },
+                    {
+                      name: 'F LA1',
+                      workplaceId: 'B1005119',
+                      notes: true,
+                      status: 'Confirmed, complete',
+                      workers: 10,
+                      localAuthorityUID: 'mock-localAuthorityUID-f1',
+                    },
+                    {
+                      name: 'F LA2',
+                      workplaceId: 'B100511',
+                      notes: false,
+                      status: 'Not updated',
+                      workers: 0,
+                      localAuthorityUID: 'mock-localAuthorityUID-f2',
+                    },
                   ],
-                  G: [{ name: 'G LA1', workplaceId: 'B1005112', notes: true, status: 'Not updated', workers: 10 }],
+                  G: [
+                    {
+                      name: 'G LA1',
+                      workplaceId: 'B1005112',
+                      notes: true,
+                      status: 'Not updated',
+                      workers: 10,
+                      localAuthorityUID: 'mock-localAuthorityUID-g',
+                    },
+                  ],
                   H: [
                     {
                       name: 'H LA1',
@@ -51,10 +100,29 @@ describe('MonitorComponent', () => {
                       notes: false,
                       status: 'Confirmed, not complete',
                       workers: 0,
+                      localAuthorityUID: 'mock-localAuthorityUID-h',
                     },
                   ],
-                  I: [{ name: 'I LA1', workplaceId: 'B1005116', notes: true, status: 'Not updated', workers: 10 }],
-                  J: [{ name: 'J LA1', workplaceId: 'B1005117', notes: false, status: 'Not updated', workers: 0 }],
+                  I: [
+                    {
+                      name: 'I LA1',
+                      workplaceId: 'B1005116',
+                      notes: true,
+                      status: 'Not updated',
+                      workers: 10,
+                      localAuthorityUID: 'mock-localAuthorityUID-i',
+                    },
+                  ],
+                  J: [
+                    {
+                      name: 'J LA1',
+                      workplaceId: 'B1005117',
+                      notes: false,
+                      status: 'Not updated',
+                      workers: 0,
+                      localAuthorityUID: 'mock-localAuthorityUID-j',
+                    },
+                  ],
                 },
               },
             },
@@ -328,7 +396,7 @@ describe('MonitorComponent', () => {
               notes: false,
               status: 'Not updated',
               workers: 0,
-              localAuthorityUID: '123',
+              localAuthorityUID: 'mock-localAuthorityUID-B',
             },
           ],
           C: [
@@ -338,7 +406,7 @@ describe('MonitorComponent', () => {
               notes: false,
               status: 'Not updated',
               workers: 0,
-              localAuthorityUID: '123',
+              localAuthorityUID: 'mock-localAuthorityUID-C',
             },
           ],
           D: [
@@ -348,7 +416,7 @@ describe('MonitorComponent', () => {
               notes: false,
               status: 'Not updated',
               workers: 0,
-              localAuthorityUID: '123',
+              localAuthorityUID: 'mock-localAuthorityUID-D',
             },
           ],
           E: [
@@ -358,7 +426,7 @@ describe('MonitorComponent', () => {
               notes: false,
               status: 'Not updated',
               workers: 0,
-              localAuthorityUID: '123',
+              localAuthorityUID: 'mock-localAuthorityUID-E',
             },
           ],
           F: [
@@ -368,7 +436,7 @@ describe('MonitorComponent', () => {
               notes: false,
               status: 'Not updated',
               workers: 0,
-              localAuthorityUID: '123',
+              localAuthorityUID: 'mock-localAuthorityUID-F',
             },
             {
               name: 'F LA2',
@@ -376,7 +444,7 @@ describe('MonitorComponent', () => {
               notes: false,
               status: 'Not updated',
               workers: 0,
-              localAuthorityUID: '123',
+              localAuthorityUID: 'mock-localAuthorityUID-F2',
             },
           ],
           G: [
@@ -386,7 +454,7 @@ describe('MonitorComponent', () => {
               notes: false,
               status: 'Not updated',
               workers: 0,
-              localAuthorityUID: '123',
+              localAuthorityUID: 'mock-localAuthorityUID-G',
             },
           ],
           H: [
@@ -396,7 +464,7 @@ describe('MonitorComponent', () => {
               notes: false,
               status: 'Not updated',
               workers: 0,
-              localAuthorityUID: '123',
+              localAuthorityUID: 'mock-localAuthorityUID-H',
             },
           ],
           I: [
@@ -406,7 +474,7 @@ describe('MonitorComponent', () => {
               notes: false,
               status: 'Not updated',
               workers: 0,
-              localAuthorityUID: '123',
+              localAuthorityUID: 'mock-localAuthorityUID-I',
             },
           ],
           J: [
@@ -416,7 +484,7 @@ describe('MonitorComponent', () => {
               notes: false,
               status: 'Not updated',
               workers: 0,
-              localAuthorityUID: '123',
+              localAuthorityUID: 'mock-localAuthorityUID-J',
             },
           ],
         }),
