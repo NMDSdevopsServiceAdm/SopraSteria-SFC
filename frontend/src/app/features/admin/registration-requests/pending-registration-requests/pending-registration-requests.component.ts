@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { Registration } from '@core/model/registrations.model';
+import { WorkplaceRegistration } from '@core/model/registrations.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 
 @Component({
-    selector: 'app-registration-requests',
-    templateUrl: './pending-registration-requests.component.html',
-    standalone: false
+  selector: 'app-registration-requests',
+  templateUrl: './pending-registration-requests.component.html',
+  standalone: false,
 })
 export class PendingRegistrationRequestsComponent implements OnInit {
-  public pendingRegistrations: Registration[];
+  public pendingRegistrations: WorkplaceRegistration[];
 
   constructor(
     private route: ActivatedRoute,
