@@ -14,8 +14,8 @@ export class MockNotificationsService extends NotificationsService {
       status: this.approved ? 'Approved' : 'Rejected',
     },
     isViewed: false,
-    notificationUid: ''
-  }
+    notificationUid: '',
+  };
 
   public static factory(approved = false) {
     return (httpClient: HttpClient) => {
@@ -72,22 +72,25 @@ export class MockNotificationsService extends NotificationsService {
   public getAllNotifications(): Observable<any> {
     return of({
       notifications: [
-      {
-        created: '2020-01-01',
-        type: 'BECOMEAPARENT',
-        typeContent: {
-          status: 'Rejected',
+        {
+          created: '2020-01-01',
+          type: 'BECOMEAPARENT',
+          typeContent: {
+            status: 'Rejected',
+          },
+          notificationUid: 'notificationUid-0',
         },
-      },
-      {
-        created: '2023-01-01',
-        type: 'OWNERCHANGE',
-        typeContent: {
-          status: 'Approved',
+        {
+          created: '2023-01-01',
+          type: 'OWNERCHANGE',
+          typeContent: {
+            status: 'Approved',
+          },
+          notificationUid: 'notificationUid-1',
         },
-      },
-    ],
-    count: 2});
+      ],
+      count: 2,
+    });
   }
 
   public deleteNotifications(notificationsForDeletion: Array<any>): Observable<any> {

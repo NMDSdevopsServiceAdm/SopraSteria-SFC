@@ -26,7 +26,7 @@ import sinon from 'sinon';
 import { FundingModule } from '../funding.module';
 import { WdfStaffSummaryComponent } from './wdf-staff-summary.component';
 
-fdescribe('WdfStaffSummaryComponent', () => {
+describe('WdfStaffSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const establishment = establishmentBuilder() as Establishment;
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];

@@ -27,6 +27,7 @@ describe('WdfWorkplacesSummaryComponent', () => {
   const mockWorkplaces = (): any[] => [
     {
       name: 'Workplace name',
+      uid: 'mock-uid-0',
       wdf: {
         overall: true,
         staff: true,
@@ -35,6 +36,7 @@ describe('WdfWorkplacesSummaryComponent', () => {
     },
     {
       name: 'Workplace name 2',
+      uid: 'mock-uid-1',
       wdf: {
         overall: true,
         staff: true,

@@ -38,7 +38,7 @@
                   </th>
                   <td class="govuk-table__cell"></td>
                 </tr>
-                @for (worker of workers.controls; track worker.uid; let i = $index) {
+                @for (worker of workers.controls; track worker; let i = $index) {
                   <tr class="govuk-table__row" [formGroupName]="i">
                     <th
                       scope="row"
@@ -51,7 +51,7 @@
                     </th>
                     <td class="govuk-table__cell">
                       <div class="govuk-radios govuk-radios--inline asc-inline-radio-buttons">
-                        @for (answer of answers; track answer.value; let j = $index) {
+                        @for (answer of answers; track $index; let j = $index) {
                           <div
                             id="workers-insideOrOutsideUk-{{ i }}"
                             class="govuk-radios__item govuk-!-margin-left-4 govuk-!-margin-bottom-0"
