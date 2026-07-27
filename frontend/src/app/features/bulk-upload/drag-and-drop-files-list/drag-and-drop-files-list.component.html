@@ -11,7 +11,7 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      @for (file of uploadedFiles; track file.filename) {
+      @for (file of uploadedFiles; track file) {
         @if (validationComplete) {
           <tr>
             <td colspan="5">
