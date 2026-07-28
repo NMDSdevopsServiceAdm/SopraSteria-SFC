@@ -7,6 +7,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { VacanciesAndTurnoverService, WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
+import { provideActivatedRouteWithRouterLink } from '@core/test-utils/MockActivatedRoute';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { SharedModule } from '@shared/shared.module';
@@ -14,7 +15,6 @@ import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes.component';
-import { provideActivatedRouteWithRouterLink } from '@core/test-utils/MockActivatedRoute';
 
 describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -23,7 +23,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     const flowType = overrides?.flowType || WorkplaceUpdateFlowType.ADD;
     const totalNumberOfStaff = overrides?.totalNumberOfStaff ?? 10;
     const alertSpy = jasmine.createSpy('addAlert').and.returnValue(Promise.resolve(true));
-    const showBackLinkSpy = jasmine.createSpy('setBacklink').and.returnValue(Promise.resolve(true));
+    const showBackLinkSpy = jasmine.createSpy('showBackLink').and.returnValue(Promise.resolve(true));
 
     const setupTools = await render(UpdateWorkplaceDetailsAfterStaffChangesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],

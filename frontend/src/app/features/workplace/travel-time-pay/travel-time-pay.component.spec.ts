@@ -220,9 +220,7 @@ describe('TravelTimePayComponent', () => {
         'add-workplace-details',
         'how-many-leavers',
       ]);
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'workplace-data', 'add-workplace-details', 'how-many-leavers'],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
     });
 
     it('should navigate to benefits-statutory-sick-pay page when user skips the question', async () => {
@@ -302,10 +300,7 @@ describe('TravelTimePayComponent', () => {
     it('should set the previous page to workplace summary', async () => {
       const { backServiceSpy } = await setup(overrides);
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/dashboard'],
-        fragment: 'workplace',
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
     });
 
     it('should show a "Save and return" cta button and "Cancel" link', async () => {
@@ -403,9 +398,7 @@ describe('TravelTimePayComponent', () => {
     it('should set the previous page to how-do-you-pay-for-sleep-ins when in the pay and pension mini flow', async () => {
       const { backServiceSpy } = await setup(overrides);
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'workplace-data', 'workplace-summary', 'how-do-you-pay-for-sleep-ins'],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
     });
 
     it('should show the "Save and continue" and "Skip this question cta buttons', async () => {

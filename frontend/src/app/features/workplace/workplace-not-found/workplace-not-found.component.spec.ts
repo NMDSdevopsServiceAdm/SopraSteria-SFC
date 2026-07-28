@@ -15,7 +15,7 @@ describe('WorkplaceNotFoundComponent', () => {
   const workplaceUid = 'abc131355543435';
 
   async function setup() {
-    const backServiceSpy = jasmine.createSpyObj('BackLinkService', ['showBackLink']);
+    const backLinkServiceSpy = jasmine.createSpyObj('BacklinkService', ['showBackLink']);
 
     const { fixture, getByText } = await render(WorkplaceNotFoundComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -29,7 +29,7 @@ describe('WorkplaceNotFoundComponent', () => {
         },
         {
           provide: BackLinkService,
-          useValue: backServiceSpy,
+          useValue: backLinkServiceSpy,
         },
         LocationService,
         provideRouter([
@@ -48,7 +48,7 @@ describe('WorkplaceNotFoundComponent', () => {
     const component = fixture.componentInstance;
 
     return {
-      backServiceSpy,
+      backLinkServiceSpy,
       component,
       fixture,
       getByText,
@@ -69,8 +69,8 @@ describe('WorkplaceNotFoundComponent', () => {
   });
 
   it('should set the back link to regulated-by-cqc page', async () => {
-    const { backServiceSpy } = await setup();
+    const { backLinkServiceSpy } = await setup();
 
-    expect(backServiceSpy.showBackLink).toHaveBeenCalled();
+    expect(backLinkServiceSpy.showBackLink).toHaveBeenCalled();
   });
 });

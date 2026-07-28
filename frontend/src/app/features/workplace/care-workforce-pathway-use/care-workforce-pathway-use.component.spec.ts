@@ -7,7 +7,6 @@ import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathwa
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { PreviousRouteService } from '@core/services/previous-route.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
@@ -66,10 +65,6 @@ describe('CareWorkforcePathwayUseComponent', () => {
         {
           provide: BackLinkService,
           useValue: backServiceSpy,
-        },
-        {
-          provide: PreviousRouteService,
-          useValue: { getPreviousUrl: () => overrides?.previousUrl, getPreviousPage: () => overrides?.previousPage },
         },
         AlertService,
         WindowRef,
@@ -363,16 +358,10 @@ describe('CareWorkforcePathwayUseComponent', () => {
       expect(getByText('Skip this question')).toBeTruthy();
     });
 
-    it('should set the previous page to CWP awareness question page', async () => {
-      const { component } = await setup(overrides);
+    it('should show the back link in the new workplace workflow', async () => {
+      const { backServiceSpy } = await setup(overrides);
 
-      expect(component.previousRoute).toEqual([
-        '/workplace',
-        'mocked-uid',
-        'workplace-data',
-        'add-workplace-details',
-        'care-workforce-pathway-awareness',
-      ]);
+      expect(backServiceSpy.showBackLink).toHaveBeenCalled();
     });
 
     it('should navigate to sharing-data page when skipped the question', async () => {
@@ -405,18 +394,10 @@ describe('CareWorkforcePathwayUseComponent', () => {
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
 
-    it('should set the back link to CWP awareness question', async () => {
+    it('should show the back link', async () => {
       const { backServiceSpy } = await setup(overrides);
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: [
-          '/workplace',
-          'mocked-uid',
-          'workplace-data',
-          'add-workplace-details',
-          'care-workforce-pathway-awareness',
-        ],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalled();
     });
   });
 
@@ -458,12 +439,10 @@ describe('CareWorkforcePathwayUseComponent', () => {
       expect(alertSpy).not.toHaveBeenCalled();
     });
 
-    it('should set the back link to CWP awareness question', async () => {
+    it('should show the back link when coming from summary panel', async () => {
       const { backServiceSpy } = await setup(comingFromSummaryPanelOverrides);
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'workplace-data', 'workplace-summary', 'care-workforce-pathway-awareness'],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalled();
     });
   });
 
@@ -480,8 +459,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
           returnTo,
         },
       });
-
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith(returnTo);
+      expect(backServiceSpy.showBackLink).toHaveBeenCalled();
     });
 
     it('should set backlink to CWP awareness question when visited via workplace summary --> awareness question', async () => {
@@ -492,9 +470,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
         },
       });
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'workplace-data', 'workplace-summary', 'care-workforce-pathway-awareness'],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalled();
     });
   });
 });
