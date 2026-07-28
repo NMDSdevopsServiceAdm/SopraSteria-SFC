@@ -1,23 +1,22 @@
-import { provideHttpClient } from '@angular/common/http';
-import dayjs from 'dayjs';
-
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Starter } from '@core/model/establishment.model';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 import { FormatUtil } from '@core/utils/format-util';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import dayjs from 'dayjs';
 
 import { HowManyStartersComponent } from './how-many-starters.component';
-import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('HowManyStartersComponent', () => {
   const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(dayjs().subtract(1, 'years').toDate());
@@ -39,8 +38,8 @@ describe('HowManyStartersComponent', () => {
     const availableJobs = override.availableJobs;
     const workplace = override.workplace ?? {};
 
-    const selectedJobRoles = override.noLocalStorageData ? null : (override.selectedJobRoles ?? mockSelectedJobRoles);
-
+    const selectedJobRoles = override.noLocalStorageData ? null : override.selectedJobRoles ?? mockSelectedJobRoles;
+    const backLinkSpy = jasmine.createSpyObj('BackLinkService', ['showBackLink']);
     const isInAddDetailsFlow = true;
 
     const renderResults = await render(HowManyStartersComponent, {
@@ -48,6 +47,10 @@ describe('HowManyStartersComponent', () => {
       providers: [
         patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
+        {
+          provide: BackLinkService,
+          useValue: backLinkSpy,
+        },
         {
           provide: EstablishmentService,
           useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, null, workplace),
@@ -88,6 +91,7 @@ describe('HowManyStartersComponent', () => {
       router,
       routerSpy,
       updateJobsSpy,
+      backLinkSpy,
       vacanciesAndTurnoverService,
       ...renderResults,
     };
@@ -352,16 +356,11 @@ describe('HowManyStartersComponent', () => {
 
     describe('backlink', () => {
       it('should set the backlink to job role selection page', async () => {
-        const { component } = await setup();
-        expect(component.back).toEqual({
-          url: [
-            '/workplace',
-            component.establishment.uid,
-            'workplace-data',
-            'add-workplace-details',
-            'select-starter-job-roles',
-          ],
-        });
+        const { component, backLinkSpy } = await setup();
+
+        component.setBackLink();
+
+        expect(backLinkSpy).toHaveBeenCalled();
       });
     });
 

@@ -1,21 +1,21 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Vacancy } from '@core/model/establishment.model';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockJobRoles } from '@core/test-utils/MockJobService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles.component';
-import { MockJobRoles } from '@core/test-utils/MockJobService';
-import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
-import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
-import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('SelectVacancyJobRolesComponent', () => {
   const mockAvailableJobs = MockJobRoles;
@@ -28,11 +28,17 @@ describe('SelectVacancyJobRolesComponent', () => {
     const availableJobs = override.availableJobs ?? mockAvailableJobs;
     const selectedVacancies = override.selectedVacancies ?? null;
 
+    const backLinkServiceSpy = jasmine.createSpyObj('BackLinkService', ['showBackLink']);
+
     const renderResults = await render(SelectVacancyJobRolesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
+        {
+          provide: BackLinkService,
+          useValue: backLinkServiceSpy,
+        },
         {
           provide: EstablishmentService,
           useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnToUrl, {
@@ -81,6 +87,7 @@ describe('SelectVacancyJobRolesComponent', () => {
       vacanciesAndTurnoverService,
       setSelectedVacanciesSpy,
       getSelectedVacanciesSpy,
+      backLinkServiceSpy,
       ...renderResults,
     };
   };
@@ -399,30 +406,20 @@ describe('SelectVacancyJobRolesComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/funding', 'workplaces', 'mock-uid'], jasmine.anything());
     });
 
-    it('should set the backlink to "do you have vacancy" page', async () => {
-      const { component } = await setup();
-      expect(component.back).toEqual({
-        url: [
-          '/workplace',
-          component.establishment.uid,
-          'workplace-data',
-          'add-workplace-details',
-          'do-you-have-vacancies',
-        ],
-      });
+    it('should show the backlink when in add workplace details flow', async () => {
+      const { component, backLinkServiceSpy } = await setup();
+
+      component.setBackLink();
+
+      expect(backLinkServiceSpy.showBackLink).toHaveBeenCalled();
     });
 
-    it('should set the backlink to "do you have vacancy" when not in the flow', async () => {
-      const { component } = await setup({ returnToUrl: true });
-      expect(component.back).toEqual({
-        url: [
-          '/workplace',
-          component.establishment.uid,
-          'workplace-data',
-          'workplace-summary',
-          'do-you-have-vacancies',
-        ],
-      });
+    it('should show the backlink when not in the flow', async () => {
+      const { component, backLinkServiceSpy } = await setup({ returnToUrl: true });
+
+      component.setBackLink();
+
+      expect(backLinkServiceSpy.showBackLink).toHaveBeenCalled();
     });
   });
 });

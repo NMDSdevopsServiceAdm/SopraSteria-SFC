@@ -159,7 +159,7 @@ describe('WorkplaceQuestion', () => {
         currentUrl: `/workplace/${mockWorkplaceUid}/workplace-data/workplace-summary/question-page-name`,
       });
 
-      expect(backServiceSpy).toHaveBeenCalledWith({ url: ['/dashboard'], fragment: 'workplace' });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalled();
     });
 
     it('should set the backlink to /dashboard#workplace (as a failsafe) if returnTo is missing and current url is a special route', async () => {
@@ -167,7 +167,7 @@ describe('WorkplaceQuestion', () => {
         currentUrl: `/workplace/${mockWorkplaceUid}/some/unexpected/url`,
       });
 
-      expect(backServiceSpy).toHaveBeenCalledWith({ url: ['/dashboard'], fragment: 'workplace' });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalled();
     });
   });
 

@@ -41,6 +41,7 @@ import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AuthInterceptor } from '@core/services/auth-interceptor';
+import { BackLinkService } from '@core/services/backLink.service';
 import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { CountryService } from '@core/services/country.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -203,6 +204,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
   providers: [
     AuthGuard,
     AdminSkipService,
+    BackLinkService,
     BenchmarksV2Service,
     CountryService,
     EstablishmentService,
