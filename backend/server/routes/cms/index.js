@@ -1,6 +1,6 @@
 var axios = require('axios');
 var express = require('express');
-const cacheCMSReponse = require('../../utils/cacheCMSReponse');
+const cacheCMSResponse = require('../../utils/cacheCMSResponse');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -28,13 +28,13 @@ const getContentFromCms = async (req, res) => {
       params: queryParams,
     });
 
-    await cacheCMSReponse.cacheCMSResponse(req.url, cmsResponse.data);
+    await cacheCMSResponse.cacheCMSResponse(req.url, cmsResponse.data);
 
     return res.status(200).json(cmsResponse.data);
   } catch (err) {
     console.error('CMS fetch error:', err.response?.data || err.message || err);
 
-    const dataFromCache = await cacheCMSReponse.getCMSResponseFromCache(req.url);
+    const dataFromCache = await cacheCMSResponse.getCMSResponseFromCache(req.url);
     if (dataFromCache) {
       console.log('respond to frontend with data from cache');
       return res.status(200).json(dataFromCache);

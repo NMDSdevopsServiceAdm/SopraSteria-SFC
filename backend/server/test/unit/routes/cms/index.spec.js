@@ -3,7 +3,7 @@ const sinon = require('sinon');
 const axios = require('axios');
 const httpMocks = require('node-mocks-http');
 const { getContentFromCms } = require('../../../../routes/cms');
-const cacheCMSModule = require('../../../../utils/cacheCMSReponse');
+const cacheCMSModule = require('../../../../utils/cacheCMSResponse');
 const config = require('../../../../config/config');
 
 describe('getContentFromCms', () => {
