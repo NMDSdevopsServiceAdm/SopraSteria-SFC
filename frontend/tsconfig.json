@@ -18,7 +18,6 @@
     "types": ["jasmine", "node"],
     "typeRoots": ["node_modules/@types"],
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "useDefineForClassFields": false
   },
   "exclude": ["./cypress.config.ts"]
