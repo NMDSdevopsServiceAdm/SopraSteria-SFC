@@ -707,7 +707,7 @@ describe('RegistrationRequestComponent', () => {
       const dialogMessage = `You're about to approve this registration request`;
 
       fireEvent.click(approveButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
 
@@ -725,6 +725,7 @@ describe('RegistrationRequestComponent', () => {
       fixture.detectChanges();
 
       const dialog = await within(document.body).findByRole('dialog');
+      await fixture.whenStable();
 
       expect(within(dialog).getByText(workplaceName, { exact: false })).toBeTruthy();
     });
@@ -737,9 +738,10 @@ describe('RegistrationRequestComponent', () => {
       const approveButton = getByText('Approve');
 
       fireEvent.click(approveButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
+
       const approvalConfirmButton = within(dialog).getByText('Approve this request');
 
       fireEvent.click(approvalConfirmButton);
@@ -760,9 +762,10 @@ describe('RegistrationRequestComponent', () => {
       component.registration.email = null;
 
       fireEvent.click(approveButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
+
       const approvalConfirmButton = within(dialog).getByText('Approve this request');
 
       fireEvent.click(approvalConfirmButton);
@@ -784,7 +787,7 @@ describe('RegistrationRequestComponent', () => {
       const approveButton = getByText('Approve');
 
       fireEvent.click(approveButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const approvalConfirmButton = within(dialog).getByText('Approve this request');
@@ -804,9 +807,10 @@ describe('RegistrationRequestComponent', () => {
       const approveButton = getByText('Approve');
 
       fireEvent.click(approveButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
+
       const approvalConfirmButton = within(dialog).getByText('Approve this request');
 
       fireEvent.click(approvalConfirmButton);
@@ -826,7 +830,7 @@ describe('RegistrationRequestComponent', () => {
       const dialogMessage = `You're about to reject this registration request`;
 
       fireEvent.click(rejectButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
 
@@ -841,7 +845,7 @@ describe('RegistrationRequestComponent', () => {
       const workplaceName = component.registration.establishment.name;
 
       fireEvent.click(rejectButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
 
@@ -856,7 +860,7 @@ describe('RegistrationRequestComponent', () => {
       const rejectButton = getByText('Reject');
 
       fireEvent.click(rejectButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const rejectConfirmButton = within(dialog).getByText('Reject this request');
@@ -879,7 +883,7 @@ describe('RegistrationRequestComponent', () => {
       component.registration.email = null;
 
       fireEvent.click(rejectButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const rejectConfirmButton = within(dialog).getByText('Reject this request');
@@ -903,7 +907,7 @@ describe('RegistrationRequestComponent', () => {
       const rejectButton = getByText('Reject');
 
       fireEvent.click(rejectButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const rejectionConfirmButton = within(dialog).getByText('Reject this request');
@@ -923,7 +927,7 @@ describe('RegistrationRequestComponent', () => {
       const rejectButton = getByText('Reject');
 
       fireEvent.click(rejectButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const rejectionConfirmButton = within(dialog).getByText('Reject this request');

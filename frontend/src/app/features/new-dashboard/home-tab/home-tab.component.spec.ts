@@ -34,7 +34,7 @@ import { of } from 'rxjs';
 import { Establishment } from '../../../../mockdata/establishment';
 import { NewHomeTabComponent } from './home-tab.component';
 
-fdescribe('NewHomeTabComponent', () => {
+describe('NewHomeTabComponent', () => {
   const setup = async (overrides: any = {}) => {
     const dataLayerPushSpy = jasmine.createSpy();
     const MockWindow = {
@@ -430,7 +430,7 @@ fdescribe('NewHomeTabComponent', () => {
         expect(within(document.body).queryByRole('dialog')).toBeFalsy();
       });
 
-      fit('should call cancelOwnership() to cancel the request when the "Cancel data owner request" clicked', async () => {
+      it('should call cancelOwnership() to cancel the request when the "Cancel data owner request" clicked', async () => {
         const { component, getByText, fixture, changeOwnershipDetailsSpy, cancelOwnershipSpy, alertServiceSpy } =
           await setup(overrides);
 
@@ -441,7 +441,7 @@ fdescribe('NewHomeTabComponent', () => {
 
         const dataRequestPendingLink = getByText('Data request pending');
         fireEvent.click(dataRequestPendingLink);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const dialog = await within(document.body).findByRole('dialog');
         const cancelDataOwnerRequestButton = within(dialog).getByText('Cancel data owner request');
@@ -449,15 +449,15 @@ fdescribe('NewHomeTabComponent', () => {
         fireEvent.click(cancelDataOwnerRequestButton);
         fixture.detectChanges();
 
-        // expect(cancelOwnershipSpy).toHaveBeenCalledWith(workplace.id, workplace.ownershipChangeRequestId[0], {
-        //   approvalStatus: 'CANCELLED',
-        //   notificationRecipientUid: workplace.uid,
-        // } as CancelOwnerShip);
-        // expect(within(document.body).queryByRole('dialog')).toBeFalsy();
-        // expect(alertServiceSpy).toHaveBeenCalledWith({
-        //   type: 'success',
-        //   message: 'Request to change data owner has been cancelled ',
-        // });
+        expect(cancelOwnershipSpy).toHaveBeenCalledWith(workplace.id, workplace.ownershipChangeRequestId[0], {
+          approvalStatus: 'CANCELLED',
+          notificationRecipientUid: workplace.uid,
+        } as CancelOwnerShip);
+        expect(within(document.body).queryByRole('dialog')).toBeFalsy();
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Request to change data owner has been cancelled ',
+        });
       });
     });
 
