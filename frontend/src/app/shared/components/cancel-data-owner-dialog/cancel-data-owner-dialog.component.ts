@@ -9,9 +9,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-cancel-data-owner-dialog',
-    templateUrl: './cancel-data-owner-dialog.component.html',
-    standalone: false
+  selector: 'app-cancel-data-owner-dialog',
+  templateUrl: './cancel-data-owner-dialog.component.html',
+  standalone: false,
 })
 export class CancelDataOwnerDialogComponent extends DialogComponent implements OnInit, OnDestroy {
   public dataPermissions: DataPermissions[];
@@ -32,7 +32,7 @@ export class CancelDataOwnerDialogComponent extends DialogComponent implements O
   constructor(
     @Inject(DIALOG_DATA) public data,
     private establishmentService: EstablishmentService,
-    public dialog: Dialog<CancelDataOwnerDialogComponent>
+    public dialog: Dialog<CancelDataOwnerDialogComponent>,
   ) {
     super(data, dialog);
   }
@@ -83,25 +83,25 @@ export class CancelDataOwnerDialogComponent extends DialogComponent implements O
 
   public cancelChangeOwnership() {
     if (this.workplace.ownershipChangeRequestId.length > 0) {
-      this.workplace.ownershipChangeRequestId.forEach(ownershipChangeRequestId => {
+      this.workplace.ownershipChangeRequestId.forEach((ownershipChangeRequestId) => {
         let status = {
           approvalStatus: 'CANCELLED',
           notificationRecipientUid: this.ownershipToUid,
         };
         this.subscriptions.add(
           this.establishmentService.cancelOwnership(this.workplace.uid, ownershipChangeRequestId, status).subscribe(
-            data => {
+            (data) => {
               if (data) {
                 this.close(true);
               }
             },
-            error => {
+            (error) => {
               this.isCancelOwnershipError = true;
               if (error.error.message) {
                 this.serverError = error.error.message;
               }
-            }
-          )
+            },
+          ),
         );
       });
     }

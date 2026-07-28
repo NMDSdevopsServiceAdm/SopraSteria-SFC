@@ -3,7 +3,13 @@
 import 'zone.js/testing';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
+import { NgModule, provideZoneChangeDetection } from '@angular/core';
 
-getTestBed().initTestEnvironment(BrowserTestingModule, platformBrowserTesting(), {
+@NgModule({
+  providers: [provideZoneChangeDetection({ eventCoalescing: true })],
+})
+class AppTestingModule {}
+
+getTestBed().initTestEnvironment([BrowserTestingModule, AppTestingModule], platformBrowserTesting(), {
   teardown: { destroyAfterEach: false },
 });
