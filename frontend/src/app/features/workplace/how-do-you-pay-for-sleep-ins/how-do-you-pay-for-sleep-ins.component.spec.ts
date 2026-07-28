@@ -244,10 +244,7 @@ describe('HowDoYouPayForSleepInsComponent', () => {
         };
         const { backServiceSpy } = await setup(updatedOverrides);
 
-        expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-          url: ['/dashboard'],
-          fragment: 'workplace',
-        });
+        expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
       });
 
       it('should be set to offer-sleep-ins when visited via workplace summary then offer sleep ins', async () => {
@@ -257,15 +254,7 @@ describe('HowDoYouPayForSleepInsComponent', () => {
         };
         const { component, backServiceSpy } = await setup(updatedOverrides);
 
-        expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-          url: [
-            '/workplace',
-            component.establishment.uid,
-            'workplace-data',
-            'workplace-summary',
-            'workplace-offer-sleep-ins',
-          ],
-        });
+        expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
       });
     });
 

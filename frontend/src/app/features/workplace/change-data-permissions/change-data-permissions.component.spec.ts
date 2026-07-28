@@ -181,11 +181,10 @@ describe('ChangeDataPermissionsComponent', () => {
       expect(workplaceNameEl.textContent).toContain(subsidiaryWorkplace.name);
     });
 
-    it('should set the back link to "All your workplaces" page', async () => {
+    it('should show the back link', async () => {
       const { backServiceSpy } = await setup({ previousUrl });
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'view-all-workplaces'],
-      });
+
+      expect(backServiceSpy.showBackLink).toHaveBeenCalled();
     });
 
     it('should show the correct labels for the radio buttons', async () => {
@@ -352,12 +351,10 @@ describe('ChangeDataPermissionsComponent', () => {
       expect(getAllByText(parentWorkplace.name).length).toEqual(2);
     });
 
-    it('should set the back link to "All your workplaces" page', async () => {
+    it('should show the back link', async () => {
       const { backServiceSpy } = await setup({ previousUrl });
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/dashboard'],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalled();
     });
 
     it('should show the correct labels for the radio buttons', async () => {

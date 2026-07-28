@@ -29,7 +29,7 @@ describe('WorkplaceQuestion', () => {
   const setup = async (overrides: any = {}) => {
     const currentUrl = overrides?.currentUrl ?? '/dashboard';
     const returnTo = overrides?.returnTo ?? null;
-    const backServiceSpy = jasmine.createSpy();
+    const backServiceSpy = jasmine.createSpyObj('BackLinkService', ['showBackLink']);
 
     const setupTools = await render(MockChildComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -43,7 +43,7 @@ describe('WorkplaceQuestion', () => {
         },
         {
           provide: BackLinkService,
-          useValue: { setBackLink: backServiceSpy },
+          useValue: backServiceSpy,
         },
         { provide: Router, useValue: { url: currentUrl, navigate: jasmine.createSpy() } },
         provideHttpClient(),
@@ -141,7 +141,7 @@ describe('WorkplaceQuestion', () => {
         returnTo: returnToFundingPage,
       });
 
-      expect(backServiceSpy).toHaveBeenCalledWith({ url: ['/funding/data'], fragment: 'workplace' });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
     });
 
     it('should set the backlink to the previous question page if returnTo is missing and in add workplace details flow', async () => {

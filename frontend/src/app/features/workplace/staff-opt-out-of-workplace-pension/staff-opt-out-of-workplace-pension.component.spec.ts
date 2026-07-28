@@ -154,9 +154,7 @@ describe('StaffOptOutOfWorkplacePensionComponent', () => {
         'add-workplace-details',
         'pensions',
       ]);
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', component.establishment.uid, 'workplace-data', 'add-workplace-details', 'pensions'],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
     });
 
     it('should navigate to staff-benefit-holiday-leave page when user skips the question', async () => {
@@ -225,10 +223,7 @@ describe('StaffOptOutOfWorkplacePensionComponent', () => {
     it('should set the previous page to workplace summary', async () => {
       const { backServiceSpy } = await setup(overrides);
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/dashboard'],
-        fragment: 'workplace',
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
     });
 
     it('should show a "Save and return" cta button and "Cancel" link', async () => {
@@ -330,9 +325,7 @@ describe('StaffOptOutOfWorkplacePensionComponent', () => {
       };
       const { backServiceSpy } = await setup(overrides);
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'workplace-data', 'workplace-summary', 'pensions'],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
     });
 
     it('should show the "Save and continue" and "Skip this question cta buttons', async () => {

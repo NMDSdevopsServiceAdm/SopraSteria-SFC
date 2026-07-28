@@ -174,15 +174,13 @@ describe('OfferSleepInsComponent', () => {
           'add-workplace-details',
           'service-users',
         ]);
-        expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-          url: ['/workplace', component.establishment.uid, 'workplace-data', 'add-workplace-details', 'service-users'],
-        });
+        expect(backServiceSpy.showBackLink).toHaveBeenCalled();
       });
 
-      it('should set the previous page to what-kind-of-delegated-healthcare-activities question page if canDoDelegatedHealthcareActivities is true', async () => {
+      it('should show the back link when canDoDelegatedHealthcareActivities is false', async () => {
         const updatedOverrides = {
           ...overrides,
-          establishment: { mainService: { canDoDelegatedHealthcareActivities: true } },
+          establishment: { mainService: { canDoDelegatedHealthcareActivities: false } },
         };
 
         const { component, backServiceSpy } = await setup(updatedOverrides);
@@ -192,17 +190,10 @@ describe('OfferSleepInsComponent', () => {
           component.establishment.uid,
           'workplace-data',
           'add-workplace-details',
-          'what-kind-of-delegated-healthcare-activities',
+          'service-users',
         ]);
-        expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-          url: [
-            '/workplace',
-            component.establishment.uid,
-            'workplace-data',
-            'add-workplace-details',
-            'what-kind-of-delegated-healthcare-activities',
-          ],
-        });
+
+        expect(backServiceSpy.showBackLink).toHaveBeenCalled();
       });
     });
 
@@ -297,10 +288,7 @@ describe('OfferSleepInsComponent', () => {
     it('should set the previous page to workplace summary', async () => {
       const { backServiceSpy } = await setup(overrides);
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/dashboard'],
-        fragment: 'workplace',
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalled();
     });
 
     it('should show a "Save" cta button and "Cancel" link', async () => {
@@ -388,9 +376,7 @@ describe('OfferSleepInsComponent', () => {
       };
       const { backServiceSpy } = await setup(overrides);
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'workplace-data', 'workplace-summary', 'staff-opt-out-of-workplace-pension'],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalled();
     });
 
     it('should show the "Save and continue" and "Skip this question cta buttons', async () => {

@@ -138,7 +138,7 @@ describe('DeleteUserAccountComponent', () => {
     expect(cancelButton.getAttribute('href')).toEqual('/workplace/asdfg12345/user/12345asdfg');
   });
 
-  it('should navigate to previous page when back link is clicked', async () => {
+  it('should show the back link', async () => {
     const { component, componentInstance } = await setup();
     const backLinkSpy = spyOn(componentInstance.backLinkService, 'showBackLink');
 

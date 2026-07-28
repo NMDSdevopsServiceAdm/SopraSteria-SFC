@@ -271,9 +271,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
     it('should set the back link to the service users question', async () => {
       const { backServiceSpy } = await setup(overrides);
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'workplace-data', 'add-workplace-details', 'service-users'],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
     });
 
     describe('user skips the question', () => {

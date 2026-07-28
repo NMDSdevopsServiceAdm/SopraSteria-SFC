@@ -243,15 +243,7 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
     it('should set the back link to the service users question', async () => {
       const { backServiceSpy } = await setup(overrides);
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: [
-          '/workplace',
-          'mocked-uid',
-          'workplace-data',
-          'add-workplace-details',
-          'staff-do-delegated-healthcare-activities',
-        ],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
     });
 
     describe('user skips the question', () => {
@@ -377,7 +369,7 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
         },
       });
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith(returnTo);
+      expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
     });
 
     it('should set backlink to staff do DHA question when visited via workplace summary then staff do DHA', async () => {
@@ -388,15 +380,7 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
         },
       });
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: [
-          '/workplace',
-          'mocked-uid',
-          'workplace-data',
-          'workplace-summary',
-          'staff-do-delegated-healthcare-activities',
-        ],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
     });
   });
 });
