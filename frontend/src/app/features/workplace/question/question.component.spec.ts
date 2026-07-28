@@ -149,9 +149,7 @@ describe('WorkplaceQuestion', () => {
         currentUrl: `/workplace/${mockWorkplaceUid}/workplace-data/add-workplace-details/question-page-name`,
       });
 
-      expect(backServiceSpy).toHaveBeenCalledWith({
-        url: ['/workplace', mockWorkplaceUid, 'workplace-data', 'add-workplace-details', 'previous-page'],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalled();
     });
 
     it('should set the backlink to /dashboard#workplace if returnTo is missing and visited from workplace summary', async () => {

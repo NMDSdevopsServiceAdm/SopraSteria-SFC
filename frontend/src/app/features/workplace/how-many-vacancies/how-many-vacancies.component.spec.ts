@@ -357,7 +357,7 @@ describe('HowManyVacanciesComponent', () => {
 
         component.setBackLink();
 
-        expect(backLinkSpy).toHaveBeenCalled();
+        expect(backLinkSpy.showBackLink).toHaveBeenCalled();
       });
     });
 
