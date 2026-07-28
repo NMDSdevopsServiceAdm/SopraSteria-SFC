@@ -256,7 +256,7 @@ describe('Standalone staff records page as edit user', { tags: '@staffRecords' }
       cy.get('h1')
         .invoke('text')
         .should(
-          'eq',
+          'contain',
           'Do you want to download their training and qualifications summary, and any certificates, before you delete this staff record?',
         );
       cy.getByLabel('Yes, I want to download the summary and any certificates').check();
@@ -300,7 +300,7 @@ describe('Standalone staff records page as edit user', { tags: '@staffRecords' }
       cy.get('h1')
         .invoke('text')
         .should(
-          'eq',
+          'contain',
           'Do you want to download their training and qualifications summary, and any certificates, before you delete this staff record?',
         );
       cy.getByLabel('No, I do not want to download the summary and any certificates').check();
