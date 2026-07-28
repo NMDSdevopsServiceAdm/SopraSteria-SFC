@@ -1,26 +1,28 @@
-import { provideHttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 import { WindowRef } from '@core/services/window.ref';
+import { mockDHADefinition, mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
-import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-what-kind-of-delegated-healthcare-activities.component';
-import { BackService } from '@core/services/back.service';
-import { mockDHADefinition, mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
-import { HttpClient } from '@angular/common/http';
-import { PreviousRouteService } from '@core/services/previous-route.service';
-import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
+
+import {
+  StaffWhatKindOfDelegatedHealthcareActivitiesComponent,
+} from './staff-what-kind-of-delegated-healthcare-activities.component';
 
 describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
   const doNotKnowText = 'I do not know';
   async function setup(overrides: any = {}) {
-    const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
+    const backServiceSpy = jasmine.createSpyObj('BackLinkService', ['showBackLink']);
 
     const isInAddDetailsFlow = !overrides?.establishmentService?.returnTo;
 
@@ -30,7 +32,7 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
         patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
         {
-          provide: BackService,
+          provide: BackLinkService,
           useValue: backServiceSpy,
         },
         {

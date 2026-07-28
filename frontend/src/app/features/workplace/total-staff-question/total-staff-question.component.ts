@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TotalStaffFormService } from '@core/services/total-staff-form.service';
@@ -22,11 +22,11 @@ export class TotalStaffQuestionComponent extends WorkplaceQuestion {
     public errorSummaryService: ErrorSummaryService,
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected establishmentService: EstablishmentService,
     private totalStaffFormService: TotalStaffFormService,
   ) {
-    super(formBuilder, router, backService, errorSummaryService, establishmentService);
+    super(formBuilder, router, backLinkService, errorSummaryService, establishmentService);
     this.form = totalStaffFormService.createForm(formBuilder, true);
   }
 

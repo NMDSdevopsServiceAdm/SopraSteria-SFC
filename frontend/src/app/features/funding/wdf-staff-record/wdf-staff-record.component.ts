@@ -4,7 +4,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
@@ -15,9 +15,9 @@ import { Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-wdf-staff-record',
-    templateUrl: './wdf-staff-record.component.html',
-    standalone: false
+  selector: 'app-wdf-staff-record',
+  templateUrl: './wdf-staff-record.component.html',
+  standalone: false,
 })
 export class WdfStaffRecordComponent implements OnInit, OnDestroy {
   public worker: Worker;
@@ -43,7 +43,7 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
     private breadcrumbService: BreadcrumbService,
     private reportService: ReportService,
     protected router: Router,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     private wdfConfirmFieldsService: WdfConfirmFieldsService,
   ) {}
 

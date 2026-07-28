@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { UserService } from '@core/services/user.service';
 import { MockUserServiceWithNoUserDetails } from '@core/test-utils/MockUserService';
 import { SharedModule } from '@shared/shared.module';
@@ -16,7 +16,7 @@ describe('YourDetailsComponent', () => {
     const component = await render(YourDetailsComponent, {
       imports: [SharedModule, RouterModule, RegistrationModule],
       providers: [
-        BackService,
+        BackLinkService,
         {
           provide: UserService,
           useClass: MockUserServiceWithNoUserDetails,

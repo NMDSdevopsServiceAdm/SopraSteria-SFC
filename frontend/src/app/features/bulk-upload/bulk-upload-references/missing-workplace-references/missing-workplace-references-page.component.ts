@@ -7,7 +7,7 @@ import { EstablishmentList } from '@core/model/bulk-upload.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -18,11 +18,11 @@ import { take } from 'rxjs/operators';
 import { BulkUploadReferencesDirective } from '../bulk-upload-references.directive';
 
 @Component({
-    selector: 'app-bu-missing-workplace-references-page',
-    templateUrl: 'missing-workplace-references.component.html',
-    styleUrls: ['../references.component.scss'],
-    providers: [I18nPluralPipe],
-    standalone: false
+  selector: 'app-bu-missing-workplace-references-page',
+  templateUrl: 'missing-workplace-references.component.html',
+  styleUrls: ['../references.component.scss'],
+  providers: [I18nPluralPipe],
+  standalone: false,
 })
 export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
   private primaryWorkplace: Establishment;
@@ -36,14 +36,14 @@ export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDir
     private activatedRoute: ActivatedRoute,
     protected establishmentService: EstablishmentService,
     protected bulkUploadService: BulkUploadService,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected alertService: AlertService,
     private adminSkipService: AdminSkipService,
   ) {
-    super(errorSummaryService, formBuilder, alertService, backService, router);
+    super(errorSummaryService, formBuilder, alertService, backLinkService, router);
   }
 
   ngOnInit(): void {

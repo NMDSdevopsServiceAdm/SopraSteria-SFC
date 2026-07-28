@@ -1,11 +1,11 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ErrorDetails, ErrorDefinition } from '@core/model/errorSummary.model';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { DataPermissions, Workplace } from '@core/model/my-workplaces.model';
+import { DataPermissions } from '@core/model/my-workplaces.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
@@ -43,7 +43,7 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit, On
     private formBuilder: UntypedFormBuilder,
     private router: Router,
     public route: ActivatedRoute,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     private previousRouteService: PreviousRouteService,
     private alertService: AlertService,
   ) {}
@@ -116,7 +116,7 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit, On
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: this.previousRoute });
+    this.backLinkService.showBackLink();
   }
 
   public getWorkplaceToChangeDataPermissionsFor(): void {

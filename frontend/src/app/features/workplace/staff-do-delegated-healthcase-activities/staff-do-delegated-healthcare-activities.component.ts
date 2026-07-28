@@ -6,14 +6,14 @@ import {
   StaffWhatKindDelegatedHealthcareActivities,
 } from '@core/model/delegated-healthcare-activities.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { WorkplaceQuestion } from '../question/question.component';
-import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 
 @Component({
   selector: 'app-staff-do-delegated-healthcare-activities',
@@ -36,7 +36,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends WorkplaceQues
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     protected route: ActivatedRoute,
@@ -44,7 +44,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends WorkplaceQues
     private alertService: AlertService,
     protected payAndPensionService: PayAndPensionService,
   ) {
-    super(formBuilder, router, backService, errorSummaryService, establishmentService);
+    super(formBuilder, router, backLinkService, errorSummaryService, establishmentService);
   }
 
   init() {

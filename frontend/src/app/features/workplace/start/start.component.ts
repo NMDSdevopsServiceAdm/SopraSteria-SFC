@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -20,7 +20,7 @@ export class StartComponent implements OnInit, OnDestroy {
   public isViewingSubAsParent: boolean;
 
   constructor(
-    public backService: BackService,
+    public backLinkService: BackLinkService,
     private establishmentService: EstablishmentService,
     private router: Router,
   ) {}
@@ -41,8 +41,7 @@ export class StartComponent implements OnInit, OnDestroy {
   }
 
   public setBackLink(): void {
-    const returnTo = this.fragment ? this.fragment : 'home';
-    this.backService.setBackLink({ url: ['/dashboard'], fragment: returnTo });
+    this.backLinkService.showBackLink();
   }
 
   public onSubmit(event: Event): void {

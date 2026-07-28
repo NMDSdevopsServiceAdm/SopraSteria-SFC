@@ -11,7 +11,6 @@ import { SecurityDetails } from '@core/model/security-details.model';
 import { Service } from '@core/model/services.model';
 import { SummaryList } from '@core/model/summary-list.model';
 import { InviteResponse, UserDetails } from '@core/model/userDetails.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -49,7 +48,6 @@ export class ConfirmDetailsComponent implements OnInit {
 
   constructor(
     public registrationService: RegistrationService,
-    public backService: BackService,
     protected backLinkService: BackLinkService,
     private errorSummaryService: ErrorSummaryService,
     private formBuilder: UntypedFormBuilder,
@@ -68,7 +66,7 @@ export class ConfirmDetailsComponent implements OnInit {
 
   ngAfterViewInit() {
     this.errorSummaryService.formEl$.next(this.formEl);
-    this.backService.setBackLink(null);
+    //this.backService.setBackLink(null);
   }
 
   public setBackLink(): void {

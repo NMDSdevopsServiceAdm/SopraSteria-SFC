@@ -1,15 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
-import { ProgressBarUtil, WorkplaceFlowSections } from '@core/utils/progress-bar-util';
-
-import { WorkplaceQuestion } from '../question/question.component';
-import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
   selector: 'app-staff-opt-out-of-workplace-pension',
@@ -28,13 +28,13 @@ export class StaffOptOutOfWorkplacePensionComponent extends WorkplaceQuestion im
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     protected payAndPensionService: PayAndPensionService,
     protected previousRouteService: PreviousRouteService,
   ) {
-    super(formBuilder, router, backService, errorSummaryService, establishmentService);
+    super(formBuilder, router, backLinkService, errorSummaryService, establishmentService);
   }
 
   init(): void {
@@ -66,17 +66,7 @@ export class StaffOptOutOfWorkplacePensionComponent extends WorkplaceQuestion im
   }
 
   public setBackLink(): void {
-    const isInWorkflow = !this.return;
-
-    const previousPage = this.previousRouteService.getPreviousPage();
-    const previousPageWasPensions = previousPage === this.previousQuestionPage;
-
-    if (isInWorkflow || previousPageWasPensions || this.inPayAndPensionsMiniFlow) {
-      this.back = { url: this.previousRoute };
-    } else {
-      this.back = this.return;
-    }
-    this.backService.setBackLink(this.back);
+    this.backLinkService.showBackLink();
   }
 
   protected setupRoutes(): void {

@@ -3,17 +3,18 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { AddWorkplaceFlow, AddWorkplaceResponse } from '@core/model/workplace.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { ConfirmWorkplaceDetailsDirective } from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
+import {
+  ConfirmWorkplaceDetailsDirective,
+} from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
 
 @Component({
-    selector: 'app-confirm-workplace-details',
-    templateUrl: './confirm-workplace-details.component.html',
-    standalone: false
+  selector: 'app-confirm-workplace-details',
+  templateUrl: './confirm-workplace-details.component.html',
+  standalone: false,
 })
 export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDirective {
   public serverError: string;
@@ -24,10 +25,9 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDir
     protected establishmentService: EstablishmentService,
     protected router: Router,
     protected workplaceService: WorkplaceService,
-    public backService: BackService,
     protected backLinkService: BackLinkService,
   ) {
-    super(backService, backLinkService);
+    super(backLinkService);
   }
 
   protected init(): void {

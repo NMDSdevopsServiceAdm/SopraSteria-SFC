@@ -1,22 +1,19 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import {
-  MockRegistrationService,
-  MockRegistrationServiceWithMainService,
-} from '@core/test-utils/MockRegistrationService';
+import { MockRegistrationService, MockRegistrationServiceWithMainService } from '@core/test-utils/MockRegistrationService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import { BackService } from '@core/services/back.service';
-import { BackLinkService } from '@core/services/backLink.service';
+
 import { ParentWorkplaceAccounts } from './parent-workplace-accounts.component';
 
 describe('ParentWorkplaceAccounts', () => {
@@ -26,7 +23,6 @@ describe('ParentWorkplaceAccounts', () => {
       {
         imports: [SharedModule, RegistrationModule, FormsModule, ReactiveFormsModule],
         providers: [
-          BackService,
           BackLinkService,
           {
             provide: RegistrationService,

@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { fireEvent, render } from '@testing-library/angular';
@@ -18,7 +18,7 @@ describe('StartComponent (workplace)', () => {
     const { fixture, getByText, getByTestId } = await render(StartComponent, {
       imports: [RouterModule, WorkplaceModule],
       providers: [
-        BackService,
+        BackLinkService,
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
@@ -200,19 +200,19 @@ describe('StartComponent (workplace)', () => {
 
   it('should set the back link to the dashboard home fragment when no navigatedFromFragment state is passed', async () => {
     const { component } = await setup();
-    const backLinkSpy = spyOn(component.backService, 'setBackLink');
+    const backLinkSpy = spyOn(component.backLinkService, 'showBackLink');
 
     component.setBackLink();
 
-    expect(backLinkSpy).toHaveBeenCalledWith({ url: ['/dashboard'], fragment: 'home' });
+    expect(backLinkSpy).toHaveBeenCalled();
   });
 
   it('should set the back link to the correct fragment when navigatedFromFragment state is passed', async () => {
     const { component } = await setup('workplace');
-    const backLinkSpy = spyOn(component.backService, 'setBackLink');
+    const backLinkSpy = spyOn(component.backLinkService, 'showBackLink');
 
     component.setBackLink();
 
-    expect(backLinkSpy).toHaveBeenCalledWith({ url: ['/dashboard'], fragment: 'workplace' });
+    expect(backLinkSpy).toHaveBeenCalled();
   });
 });

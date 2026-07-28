@@ -3,14 +3,16 @@ import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Leaver, Starter, StarterLeaverVacancy, Vacancy } from '@core/model/establishment.model';
 import { Job, JobGroup } from '@core/model/job.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { WorkplaceQuestion } from '@features/workplace/question/question.component';
-import { AccordionGroupComponent } from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
+import {
+  AccordionGroupComponent,
+} from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 
 @Directive()
@@ -33,13 +35,13 @@ export class SelectJobRolesDirective extends WorkplaceQuestion {
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     private route: ActivatedRoute,
     protected vacanciesAndTurnoverService: VacanciesAndTurnoverService,
   ) {
-    super(formBuilder, router, backService, errorSummaryService, establishmentService);
+    super(formBuilder, router, backLinkService, errorSummaryService, establishmentService);
   }
 
   protected init() {
@@ -60,8 +62,7 @@ export class SelectJobRolesDirective extends WorkplaceQuestion {
   }
 
   public setBackLink() {
-    this.back = { url: this.previousRoute };
-    this.backService.setBackLink(this.back);
+    this.backLinkService.showBackLink();
   }
 
   private setupForm(): void {

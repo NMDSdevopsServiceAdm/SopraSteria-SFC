@@ -3,7 +3,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
@@ -19,7 +19,7 @@ describe('NameOfWorkplaceComponent', () => {
     const component = await render(NameOfWorkplaceComponent, {
       imports: [SharedModule, RouterModule, RegistrationModule, ReactiveFormsModule],
       providers: [
-        BackService,
+        BackLinkService,
         {
           provide: EstablishmentService,
           useValue: { primaryWorkplace },

@@ -1,21 +1,18 @@
 import { Component } from '@angular/core';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { ConfirmWorkplaceDetailsDirective } from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
+import {
+  ConfirmWorkplaceDetailsDirective,
+} from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
 
 @Component({
-    selector: 'app-confirm-workplace-details',
-    templateUrl: './confirm-workplace-details.component.html',
-    standalone: false
+  selector: 'app-confirm-workplace-details',
+  templateUrl: './confirm-workplace-details.component.html',
+  standalone: false,
 })
 export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDirective {
-  constructor(
-    protected registrationService: RegistrationService,
-    protected backService: BackService,
-    protected backLinkService: BackLinkService,
-  ) {
-    super(backService, backLinkService);
+  constructor(protected registrationService: RegistrationService, protected backLinkService: BackLinkService) {
+    super(backLinkService);
   }
 
   protected async init(): Promise<void> {

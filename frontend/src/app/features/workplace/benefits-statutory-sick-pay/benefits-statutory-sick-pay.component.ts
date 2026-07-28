@@ -2,13 +2,13 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StaffBenefitEnum } from '@core/model/establishment.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { WorkplaceQuestion } from '../question/question.component';
-import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 
 @Component({
   selector: 'app-benefits-statutory-sick-pay',
@@ -37,12 +37,12 @@ export class BenefitsStatutorySickPayComponent extends WorkplaceQuestion impleme
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     protected payAndPensionService: PayAndPensionService,
   ) {
-    super(formBuilder, router, backService, errorSummaryService, establishmentService);
+    super(formBuilder, router, backLinkService, errorSummaryService, establishmentService);
   }
 
   protected init(): void {

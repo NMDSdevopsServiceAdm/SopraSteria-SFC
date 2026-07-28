@@ -5,7 +5,7 @@ import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
@@ -15,9 +15,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-health-and-care-visa-existing-workers',
-    templateUrl: 'health-and-care-visa-existing-workers.component.html',
-    standalone: false
+  selector: 'app-health-and-care-visa-existing-workers',
+  templateUrl: 'health-and-care-visa-existing-workers.component.html',
+  standalone: false,
 })
 export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   public healthCareAndVisaAnswers = [
@@ -48,7 +48,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
-    private backService: BackService,
+    private backLinkService: BackLinkService,
     private errorSummaryService: ErrorSummaryService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
@@ -153,7 +153,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   }
 
   private setBackLink(): void {
-    this.backService.setBackLink(this.returnUrl);
+    this.backLinkService.showBackLink();
   }
 
   private setPluralisation(): void {

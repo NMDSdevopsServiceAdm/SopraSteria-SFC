@@ -1,14 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { WorkplaceQuestion } from '../question/question.component';
 import { UntypedFormBuilder } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AlertService } from '@core/services/alert.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
-import { AlertService } from '@core/services/alert.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
   selector: 'app-how-do-you-pay-for-sleep-ins',
@@ -29,7 +30,7 @@ export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implement
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     protected route: ActivatedRoute,
@@ -37,7 +38,7 @@ export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implement
     private previousRouteService: PreviousRouteService,
     protected alertService: AlertService,
   ) {
-    super(formBuilder, router, backService, errorSummaryService, establishmentService);
+    super(formBuilder, router, backLinkService, errorSummaryService, establishmentService);
   }
 
   init(): void {
@@ -131,7 +132,7 @@ export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implement
       this.back = this.return;
     }
 
-    this.backService.setBackLink(this.back);
+    this.backLinkService.showBackLink();
   }
 
   private setSkipRoute(): void {

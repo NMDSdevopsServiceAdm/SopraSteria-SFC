@@ -3,7 +3,7 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
@@ -29,7 +29,7 @@ export class WorkplaceNotFoundDirective implements OnInit, AfterViewInit {
   constructor(
     protected establishmentService: EstablishmentService,
     protected formBuilder: UntypedFormBuilder,
-    public backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected workplaceInterfaceService: WorkplaceInterfaceService,
     protected router: Router,
@@ -96,7 +96,7 @@ export class WorkplaceNotFoundDirective implements OnInit, AfterViewInit {
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: [this.flow, 'find-workplace'] });
+    this.backLinkService.showBackLink();
   }
 
   public getErrorMessage(item: string): string {

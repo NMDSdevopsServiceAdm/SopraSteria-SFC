@@ -1,20 +1,19 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { AlertService } from '@core/services/alert.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { DataSharingComponent } from './data-sharing.component';
-import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
-import { AlertService } from '@core/services/alert.service';
 
 describe('DataSharingComponent', () => {
   async function setup(overrides: any = {}) {
@@ -25,7 +24,7 @@ describe('DataSharingComponent', () => {
       providers: [
         patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         ErrorSummaryService,
-        BackService,
+        BackLinkService,
         UntypedFormBuilder,
         {
           provide: EstablishmentService,

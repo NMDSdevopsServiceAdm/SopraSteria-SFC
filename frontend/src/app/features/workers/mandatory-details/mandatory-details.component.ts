@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -11,9 +10,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-mandatory-details',
-    templateUrl: './mandatory-details.component.html',
-    standalone: false
+  selector: 'app-mandatory-details',
+  templateUrl: './mandatory-details.component.html',
+  standalone: false,
 })
 export class MandatoryDetailsComponent implements OnInit, OnDestroy {
   public worker: Worker;
@@ -23,7 +22,6 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
   public staffRecordSections: ProgressBarUtil;
 
   constructor(
-    private backService: BackService,
     protected backLinkService: BackLinkService,
     private route: ActivatedRoute,
     private workerService: WorkerService,

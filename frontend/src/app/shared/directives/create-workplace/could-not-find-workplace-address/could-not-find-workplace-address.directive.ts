@@ -3,7 +3,7 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
@@ -25,7 +25,7 @@ export class CouldNotFindWorkplaceAddressDirective implements OnInit {
 
   constructor(
     protected workplaceInterfaceService: WorkplaceInterfaceService,
-    public backService: BackService,
+    public backLinkService: BackLinkService,
     protected establishmentService: EstablishmentService,
     protected formBuilder: UntypedFormBuilder,
     protected errorSummaryService: ErrorSummaryService,
@@ -56,7 +56,7 @@ export class CouldNotFindWorkplaceAddressDirective implements OnInit {
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: [this.flow, 'find-workplace-address'] });
+    this.backLinkService.showBackLink();
   }
 
   private setupForm(): void {

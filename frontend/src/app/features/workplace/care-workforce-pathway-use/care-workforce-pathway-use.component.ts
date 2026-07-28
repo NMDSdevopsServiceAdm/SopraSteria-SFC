@@ -6,7 +6,7 @@ import {
   UpdateCareWorkforcePathwayUsePayload,
 } from '@core/model/care-workforce-pathway.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
@@ -33,14 +33,14 @@ export class CareWorkforcePathwayUseComponent extends WorkplaceQuestion implemen
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     protected route: ActivatedRoute,
     protected alertService: AlertService,
     private previousRouteService: PreviousRouteService,
   ) {
-    super(formBuilder, router, backService, errorSummaryService, establishmentService);
+    super(formBuilder, router, backLinkService, errorSummaryService, establishmentService);
   }
 
   protected init(): void {
@@ -61,18 +61,7 @@ export class CareWorkforcePathwayUseComponent extends WorkplaceQuestion implemen
   }
 
   protected setBackLink(): void {
-    const isInWorkflow = !this.return;
-
-    const previousPage = this.previousRouteService.getPreviousPage();
-    const previousPageWasCWPAwareness = previousPage === 'care-workforce-pathway-awareness';
-
-    if (isInWorkflow || previousPageWasCWPAwareness) {
-      this.back = { url: this.previousRoute };
-    } else {
-      this.back = this.return;
-    }
-
-    this.backService.setBackLink(this.back);
+    this.backLinkService.showBackLink();
   }
 
   private setupForm(): void {

@@ -7,7 +7,7 @@ import { EstablishmentList } from '@core/model/bulk-upload.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -20,11 +20,11 @@ import { filter, map, take } from 'rxjs/operators';
 import { BulkUploadReferencesDirective } from '../bulk-upload-references.directive';
 
 @Component({
-    selector: 'app-bu-missing-staff-references-page',
-    templateUrl: 'missing-staff-references.component.html',
-    styleUrls: ['../references.component.scss'],
-    providers: [I18nPluralPipe],
-    standalone: false
+  selector: 'app-bu-missing-staff-references-page',
+  templateUrl: 'missing-staff-references.component.html',
+  styleUrls: ['../references.component.scss'],
+  providers: [I18nPluralPipe],
+  standalone: false,
 })
 export class MissingStaffReferencesComponent extends BulkUploadReferencesDirective implements OnDestroy, OnInit {
   private subscriptions: Subscription = new Subscription();
@@ -40,7 +40,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
     private activatedRoute: ActivatedRoute,
     protected establishmentService: EstablishmentService,
     protected bulkUploadService: BulkUploadService,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
@@ -48,7 +48,7 @@ export class MissingStaffReferencesComponent extends BulkUploadReferencesDirecti
     private workerService: WorkerService,
     private adminSkipService: AdminSkipService,
   ) {
-    super(errorSummaryService, formBuilder, alertService, backService, router);
+    super(errorSummaryService, formBuilder, alertService, backLinkService, router);
   }
 
   ngOnInit(): void {

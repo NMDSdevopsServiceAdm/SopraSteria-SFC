@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
@@ -13,7 +13,7 @@ export class WorkplaceNotFoundComponent {
   public workplace: Establishment;
   constructor(
     protected router: Router,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     private establishmentService: EstablishmentService,
     private route: ActivatedRoute,
   ) {}
@@ -24,8 +24,7 @@ export class WorkplaceNotFoundComponent {
   }
 
   private setBackLink(): void {
-    const backLinkUrl = this.router.createUrlTree(['..', 'regulated-by-cqc'], { relativeTo: this.route }).toString();
-    this.backService.setBackLink({ url: [backLinkUrl] });
+    this.backLinkService.showBackLink();
   }
 
   public returnToWorkPlace(event: Event) {

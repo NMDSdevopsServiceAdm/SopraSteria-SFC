@@ -1,21 +1,21 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { provideRouter, Router, RouterModule } from '@angular/router';
+import { provideRouter, RouterModule } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { LocationService } from '@core/services/location.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { WorkplaceNotFoundComponent } from './workplace-not-found.component';
-import { BackService } from '@core/services/back.service';
-import { RouterTestingHarness } from '@angular/router/testing';
 
 describe('WorkplaceNotFoundComponent', () => {
   const workplaceUid = 'abc131355543435';
 
   async function setup() {
-    const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
+    const backServiceSpy = jasmine.createSpyObj('BackLinkService', ['showBackLink']);
 
     const { fixture, getByText } = await render(WorkplaceNotFoundComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -28,7 +28,7 @@ describe('WorkplaceNotFoundComponent', () => {
           },
         },
         {
-          provide: BackService,
+          provide: BackLinkService,
           useValue: backServiceSpy,
         },
         LocationService,
@@ -71,8 +71,6 @@ describe('WorkplaceNotFoundComponent', () => {
   it('should set the back link to regulated-by-cqc page', async () => {
     const { backServiceSpy } = await setup();
 
-    expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-      url: [`/workplace/${workplaceUid}/workplace-data/workplace-summary/regulated-by-cqc`],
-    });
+    expect(backServiceSpy.showBackLink).toHaveBeenCalled();
   });
 });

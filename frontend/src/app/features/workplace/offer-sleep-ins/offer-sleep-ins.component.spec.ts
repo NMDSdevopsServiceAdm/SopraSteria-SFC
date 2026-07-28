@@ -1,33 +1,34 @@
-import { fireEvent, render, within } from '@testing-library/angular';
-import { OfferSleepInsComponent } from './offer-sleep-ins.component';
-import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { SharedModule } from '@shared/shared.module';
 import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
-import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
 import { getTestBed } from '@angular/core/testing';
-import { WindowRef } from '@core/services/window.ref';
-import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
-import { of } from 'rxjs';
-import { BackService } from '@core/services/back.service';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { Alert } from '@core/model/alert.model';
+import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
+import { AlertService } from '@core/services/alert.service';
+import { BackLinkService } from '@core/services/backLink.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
+import { WindowRef } from '@core/services/window.ref';
+import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import {
   MockPayAndPensionService,
   mockPayAndPensionsGroup1ProgressBarSections,
   mockPayAndPensionsGroup2ProgressBarSections,
 } from '@core/test-utils/MockPayAndPensionService';
-import { AlertService } from '@core/services/alert.service';
-import { Alert } from '@core/model/alert.model';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
+import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render, within } from '@testing-library/angular';
+import { of } from 'rxjs';
+
+import { OfferSleepInsComponent } from './offer-sleep-ins.component';
 
 describe('OfferSleepInsComponent', () => {
   const options = YesNoDontKnowOptions;
 
   async function setup(overrides: any = {}) {
     const isInAddDetailsFlow = !overrides.returnToUrl;
-    const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
+    const backServiceSpy = jasmine.createSpyObj('BackLinkService', ['showBackLink']);
 
     const setupTools = await render(OfferSleepInsComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -41,7 +42,7 @@ describe('OfferSleepInsComponent', () => {
           deps: [HttpClient],
         },
         {
-          provide: BackService,
+          provide: BackLinkService,
           useValue: backServiceSpy,
         },
         {

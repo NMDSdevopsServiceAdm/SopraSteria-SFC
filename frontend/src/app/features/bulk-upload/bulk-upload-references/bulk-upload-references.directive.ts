@@ -7,7 +7,7 @@ import { Establishment, LocalIdentifiersRequest } from '@core/model/establishmen
 import { Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { ArrayUtil } from '@core/utils/array-util';
 import filter from 'lodash/filter';
@@ -29,7 +29,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: UntypedFormBuilder,
     protected alertService: AlertService,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected router: Router,
   ) {}
 
@@ -180,7 +180,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
   }
 
   protected setBackLink(returnTo): void {
-    this.backService.setBackLink(returnTo);
+    this.backLinkService.showBackLink();
   }
 
   protected nextMissingPage(url, missingReferencesLeft: boolean = false): void {

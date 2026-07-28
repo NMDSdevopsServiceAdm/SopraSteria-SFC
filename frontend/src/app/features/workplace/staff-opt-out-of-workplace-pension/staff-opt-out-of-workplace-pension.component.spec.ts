@@ -1,34 +1,33 @@
-import { of } from 'rxjs';
-
 import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
-import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
-import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
-import userEvent from '@testing-library/user-event';
-
-import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workplace-pension.component';
-import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import {
   MockPayAndPensionService,
   mockPayAndPensionsGroup1ProgressBarSections,
   mockPayAndPensionsGroup2ProgressBarSections,
 } from '@core/test-utils/MockPayAndPensionService';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
+import { SharedModule } from '@shared/shared.module';
+import { render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
+import { of } from 'rxjs';
+
+import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workplace-pension.component';
 
 describe('StaffOptOutOfWorkplacePensionComponent', () => {
   const options = YesNoDontKnowOptions;
 
   async function setup(overrides: any = {}) {
     const isInAddDetailsFlow = !overrides.returnToUrl;
-    const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
+    const backServiceSpy = jasmine.createSpyObj('BackLinkService', ['showBackLink']);
 
     const setupTools = await render(StaffOptOutOfWorkplacePensionComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -41,7 +40,7 @@ describe('StaffOptOutOfWorkplacePensionComponent', () => {
           deps: [HttpClient],
         },
         {
-          provide: BackService,
+          provide: BackLinkService,
           useValue: backServiceSpy,
         },
         {

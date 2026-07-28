@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 
 @Component({
-    selector: 'app-about-us-registration',
-    templateUrl: './about-us.component.html',
-    standalone: false
+  selector: 'app-about-us-registration',
+  templateUrl: './about-us.component.html',
+  standalone: false,
 })
 export class AboutUsRegistrationComponent implements OnInit {
-  constructor(private backService: BackService) {}
+  constructor(private backLinkService: BackLinkService) {}
 
   ngOnInit(): void {
-    this.backService.setBackLink({ url: ['registration', 'create-account'] });
+    this.backLinkService.showBackLink();
   }
 }
