@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import filter from 'lodash/filter';
 import { BehaviorSubject } from 'rxjs';
-import * as parse from 'url-parse';
+import parse from 'url-parse';
 
 @Injectable({
   providedIn: 'root',
