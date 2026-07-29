@@ -32,9 +32,6 @@ export class SelectPrimaryUserDeleteComponent extends SelectPrimaryUserDirective
   }
 
   protected setBackButtonOrBreadcrumbs(): void {
-    // const userDetailsLink = this.router.url.split('/');
-    // userDetailsLink.pop();
-
     this.backLinkService.showBackLink();
   }
 

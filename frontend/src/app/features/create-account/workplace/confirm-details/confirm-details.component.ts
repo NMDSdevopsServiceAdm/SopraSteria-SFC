@@ -66,7 +66,6 @@ export class ConfirmDetailsComponent implements OnInit {
 
   ngAfterViewInit() {
     this.errorSummaryService.formEl$.next(this.formEl);
-    //this.backService.setBackLink(null);
   }
 
   public setBackLink(): void {
