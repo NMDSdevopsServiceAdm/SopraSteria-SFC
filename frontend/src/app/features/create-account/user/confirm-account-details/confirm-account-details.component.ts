@@ -121,7 +121,6 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
   }
 
   protected setBackLink(): void {
-    // this.backService.setBackLink({ url: ['/registration/create-security-question'] });
     this.backLinkService.showBackLink();
   }
 
