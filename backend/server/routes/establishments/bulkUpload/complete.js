@@ -96,6 +96,7 @@ const completeDeleteEstablishment = async (
   theLoggedInUser,
   transaction,
   myCurrentEstablishments,
+  onloadEstablishments,
 ) => {
   try {
     const startTime = new Date();
@@ -104,6 +105,22 @@ const completeDeleteEstablishment = async (
     const foundCurrentEstablishment = myCurrentEstablishments.find(
       (thisCurrent) => thisCurrent.key === thisDeletedEstablishment.key,
     );
+    const onloadEstablishment = onloadEstablishments.find((e) => e.key === thisDeletedEstablishment.key);
+
+    for (const currentWorker of Object.values(foundCurrentEstablishment._workerEntities || {})) {
+      const onloadWorker = Object.values(onloadEstablishment?._workerEntities || {}).find(
+        (w) => w.key === currentWorker.key,
+      );
+
+      if (onloadWorker?.newWorkplaceId) {
+        currentWorker._transferStaffRecord = onloadWorker.transferStaffRecord;
+        currentWorker._newWorkplaceId = onloadWorker.newWorkplaceId;
+
+        await currentWorker.save(theLoggedInUser, true, transaction);
+
+        delete foundCurrentEstablishment._workerEntities[currentWorker.key];
+      }
+    }
 
     // current is already restored, so simply need to delete it
     if (foundCurrentEstablishment) {
@@ -216,7 +233,13 @@ const completePost = async (req, res) => {
           await validationDifferenceReport.deleted.reduce(
             (p, thisDeletedEstablishment) =>
               p.then(() =>
-                completeDeleteEstablishment(thisDeletedEstablishment, theLoggedInUser, t, myCurrentEstablishments)
+                completeDeleteEstablishment(
+                  thisDeletedEstablishment,
+                  theLoggedInUser,
+                  t,
+                  myCurrentEstablishments,
+                  onloadEstablishments,
+                )
                   .then((data) => {
                     return data;
                   })
