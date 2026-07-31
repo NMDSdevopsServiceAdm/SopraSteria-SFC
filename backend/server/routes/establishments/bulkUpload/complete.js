@@ -69,7 +69,7 @@ const completeUpdateEstablishment = async (
 
       await foundCurrentEstablishment.load(thisEstablishmentJSON, true, true);
       Object.values(foundCurrentEstablishment._workerEntities || {}).forEach((worker) => {
-        const targetEstablishment = onloadEstablishments.find((e) => e.name === worker.transferStaffRecord);
+        const targetEstablishment = onloadEstablishments.find((e) => e.localIdentifier === worker.transferStaffRecord);
 
         if (targetEstablishment) {
           worker._newWorkplaceId = targetEstablishment._id;
