@@ -767,7 +767,16 @@ class Worker extends EntityValidator {
             updatedBy: savedBy.toLowerCase(),
           };
 
-          if (bulkUploaded && this._status === 'UPDATE' && this.transferStaffRecord && this.newWorkplaceId) {
+          // During bulk upload completion, workers restored from the database
+          // are assigned status COMPLETE. Transfer workers still need to be
+          // moved to the target workplace.
+
+          if (
+            bulkUploaded &&
+            ['UPDATE', 'COMPLETE'].includes(this._status) &&
+            this.transferStaffRecord &&
+            this.newWorkplaceId
+          ) {
             updateDocument.establishmentFk = this.newWorkplaceId;
           }
 
