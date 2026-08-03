@@ -38,7 +38,7 @@ export class SelectPrimaryUserDeleteComponent extends SelectPrimaryUserDirective
     this.backService.setBackLink({ url: userDetailsLink });
   }
 
-  protected navigateToNextPage(): void {
-    this.router.navigate(['../delete-user'], { relativeTo: this.route });
+  protected navigateToNextPage(): Promise<boolean> {
+    return this.router.navigate(['../delete-user'], { relativeTo: this.route });
   }
 }
