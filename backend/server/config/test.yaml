@@ -59,3 +59,6 @@ public:
 satisfactionSurvey:
   timeSpan: 5
   unit: m
+
+cms:
+  url: https://asc-wds-test.directus.app

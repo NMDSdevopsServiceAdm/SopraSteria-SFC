@@ -23,7 +23,7 @@ export class BulkUploadTopTipsService {
   }
 
   public getTopTipsTitles(): Observable<BulkUploadTopTips> {
-    const params = new HttpParams().set('fields', 'title,slug,link_title').set('env', environment.environmentName);
+    const params = new HttpParams().set('fields', 'title,slug,link_title');
 
     return this.http.get<BulkUploadTopTips>(`${environment.appRunnerEndpoint}/api/cms/items/${this.path}`, { params });
   }
@@ -36,8 +36,7 @@ export class BulkUploadTopTipsService {
     const params = new HttpParams()
       .set('filter', JSON.stringify(slugFilter))
       .set('limit', '1')
-      .set('fields', 'content,title,slug')
-      .set('env', environment.environmentName);
+      .set('fields', 'content,title,slug');
 
     return this.http.get<BulkUploadTopTips>(`${environment.appRunnerEndpoint}/api/cms/items/${this.path}`, { params });
   }

@@ -32,7 +32,7 @@ describe('HelpPagesService', () => {
       const req = http.expectOne(
         `${environment.appRunnerEndpoint}/api/cms/items/Help_pages?filter=${encodeURI(
           JSON.stringify(filter),
-        )}&limit=1&fields=content,title,Status&env=${environment.environmentName}`,
+        )}&limit=1&fields=content,title,Status`,
       );
       expect(req.request.method).toBe('GET');
     });
@@ -63,9 +63,7 @@ describe('HelpPagesService', () => {
       const req = http.expectOne(
         `${environment.appRunnerEndpoint}/api/cms/items/q_and_a_sections?deep=${encodeURI(
           JSON.stringify(filter),
-        )}&fields=section_heading,q_and_a_pages.*,sub_sections.*,sub_sections.q_and_a_pages.*&env=${
-          environment.environmentName
-        }`,
+        )}&fields=section_heading,q_and_a_pages.*,sub_sections.*,sub_sections.q_and_a_pages.*`,
       );
       expect(req.request.method).toBe('GET');
     });
@@ -82,9 +80,7 @@ describe('HelpPagesService', () => {
       service.getQuestionAndAnswerPage(slug).subscribe();
 
       const req = http.expectOne(
-        `${environment.appRunnerEndpoint}/api/cms/items/Q_and_A_pages?filter=${encodeURI(JSON.stringify(filter))}&env=${
-          environment.environmentName
-        }`,
+        `${environment.appRunnerEndpoint}/api/cms/items/Q_and_A_pages?filter=${encodeURI(JSON.stringify(filter))}`,
       );
       expect(req.request.method).toBe('GET');
     });
