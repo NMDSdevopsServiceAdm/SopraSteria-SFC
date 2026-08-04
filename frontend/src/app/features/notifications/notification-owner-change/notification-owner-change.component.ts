@@ -177,7 +177,6 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
         .subscribe(
           (request) => {
             if (request) {
-              //this
               this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
                 this.notificationsService.notifications = notify.notifications;
               });

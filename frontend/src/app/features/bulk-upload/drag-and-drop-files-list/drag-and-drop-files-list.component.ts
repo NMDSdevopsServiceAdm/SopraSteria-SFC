@@ -175,7 +175,6 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   }
 
   private updateEstablishmentService(): void {
-    //this
     this.establishmentService
       .getEstablishment(this.establishmentService.primaryWorkplace.uid)
       .pipe(
