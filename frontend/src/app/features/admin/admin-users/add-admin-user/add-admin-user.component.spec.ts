@@ -144,10 +144,13 @@ describe('AddAdminUserComponent', () => {
     userEvent.type(getByLabelText('Job title'), 'Administrator');
     userEvent.type(getByLabelText('Email address'), 'admin@email.com');
     userEvent.type(getByLabelText('Phone number'), '01234567890');
+
     fireEvent.click(getByLabelText('Admin'));
 
     fireEvent.click(getByText('Save admin user'));
     fixture.detectChanges();
+
+    await fixture.whenStable();
 
     expect(alertSpy).toHaveBeenCalledWith({
       type: 'success',

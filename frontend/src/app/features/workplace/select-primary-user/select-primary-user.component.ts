@@ -38,6 +38,6 @@ export class SelectPrimaryUserComponent extends SelectPrimaryUserDirective {
   }
 
   protected navigateToNextPage(): Promise<boolean> {
-    return this.router.navigate(['../delete-user'], { relativeTo: this.route });
+    return this.router.navigate(['../'], { relativeTo: this.route });
   }
 }
