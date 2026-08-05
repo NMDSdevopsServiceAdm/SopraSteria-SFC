@@ -1,6 +1,3 @@
-import dayjs from 'dayjs';
-import { of } from 'rxjs';
-
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
@@ -17,6 +14,8 @@ import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import dayjs from 'dayjs';
+import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
@@ -332,10 +331,10 @@ describe('Summary section', () => {
     });
 
     const testCasesForAddYourVacancyStarterLeaverMessages = [
-      { vacancies: null, starters: null, leavers: null, expected: 'Add your vacancy, starters and leavers data' },
+      { vacancies: null, starters: null, leavers: null, expected: 'Add your starters, leavers and vacancy data' },
 
-      { vacancies: null, starters: null, leavers: 'None', expected: 'Add your vacancy and starters data' },
-      { vacancies: null, starters: 'None', leavers: null, expected: 'Add your vacancy and leavers data' },
+      { vacancies: null, starters: null, leavers: 'None', expected: 'Add your starters and vacancy data' },
+      { vacancies: null, starters: 'None', leavers: null, expected: 'Add your leavers and vacancy data' },
       { vacancies: 'None', starters: null, leavers: null, expected: 'Add your starters and leavers data' },
 
       { vacancies: null, starters: `Don't know`, leavers: 'None', expected: 'Add your vacancy data' },

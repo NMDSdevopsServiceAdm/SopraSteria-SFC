@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, signal, Signal, WritableSignal } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
@@ -169,7 +169,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
     const notAllTurnoverDataAnswered = [vacancies, leavers, starters].some((value) => !value);
     if (notAllTurnoverDataAnswered) {
-      const missingOnes = Object.entries({ vacancy: vacancies, starters, leavers })
+      const missingOnes = Object.entries({ starters, leavers, vacancy: vacancies })
         .filter(([_key, value]) => !value)
         .map(([key, _value]) => key);
 
