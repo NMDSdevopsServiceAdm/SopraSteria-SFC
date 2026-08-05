@@ -1,5 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -598,6 +597,8 @@ describe('ParentRequestIndividualComponent', () => {
       const approvalConfirmButton = within(dialog).getByText('Approve this request');
       fireEvent.click(approvalConfirmButton);
 
+      await fixture.whenStable();
+
       expect(alertServiceSpy).toHaveBeenCalledWith({
         type: 'success',
         message: `The parent request of workplace ${workplaceName} has been approved`,
@@ -707,6 +708,8 @@ describe('ParentRequestIndividualComponent', () => {
       const dialog = await within(document.body).findByRole('dialog');
       const rejectionConfirmButton = within(dialog).getByText('Reject this request');
       fireEvent.click(rejectionConfirmButton);
+
+      await fixture.whenStable();
 
       expect(alertServiceSpy).toHaveBeenCalledWith({
         type: 'success',
