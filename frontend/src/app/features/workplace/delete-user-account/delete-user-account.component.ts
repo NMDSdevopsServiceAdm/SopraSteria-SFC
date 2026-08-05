@@ -10,9 +10,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-delete-user-account',
-    templateUrl: './delete-user-account.component.html',
-    standalone: false
+  selector: 'app-delete-user-account',
+  templateUrl: './delete-user-account.component.html',
+  standalone: false,
 })
 export class DeleteUserAccountComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
@@ -51,8 +51,9 @@ export class DeleteUserAccountComponent implements OnInit, OnDestroy {
       this.userService.deleteUser(this.establishment.uid, this.user.uid).subscribe(
         () => {
           this.updateEstablishmentUsers();
-          this.router.navigate(this.return.url, { fragment: this.return.fragment });
-          this.successAlert();
+          this.router.navigate(this.return.url, { fragment: this.return.fragment }).then(() => {
+            this.successAlert();
+          });
         },
         () => {
           this.errorAlert();
