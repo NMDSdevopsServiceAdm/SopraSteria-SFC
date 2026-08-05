@@ -381,19 +381,19 @@ describe('Summary section', () => {
           vacanciesSavedAt: moreThanOneYearAgo,
           startersSavedAt: moreThanOneYearAgo,
           leaversSavedAt: moreThanOneYearAgo,
-          expected: 'Update your staff vacancy, starters and leavers data',
+          expected: 'Update your starters, leavers and vacancy data',
         },
         {
           vacanciesSavedAt: moreThanOneYearAgo,
           startersSavedAt: moreThanOneYearAgo,
           leaversSavedAt: lessThanOneYearAgo,
-          expected: 'Update your staff vacancy and starters data',
+          expected: 'Update your starters and vacancy data',
         },
         {
           vacanciesSavedAt: moreThanOneYearAgo,
           startersSavedAt: lessThanOneYearAgo,
           leaversSavedAt: moreThanOneYearAgo,
-          expected: 'Update your staff vacancy and leavers data',
+          expected: 'Update your leavers and vacancy data',
         },
         {
           vacanciesSavedAt: lessThanOneYearAgo,
@@ -405,7 +405,7 @@ describe('Summary section', () => {
           vacanciesSavedAt: moreThanOneYearAgo,
           startersSavedAt: lessThanOneYearAgo,
           leaversSavedAt: lessThanOneYearAgo,
-          expected: 'Update your staff vacancy data',
+          expected: 'Update your vacancy data',
         },
         {
           vacanciesSavedAt: lessThanOneYearAgo,

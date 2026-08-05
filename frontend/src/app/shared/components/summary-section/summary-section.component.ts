@@ -203,9 +203,9 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
     if (someDataOutdated) {
       const outdatedOnes = [
-        ['staff vacancy', vacanciesOverOneYear],
         ['starters', startersOverOneYear],
         ['leavers', leaversOverOneYear],
+        ['vacancy', vacanciesOverOneYear],
       ]
         .filter(([_key, outdated]) => outdated)
         .map(([key, _outdated]) => key) as string[];
