@@ -1,10 +1,13 @@
-import { Injectable } from '@angular/core';
-import { NavigationBehaviorOptions, Router, UrlTree } from '@angular/router';
+import { ViewportScroller } from '@angular/common';
+import { inject, Injectable } from '@angular/core';
+import { NavigationBehaviorOptions, NavigationExtras, Router, UrlTree } from '@angular/router';
 
 import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
 
 @Injectable()
 export class SubsidiaryRouterService extends Router {
+  private viewportScroller = inject(ViewportScroller);
+
   constructor(private parentSubsidiaryViewService: ParentSubsidiaryViewService) {
     super();
   }
@@ -58,6 +61,24 @@ export class SubsidiaryRouterService extends Router {
     }
 
     return super.navigateByUrl(url, extras);
+  }
+
+  async navigateAndScrollToAnchor(
+    commands: readonly any[],
+    targetElementId: string,
+    extras?: NavigationExtras,
+  ): Promise<boolean> {
+    const navigateSuccess = await this.navigate(commands, extras);
+    if (!navigateSuccess) {
+      return false;
+    }
+
+    await new Promise((resolve) => setTimeout(() => resolve(true), 0));
+
+    this.viewportScroller.setOffset([0, 20]);
+    this.viewportScroller.scrollToAnchor(targetElementId);
+
+    return true;
   }
 
   isSubsidiaryPage(commands: any[]) {
