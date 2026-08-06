@@ -5,7 +5,7 @@ const moment = require('moment');
 
 const { acquireLock } = require('./lock');
 const router = require('express').Router();
-const s3 = require('./s3');
+const BulkUploadS3Utils = require('./s3');
 const { buStates } = require('./states');
 const { getErrorWarningArray } = require('../../../utils/errorWarningArray');
 const { EstablishmentFileHeaders } = require('../../../models/BulkImport/csv/workplaceCSVValidator');
@@ -29,9 +29,9 @@ const getErrorReport = async (establishmentId) => {
   const workersReportURI = `${establishmentId}/validation/workers.validation.json`;
   const trainingReportURI = `${establishmentId}/validation/training.validation.json`;
 
-  const estReportDownload = await s3.downloadContent(establishmentsReportURI);
-  const wrkReportDownload = await s3.downloadContent(workersReportURI);
-  const trainReportDownload = await s3.downloadContent(trainingReportURI);
+  const estReportDownload = await BulkUploadS3Utils.downloadContent(establishmentsReportURI);
+  const wrkReportDownload = await BulkUploadS3Utils.downloadContent(workersReportURI);
+  const trainReportDownload = await BulkUploadS3Utils.downloadContent(trainingReportURI);
 
   const estReport = estReportDownload && estReportDownload.data ? JSON.parse(estReportDownload.data) : [];
   const wrkReport = wrkReportDownload && wrkReportDownload.data ? JSON.parse(wrkReportDownload.data) : [];
@@ -57,9 +57,9 @@ const errorReport = async (req, res) => {
   try {
     const errorReport = await getErrorReport(req.establishmentId);
 
-    await s3.saveResponse(req, res, 200, errorReport);
+    await BulkUploadS3Utils.saveResponse(req, res, 200, errorReport);
   } catch (error) {
-    await s3.saveResponse(req, res, 404);
+    await BulkUploadS3Utils.saveResponse(req, res, 404);
     throw new Error(error);
   }
 };

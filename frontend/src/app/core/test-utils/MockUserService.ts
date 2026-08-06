@@ -129,6 +129,30 @@ export class MockUserService extends UserService {
     };
   }
 
+  public static factoryWithOverrides(overrides: Record<string, any> = {}) {
+    return (httpClient: HttpClient) => {
+      const service = new MockUserService(httpClient);
+
+      Object.keys(overrides).forEach((overrideName) => {
+        switch (overrideName) {
+          case 'loggedInUser': {
+            Object.defineProperty(service, 'loggedInUser', {
+              get: () => overrides.loggedInUser,
+              set: () => {},
+            });
+            break;
+          }
+          default: {
+            service[overrideName] = overrides[overrideName];
+            break;
+          }
+        }
+      });
+
+      return service;
+    };
+  }
+
   public get loggedInUser(): UserDetails {
     return {
       uid: 'mocked-uid',
@@ -185,6 +209,20 @@ export class MockUserService extends UserService {
     return of({});
   }
 }
+
+export const mockLoggedInUser: UserDetails = {
+  uid: 'mocked-uid',
+  email: 'test@developer.com',
+  fullname: 'John Smith',
+  jobTitle: 'Developer',
+  phone: '01234567890',
+  role: Roles.Edit,
+  securityQuestion: 'Not relevant',
+  securityQuestionAnswer: 'Not relevant',
+  lastLoggedInFromLogin: '2026-06-01T12:34:56.000Z',
+  userResearchInviteResponse: null,
+  viewedUserResearchQuestion: true,
+};
 
 @Injectable()
 export class MockUserServiceWithNoUserDetails extends MockUserService {

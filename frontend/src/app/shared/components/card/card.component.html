@@ -1,7 +1,12 @@
 <div class="asc-card">
-  <div>
-    <img class="asc-card__image" src="{{ image }}" alt="" />
+  <div class="asc-card__container">
+    <h2 *ngIf="title" class="govuk-heading-m asc-card-heading">
+      {{ title }}
+    </h2>
   </div>
+
+  <img class="asc-card__image" [src]="image" alt="" />
+
   <div class="asc-card__container">
     <ng-content></ng-content>
   </div>

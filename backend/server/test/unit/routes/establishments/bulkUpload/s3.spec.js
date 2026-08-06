@@ -1,6 +1,7 @@
 const sinon = require('sinon');
-const S3 = require('../../../../../routes/establishments/bulkUpload/s3');
-const s3ClientV3 = require('../../../../../routes/establishments/bulkUpload/s3clientv3');
+const BulkUploadS3Utils = require('../../../../../routes/establishments/bulkUpload/s3');
+const bulkUploadS3Client = require('../../../../../routes/establishments/bulkUpload/bulkUploadS3Client');
+const { buildGetObjectResponseBody } = require('./testUtils');
 const expect = require('chai').expect;
 
 const extraData = {
@@ -95,37 +96,32 @@ const deleteFiles = {
   },
 };
 
-describe('s3', () => {
+describe('BulkUploadS3Utils', () => {
   afterEach(() => {
     sinon.restore();
   });
 
   describe('deleteFilesS3', () => {
     it('should delete the files from s3', async () => {
-      sinon.stub(s3ClientV3, 'listObjects').resolves(listObjects);
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves(listObjects);
 
-      const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
-      deleteObjects.returns({
-        promise: async () => {
-          return;
-        },
-      });
-      await S3.deleteFilesS3(123, 'filename1');
+      const deleteObjects = sinon.stub(bulkUploadS3Client, 'deleteObjects').resolves();
+      await BulkUploadS3Utils.deleteFilesS3(123, 'filename1');
       sinon.assert.calledWith(deleteObjects, deleteFiles);
     });
 
     it('should handle the case when listObjects found no result', async () => {
-      sinon.stub(s3ClientV3, 'listObjects').resolves({});
-      const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves({});
+      const deleteObjects = sinon.stub(bulkUploadS3Client, 'deleteObjects');
 
-      await S3.deleteFilesS3(123, 'filename1');
+      await BulkUploadS3Utils.deleteFilesS3(123, 'filename1');
       sinon.assert.notCalled(deleteObjects);
     });
   });
 
   describe('purgeBulkUploadS3Objects', () => {
     it('should delete all the files', async () => {
-      const s3listObject = sinon.stub(s3ClientV3, 'listObjects');
+      const s3listObject = sinon.stub(bulkUploadS3Client, 'listObjects');
       s3listObject.callsFake(async (listParams) => {
         switch (listParams?.Prefix) {
           case '1/latest/':
@@ -137,13 +133,8 @@ describe('s3', () => {
         }
       });
 
-      const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
-      deleteObjects.returns({
-        promise: async () => {
-          return;
-        },
-      });
-
+      const deleteObjects = sinon.stub(bulkUploadS3Client, 'deleteObjects');
+      deleteObjects.resolves();
       const consolidateFiles = [...latestFiles.Contents, ...validationFiles.Contents, ...intermediaryFiles.Contents];
 
       const justTheKeys = consolidateFiles.map((file) => {
@@ -157,27 +148,27 @@ describe('s3', () => {
           Quiet: true,
         },
       };
-      await S3.purgeBulkUploadS3Objects(1);
+      await BulkUploadS3Utils.purgeBulkUploadS3Objects(1);
 
       sinon.assert.calledWith(deleteObjects, expectedResult);
     });
 
     it('should handle the case when listObjects found no result', async () => {
-      sinon.stub(s3ClientV3, 'listObjects').resolves({});
-      const deleteObjects = sinon.stub(S3.s3, 'deleteObjects');
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves({});
+      const deleteObjects = sinon.stub(bulkUploadS3Client, 'deleteObjects');
 
-      await S3.deleteFilesS3(123, 'filename1');
+      await BulkUploadS3Utils.deleteFilesS3(123, 'filename1');
       sinon.assert.notCalled(deleteObjects);
     });
   });
 
   describe('listMetaData', () => {
     it('should list the files from s3', async () => {
-      sinon.stub(s3ClientV3, 'listObjects').resolves(latestFiles);
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves(latestFiles);
 
-      const getObject = sinon.stub(S3.s3, 'getObject');
+      const getObject = sinon.stub(bulkUploadS3Client, 'getObject');
 
-      var workerFileBuffer = Buffer.from(
+      const workerFileBody = buildGetObjectResponseBody(
         '{\n' +
           '  "username": "george-benchmarking",\n' +
           '  "filename": "WorkerFile.csv",\n' +
@@ -188,27 +179,24 @@ describe('s3', () => {
           '  "deleted": 0\n' +
           '}',
       );
+
       getObject
         .withArgs({
-          Bucket: S3.Bucket,
+          Bucket: BulkUploadS3Utils.bulkUploadBucket,
           Key: 'WorkerFile.metadata.json',
         })
-        .returns({
-          promise: async () => {
-            return {
-              AcceptRanges: 'bytes',
-              Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
-              LastModified: '2021-01-26T14:28:35.000Z',
-              ContentLength: 171,
-              ETag: '""',
-              VersionId: 'null',
-              ContentType: 'application/json',
-              Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
-              Body: workerFileBuffer,
-            };
-          },
+        .resolves({
+          AcceptRanges: 'bytes',
+          Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
+          LastModified: '2021-01-26T14:28:35.000Z',
+          ContentLength: 171,
+          ETag: '""',
+          VersionId: 'null',
+          ContentType: 'application/json',
+          Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
+          Body: workerFileBody,
         });
-      var establishmentFileBuffer = Buffer.from(
+      const establishmentFileBody = buildGetObjectResponseBody(
         '{\n' +
           '  "username": "george-benchmarking",\n' +
           '  "filename": "EstablishmentFile.csv",\n' +
@@ -221,25 +209,22 @@ describe('s3', () => {
       );
       getObject
         .withArgs({
-          Bucket: S3.Bucket,
+          Bucket: BulkUploadS3Utils.bulkUploadBucket,
           Key: 'EstablishmentFile.metadata.json',
         })
-        .returns({
-          promise: async () => {
-            return {
-              AcceptRanges: 'bytes',
-              Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
-              LastModified: '2021-01-26T14:28:35.000Z',
-              ContentLength: 171,
-              ETag: '""',
-              VersionId: 'null',
-              ContentType: 'application/json',
-              Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
-              Body: establishmentFileBuffer,
-            };
-          },
+        .resolves({
+          AcceptRanges: 'bytes',
+          Expiration: 'expiry-date="Wed, 03 Feb 2021 00:00:00 GMT", rule-id="auto-delete"',
+          LastModified: '2021-01-26T14:28:35.000Z',
+          ContentLength: 171,
+          ETag: '""',
+          VersionId: 'null',
+          ContentType: 'application/json',
+          Metadata: { username: 'george-benchmarking', establishmentid: '2000' },
+          Body: establishmentFileBody,
         });
-      const results = await S3.listMetaData(123, '/lastBulkUpload/');
+
+      const results = await BulkUploadS3Utils.listMetaData(123, '/lastBulkUpload/');
       const expectedResult = [
         {
           key: 'EstablishmentFile.metadata.json',
@@ -281,11 +266,11 @@ describe('s3', () => {
     });
 
     it('should handle the case when listObjects found no result', async () => {
-      sinon.stub(s3ClientV3, 'listObjects').resolves({});
+      sinon.stub(bulkUploadS3Client, 'listObjects').resolves({});
 
-      const getObject = sinon.stub(S3.s3, 'getObject');
+      const getObject = sinon.stub(bulkUploadS3Client, 'getObject');
 
-      const results = await S3.listMetaData(123, '/lastBulkUpload/');
+      const results = await BulkUploadS3Utils.listMetaData(123, '/lastBulkUpload/');
 
       expect(getObject).not.to.be.called;
       expect(results).to.deep.equal([]);

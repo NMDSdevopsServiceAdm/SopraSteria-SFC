@@ -1,12 +1,13 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 
+import { userPassword } from '../../support/configData';
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 
 describe('Cookie banner', { tags: '@others' }, () => {
   describe('when user login', () => {
     beforeEach(() => {
-      cy.loginAsUser(StandAloneEstablishment.editUserLoginName, Cypress.env('userPassword'));
+      cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
       cy.clearAllCookies();
       cy.reload();
     });
@@ -41,7 +42,7 @@ describe('Cookie banner', { tags: '@others' }, () => {
       cy.get('a').contains('Sign out').click();
       cy.get('[data-testid="cookie-banner"]').should('not.exist');
 
-      cy.loginAsUser(StandAloneEstablishment.editUserLoginName, Cypress.env('userPassword'));
+      cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
       cy.reload();
       cy.get('[data-testid="cookie-banner"]').should('not.exist');
     });

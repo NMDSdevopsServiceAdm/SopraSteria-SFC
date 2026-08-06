@@ -1,0 +1,22 @@
+.asc-card-link {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 24px;
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 25px;
+  padding-top: 7px;
+}
+
+.asc-card-description {
+  width: 100%;
+}
+.asc-card-break {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .asc-card-break {
+    display: inline;
+  }
+}

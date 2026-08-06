@@ -165,13 +165,11 @@ export interface Establishment {
   showSharingPermissionsBanner?: boolean;
   doNewStartersRepeatMandatoryTrainingFromPreviousEmployment?: string;
   moneySpentOnAdvertisingInTheLastFourWeeks?: string;
-  wouldYouAcceptCareCertificatesFromPreviousEmployment?: string;
   peopleInterviewedInTheLastFourWeeks?: string;
   showAddWorkplaceDetailsBanner?: boolean;
   pensionContribution?: string;
   pensionContributionPercentage?: number;
   careWorkersLeaveDaysPerYear?: string;
-  careWorkersCashLoyaltyForFirstTwoYears?: string;
   sickPay?: string;
   isParentApprovedBannerViewed?: boolean;
   provId?: string;

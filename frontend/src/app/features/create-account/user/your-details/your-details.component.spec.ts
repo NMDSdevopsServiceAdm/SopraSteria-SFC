@@ -48,6 +48,7 @@ describe('YourDetailsComponent', () => {
     spy.and.returnValue(Promise.resolve(true));
 
     return {
+      ...component,
       component,
       spy,
       userService,
@@ -316,6 +317,13 @@ describe('YourDetailsComponent', () => {
     expect(component.getByText('Save and return')).toBeTruthy();
     expect(cancelLink).toBeTruthy();
     expect(cancelLink.getAttribute('href')).toEqual('/registration/confirm-details');
+  });
+
+  it('should show a hint message for email address', async () => {
+    const message = /Use your own work email address. If possible, avoid shared inboxes like admin@workplace.com/;
+
+    const { getByText } = await setup();
+    expect(getByText(message)).toBeTruthy();
   });
 
   describe('progressBar', () => {

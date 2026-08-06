@@ -20,7 +20,7 @@ export class HomePage {
   }
 
   cards() {
-    cy.get('[data-cy="cards-and-links"]').should('contain', 'Does your data meet funding requirements?');
+    cy.get('[data-cy="cards-and-links"]').should('contain', 'LDSS funding');
     cy.get('[data-cy="cards-and-links"]').should('contain', 'See how you compare against other workplaces');
   }
 

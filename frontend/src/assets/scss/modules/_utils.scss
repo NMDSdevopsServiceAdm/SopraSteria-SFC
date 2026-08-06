@@ -137,6 +137,10 @@
   width: 100%;
 }
 
+.asc-util__width-85-percent {
+  width: 85%;
+}
+
 .asc-font-19 {
   @include govuk-font($size: 19);
 }
@@ -216,4 +220,22 @@ dl.asc__name-value-pair {
 
 .asc__white-background {
   background-color: #ffffff;
+}
+
+.asc-red-pill-icon--m-size {
+  width: 42px;
+  height: 19px;
+}
+
+.asc__govuk-form-group--error--orange {
+  padding-left: 15px;
+  border-left: 5px solid govuk-colour('orange');
+}
+
+.asc__govuk-error-message--orange {
+  color: govuk-colour('orange');
+}
+
+.asc-util__break-word-on-overflow {
+  overflow-wrap: break-word;
 }

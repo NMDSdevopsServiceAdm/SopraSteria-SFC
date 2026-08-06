@@ -297,7 +297,9 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
     });
 
     const clickIntoFundingSection = () => {
-      cy.get('a').contains('Does your data meet funding requirements?').click();
+      cy.get('a')
+        .contains(/LDSS funding/)
+        .click();
       cy.get('h1').should('contain.text', `Does your data meet funding requirements for`);
 
       if (isTestingForParentViewSub) {

@@ -127,7 +127,6 @@ import { LongDatePipe } from './pipes/long-date.pipe';
 import { NewDataViewPermissionsPipe } from './pipes/new-data-view-permissions.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
 import { NursingCategoriesTextPipe } from './pipes/nursing-categories-text.pipe';
-import { NursingSpecialismsTextPipe } from './pipes/nursing-specialisms-text.pipe';
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
 import { OrderOtherPipe } from './pipes/order-other.pipe';
 import { RemoveTrailingWhitespacePipe } from './pipes/remove-trailing-whitespace.pipe';
@@ -192,7 +191,6 @@ import { UpdateBannerComponent } from './components/update-banner/update-banner.
     MessagesComponent,
     NumericAnswerPipe,
     NursingCategoriesTextPipe,
-    NursingSpecialismsTextPipe,
     OpenEndedAnswerPipe,
     OrderOtherPipe,
     PanelComponent,
@@ -337,7 +335,6 @@ import { UpdateBannerComponent } from './components/update-banner/update-banner.
     MessagesComponent,
     NumericAnswerPipe,
     NursingCategoriesTextPipe,
-    NursingSpecialismsTextPipe,
     OpenEndedAnswerPipe,
     OrderOtherPipe,
     PanelComponent,

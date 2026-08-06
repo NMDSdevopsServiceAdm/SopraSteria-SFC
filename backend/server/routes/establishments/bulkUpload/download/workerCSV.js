@@ -33,7 +33,7 @@ const _convertYesNoDontKnow = (value) => {
 const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
   //     "CARECERT","L2CARECERT","RECSOURCE","HANDCVISA","INOUTUK","STARTDATE","STARTINSECT", "DHA","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
-  //     "NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","CWPCATEGORY","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
+  //     "NMCREG","AMHP","SCQUAL","NONSCQUAL","CWPCATEGORY","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
   const columns = [];
 
   // "LOCALESTID"
@@ -391,23 +391,6 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
       ? _maptoCSVregisteredNurse(entity.RegisteredNurseValue)
       : '',
   );
-
-  // "NURSESPEC"
-  if (get(entity, 'mainJob.id') && entity.mainJob.id === NURSE_JOB_ID && entity.NurseSpecialismsValue) {
-    if (entity.NurseSpecialismsValue === 'No') {
-      columns.push(BUDI.nursingSpecialist(BUDI.FROM_ASC, 7));
-    } else if (entity.NurseSpecialismsValue === "Don't know") {
-      columns.push(BUDI.nursingSpecialist(BUDI.FROM_ASC, 8));
-    } else if (entity.NurseSpecialismsValue === 'Yes') {
-      columns.push(
-        entity.nurseSpecialisms
-          .map((thisSpecialism) => BUDI.nursingSpecialist(BUDI.FROM_ASC, thisSpecialism.id))
-          .join(';'),
-      );
-    }
-  } else {
-    columns.push('');
-  }
 
   // "AMHP"
   let amhp = '';

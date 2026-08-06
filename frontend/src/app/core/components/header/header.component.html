@@ -31,8 +31,19 @@
               [routerLink]="['/account-management']"
               class="govuk-header__link"
               routerLinkActive="govuk-link--no-underline"
-              >{{ fullname }}</a
             >
+              @if (showFlagForUsername()) {
+                {{ fullname
+                }}<img
+                  src="/assets/images/flag-orange.svg"
+                  alt="flag"
+                  class="govuk-!-margin-right-0 govuk-!-margin-bottom-1"
+                  style="height: 16px; width: 16px"
+                />
+              } @else {
+                {{ fullname }}
+              }
+            </a>
           </li>
           <li *ngIf="workplaceId && !isOnAdminScreen" class="govuk-header__navigation-item" routerLinkActive="active">
             <a

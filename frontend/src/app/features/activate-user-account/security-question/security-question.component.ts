@@ -8,9 +8,9 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { SecurityQuestionDirective } from '@shared/directives/user/security-question.directive';
 
 @Component({
-    selector: 'app-security-question',
-    templateUrl: './security-question.component.html',
-    standalone: false
+  selector: 'app-security-question',
+  templateUrl: './security-question.component.html',
+  standalone: false,
 })
 export class SecurityQuestionComponent extends SecurityQuestionDirective {
   private activationToken: string;
@@ -55,7 +55,14 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
 
   protected save(): void {
     this.createAccountService.activationComplete$.next(true);
-    this.router.navigate(['/activate-account', this.activationToken, 'confirm-account-details']).then(() => {
+
+    const nextRoute = [
+      '/activate-account',
+      this.activationToken,
+      this.insideFlow ? 'user-research-invite' : 'confirm-account-details',
+    ];
+
+    this.router.navigate(nextRoute).then(() => {
       this.createAccountService.securityDetails$.next({
         securityQuestion: this.getSecurityQuestion.value,
         securityQuestionAnswer: this.getSecurityQuestionAnswer.value,

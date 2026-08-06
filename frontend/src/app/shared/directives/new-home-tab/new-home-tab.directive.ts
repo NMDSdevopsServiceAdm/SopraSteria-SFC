@@ -17,10 +17,15 @@ import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { isAdminRole } from '@core/utils/check-role-util';
-import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
-import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
-
+import {
+  CancelDataOwnerDialogComponent,
+} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import {
+  ChangeDataOwnerDialogComponent,
+} from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import {
+  OwnershipChangeMessageDialogComponent,
+} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import saveAs from 'file-saver';
@@ -85,6 +90,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   public noOfWorkersWithDelegatedHealthcareUnanswered: number;
   public workplacesNeedAttention: boolean;
   public showCheckCqcDetails: boolean;
+  public fundingYear: string;
 
   constructor(
     private userService: UserService,
@@ -179,6 +185,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.updateOnRemoveLinkToParentSuccess();
 
     this.saveAllWorkerIdsInLocalStorage();
+    this.setFundingYear();
   }
 
   private setBenchmarksCard(): void {
@@ -193,6 +200,18 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
       this.benchmarksMessage = `${noOfWorkplacesText} providing ${serviceText} in ${localAuthority}.`;
     } else {
       this.benchmarksMessage = `Benchmarks can show how you're doing when it comes to pay, recruitment and retention.`;
+    }
+  }
+
+  protected setFundingYear(): void {
+    const currentYear = this.now.getFullYear();
+
+    if (this.now.getMonth() >= 3) {
+      // April onwards
+      this.fundingYear = `${currentYear} to ${currentYear + 1}`;
+    } else {
+      // January to March
+      this.fundingYear = `${currentYear - 1} to ${currentYear}`;
     }
   }
 

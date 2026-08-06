@@ -11,13 +11,16 @@ import { AuthService } from './auth.service';
 export class AuthInterceptor implements HttpInterceptor {
   private jwt = new JwtHelperService();
 
-  constructor(private authService: AuthService, private createAccountService: CreateAccountService) {}
+  constructor(
+    private authService: AuthService,
+    private createAccountService: CreateAccountService,
+  ) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.getToken(request.url);
     if (token) {
       if (this.jwt.isTokenExpired(token)) {
-        this.authService.logout();
+        this.authService.frontendLogout();
         // return throwError(new HttpErrorResponse({ error: 'Not Authorised', status: 403 }));
       }
 

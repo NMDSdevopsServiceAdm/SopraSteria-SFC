@@ -1653,37 +1653,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
         ).toBeTruthy();
       });
     });
-
-    describe('Cash loyalty bonus', () => {
-      it('should show dash and have Add information button on Cash loyalty bonus row when careWorkersCashLoyaltyForFirstTwoYears is set to null (not answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.workplace.careWorkersCashLoyaltyForFirstTwoYears = null;
-        fixture.detectChanges();
-
-        const careWorkersCashLoyaltyRow = within(document.body).queryByTestId('cash-loyalty-bonus-spend');
-        const link = within(careWorkersCashLoyaltyRow).queryByText('Add');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/cash-loyalty`);
-        expect(within(careWorkersCashLoyaltyRow).queryByText('-')).toBeTruthy();
-      });
-
-      it('should show Change button on Cash loyalty bonus row when careWorkersCashLoyaltyForFirstTwoYears has a value (answered)', async () => {
-        const { component } = await setup();
-
-        const careWorkersCashLoyaltyRow = within(document.body).queryByTestId('cash-loyalty-bonus-spend');
-        const link = within(careWorkersCashLoyaltyRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/cash-loyalty`);
-        expect(
-          within(careWorkersCashLoyaltyRow).getByText(
-            `£${component.formatMonetaryValue(component.workplace.careWorkersCashLoyaltyForFirstTwoYears)}`,
-          ),
-        ).toBeTruthy();
-      });
-    });
   });
 
   describe('Staff development section', () => {
@@ -1718,42 +1687,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(
           within(repeatTrainingRow).queryByText(
             component.workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
-          ),
-        ).toBeTruthy();
-      });
-    });
-
-    describe('Accept care certificate', () => {
-      it('should show dash and have Add information button on accept care certificate row when wouldYouAcceptCareCertificatesFromPreviousEmployment is set to null (not answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
-        fixture.detectChanges();
-
-        const acceptCareCertificateRow = within(document.body).queryByTestId('accept-care-certificate');
-        const link = within(acceptCareCertificateRow).queryByText('Add');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/accept-previous-care-certificate`,
-        );
-        expect(within(acceptCareCertificateRow).queryByText('Add')).toBeTruthy();
-        expect(within(acceptCareCertificateRow).queryByText('-')).toBeTruthy();
-      });
-
-      it('should show Change button on accept care certificate row when wouldYouAcceptCareCertificatesFromPreviousEmployment has a value (answered)', async () => {
-        const { component } = await setup();
-
-        const acceptCareCertificateRow = within(document.body).queryByTestId('accept-care-certificate');
-        const link = within(acceptCareCertificateRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/accept-previous-care-certificate`,
-        );
-        expect(
-          within(acceptCareCertificateRow).queryByText(
-            component.workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment,
           ),
         ).toBeTruthy();
       });

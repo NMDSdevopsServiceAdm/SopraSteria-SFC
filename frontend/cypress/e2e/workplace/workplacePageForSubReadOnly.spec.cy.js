@@ -2,6 +2,7 @@
 /// <reference types="cypress" />
 import { SubEstablishment } from '../../support/mockEstablishmentData';
 import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
+import { userPassword } from '../../support/configData';
 
 describe('Sub workplace page as read only user', { tags: '@workplace' }, () => {
   const establishmentId = SubEstablishment.id;
@@ -14,7 +15,7 @@ describe('Sub workplace page as read only user', { tags: '@workplace' }, () => {
 
   beforeEach(() => {
     cy.reload();
-    cy.loginAsUser(Cypress.env('readOnlySubUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(SubEstablishment.readOnlyUserLoginName, userPassword);
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();
   });
 

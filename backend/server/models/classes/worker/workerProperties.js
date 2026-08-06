@@ -41,8 +41,6 @@ const highestQualificationProperty =
   require('./properties/highestQualificationProperty').WorkerHighestQualificationProperty;
 const completedProperty = require('./properties/completedProperty').WorkerCompletedProperty;
 const registeredNurseProperty = require('./properties/registeredNurseProperty').RegisteredNurseProperty;
-const nurseSpecialismProperty = require('./properties/nurseSpecialismProperty').NurseSpecialismProperty;
-const nurseSpecialismsProperty = require('./properties/nurseSpecialismsProperty').WorkerNurseSpecialismsProperty;
 const localIdentifierProperty = require('./properties/localIdentifierProperty').LocalIdentifierProperty;
 const establishmentFkProperty = require('./properties/establishmentFkProperty').EstablishmentFkProperty;
 const longTermAbsenceProperty = require('./properties/longTermAbsenceProperty').LongTermAbsenceProperty;
@@ -92,8 +90,6 @@ class WorkerPropertyManager {
     this._thisManager.registerProperty(otherQualificationProperty);
     this._thisManager.registerProperty(highestQualificationProperty);
     this._thisManager.registerProperty(registeredNurseProperty);
-    this._thisManager.registerProperty(nurseSpecialismProperty);
-    this._thisManager.registerProperty(nurseSpecialismsProperty);
     this._thisManager.registerProperty(localIdentifierProperty);
     this._thisManager.registerProperty(establishmentFkProperty);
     this._thisManager.registerProperty(longTermAbsenceProperty);

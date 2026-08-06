@@ -7,16 +7,10 @@ const fs = require('fs');
 const path = require('path');
 const walk = require('walk');
 const JsZip = require('jszip');
-const config = require('../../../../server/config/config');
 const { v4: uuidv4 } = require('uuid');
-uuidv4();
-const AWS = require('aws-sdk');
 const cheerio = require('cheerio');
 
-const s3 = new AWS.S3({
-  region: String(config.get('bulkupload.region')),
-});
-const Bucket = String(config.get('bulkupload.bucketname'));
+const BulkUploadS3Utils = require('../../establishments/bulkUpload/s3');
 
 const { Establishment } = require('../../../models/classes/establishment');
 const {
@@ -1313,18 +1307,18 @@ const releaseLock = async (req, res, next, nextState = null) => {
 const signedUrlGet = async (req, res) => {
   try {
     const establishmentId = req.establishmentId;
+    const params = {
+      Key: `${establishmentId}/latest/${moment().format('YYYY-MM-DD')}-SFC-Parent-Wdf-Report.xlsx`,
+      ContentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      Metadata: {
+        username: String(req.username),
+        establishmentId: String(establishmentId),
+      },
+    };
+    const signedUrl = await BulkUploadS3Utils.getSignedUrlForUpload(params);
 
     await saveResponse(req, res, 200, {
-      urls: s3.getSignedUrl('putObject', {
-        Bucket,
-        Key: `${establishmentId}/latest/${moment().format('YYYY-MM-DD')}-SFC-Parent-Wdf-Report.xlsx`,
-        ContentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        Metadata: {
-          username: String(req.username),
-          establishmentId: String(establishmentId),
-        },
-        Expires: config.get('bulkupload.uploadSignedUrlExpire'),
-      }),
+      urls: signedUrl,
     });
   } catch (err) {
     console.error('report/wdf/parent:PreSigned - failed', err.message);
@@ -1332,26 +1326,7 @@ const signedUrlGet = async (req, res) => {
   }
 };
 
-const saveResponse = async (req, res, statusCode, body, headers) => {
-  if (!Number.isInteger(statusCode) || statusCode < 100) {
-    statusCode = 500;
-  }
-
-  return s3
-    .putObject({
-      Bucket,
-      Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
-      Body: JSON.stringify({
-        url: req.url,
-        startTime: req.startTime,
-        endTime: new Date().toISOString(),
-        responseCode: statusCode,
-        responseBody: body,
-        responseHeaders: typeof headers === 'object' ? headers : undefined,
-      }),
-    })
-    .promise();
-};
+const saveResponse = BulkUploadS3Utils.saveResponse;
 
 const responseGet = (req, res) => {
   const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
@@ -1365,13 +1340,9 @@ const responseGet = (req, res) => {
     return;
   }
 
-  s3.getObject({
-    Bucket,
-    Key: `${req.establishmentId}/intermediary/${buRequestId}.json`,
-  })
-    .promise()
+  BulkUploadS3Utils.downloadObjectAsString(`${req.establishmentId}/intermediary/${buRequestId}.json`)
     .then((data) => {
-      const jsonData = JSON.parse(data.Body.toString());
+      const jsonData = JSON.parse(data);
 
       if (Number.isInteger(jsonData.responseCode) && jsonData.responseCode > 99) {
         if (jsonData.responseHeaders) {

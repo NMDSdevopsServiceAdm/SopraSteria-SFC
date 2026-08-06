@@ -979,62 +979,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CompletedChangedBy"',
       },
-      NurseSpecialismFKValue: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        field: '"NurseSpecialismFKValue"',
-      },
-      NurseSpecialismFKOther: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"NurseSpecialismFKOther"',
-      },
-      NurseSpecialismFKSavedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: '"NurseSpecialismFKSavedAt"',
-      },
-      NurseSpecialismFKChangedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: '"NurseSpecialismFKChangedAt"',
-      },
-      NurseSpecialismFKSavedBy: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"NurseSpecialismFKSavedBy"',
-      },
-      NurseSpecialismFKChangedBy: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"NurseSpecialismFKChangedBy"',
-      },
-      NurseSpecialismsValue: {
-        type: DataTypes.ENUM,
-        allowNull: true,
-        values: ['Yes', 'No', "Don't know"],
-        field: '"NurseSpecialismsValue"',
-      },
-      NurseSpecialismsSavedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: '"NurseSpecialismsSavedAt"',
-      },
-      NurseSpecialismsChangedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: '"NurseSpecialismsChangedAt"',
-      },
-      NurseSpecialismsSavedBy: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"NurseSpecialismsSavedBy"',
-      },
-      NurseSpecialismsChangedBy: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"NurseSpecialismsChangedBy"',
-      },
       RegisteredNurseValue: {
         type: DataTypes.ENUM,
         allowNull: true,
@@ -1209,11 +1153,6 @@ module.exports = function (sequelize, DataTypes) {
       targetKey: 'id',
       as: 'ethnicity',
     });
-    Worker.belongsTo(models.workerNurseSpecialism, {
-      foreignKey: 'NurseSpecialismFKValue',
-      targetKey: 'id',
-      as: 'nurseSpecialism',
-    });
     Worker.belongsTo(models.nationality, {
       foreignKey: 'NationalityOtherFK',
       targetKey: 'id',
@@ -1249,12 +1188,6 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'workerFk',
       otherKey: 'jobFk',
       as: 'otherJobs',
-    });
-    Worker.belongsToMany(models.workerNurseSpecialism, {
-      through: 'workerNurseSpecialisms',
-      foreignKey: 'workerFk',
-      otherKey: 'nurseSpecialismFk',
-      as: 'nurseSpecialisms',
     });
     Worker.belongsToMany(models.workerQualifications, {
       foreignKey: 'workerFk',

@@ -1,25 +1,25 @@
 'use strict';
-const config = require('../../../config/config');
 const { buStates } = require('./states');
-const { s3, Bucket, saveResponse } = require('./s3');
+const { saveResponse, getSignedUrlForUpload } = require('./s3');
 
 const signedUrlGet = async (req, res) => {
   try {
     const establishmentId = req.establishmentId;
 
-    await saveResponse(req, res, 200, {
-      urls: s3.getSignedUrl('putObject', {
-        Bucket,
-        Key: `${establishmentId}/latest/${req.query.filename}`,
-        ContentType: req.query.type,
-        Metadata: {
-          username: String(req.username),
-          establishmentId: String(establishmentId),
-          validationstatus: 'pending',
-        },
-        Expires: config.get('bulkupload.uploadSignedUrlExpire'),
-      }),
-    });
+    const params = {
+      Key: `${establishmentId}/latest/${req.query.filename}`,
+      ContentType: req.query.type,
+      Metadata: {
+        username: String(req.username),
+        establishmentId: String(establishmentId),
+        validationstatus: 'pending',
+      },
+    };
+    const urls = await getSignedUrlForUpload(params);
+    const responseBody = {
+      urls,
+    };
+    await saveResponse(req, res, 200, responseBody);
   } catch (err) {
     console.error('establishment::bulkupload GET/:PreSigned - failed', err.message);
     await saveResponse(req, res, 500, {});

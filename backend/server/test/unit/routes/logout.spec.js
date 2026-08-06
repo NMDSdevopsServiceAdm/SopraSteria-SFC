@@ -1,9 +1,14 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const models = require('../../../models');
+const cacheUserLogoutTime = require('../../../utils/cacheUserLogoutTime');
 const logout = require('../../../routes/logout').logout;
 
 describe('logout', () => {
+  beforeEach(() => {
+    sinon.stub(cacheUserLogoutTime, 'cacheUserLogoutTime');
+  });
+
   afterEach(() => {
     sinon.restore();
   });
@@ -56,5 +61,16 @@ describe('logout', () => {
     const result = await logout('username');
 
     expect(result.showSurvey).to.equal(false);
+  });
+
+  it('should cache the logout time of user', async () => {
+    sinon.stub(models.login, 'findByUsername').returns({ registrationId: 123, user: { establishmentId: 456 } });
+    sinon.stub(models.userAudit, 'create').returns();
+    sinon.stub(models.userAudit, 'countLogouts').returns(1);
+    sinon.stub(models.satisfactionSurvey, 'countSubmissions').returns(0);
+
+    await logout('username');
+
+    expect(cacheUserLogoutTime.cacheUserLogoutTime).to.have.been.called;
   });
 });

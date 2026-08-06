@@ -2,6 +2,7 @@
 /// <reference types="cypress" />
 import { ParentEstablishment, SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentData';
 import { runTestsForWorkplaceQuestions } from './runTestsForWorkplaceQuestions';
+import { userPassword } from '../../support/configData';
 
 describe('Workplace page for Parent viewing subsidiary', { tags: '@workplace' }, () => {
   const subsidaryToView = SubEstablishmentNotDataOwner;
@@ -18,7 +19,7 @@ describe('Workplace page for Parent viewing subsidiary', { tags: '@workplace' },
   });
 
   beforeEach(() => {
-    cy.loginAsUser(ParentEstablishment.editUserLoginName, Cypress.env('userPassword'));
+    cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
 
     cy.get('app-navigate-to-workplace-dropdown select').select(subsidaryToView.name);
 

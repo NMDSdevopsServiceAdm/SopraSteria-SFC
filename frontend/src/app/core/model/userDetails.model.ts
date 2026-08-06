@@ -19,7 +19,7 @@ export interface UserDetails {
   registrationSurveyCompleted?: boolean;
   securityQuestion?: string;
   securityQuestionAnswer?: string;
-  userResearchInviteResponse?: InviteResponse;
+  userResearchInviteResponse?: InviteResponse | null;
   status?: UserStatus;
   password?: string;
   uid?: string;
@@ -28,6 +28,7 @@ export interface UserDetails {
   username?: string;
   lastViewedVacanciesAndTurnoverMessage?: string;
   trainingCoursesMessageViewedQuantity?: number;
+  viewedUserResearchQuestion?: boolean;
 }
 
 export enum UserStatus {

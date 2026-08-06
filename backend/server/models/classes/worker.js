@@ -339,14 +339,6 @@ class Worker extends EntityValidator {
     return this._properties.get('RegisteredNurse') ? this._properties.get('RegisteredNurse').property : null;
   }
 
-  get nurseSpecialism() {
-    return this._properties.get('NurseSpecialism') ? this._properties.get('NurseSpecialism').property : null;
-  }
-
-  get nurseSpecialisms() {
-    return this._properties.get('NurseSpecialisms') ? this._properties.get('NurseSpecialisms').property : null;
-  }
-
   get healthAndCareVisa() {
     return this._properties.get('HealthAndCareVisa') ? this._properties.get('HealthAndCareVisa').property : null;
   }
@@ -412,7 +404,6 @@ class Worker extends EntityValidator {
         }
         if (mainJob && mainJob.jobId !== 23 && !otherRegNurse) {
           document.registeredNurse = null;
-          document.nurseSpecialisms = { value: null, specialisms: null };
         }
         // If their job isn't a social worker - remove the approved mental health worker
         if (mainJob && mainJob.jobId !== 27 && !otherSocialWorker) {
@@ -709,15 +700,6 @@ class Worker extends EntityValidator {
           if (associatedEntities) {
             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
           }
-          if (this.nurseSpecialisms && this.nurseSpecialisms.value === 'Yes') {
-            await models.workerNurseSpecialisms.bulkCreate(
-              this.nurseSpecialisms.specialisms.map((thisSpecialism) => ({
-                nurseSpecialismFk: thisSpecialism.id,
-                workerFk: this._id,
-              })),
-              { transaction: thisTransaction },
-            );
-          }
 
           // having the worker id we can now create the audit record; inserting the workerFk
           const allAuditEvents = [
@@ -785,7 +767,16 @@ class Worker extends EntityValidator {
             updatedBy: savedBy.toLowerCase(),
           };
 
-          if (bulkUploaded && this._status === 'UPDATE' && this.transferStaffRecord && this.newWorkplaceId) {
+          // During bulk upload completion, workers restored from the database
+          // are assigned status COMPLETE. Transfer workers still need to be
+          // moved to the target workplace.
+
+          if (
+            bulkUploaded &&
+            ['UPDATE', 'COMPLETE'].includes(this._status) &&
+            this.transferStaffRecord &&
+            this.newWorkplaceId
+          ) {
             updateDocument.establishmentFk = this.newWorkplaceId;
           }
 
@@ -1024,16 +1015,6 @@ class Worker extends EntityValidator {
             model: models.job,
             as: 'otherJobs',
             attributes: ['id', 'title'],
-          },
-          {
-            model: models.workerNurseSpecialism,
-            as: 'nurseSpecialism',
-            attributes: ['id', 'specialism'],
-          },
-          {
-            model: models.workerNurseSpecialism,
-            as: 'nurseSpecialisms',
-            attributes: ['id', 'specialism'],
           },
           {
             model: models.careWorkforcePathwayRoleCategory,

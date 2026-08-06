@@ -18,3 +18,23 @@
     @include govuk-font($size: 19, $weight: normal, $line-height: 26px);
   }
 }
+
+.asc-email-input--wrapper {
+  background-color: #f3f2f1;
+  padding: govuk-spacing(4);
+  margin-bottom: govuk-spacing(4);
+
+  > .govuk-form-group {
+    margin-bottom: 0;
+  }
+
+  .govuk-error-message {
+    margin-bottom: govuk-spacing(2);
+  }
+
+  .asc-email-input--hint {
+    display: inline-block;
+    margin-bottom: govuk-spacing(2);
+    font-weight: 700;
+  }
+}

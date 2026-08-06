@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import { v4 as uuidv4 } from 'uuid';
+import { adminUserLoginName, userPassword } from '../configData';
 
 Cypress.Commands.add('openLoginPage', () => {
   cy.setCookie('cookies_preferences_set', 'true');
@@ -11,8 +12,8 @@ Cypress.Commands.add('loginAsAdmin', () => {
 
   cy.setCookie('cookies_preferences_set', 'true');
   cy.visit('/');
-  cy.get('[data-cy="username"]').type(Cypress.env('adminUser'));
-  cy.get('[data-cy="password"]').type(Cypress.env('userPassword'));
+  cy.get('[data-cy="username"]').type(adminUserLoginName);
+  cy.get('[data-cy="password"]').type(userPassword);
   cy.get('[data-testid="signinButton"]').click();
   cy.wait('@login');
 });
@@ -93,7 +94,7 @@ Cypress.Commands.add('deleteTestUserFromDb', (userFullName) => {
   cy.task('multipleDbQueries', dbQueries);
 });
 
-Cypress.Commands.add('addTestUser', (userFullName, username, establishmentID) => {
+Cypress.Commands.add('addTestUser', (userFullName, username, establishmentID, userRoleValue) => {
   const mockUserDetails = {
     FullNameValue: userFullName,
     UserUID: uuidv4(),
@@ -103,11 +104,12 @@ Cypress.Commands.add('addTestUser', (userFullName, username, establishmentID) =>
     EstablishmentID: establishmentID,
     SecurityQuestionValue: '2+2',
     SecurityQuestionAnswerValue: '4',
-    UserRoleValue: 'Read',
+    UserRoleValue: userRoleValue ?? 'Read',
     Archived: false,
     IsPrimary: false,
     updatedby: 'cypress test',
   };
+  const mockPasswordHash = '$2a$10$mDCJKwlWQIfAYHF4dOBmBug9ZwIFxOzlLOWeszyMFCs0GwiyJ9EHq';
 
   const insertUser = `INSERT INTO cqc."User"
           (${Object.keys(mockUserDetails)
@@ -125,7 +127,9 @@ Cypress.Commands.add('addTestUser', (userFullName, username, establishmentID) =>
       RegistrationID: registrationId,
       Username: username,
       Active: true,
+      AgreedUpdatedTerms: true,
       InvalidAttempt: 0,
+      Hash: mockPasswordHash,
     };
 
     const insertLogin = `INSERT INTO cqc."Login"
@@ -133,7 +137,7 @@ Cypress.Commands.add('addTestUser', (userFullName, username, establishmentID) =>
           .map((columnName) => `"${columnName}"`)
           .join(', ')})
       VALUES
-        ($1, $2, $3, $4)`;
+        ($1, $2, $3, $4, $5, $6)`;
     const parameters = Object.values(mockLoginDetails);
 
     return cy.task('dbQuery', { queryString: insertLogin, parameters });

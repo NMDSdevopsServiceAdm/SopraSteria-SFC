@@ -101,7 +101,7 @@ import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } f
 import { SortByService } from '@core/services/sort-by.service';
 import { TrainingCoursesLoginMessage } from '@features/login/training-courses-login-message/training-courses-login-message.component';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
-import { UpdateBannerComponent } from '@shared/components/update-banner/update-banner.component';
+import { PasswordSavedConfirmationComponent } from '@shared/components/password-saved-confirmation/password-saved-confirmation.component';
 
 @NgModule({
   declarations: [
@@ -159,6 +159,7 @@ import { UpdateBannerComponent } from '@shared/components/update-banner/update-b
     RouterModule,
     BenchmarksModule,
     DataAreaTabModule,
+    PasswordSavedConfirmationComponent,
   ],
   providers: [
     AuthGuard,

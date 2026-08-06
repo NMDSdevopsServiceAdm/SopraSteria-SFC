@@ -1,53 +1,44 @@
-const AWS = require('aws-sdk');
 const config = require('../config/config');
+const { SNSClient, PublishCommand } = require('@aws-sdk/client-sns');
 
-let sns = null;
+const region = config.get('aws.region');
 
-const initialise = (region) => {
-  sns = new AWS.SNS({
-    apiVersion: '2010-03-31',
-    region,
-  });
+const snsClient = new SNSClient({ region, signatureVersion: 'v4' });
+
+const SNSTopics = {
+  Registration: config.get('aws.sns.registrations'),
+  Feedback: config.get('aws.sns.feedback'),
+};
+
+const postToSNSTopic = async (snsTopic, messageBody) => {
+  try {
+    if (!config.get('aws.sns.enabled')) {
+      console.error('trying to post to SNS topic but SNS was not enabled in env config');
+      return;
+    }
+    if (!snsTopic || !messageBody) {
+      console.error('failed to post to SNS topic due to missing params');
+      return;
+    }
+
+    const command = new PublishCommand({
+      Message: JSON.stringify(messageBody),
+      TopicArn: snsTopic,
+    });
+
+    return snsClient.send(command);
+  } catch (err) {
+    console.log('failed to post to SNS topic:', snsTopic);
+    console.error('postToSNSTopic error: ', err);
+  }
 };
 
 const postToRegistrations = async (registration) => {
-  if (!sns) return;
-  if (!config.get('aws.sns.enabled')) return;
-
-  // remove sensitive/unnecessary data
-
-  const params = {
-    Message: JSON.stringify(registration),
-    TopicArn: config.get('aws.sns.registrations'),
-  };
-
-  try {
-    await sns.publish(params).promise();
-  } catch (err) {
-    // trap any errors - stop them from propagating - an error on kinesis stop not interfere with the application
-    console.error('postToRegistrations error: ', err);
-  }
+  return postToSNSTopic(SNSTopics.Registration, registration);
 };
 
 const postToFeedback = async (feedback) => {
-  if (!sns) return;
-  if (!config.get('aws.sns.enabled')) return;
-
-  // remove sensitive/unnecessary data
-
-  const params = {
-    Message: JSON.stringify(feedback),
-    TopicArn: config.get('aws.sns.feedback'),
-  };
-
-  try {
-    await sns.publish(params).promise();
-  } catch (err) {
-    // trap any errors - stop them from propagating - an error on kinesis stop not interfere with the application
-    console.error('postToFeedback error: ', err);
-  }
+  return postToSNSTopic(SNSTopics.Feedback, feedback);
 };
 
-module.exports.initialise = initialise;
-module.exports.postToRegistrations = postToRegistrations;
-module.exports.postToFeedback = postToFeedback;
+module.exports = { postToSNSTopic, postToRegistrations, postToFeedback };

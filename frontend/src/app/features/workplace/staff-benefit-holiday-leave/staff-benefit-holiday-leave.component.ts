@@ -33,7 +33,7 @@ export class StaffBenefitHolidayLeaveComponent extends WorkplaceQuestion impleme
     this.prefill();
     this.setPreviousRoute();
 
-    this.skipToQuestionPage = 'cash-loyalty';
+    this.skipToQuestionPage = 'staff-recruitment-capture-training-requirement';
   }
 
   private setupForm(): void {
@@ -83,7 +83,7 @@ export class StaffBenefitHolidayLeaveComponent extends WorkplaceQuestion impleme
   }
 
   protected onSuccess(): void {
-    this.nextQuestionPage = 'cash-loyalty';
+    this.nextQuestionPage = 'staff-recruitment-capture-training-requirement';
   }
 
   private customValidator(regexp: RegExp, error: string): ValidatorFn {

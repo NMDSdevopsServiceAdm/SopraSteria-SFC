@@ -156,4 +156,11 @@ describe('CreateUserAccountComponent', () => {
 
     expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishmentUid, 'user', 'saved', 'testuid']);
   });
+
+  it('should show a hint message for email address', async () => {
+    const message = /Use your own work email address. If possible, avoid shared inboxes like admin@workplace.com/;
+
+    const { getByText } = await setup();
+    expect(getByText(message)).toBeTruthy();
+  });
 });

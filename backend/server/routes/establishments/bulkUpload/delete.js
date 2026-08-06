@@ -1,14 +1,14 @@
 'use strict';
 
 const router = require('express').Router();
-const s3 = require('./s3');
+const BulkUploadS3Utils = require('./s3');
 
 const deleteFiles = async (req, res) => {
   const fileName = decodeURI(req.params.fileName);
   try {
-    const foundFileList = await s3.findFilesS3(req.establishmentId, fileName);
+    const foundFileList = await BulkUploadS3Utils.findFilesS3(req.establishmentId, fileName);
     if (foundFileList.length > 0) {
-      await s3.deleteFilesS3(req.establishmentId, fileName);
+      await BulkUploadS3Utils.deleteFilesS3(req.establishmentId, fileName);
       res.status(200).send();
     } else {
       res.status(404).send('Not found');

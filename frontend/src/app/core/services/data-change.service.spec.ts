@@ -27,7 +27,7 @@ describe('DataChangeService', () => {
       service.getDataChange().subscribe();
 
       const req = http.expectOne(
-        `${environment.appRunnerEndpoint}/api/cms/items/data_changes?limit=1&fields=content,title,last_updated&env=${environment.environmentName}`,
+        `${environment.appRunnerEndpoint}/api/cms/items/data_changes?limit=1&fields=content,title,last_updated`,
       );
       expect(req.request.method).toBe('GET');
     });

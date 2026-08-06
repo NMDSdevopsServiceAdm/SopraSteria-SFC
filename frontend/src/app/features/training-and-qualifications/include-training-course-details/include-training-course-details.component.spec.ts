@@ -1,13 +1,15 @@
 import { render, fireEvent } from '@testing-library/angular';
 import { IncludeTrainingCourseDetailsComponent } from './include-training-course-details.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { WorkersModule } from '@features/workers/workers.module';
 import { getTestBed } from '@angular/core/testing';
 import { TrainingService } from '@core/services/training.service';
 import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
 import { BackLinkService } from '@core/services/backLink.service';
+import { provideHttpClient } from '@angular/common/http';
+import { MockTrainingServiceWithOverrides } from '@core/test-utils/MockTrainingService';
 
 describe('IncludeTrainingCourseDetailsComponent', () => {
   const workplace = {
@@ -21,7 +23,7 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
     },
   };
 
-  const trainingRecord = {
+  const mockTrainingRecord = {
     title: 'Basic safeguarding for support staff',
     uid: 910,
   };
@@ -65,27 +67,37 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
     },
   ];
 
-  const mockDataObject = {
-    imports: [WorkersModule, HttpClientTestingModule],
-    providers: [
-      {
-        provide: ActivatedRoute,
-        useValue: {
-          snapshot: {
-            data: {
-              establishment: workplace,
-              worker: worker,
-              trainingRecord: trainingRecord,
-              trainingCourses: [mockTrainingCourses[0]],
+  async function setup(overrides: any = {}) {
+    const trainingCourses = overrides?.trainingCourses ?? [mockTrainingCourses[0]];
+    const selectedTrainingCourse = overrides?.selectedTrainingCourse;
+    const trainingRecord = overrides?.trainingRecord ?? mockTrainingRecord;
+
+    const renderOptions = {
+      imports: [WorkersModule],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                establishment: workplace,
+                worker: worker,
+                trainingRecord: trainingRecord,
+                trainingCourses: trainingCourses,
+              },
             },
           },
         },
-      },
-    ],
-  };
+        {
+          provide: TrainingService,
+          useFactory: MockTrainingServiceWithOverrides.factory({ _selectedTrainingCourse: selectedTrainingCourse }),
+        },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+    };
 
-  async function setup() {
-    const setupTools = await render(IncludeTrainingCourseDetailsComponent, mockDataObject);
+    const setupTools = await render(IncludeTrainingCourseDetailsComponent, renderOptions);
 
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
@@ -179,9 +191,7 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
 
       describe('When multiple courses match the training record', () => {
         it('should display the correct courses related to the training record as radios', async () => {
-          mockDataObject.providers[0].useValue.snapshot.data.trainingCourses = mockTrainingCourses;
-
-          const { queryAllByRole, queryByTestId } = await setup();
+          const { queryAllByRole, queryByTestId } = await setup({ trainingCourses: mockTrainingCourses });
           const name = queryByTestId('training-course-name-checkbox');
           const radioOptions = queryAllByRole('radio');
 
@@ -202,8 +212,9 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
       describe('When page has a course selection checkbox', () => {
         describe('When the checkbox is ticked', () => {
           it(`should call the training service with the selected course`, async () => {
-            mockDataObject.providers[0].useValue.snapshot.data.trainingCourses = [mockTrainingCourses[0]];
-            const { fixture, getByTestId, getByRole, setSelectedTrainingCourseSpy } = await setup();
+            const { fixture, getByTestId, getByRole, setSelectedTrainingCourseSpy } = await setup({
+              trainingCourses: [mockTrainingCourses[0]],
+            });
 
             const checkbox = getByTestId('training-course-name-checkbox');
             const button = getByRole('button', { name: 'Continue' });
@@ -309,8 +320,9 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
       describe('When page has course selection radios', () => {
         describe('When a radio is selected', () => {
           it(`should call the training service with the chosen course`, async () => {
-            mockDataObject.providers[0].useValue.snapshot.data.trainingCourses = mockTrainingCourses;
-            const { fixture, getByTestId, getByRole, setSelectedTrainingCourseSpy } = await setup();
+            const { fixture, getByTestId, getByRole, setSelectedTrainingCourseSpy } = await setup({
+              trainingCourses: mockTrainingCourses,
+            });
 
             const radio = getByTestId('radio-2');
             const button = getByRole('button', { name: 'Continue' });
@@ -345,8 +357,7 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
 
       describe('When a radio is not selected', () => {
         it(`should call the training service with the chosen course`, async () => {
-          mockDataObject.providers[0].useValue.snapshot.data.trainingCourses = mockTrainingCourses;
-          const { getByRole, setSelectedTrainingCourseSpy } = await setup();
+          const { getByRole, setSelectedTrainingCourseSpy } = await setup({ trainingCourses: mockTrainingCourses });
 
           const button = getByRole('button', { name: 'Continue' });
           fireEvent.click(button);
@@ -385,9 +396,55 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
         const { queryByTestId } = await setup();
         const link = queryByTestId('cancel-link');
         expect(link.getAttribute('href')).toEqual(
-          `/workplace/${workplace.uid}/training-and-qualifications-record/${worker.uid}/training/${trainingRecord.uid}`,
+          `/workplace/${workplace.uid}/training-and-qualifications-record/${worker.uid}/training/${mockTrainingRecord.uid}`,
         );
       });
+    });
+  });
+
+  describe('prefill', () => {
+    it('should prefill the radio button if there is a course selected', async () => {
+      const { getByRole } = await setup({
+        trainingCourses: mockTrainingCourses,
+        selectedTrainingCourse: mockTrainingCourses[1],
+      });
+
+      const radioButton = getByRole('radio', { name: mockTrainingCourses[1].name }) as HTMLInputElement;
+      expect(radioButton.checked).toBeTrue();
+    });
+
+    it('should prefill the radio button if no course selected before but the training record is linked to a course', async () => {
+      const { getByRole } = await setup({
+        trainingCourses: mockTrainingCourses,
+        trainingRecord: { ...mockTrainingRecord, trainingCourseFK: mockTrainingCourses[1].id },
+      });
+
+      const radioButton = getByRole('radio', { name: mockTrainingCourses[1].name }) as HTMLInputElement;
+      expect(radioButton.checked).toBeTrue();
+    });
+
+    it('should not prefill if the training record is not linked to any course', async () => {
+      const { getAllByRole } = await setup({
+        trainingCourses: mockTrainingCourses,
+      });
+
+      const radioButtons = getAllByRole('radio') as HTMLInputElement[];
+      radioButtons.forEach((button) => {
+        expect(button.checked).toBeFalse();
+      });
+    });
+
+    it('should not prefill if there is only one course', async () => {
+      const { queryAllByRole, getByRole } = await setup({
+        trainingCourses: [mockTrainingCourses[0]],
+        selectedTrainingCourse: mockTrainingCourses[0],
+      });
+
+      const radioButtons = queryAllByRole('radio') as HTMLInputElement[];
+      expect(radioButtons).toHaveSize(0);
+
+      const checkbox = getByRole('checkbox', { name: mockTrainingCourses[0].name }) as HTMLInputElement;
+      expect(checkbox.checked).toBeFalse();
     });
   });
 });

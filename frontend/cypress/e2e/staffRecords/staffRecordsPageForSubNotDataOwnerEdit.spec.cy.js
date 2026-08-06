@@ -2,6 +2,7 @@
 /// <reference types="cypress" />
 import { SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
+import { userPassword } from '../../support/configData';
 
 describe(
   'Sub staff records page as edit user where parent owns data but sub has view workplace and staff records permissions',
@@ -19,7 +20,7 @@ describe(
     });
 
     beforeEach(() => {
-      cy.loginAsUser(Cypress.env('editSubUserNonDataOwner'), Cypress.env('userPassword'));
+      cy.loginAsUser(SubEstablishmentNotDataOwner.editUserLoginName, userPassword);
       onHomePage.clickTab('Staff records');
     });
 

@@ -185,7 +185,7 @@ describe('NewHomeTabComponent', () => {
       });
     });
 
-    describe('Does your data meet funding requirements card', () => {
+    describe('LDSS funding card', () => {
       it('should render the funding card with link to wdf section', async () => {
         const overrides = {
           cqcStatusMatch: false,
@@ -195,17 +195,20 @@ describe('NewHomeTabComponent', () => {
           permissions: ['canViewEstablishment', 'canViewListOfWorkers', 'canViewWdfReport'],
         };
 
-        const { getByText } = await setup(overrides);
+        const { getByText, component } = await setup(overrides);
 
-        const link = getByText('Does your data meet funding requirements?');
+        const link = getByText(`LDSS funding ${component.fundingYear}`);
+
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual('/funding');
+
+        expect(getByText('Check your eligibility to claim funding for staff training.')).toBeTruthy();
       });
 
       it('should not render the funding card or link when view reports is false', async () => {
         const { queryByText } = await setup();
 
-        expect(queryByText('Does your data meet funding requirements?')).toBeFalsy();
+        expect(queryByText(/LDSS funding/)).toBeFalsy();
       });
     });
 
@@ -592,9 +595,7 @@ describe('NewHomeTabComponent', () => {
             const overrides = { cqcStatusMatch: false, establishment, comparisonDataAvailable: true };
             const { getByText, tabsServiceSpy } = await setup(overrides);
 
-            const benchmarksLink = getByText(
-              'See how your pay, recruitment and retention compares against other workplaces',
-            );
+            const benchmarksLink = getByText(/Compare your workplace/);
             const benchmarksCardText = getByText(
               'There are 9 workplaces providing day care and day services in Test LA.',
             );

@@ -241,23 +241,6 @@ class BUDI {
     return this.convertValue(direction, originalCode, mappings.RECRUITMENT);
   }
 
-  static nursingSpecialist(direction, originalCode) {
-    return this.convertValue(direction, originalCode, mappings.NURSING_SPECIALIST);
-  }
-
-  static mapNurseSpecialismsToDb(specialisms) {
-    if (specialisms.length === 1 && specialisms[0] === 7) {
-      return { value: 'No' };
-    } else if (specialisms.length === 1 && specialisms[0] === 8) {
-      return { value: "Don't know" };
-    } else {
-      return {
-        value: 'Yes',
-        specialisms: specialisms.filter((s) => s !== 7 && s !== 8).map((s) => ({ id: s })),
-      };
-    }
-  }
-
   static qualificationLevels(direction, originalCode) {
     return this.convertValue(direction, originalCode, mappings.QUALIFICATION_LEVELS);
   }

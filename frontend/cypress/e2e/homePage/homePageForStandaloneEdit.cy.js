@@ -1,11 +1,12 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+import { userPassword } from '../../support/configData';
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
 
 describe('Home page', { tags: '@home' }, () => {
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
   });
 
   it('should see the standalone establishment home page', () => {
@@ -23,7 +24,7 @@ describe('Home page', { tags: '@home' }, () => {
   });
 
   it('should show funding requirements link', () => {
-    cy.get('[data-cy="cards-and-links"]').contains('Does your data meet funding requirements?').click();
+    cy.get('[data-cy="cards-and-links"]').contains('LDSS funding').click();
     cy.url().should('include', 'funding');
     cy.get('h1').should('contain', 'Does your data meet funding requirements');
   });

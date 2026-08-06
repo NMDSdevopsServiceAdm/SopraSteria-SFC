@@ -499,44 +499,6 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     cy.get('h1').should('contain.text', heading);
   });
 
-  it('updates accept care certificate', () => {
-    const answer = 'Yes, but not very often';
-    const heading = "Would you accept a Care Certificate from a worker's previous employer?";
-
-    cy.get('[data-testid="accept-care-certificate"]').as('testId');
-
-    cy.get('@testId').contains('Add').click();
-
-    cy.get('h1').should('contain.text', heading);
-    cy.getByLabel(answer).click();
-    cy.contains('button', 'Save and return').click();
-
-    cy.get('@testId').contains(answer);
-    cy.get('@testId').contains('Change').click();
-
-    cy.get('h1').should('contain.text', heading);
-  });
-
-  it('updates cash loyalty bonus', () => {
-    const answer = 'Yes';
-    const amount = 100;
-    const heading = 'Do you pay care workers a cash loyalty bonus within their first 2 years of employment?';
-
-    cy.get('[data-testid="cash-loyalty-bonus-spend"]').as('testId');
-
-    cy.get('@testId').contains('Add').click();
-
-    cy.get('h1').should('contain.text', heading);
-    cy.getByLabel(answer).click();
-    cy.getByLabel('Amount').clear().type(amount);
-    cy.contains('button', 'Save and return').click();
-
-    cy.get('@testId').contains(`£${amount}`);
-    cy.get('@testId').contains('Change').click();
-
-    cy.get('h1').should('contain.text', heading);
-  });
-
   it('updates statutory sick pay', () => {
     const answer = 'Yes';
     const heading = 'Do you pay your care workers more than Statutory Sick Pay if they cannot work because of illness?';

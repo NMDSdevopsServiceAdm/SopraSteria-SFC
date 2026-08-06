@@ -126,6 +126,36 @@ export class MockRegistrationService extends RegistrationService {
   public checkIfEstablishmentExists(locationId: string): Observable<EstablishmentExistsResponse> {
     return of({ exists: false });
   }
+
+  public static factoryWithOverrides(overrides: Record<string, any> = {}) {
+    const typeOfEmployer = overrides?.typeOfEmployer ?? { value: 'Private Sector' };
+    const manyLocationAddresses = overrides?.manyLocationAddresses ?? false;
+
+    return (httpClient: HttpClient) => {
+      const service = new this(httpClient);
+
+      Object.keys(overrides).forEach((overrideName) => {
+        switch (overrideName) {
+          case 'termsAndConditionsCheckboxValue': {
+            const value = overrides.termsAndConditionsCheckboxValue;
+            service.termsAndConditionsCheckbox$.next(value);
+            break;
+          }
+          default: {
+            service[overrideName] = overrides[overrideName];
+            break;
+          }
+        }
+      });
+
+      service.typeOfEmployer$.next(typeOfEmployer);
+      if (manyLocationAddresses) {
+        service.locationAddresses$.next(moreThanFourLocationAddresses);
+      }
+
+      return service;
+    };
+  }
 }
 
 @Injectable()

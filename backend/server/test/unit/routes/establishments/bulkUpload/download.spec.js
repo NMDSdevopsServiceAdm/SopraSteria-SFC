@@ -3,7 +3,7 @@ const sinon = require('sinon');
 const models = require('../../../../../models');
 const BUDI = require('../../../../../models/BulkImport/BUDI').BUDI;
 const { downloadGet, workerCsv } = require('../../../../../routes/establishments/bulkUpload/download');
-const s3 = require('../../../../../routes/establishments/bulkUpload/s3');
+const BulkUploadS3Utils = require('../../../../../routes/establishments/bulkUpload/s3');
 const httpMocks = require('node-mocks-http');
 const { apiEstablishmentBuilder } = require('../../../../integration/utils/establishment');
 const { apiWorkerBuilder } = require('../../../../integration/utils/worker');
@@ -33,7 +33,7 @@ describe('download', () => {
     const establishment = apiEstablishmentBuilder();
     const downloadType = 'establishments';
     const downloadEstablishents = sinon.stub(models.establishment, 'downloadEstablishments').returns([establishment]);
-    sinon.stub(s3, 'saveResponse').callsFake((req, res, statusCode, body) => {
+    sinon.stub(BulkUploadS3Utils, 'saveResponse').callsFake((req, res, statusCode, body) => {
       expect(statusCode).to.deep.equal(200);
       expect(body).to.contain(establishment.NameValue);
       expect(body).to.contain(establishment.LocalIdentifierValue);
@@ -83,7 +83,7 @@ describe('download', () => {
       },
     ]);
 
-    sinon.stub(s3, 'saveResponse').callsFake((req, res, statusCode, body) => {
+    sinon.stub(BulkUploadS3Utils, 'saveResponse').callsFake((req, res, statusCode, body) => {
       expect(statusCode).to.deep.equal(200);
       expect(body).to.contain(establishment.LocalIdentifierValue);
       expect(body).to.contain(worker.LocalIdentifierValue);
@@ -132,7 +132,7 @@ describe('download', () => {
       },
     ]);
 
-    sinon.stub(s3, 'saveResponse').callsFake((req, res, statusCode, body) => {
+    sinon.stub(BulkUploadS3Utils, 'saveResponse').callsFake((req, res, statusCode, body) => {
       expect(statusCode).to.deep.equal(200);
       expect(body).to.contain(establishment.LocalIdentifierValue);
       expect(body).to.contain(worker.LocalIdentifierValue);
@@ -224,7 +224,7 @@ describe('download', () => {
       },
     ]);
 
-    sinon.stub(s3, 'saveResponse').callsFake((req, res, statusCode, body) => {
+    sinon.stub(BulkUploadS3Utils, 'saveResponse').callsFake((req, res, statusCode, body) => {
       expect(statusCode).to.deep.equal(200);
       expect(body).to.contain(establishment.LocalIdentifierValue);
       expect(body).to.contain(worker.LocalIdentifierValue);

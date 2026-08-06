@@ -203,9 +203,7 @@ describe('ParentHomeTabComponent', () => {
             };
             const { getByText, tabsServiceSpy } = await setup(overrides);
 
-            const benchmarksLink = getByText(
-              'See how your pay, recruitment and retention compares against other workplaces',
-            );
+            const benchmarksLink = getByText(/Compare your workplace/);
             const benchmarksCardText = getByText(
               'There are 9 workplaces providing day care and day services in Test LA.',
             );
@@ -284,7 +282,7 @@ describe('ParentHomeTabComponent', () => {
     it('should show a card with a link that takes you to the benefits bundle page', async () => {
       const { getByText } = await setup();
 
-      const benefitsBundleLink = getByText('View the ASC-WDS Benefits Bundle');
+      const benefitsBundleLink = getByText(/View the ASC-WDS/);
 
       expect(benefitsBundleLink).toBeTruthy();
       expect(benefitsBundleLink.getAttribute('href')).toBe('/benefits-bundle');
@@ -327,9 +325,9 @@ describe('ParentHomeTabComponent', () => {
         permissions: ['canViewWdfReport'],
         canAccessCms: true,
       };
-      const { getByText } = await setup(overrides);
+      const { getByText, component } = await setup(overrides);
 
-      const wdfLink = getByText('Does your data meet funding requirements?');
+      const wdfLink = getByText(`LDSS funding ${component.fundingYear}`);
 
       expect(wdfLink.getAttribute('href')).toBe('/funding');
     });
@@ -337,7 +335,7 @@ describe('ParentHomeTabComponent', () => {
     it('should not show the funding card if user does not have permission to view reports', async () => {
       const { queryByText } = await setup();
 
-      const wdfLink = queryByText('Does your data meet funding requirements?');
+      const wdfLink = queryByText(/LDSS funding/);
 
       expect(wdfLink).toBeFalsy();
     });

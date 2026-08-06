@@ -1,11 +1,12 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+import { userPassword } from '../../support/configData';
 import { SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
 
 describe('Sub home page as edit user where parent owns the data', { tags: '@home' }, () => {
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editSubUserNonDataOwner'), Cypress.env('userPassword'));
+    cy.loginAsUser(SubEstablishmentNotDataOwner.editUserLoginName, userPassword);
   });
 
   it('should see the admin page', () => {

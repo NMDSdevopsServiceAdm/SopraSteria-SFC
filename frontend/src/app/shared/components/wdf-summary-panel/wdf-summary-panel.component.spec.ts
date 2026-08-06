@@ -59,22 +59,6 @@ describe('WdfSummaryPanel', () => {
       expect(within(workplaceRow).getByTestId('green-tick')).toBeTruthy();
     });
 
-    it('should display the correct message with timeframe for meeting funding requirements for the workplace if overall has met but workplace hasn\t', async () => {
-      const overrides = {
-        workplaceWdfEligibilityStatus: false,
-        overallWdfEligibility: true,
-      };
-
-      const { getByTestId } = await setup(overrides);
-
-      const workplaceRow = getByTestId('workplace-row');
-
-      expect(workplaceRow).toBeTruthy();
-      expect(within(workplaceRow).queryByText(messages.fundingNotMet)).toBeFalsy();
-      expect(within(workplaceRow).getByText(messages.fundingMet)).toBeTruthy();
-      expect(within(workplaceRow).getByTestId('green-tick')).toBeTruthy();
-    });
-
     it('should display the correct message with timeframe for meeting funding requirements for staff', async () => {
       const overrides = {
         staffWdfEligibilityStatus: true,
@@ -91,26 +75,11 @@ describe('WdfSummaryPanel', () => {
       expect(within(staffRow).getByTestId('green-tick')).toBeTruthy();
     });
 
-    it("should display the correct message with timeframe for meeting funding requirements for staff if overall has met but staff hasn't", async () => {
-      const overrides = {
-        staffWdfEligibilityStatus: false,
-        overallWdfEligibility: true,
-      };
-
-      const { getByTestId } = await setup(overrides);
-
-      const staffRow = getByTestId('staff-row');
-
-      expect(staffRow).toBeTruthy();
-      expect(within(staffRow).queryByText(messages.fundingNotMet)).toBeFalsy();
-      expect(within(staffRow).getByText(messages.fundingMet)).toBeTruthy();
-      expect(within(staffRow).getByTestId('green-tick')).toBeTruthy();
-    });
-
     it('should display the correct message with timeframe for meeting funding requirements for all other workplaces', async () => {
       const overrides = {
         subsidiariesOverallWdfEligibility: true,
         isParent: true,
+        subsidiariesCount: 2,
       };
 
       const { getByTestId } = await setup(overrides);
@@ -188,6 +157,7 @@ describe('WdfSummaryPanel', () => {
           staffWdfEligibilityStatus: true,
           subsidiariesOverallWdfEligibility: true,
           isParent: true,
+          subsidiariesCount: 2,
         };
 
         const { getByTestId } = await setup(overrides);
@@ -212,6 +182,7 @@ describe('WdfSummaryPanel', () => {
           subsidiariesOverallWdfEligibility: true,
           isParent: true,
           activatedFragment: 'workplaces',
+          subsidiariesCount: 2,
         };
 
         const { getByTestId } = await setup(overrides);
@@ -227,6 +198,25 @@ describe('WdfSummaryPanel', () => {
         expect(workplaceFundingMessage).toBeTruthy();
         expect(staffFundingMessage).toBeTruthy();
         expect(allWorkplacesFundingMessage).toBeFalsy();
+      });
+
+      it(`should show "You've not added any other workplaces yet" without a link when no other workplaces has been added`, async () => {
+        const overrides = {
+          workplaceWdfEligibilityStatus: true,
+          staffWdfEligibilityStatus: true,
+          subsidiariesOverallWdfEligibility: true,
+          isParent: true,
+          subsidiariesCount: 0,
+        };
+        const { getByTestId } = await setup(overrides);
+
+        const otherWorkplacesRow = getByTestId('workplaces-row');
+
+        const otherWorkplacesFundingMessage = within(otherWorkplacesRow).queryByRole('link');
+        expect(within(otherWorkplacesRow).getByText(`You've not added any other workplaces yet`)).toBeTruthy();
+
+        expect(otherWorkplacesFundingMessage).toBeFalsy();
+        expect(within(otherWorkplacesRow).queryByTestId('red-flag')).toBeFalsy();
       });
     });
   });
@@ -273,6 +263,7 @@ describe('WdfSummaryPanel', () => {
         subsidiariesOverallWdfEligibility: false,
         isParent: true,
         overallWdfEligibility: false,
+        subsidiariesCount: 2,
       };
 
       const { getByTestId } = await setup(overrides);
@@ -293,6 +284,7 @@ describe('WdfSummaryPanel', () => {
         someSubsidiariesMeetingRequirements: true,
         isParent: true,
         overallWdfEligibility: false,
+        subsidiariesCount: 2,
       };
 
       const { getByTestId } = await setup(overrides);
@@ -304,6 +296,71 @@ describe('WdfSummaryPanel', () => {
 
       expect(within(workplacesRow).queryByText(messages.fundingMet)).toBeFalsy();
       expect(within(workplacesRow).queryByText(messages.fundingNotMet)).toBeFalsy();
+    });
+  });
+
+  describe('Orange flag (met overall requirements before but data changed)', () => {
+    it('should display "Check your workplace data" if overall requirements has met but workplace has not', async () => {
+      const overrides = {
+        workplaceWdfEligibilityStatus: false,
+        staffWdfEligibilityStatus: true,
+        overallWdfEligibility: true,
+      };
+
+      const { getByTestId } = await setup(overrides);
+
+      const workplaceRow = getByTestId('workplace-row');
+
+      expect(within(workplaceRow).getByText('Check your workplace data')).toBeTruthy();
+      expect(within(workplaceRow).queryByTestId('orange-flag')).toBeTruthy();
+
+      expect(within(workplaceRow).queryByTestId('red-flag')).toBeFalsy();
+      expect(within(workplaceRow).queryByTestId('green-tick')).toBeFalsy();
+      expect(within(workplaceRow).queryByText(messages.fundingMet)).toBeFalsy();
+      expect(within(workplaceRow).queryByText(messages.fundingNotMet)).toBeFalsy();
+    });
+
+    it('should display "Check your staff records" if overall requirements has met but staff records has not', async () => {
+      const overrides = {
+        workplaceWdfEligibilityStatus: true,
+        staffWdfEligibilityStatus: false,
+        overallWdfEligibility: true,
+      };
+
+      const { getByTestId } = await setup(overrides);
+
+      const staffRow = getByTestId('staff-row');
+
+      expect(within(staffRow).getByText('Check your staff records')).toBeTruthy();
+      expect(within(staffRow).queryByTestId('orange-flag')).toBeTruthy();
+
+      expect(within(staffRow).queryByTestId('red-flag')).toBeFalsy();
+      expect(within(staffRow).queryByTestId('green-tick')).toBeFalsy();
+      expect(within(staffRow).queryByText(messages.fundingMet)).toBeFalsy();
+      expect(within(staffRow).queryByText(messages.fundingNotMet)).toBeFalsy();
+    });
+
+    it('should display "Check your other workplaces" if subsidiaries overall requirements has met but some subsidiaries need check again', async () => {
+      const overrides = {
+        workplaceWdfEligibilityStatus: true,
+        staffWdfEligibilityStatus: true,
+        isParent: true,
+        subsidiariesCount: 2,
+        subsidiariesOverallWdfEligibility: true,
+        someSubsidiariesNeedCheckAgain: true,
+      };
+
+      const { getByTestId } = await setup(overrides);
+
+      const otherWorkplacesRow = getByTestId('workplaces-row');
+
+      expect(within(otherWorkplacesRow).getByText('Check your other workplaces')).toBeTruthy();
+      expect(within(otherWorkplacesRow).queryByTestId('orange-flag')).toBeTruthy();
+
+      expect(within(otherWorkplacesRow).queryByTestId('red-flag')).toBeFalsy();
+      expect(within(otherWorkplacesRow).queryByTestId('green-tick')).toBeFalsy();
+      expect(within(otherWorkplacesRow).queryByText(messages.fundingMet)).toBeFalsy();
+      expect(within(otherWorkplacesRow).queryByText(messages.fundingNotMet)).toBeFalsy();
     });
   });
 
@@ -321,9 +378,7 @@ describe('WdfSummaryPanel', () => {
       },
     ].forEach(({ scenario, onDataPage, expectedLink }) => {
       [{ isEligible: true }, { isEligible: false }].forEach(({ isEligible }) => {
-        const linkId = isEligible ? 'met-funding-message' : 'not-met-funding-message';
-
-        it(`should navigate to workplace when ${linkId} clicked ${scenario}`, async () => {
+        it(`should navigate to workplace when workplace message clicked ${scenario}`, async () => {
           const overrides = {
             workplaceWdfEligibilityStatus: isEligible,
             overallWdfEligibility: isEligible,
@@ -334,7 +389,7 @@ describe('WdfSummaryPanel', () => {
 
           const workplaceRow = getByTestId('workplace-row');
 
-          const notMetFundingMessage = within(workplaceRow).getByTestId(linkId);
+          const notMetFundingMessage = within(workplaceRow).getByRole('link');
 
           expect(notMetFundingMessage).toBeTruthy();
 
@@ -344,7 +399,7 @@ describe('WdfSummaryPanel', () => {
           expect(routerSpy).toHaveBeenCalledWith(expectedLink, { fragment: 'workplace' });
         });
 
-        it(`should navigate to staff when ${linkId} clicked ${scenario}`, async () => {
+        it(`should navigate to staff when staff message clicked ${scenario}`, async () => {
           const overrides = {
             staffWdfEligibilityStatus: isEligible,
             overallWdfEligibility: isEligible,
@@ -355,7 +410,7 @@ describe('WdfSummaryPanel', () => {
 
           const staffRow = getByTestId('staff-row');
 
-          const notMetFundingMessage = within(staffRow).getByTestId(linkId);
+          const notMetFundingMessage = within(staffRow).getByRole('link');
 
           expect(notMetFundingMessage).toBeTruthy();
 
@@ -368,6 +423,7 @@ describe('WdfSummaryPanel', () => {
           const overrides = {
             subsidiariesOverallWdfEligibility: isEligible,
             isParent: true,
+            subsidiariesCount: 2,
             onDataPage,
           };
 
@@ -375,7 +431,7 @@ describe('WdfSummaryPanel', () => {
 
           const workplacesRow = getByTestId('workplaces-row');
 
-          const notMetFundingMessage = within(workplacesRow).getByTestId(linkId);
+          const notMetFundingMessage = within(workplacesRow).getByRole('link');
 
           expect(notMetFundingMessage).toBeTruthy();
 

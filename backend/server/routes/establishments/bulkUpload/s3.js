@@ -2,12 +2,7 @@
 const moment = require('moment');
 const config = require('../../../config/config');
 
-const AWS_SDK_V2 = require('aws-sdk');
-const s3 = new AWS_SDK_V2.S3({
-  region: String(config.get('bulkupload.region')),
-});
-
-const s3ClientV3 = require('./s3clientv3');
+const bulkUploadS3Client = require('./bulkUploadS3Client');
 
 const Bucket = String(config.get('bulkupload.bucketname'));
 
@@ -22,13 +17,11 @@ const disbursementBucket = String(config.get('disbursement.bucketname'));
 
 const uploadDisbursementFileToS3 = async (buffer) => {
   try {
-    await s3
-      .putObject({
-        Bucket: disbursementBucket,
-        Key: moment().format('DD-MM-YYYY hh:mm:ss') + '-fundingClaimForm.xlsx',
-        Body: buffer,
-      })
-      .promise();
+    await bulkUploadS3Client.putObject({
+      Bucket: disbursementBucket,
+      Key: moment().format('DD-MM-YYYY hh:mm:ss') + '-fundingClaimForm.xlsx',
+      Body: buffer,
+    });
   } catch (err) {
     console.error('uploadDataToS3: ', err);
     throw new Error('Failed to upload To S3 ');
@@ -37,18 +30,16 @@ const uploadDisbursementFileToS3 = async (buffer) => {
 
 const uploadJSONDataToS3 = async (username, establishmentId, content, key) => {
   try {
-    await s3
-      .putObject({
-        Bucket,
-        Key: `${establishmentId}/${key}.json`,
-        Body: JSON.stringify(content, null, 2),
-        ContentType: 'application/json',
-        Metadata: {
-          username,
-          establishmentId: String(establishmentId),
-        },
-      })
-      .promise();
+    await bulkUploadS3Client.putObject({
+      Bucket,
+      Key: `${establishmentId}/${key}.json`,
+      Body: JSON.stringify(content, null, 2),
+      ContentType: 'application/json',
+      Metadata: {
+        username,
+        establishmentId: String(establishmentId),
+      },
+    });
   } catch (err) {
     console.error('uploadDataToS3: ', err);
     throw new Error(`Failed to upload S3 object: ${key}`);
@@ -101,44 +92,66 @@ const uploadUniqueLocalAuthoritiesToS3 = async (username, establishmentId, uniqu
   await uploadJSONDataToS3(username, establishmentId, uniqueLocalAuthorities, 'intermediary/all.localauthorities');
 };
 
+const uploadToBulkUploadBucket = async ({ key, body }) => {
+  try {
+    return bulkUploadS3Client.putObject({
+      Bucket,
+      Key: key,
+      Body: body,
+    });
+  } catch (err) {
+    console.error('uploadDataToS3: ', err);
+    throw new Error(`Failed to upload S3 object: ${key}`);
+  }
+};
+
 const saveResponse = async (req, res, statusCode, body, headers) => {
   if (!Number.isInteger(statusCode) || statusCode < 100) {
     statusCode = 500;
   }
 
-  return s3
-    .putObject({
-      Bucket,
-      Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
-      Body: JSON.stringify({
-        url: req.url,
-        startTime: req.startTime,
-        endTime: new Date().toISOString(),
-        responseCode: statusCode,
-        responseBody: body,
-        responseHeaders: typeof headers === 'object' ? headers : undefined,
-      }),
-    })
-    .promise();
+  return bulkUploadS3Client.putObject({
+    Bucket,
+    Key: `${req.establishmentId}/intermediary/${req.buRequestId}.json`,
+    Body: JSON.stringify({
+      url: req.url,
+      startTime: req.startTime,
+      endTime: new Date().toISOString(),
+      responseCode: statusCode,
+      responseBody: body,
+      responseHeaders: typeof headers === 'object' ? headers : undefined,
+    }),
+  });
+};
+
+const downloadObjectAsString = async (key) => {
+  const getObjectResult = await bulkUploadS3Client.getObject({
+    Bucket,
+    Key: key,
+  });
+
+  return getObjectResult.Body.transformToString();
 };
 
 const downloadContent = async (key, size, lastModified) => {
   try {
     const filenameRegex = /^(.+\/)*(.+)\.(.+)$/;
-    return await s3
-      .getObject({
-        Bucket,
-        Key: key,
-      })
-      .promise()
-      .then((objData) => ({
-        key,
-        data: objData.Body.toString(),
-        filename: key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3],
-        username: objData.Metadata.username,
-        size,
-        lastModified,
-      }));
+
+    const getObjectResult = await bulkUploadS3Client.getObject({
+      Bucket,
+      Key: key,
+    });
+    const data = await getObjectResult.Body.transformToString();
+
+    const returnObject = {
+      key,
+      data,
+      filename: key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3],
+      username: getObjectResult.Metadata.username,
+      size,
+      lastModified,
+    };
+    return returnObject;
   } catch (err) {
     console.error(`api/establishment/bulkupload/downloadFile: ${key})\n`, err);
     throw new Error(`Failed to download S3 object: ${key}`);
@@ -159,7 +172,7 @@ const saveLastBulkUpload = async (establishmentId) => {
       },
     };
 
-    await s3.deleteObjects(deleteParams).promise();
+    await bulkUploadS3Client.deleteObjects(deleteParams);
   }
 
   const originFolder = `${establishmentId}/latest/`;
@@ -192,13 +205,13 @@ const purgeBulkUploadS3Objects = async (establishmentId) => {
   if (deleteKeys.length > 0) {
     if (deleteKeys.length < 1000) {
       deleteParams.Delete.Objects = deleteKeys;
-      await s3.deleteObjects(deleteParams).promise();
+      await bulkUploadS3Client.deleteObjects(deleteParams);
     } else {
       const noOfFiles = 1000;
       for (let i = 0; i < deleteKeys.length; i += noOfFiles) {
         const fileKeys = deleteKeys.slice(i, i + noOfFiles);
         deleteParams.Delete.Objects = fileKeys;
-        await s3.deleteObjects(deleteParams).promise();
+        await bulkUploadS3Client.deleteObjects(deleteParams);
       }
     }
   }
@@ -206,7 +219,7 @@ const purgeBulkUploadS3Objects = async (establishmentId) => {
 
 const moveFolders = async (folderToMove, destinationFolder) => {
   try {
-    const listObjectsResponse = await s3ClientV3.listObjects({
+    const listObjectsResponse = await bulkUploadS3Client.listObjects({
       Bucket,
       Prefix: folderToMove,
       Delimiter: '/',
@@ -219,13 +232,11 @@ const moveFolders = async (folderToMove, destinationFolder) => {
       folderContentInfo.map(async (fileInfo) => {
         const ignoreRoot = /.*\/$/;
         if (!ignoreRoot.test(fileInfo.Key)) {
-          await s3
-            .copyObject({
-              Bucket,
-              CopySource: `${Bucket}/${fileInfo.Key}`, // old file Key
-              Key: `${destinationFolder}${fileInfo.Key.replace(folderPrefix, '')}`, // new file Key
-            })
-            .promise();
+          await bulkUploadS3Client.copyObject({
+            Bucket,
+            CopySource: `${Bucket}/${fileInfo.Key}`, // old file Key
+            Key: `${destinationFolder}${fileInfo.Key.replace(folderPrefix, '')}`, // new file Key
+          });
         }
       }),
     );
@@ -236,7 +247,7 @@ const moveFolders = async (folderToMove, destinationFolder) => {
 const getKeysFromFolder = async (listParams) => {
   const results = [];
 
-  const filesInFolder = await s3ClientV3.listObjects(listParams);
+  const filesInFolder = await bulkUploadS3Client.listObjects(listParams);
   if (!filesInFolder?.Contents) {
     return [];
   }
@@ -261,18 +272,16 @@ const listMetaData = async (establishmentId, folder) => {
     Prefix: `${establishmentId}${folder}`,
   };
 
-  const filesInFolder = await s3ClientV3.listObjects(listParams);
+  const filesInFolder = await bulkUploadS3Client.listObjects(listParams);
   if (!filesInFolder?.Contents) {
     return [];
   }
 
-  filesInFolder.Contents.forEach(async (myFile) => {
-    if (findMetaDataObjects.test(myFile.Key)) {
-      toDownload.push(downloadContent(myFile.Key, myFile.Size, myFile.LastModified));
-    }
-  });
+  const filesToDownload = filesInFolder.Contents.filter((file) => findMetaDataObjects.test(file.Key)).map((file) =>
+    downloadContent(file.Key, file.Size, file.LastModified),
+  );
 
-  const allMetaFiles = await Promise.all(toDownload);
+  const allMetaFiles = await Promise.all(filesToDownload);
 
   return allMetaFiles.map((file) => {
     file.data = JSON.parse(file.data);
@@ -283,7 +292,7 @@ const listMetaData = async (establishmentId, folder) => {
 
 const findFilesS3 = async (establishmentId, fileName) => {
   const listParams = params(establishmentId);
-  const latestObjects = await s3ClientV3.listObjects(listParams);
+  const latestObjects = await bulkUploadS3Client.listObjects(listParams);
   const foundFiles = [];
 
   if (!latestObjects?.Contents) {
@@ -305,34 +314,53 @@ const deleteFilesS3 = async (establishmentId, fileName) => {
   const deleteKeys = await findFilesS3(establishmentId, fileName);
 
   if (deleteKeys.length > 0) {
-    await s3
-      .deleteObjects({
-        Bucket,
-        Delete: {
-          Objects: deleteKeys,
-          Quiet: true,
-        },
-      })
-      .promise();
+    await bulkUploadS3Client.deleteObjects({
+      Bucket,
+      Delete: {
+        Objects: deleteKeys,
+        Quiet: true,
+      },
+    });
   }
 };
 
-const listObjectsInBucket = async (establishmentId) => {
-  return await s3ClientV3.listObjects({
+const listLatestObjectsInWorkplaceBucket = async (establishmentId) => {
+  return bulkUploadS3Client.listObjects({
     Bucket,
     Prefix: `${establishmentId}/latest/`,
   });
 };
 
+const headObjectInBucket = async (fileKey) => {
+  return bulkUploadS3Client.headObject({
+    Bucket,
+    Key: fileKey,
+  });
+};
+
+const getSignedUrlForUpload = async ({ ...args }) => {
+  const expiresIn = config.get('bulkupload.uploadSignedUrlExpire');
+  const options = { expiresIn };
+
+  const params = {
+    Bucket,
+    ...args,
+  };
+
+  const signedUrl = await bulkUploadS3Client.getSignedUrlForPutObject({ ...params, options });
+
+  return signedUrl;
+};
+
 module.exports = {
-  s3,
-  Bucket,
+  bulkUploadBucket: Bucket,
   uploadJSONDataToS3,
   uploadMetadataToS3,
   uploadValidationDataToS3,
   uploadDifferenceReportToS3,
   uploadEntitiesToS3,
   uploadUniqueLocalAuthoritiesToS3,
+  uploadToBulkUploadBucket,
   saveResponse,
   saveLastBulkUpload,
   downloadContent,
@@ -340,7 +368,10 @@ module.exports = {
   deleteFilesS3,
   findFilesS3,
   listMetaData,
-  listObjectsInBucket,
+  listLatestObjectsInWorkplaceBucket,
   uploadDisbursementFileToS3,
   getKeysFromFolder,
+  headObjectInBucket,
+  getSignedUrlForUpload,
+  downloadObjectAsString,
 };

@@ -1,15 +1,44 @@
 .asc-card {
   background-color: #f3f2f1;
-  padding-top: 15px;
-  padding-bottom: 15px;
-  min-height: 420px;
-  max-height: 444px;
+  height: 400px;
+  box-sizing: border-box;
+}
 
-  &__image {
+@media (max-width: 1024px) {
+  .asc-card {
+    height: 444px;
+  }
+}
+
+.asc-card__container {
+  margin: 0 15px 0 18px;
+}
+
+@media (max-width: 769px) {
+  .asc-card__container {
+    margin-right: 4px;
+  }
+}
+
+.asc-card__image {
+  width: 100%;
+  height: 138px;
+  display: block;
+}
+
+@media (max-width: 641px) {
+  .asc-card__image {
     width: 100%;
+    height: auto;
+    max-height: 270px;
   }
+}
 
-  &__container {
-    margin: 20px 30px 0 18px;
-  }
+.asc-card-heading {
+  margin: 0;
+  padding-top: 19px;
+  color: #505a5f;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 25px;
 }

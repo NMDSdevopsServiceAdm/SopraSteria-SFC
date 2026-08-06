@@ -2,6 +2,7 @@
 /// <reference types="cypress" />
 import { SubEstablishment } from '../../support/mockEstablishmentData';
 import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
+import { userPassword } from '../../support/configData';
 
 describe('Sub workplace page as edit user', { tags: '@workplace' }, () => {
   const establishmentId = SubEstablishment.id;
@@ -14,7 +15,7 @@ describe('Sub workplace page as edit user', { tags: '@workplace' }, () => {
 
   beforeEach(() => {
     cy.reload();
-    cy.loginAsUser(Cypress.env('editSubUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(SubEstablishment.editUserLoginName, userPassword);
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();
   });
 

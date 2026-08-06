@@ -1,6 +1,6 @@
 'use strict';
 
-const { s3, Bucket } = require('./s3');
+const BulkUploadS3Utils = require('./s3');
 
 const responseGet = (req, res) => {
   const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
@@ -14,13 +14,11 @@ const responseGet = (req, res) => {
     return;
   }
 
-  s3.getObject({
-    Bucket,
-    Key: `${req.establishmentId}/intermediary/${buRequestId}.json`,
-  })
-    .promise()
+  const objectKey = `${req.establishmentId}/intermediary/${buRequestId}.json`;
+
+  BulkUploadS3Utils.downloadObjectAsString(objectKey)
     .then((data) => {
-      const jsonData = JSON.parse(data.Body.toString());
+      const jsonData = JSON.parse(data);
 
       if (Number.isInteger(jsonData.responseCode) && jsonData.responseCode > 99) {
         if (jsonData.responseHeaders) {

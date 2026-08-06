@@ -1,4 +1,4 @@
-<div class="asc-dashboard-header" [class.asc-dashboard-header__full-height]="tab === 'home'">
+<div class="asc-dashboard-header" [class.asc-dashboard-header__home-tab]="tab === 'home'">
   <div>
     <div class="govuk-width-container">
       <div
@@ -37,13 +37,18 @@
               >Selected workplace</span
             >
 
-            <h1 data-testid="workplaceName" class="govuk-heading-l govuk-!-margin-bottom-0">
+            <h1
+              data-testid="workplaceName"
+              class="govuk-heading-l govuk-!-margin-bottom-0 asc-util__break-word-on-overflow"
+            >
               {{ workplace?.name }}
             </h1>
           </ng-container>
           <ng-template #otherTab>
             <h1 data-testid="workplaceName" class="govuk-heading-l govuk-!-margin-bottom-0">
-              <span class="govuk-caption-xl govuk-!-margin-bottom-0">{{ workplace?.name }}</span>
+              <span class="govuk-caption-xl govuk-!-margin-bottom-0 asc-util__break-word-on-overflow">{{
+                workplace?.name
+              }}</span>
               {{ header }}
             </h1>
           </ng-template>
@@ -151,7 +156,7 @@
                         '/workplace',
                         workplace.uid,
                         'update-records-with-training-course-details',
-                        'select-a-training-course'
+                        'select-a-training-course',
                       ]"
                       role="button"
                       class="asc-button-menu__item govuk-!-margin-right-3"

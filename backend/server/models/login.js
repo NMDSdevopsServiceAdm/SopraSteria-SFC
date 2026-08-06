@@ -1,6 +1,7 @@
 /* jshint indent: 2 */
 var bcrypt = require('bcrypt-nodejs');
 const { MaxLoginAttempts, MaxFindUsernameAttempts, UserAccountStatus } = require('../data/constants');
+const { correctSequelizeDateWithoutTimezone } = require('../utils/dateUtils');
 
 module.exports = function (sequelize, DataTypes) {
   const Login = sequelize.define(
@@ -136,6 +137,21 @@ module.exports = function (sequelize, DataTypes) {
         },
       ],
     });
+  };
+
+  Login.getPasswordLastChangedTime = async function (username) {
+    if (!username) {
+      return;
+    }
+
+    const user = await this.findOne({
+      attributes: ['id', 'passwdLastChanged'],
+      where: {
+        username,
+      },
+    });
+
+    return correctSequelizeDateWithoutTimezone(user?.passwdLastChanged);
   };
 
   Login.prototype.recordInvalidFindUsernameAttempts = async function (transaction) {

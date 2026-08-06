@@ -13,19 +13,13 @@ export class UsefulLinksService {
   constructor(private http: HttpClient) {}
 
   public getUsefulLinksForPay(): Observable<any> {
-    const params = new HttpParams()
-      .set('limit', '1')
-      .set('fields', 'content,title')
-      .set('env', environment.environmentName);
+    const params = new HttpParams().set('limit', '1').set('fields', 'content,title');
 
     return this.http.get<any>(`${environment.appRunnerEndpoint}/api/cms/items/${this.pathPay}`, { params });
   }
 
   public getUsefulLinksForRecruitment(): Observable<any> {
-    const params = new HttpParams()
-      .set('limit', '1')
-      .set('fields', 'content,title')
-      .set('env', environment.environmentName);
+    const params = new HttpParams().set('limit', '1').set('fields', 'content,title');
 
     return this.http.get<any>(`${environment.appRunnerEndpoint}/api/cms/items/${this.pathRecruitment}`, { params });
   }

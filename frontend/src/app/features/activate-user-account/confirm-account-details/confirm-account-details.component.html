@@ -31,11 +31,13 @@
       (setReturn)="onSetReturn()"
       data-testid="loginInfo"
     ></app-summary-list>
+    <app-summary-list [wrapBorder]="true" [summaryList]="securityInfo" (setReturn)="onSetReturn()"></app-summary-list>
     <app-summary-list
-      [wrapBorder]="true"
-      [summaryList]="securityInfo"
-      class="govuk-util__block govuk-!-margin-bottom-6"
+      [wrapBorder]="false"
+      [summaryList]="userResearchInviteResponseInfo"
       (setReturn)="onSetReturn()"
+      class="govuk-util__block govuk-!-margin-bottom-9"
+      data-testid="userResearchInviteResponseInfo"
     ></app-summary-list>
   </div>
 </div>

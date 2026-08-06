@@ -13,9 +13,9 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 import { filter, take, takeWhile } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    standalone: false
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  standalone: false,
 })
 export class AppComponent implements OnInit {
   private baseTitle = 'Skills for Care';
@@ -91,7 +91,7 @@ export class AppComponent implements OnInit {
 
         this.idleService.onTimeout().subscribe(() => {
           this.authService.storeRedirectLocation();
-          this.authService.logout();
+          this.authService.frontendLogout();
         });
       } else if (this.idleService.isRunning) {
         this.idleService.clear();

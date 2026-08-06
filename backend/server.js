@@ -46,7 +46,6 @@ var user = require('./server/routes/accounts/user');
 var workerLeaveReasons = require('./server/routes/workerReason');
 var serviceUsers = require('./server/routes/serviceUsers');
 var workerTrainingCategories = require('./server/routes/workerTrainingCategories');
-var nurseSpecialism = require('./server/routes/nurseSpecialism');
 var availableQualifications = require('./server/routes/availableQualifications');
 var approvals = require('./server/routes/approvals');
 var satisfactionSurvey = require('./server/routes/satisfactionSurvey');
@@ -77,10 +76,6 @@ var ReportsRoute = require('./server/routes/reports/index');
 var WDFRoute = require('./server/routes/wdf/index');
 
 var errors = require('./server/routes/errors');
-
-// SNS
-const AWSsns = require('./server/aws/sns');
-AWSsns.initialise(config.get('aws.region'));
 
 var app = express();
 
@@ -262,7 +257,6 @@ app.use('/api/localAuthority', [refCacheMiddleware.refcache, la]);
 app.use('/api/worker/leaveReasons', [refCacheMiddleware.refcache, workerLeaveReasons]);
 app.use('/api/serviceUsers', [refCacheMiddleware.refcache, serviceUsers]);
 app.use('/api/trainingCategories', [cacheMiddleware.nocache, workerTrainingCategories]);
-app.use('/api/nurseSpecialism', [refCacheMiddleware.refcache, nurseSpecialism]);
 app.use('/api/availableQualifications', [refCacheMiddleware.refcache, availableQualifications]);
 app.use('/api/longTermAbsence', [refCacheMiddleware.refcache, longTermAbsence]);
 app.use('/api/careWorkforcePathwayRoleCategories', [cacheMiddleware.nocache, careWorkforcePathwayRoleCategories]);

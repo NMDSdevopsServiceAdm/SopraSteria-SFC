@@ -64,7 +64,6 @@ import { MoveWorkerDialogComponent } from './move-worker-dialog/move-worker-dial
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
 import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
-import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level/other-qualifications-level.component';
 import { OtherQualificationsComponent } from './other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
@@ -123,7 +122,6 @@ import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-st
     NationalInsuranceNumberComponent,
     NationalityComponent,
     NursingCategoryComponent,
-    NursingSpecialismComponent,
     OtherQualificationsComponent,
     OtherQualificationsLevelComponent,
     RecruitedFromComponent,

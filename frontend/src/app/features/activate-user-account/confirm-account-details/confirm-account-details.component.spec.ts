@@ -14,6 +14,7 @@ import { throwError } from 'rxjs';
 
 import { ActivateUserAccountModule } from '../activate-user-account.module';
 import { ConfirmAccountDetailsComponent } from './confirm-account-details.component';
+import { InviteResponse } from '@core/model/userDetails.model';
 
 describe('ConfirmAccountDetailsComponent', () => {
   async function setup() {
@@ -103,6 +104,17 @@ describe('ConfirmAccountDetailsComponent', () => {
     expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
   });
 
+  it('should update termsAndConditionsCheckbox when checkbox is clicked', async () => {
+    const { component, getByTestId } = await setup();
+
+    const nextSpy = spyOn(component['createAccountService'].termsAndConditionsCheckbox$, 'next');
+
+    fireEvent.click(getByTestId('checkbox'));
+
+    expect(component.termsAndConditionsCheckbox).toBeTrue();
+    expect(nextSpy).toHaveBeenCalledWith(true);
+  });
+
   it('should call the save function to create account when pressing submit after agreeing to terms and conditions', async () => {
     const { component, fixture, getByText, getByTestId } = await setup();
 
@@ -115,6 +127,36 @@ describe('ConfirmAccountDetailsComponent', () => {
 
     expect(fixture.componentInstance.form.invalid).toBeFalsy();
     expect(saveSpy).toHaveBeenCalled();
+  });
+
+  describe('User research invite response', async () => {
+    it('should display Yes for user research sessions when response is Yes', async () => {
+      const { component } = await setup();
+
+      component.userResearchInviteResponse = InviteResponse.Yes;
+
+      (component as any).setAccountDetails();
+
+      expect(component.userResearchInviteResponseInfo[0].data).toBe('Yes');
+    });
+
+    it('should display No for user research sessions when response is No', async () => {
+      const { component } = await setup();
+
+      component.userResearchInviteResponse = InviteResponse.No;
+
+      (component as any).setAccountDetails();
+
+      expect(component.userResearchInviteResponseInfo[0].data).toBe('No');
+    });
+
+    it('should display dash when user research response is null', async () => {
+      const { component } = await setup();
+
+      component.userResearchInviteResponse = null;
+
+      expect((component as any).setUserResearchInviteResponseValue()).toBe('-');
+    });
   });
 
   it('should navigate to expired-activation-link page if the token in activation link is expired', async () => {
@@ -135,5 +177,17 @@ describe('ConfirmAccountDetailsComponent', () => {
     fireEvent.click(submitButton);
 
     expect(routerSpy).toHaveBeenCalledWith(['/activate-account', '/expired-activation-link']);
+  });
+
+  it('should set return url when onSetReturn is called', async () => {
+    const { component } = await setup();
+
+    const setReturnSpy = spyOn(component['createAccountService'], 'setReturnTo');
+
+    component.onSetReturn();
+
+    expect(setReturnSpy).toHaveBeenCalledWith({
+      url: ['/activate-account', '78kkh676', 'confirm-account-details'],
+    });
   });
 });

@@ -1,17 +1,11 @@
-const AWSMock = require('aws-sdk-mock');
-const AWS = require('aws-sdk');
+const { SQSClient, SendMessageCommand } = require('@aws-sdk/client-sqs');
+const sinon = require('sinon');
 const expect = require('chai').expect;
 const { sendToSQSQueue } = require('../../../../utils/email/sendToSQSQueue');
 
 describe('sendToSQSQueue', () => {
   it('should call send a message to the SQS queue', async () => {
-    AWSMock.mock('SQS', 'sendMessage', (params, callback) => {
-      expect(params).to.have.property('MessageBody');
-      expect(params).to.have.property('QueueUrl');
-      expect(params).to.have.property('MessageGroupId');
-      expect(params).to.have.property('MessageDeduplicationId')
-      callback(null, 'successfully received message');
-    });
+    sinon.stub(SQSClient.prototype, 'send');
 
     const to = {
       name: 'test',
@@ -26,12 +20,15 @@ describe('sendToSQSQueue', () => {
     await sendToSQSQueue(to, templateId, params, index);
 
     const input = {
-      MessageGroupId: 'someId',
+      MessageGroupId: '1',
       MessageDeduplicationId: '19',
-      MessageBody: '{ to, templateId, params}',
-      QueueUrl: 'someUrl',
+      MessageBody: JSON.stringify({ to, templateId, params }),
+      QueueUrl: '',
     };
-    const sqs = new AWS.SQS();
-    expect(await sqs.sendMessage(input).promise()).to.deep.equal('successfully received message');
+    expect(SQSClient.prototype.send).to.have.been.calledOnce;
+
+    const callArgument = SQSClient.prototype.send.getCall(0).args[0];
+    expect(callArgument).to.be.instanceOf(SendMessageCommand);
+    expect(callArgument.input).to.deep.equal(input);
   });
 });

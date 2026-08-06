@@ -783,6 +783,7 @@ class User {
         // TODO: change to amanaged property
         this._isPrimary = fetchResults.isPrimary;
         this._registrationSurveyCompleted = fetchResults.registrationSurveyCompleted;
+        this._viewedUserResearchQuestion = fetchResults.viewedUserResearchQuestion;
         this._displayStatus = User.statusTranslator(fetchResults.login);
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
@@ -1097,6 +1098,7 @@ class User {
       myDefaultJSON.migratedUserFirstLogon = migratedUserFirstLogin;
       myDefaultJSON.migratedUser = this._tribalId !== null ? true : false;
       myDefaultJSON.registrationSurveyCompleted = this._registrationSurveyCompleted;
+      myDefaultJSON.viewedUserResearchQuestion = this._viewedUserResearchQuestion;
 
       // TODO: JSON schema validation
       if (showHistory && !showPropertyHistoryOnly) {

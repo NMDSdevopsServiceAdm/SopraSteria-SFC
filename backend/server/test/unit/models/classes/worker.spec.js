@@ -16,32 +16,26 @@ describe('Worker Class', () => {
   });
 
   describe('load()', () => {
-    it('should remove nurse specialism and registered nurse when not a registered nurse', async () => {
+    it('should remove "registered nurse" ( = nursing category) when not a registered nurse', async () => {
       const notRegisteredNurse = {
         mainJob: {
           jobId: 27,
         },
       };
       const nonRegisteredNurseWorker = await worker.load(notRegisteredNurse);
-      expect(notRegisteredNurse.nurseSpecialisms.value).to.deep.equal(null);
-      expect(notRegisteredNurse.nurseSpecialisms.specialisms).to.deep.equal(null);
       expect(notRegisteredNurse.registeredNurse).to.deep.equal(null);
       expect(nonRegisteredNurseWorker).to.deep.equal(true);
     });
-    it('should not remove nurse specialism and registered nurse when a registered nurse', async () => {
+
+    it('should not remove "registered nurse" when a registered nurse', async () => {
       const registeredNurse = {
         mainJob: {
           jobId: 23,
         },
-        nurseSpecialisms: {
-          value: 'Yes',
-          specialisms: [{ specialism: 'Adults' }],
-        },
+
         registeredNurse: 'Adult Nurse',
       };
       const registeredNurseWorker = await worker.load(registeredNurse);
-      expect(registeredNurse.nurseSpecialisms.value).to.deep.equal('Yes');
-      expect(registeredNurse.nurseSpecialisms.specialisms).to.deep.equal([{ specialism: 'Adults' }]);
       expect(registeredNurse.registeredNurse).to.deep.equal('Adult Nurse');
       expect(registeredNurseWorker).to.deep.equal(true);
     });

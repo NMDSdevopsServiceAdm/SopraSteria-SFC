@@ -89,7 +89,7 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
     expect(revealText).toBeTruthy();
   });
 
-  it('should prefill the input if the establishment has a cash loyalty value', async () => {
+  it('should prefill the input if the establishment has a holiday leave value', async () => {
     const holidayLeave = '35';
     const { component, fixture } = await setup({ holidayLeave: holidayLeave });
 
@@ -153,7 +153,7 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
       ]);
     });
 
-    it('should navigate to the cash-loyalty page when submitting from the workplace flow', async () => {
+    it('should navigate to the staff-recruitment-capture-training-requirement page when submitting from the workplace flow', async () => {
       const { fixture, getByText, routerSpy } = await setup({ returnUrl: false });
 
       const button = getByText('Save and continue');
@@ -165,7 +165,7 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
         'mocked-uid',
         'workplace-data',
         'add-workplace-details',
-        'cash-loyalty',
+        'staff-recruitment-capture-training-requirement',
       ]);
     });
 

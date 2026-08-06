@@ -6,6 +6,16 @@ const router = express.Router();
 const { UserResearchInviteResponsesDataService } = require('./data');
 
 const printRow = (worksheet, result) => {
+  const latestChangedEvent = result?.auditEvents?.[0];
+
+  const auditEvent = latestChangedEvent?.dataValues?.event ?? latestChangedEvent?.event;
+
+  const changeDate = latestChangedEvent?.dataValues?.when ?? latestChangedEvent?.when;
+
+  const previousResponse = auditEvent?.current;
+
+  const hasRealChange = typeof previousResponse === 'string';
+
   worksheet.addRow({
     workplaceID: result?.establishment?.dataValues?.nmdsId ?? '',
     name: result?.FullNameValue ?? '',
@@ -15,7 +25,11 @@ const printRow = (worksheet, result) => {
     totalStaff: result?.establishment?.dataValues?.NumberOfStaffValue ?? '',
     userResearchInviteResponse: result?.UserResearchInviteResponseValue ?? '',
     createdDate: result?.created ?? '',
-    updatedDate: ''
+    updatedDate: result?.updated ?? '',
+
+    previousResponse: hasRealChange ? previousResponse : '',
+    latestResponse: hasRealChange ? auditEvent?.new : '',
+    changeDate: hasRealChange ? changeDate : '',
   });
 };
 
@@ -27,6 +41,7 @@ const generateUserResearchInviteResponsesReport = async (_req, res) => {
   workbook.properties.date1904 = true;
 
   const worksheet = workbook.addWorksheet('User Research Invite Responses');
+
   worksheet.columns = [
     { header: 'Workplace ID', key: 'workplaceID' },
     { header: 'Name', key: 'name' },
@@ -36,14 +51,20 @@ const generateUserResearchInviteResponsesReport = async (_req, res) => {
     { header: 'Total Staff', key: 'totalStaff' },
     { header: 'User Research Invite Response', key: 'userResearchInviteResponse' },
     { header: 'User Creation Date', key: 'createdDate' },
-    { header: 'Updated Date', key: 'updatedDate' },
+    { header: 'Change Date (user details)', key: 'updatedDate' },
+    { header: 'Previous Response', key: 'previousResponse' },
+    { header: 'Latest Response', key: 'latestResponse' },
+    { header: 'Change Date (latest response)', key: 'changeDate' },
   ];
 
   const headerRow = worksheet.getRow(1);
   headerRow.font = { bold: true, name: 'Calibri' };
 
   reportData.forEach((response) => {
-    printRow(worksheet, response.dataValues);
+    printRow(worksheet, {
+      ...response.dataValues,
+      auditEvents: response.auditEvents,
+    });
   });
 
   excelUtils.fitColumnsToSize(worksheet);

@@ -15,7 +15,6 @@ import { UpdateLeaversComponent } from '@shared/components/update-starters-leave
 import { UpdateStartersComponent } from '@shared/components/update-starters-leavers-vacancies/update-starters/update-starters.component';
 import { UpdateVacanciesComponent } from '@shared/components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
 
-import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
 import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
 import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway-awareness/care-workforce-pathway-awareness.component';
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use/care-workforce-pathway-use.component';
@@ -38,7 +37,6 @@ import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/selec
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
-import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
 import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
 import { StaffDoDelegatedHealthcareActivitiesComponent } from './staff-do-delegated-healthcase-activities/staff-do-delegated-healthcare-activities.component';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
@@ -243,15 +241,6 @@ export const workplaceQuestionsSharedByFlowAndSummary: Routes = [
     },
   },
   {
-    path: 'accept-previous-care-certificate',
-    component: AcceptPreviousCareCertificateComponent,
-    canActivate: [CheckPermissionsGuard],
-    data: {
-      permissions: ['canEditEstablishment'],
-      title: 'Accept Previous Care Certificate',
-    },
-  },
-  {
     path: 'care-workforce-pathway-awareness',
     component: CareWorkforcePathwayAwarenessComponent,
     canActivate: [CheckPermissionsGuard],
@@ -271,15 +260,6 @@ export const workplaceQuestionsSharedByFlowAndSummary: Routes = [
     data: {
       permissions: ['canEditEstablishment'],
       title: 'Care workforce pathway use',
-    },
-  },
-  {
-    path: 'cash-loyalty',
-    component: StaffBenefitCashLoyaltyComponent,
-    canActivate: [CheckPermissionsGuard],
-    data: {
-      permissions: ['canEditEstablishment'],
-      title: 'Cash Loyalty',
     },
   },
   {

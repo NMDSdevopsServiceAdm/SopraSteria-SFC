@@ -8,6 +8,20 @@
     @for (item of summaryList; track $index) {
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
+          @if (item.showNewFlag) {
+            <!-- <img
+              class="asc-red-pill-icon--m-size"
+              src="/assets/images/big-red-pill.svg"
+              data-testid="new-pill"
+              alt="new"
+            /> -->
+            <img
+              class="asc-red-pill-icon--m-size govuk-!-margin-right-2"
+              src="/assets/images/new-icon.png"
+              data-testid="new-pill"
+              alt="new"
+            />
+          }
           {{ item.label }}
         </dt>
         @if (item.label === 'Password' && displayShowPasswordToggle) {
@@ -19,12 +33,13 @@
               role="button"
               (click)="togglePassword($event)"
             >
-            @if (showPassword) {
-              Hide
-            } @else {
-              Show
-            }
-            password</a>
+              @if (showPassword) {
+                Hide
+              } @else {
+                Show
+              }
+              password</a
+            >
           </dd>
         } @else {
           <dd class="govuk-summary-list__value asc__preline">
@@ -39,12 +54,14 @@
           @if (canNavigate === undefined ? true : canNavigate) {
             <dd class="govuk-summary-list__actions">
               <a [routerLink]="item.route.url" (click)="emitSetReturn()">
-                @if (item.data === null) {
+                @if (!item.data) {
                   Add
                 } @else {
                   Change
                 }
-                <span class="govuk-visually-hidden"> {{ item.label.toLowerCase() }}</span>
+                <span class="govuk-visually-hidden">
+                  {{ item.ariaDescription ? item.ariaDescription : item.label.toLowerCase() }}
+                </span>
               </a>
             </dd>
           }

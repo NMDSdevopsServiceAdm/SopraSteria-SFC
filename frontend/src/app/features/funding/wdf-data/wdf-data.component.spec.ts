@@ -217,7 +217,7 @@ describe('WdfDataComponent', () => {
 
       const yourOtherWorkplacesRow = getByTestId('workplaces-row');
 
-      expect(within(yourOtherWorkplacesRow).getByTestId('met-funding-message')).toBeTruthy();
+      expect(within(yourOtherWorkplacesRow).getByText(/Your data has met the funding requirements for/)).toBeTruthy();
     });
 
     it('should display the met funding requirements message when all subs have eligibility even if parent does not', async () => {
@@ -229,7 +229,7 @@ describe('WdfDataComponent', () => {
 
       const yourOtherWorkplacesRow = getByTestId('workplaces-row');
 
-      expect(within(yourOtherWorkplacesRow).getByTestId('met-funding-message')).toBeTruthy();
+      expect(within(yourOtherWorkplacesRow).getByText(/Your data has met the funding requirements for/)).toBeTruthy();
     });
 
     it('should display the some data not meeting funding requirements message when not all meeting but some subs have overall eligibility', async () => {

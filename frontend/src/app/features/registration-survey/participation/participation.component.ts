@@ -9,9 +9,9 @@ import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-participation',
-    templateUrl: './participation.component.html',
-    standalone: false
+  selector: 'app-participation',
+  templateUrl: './participation.component.html',
+  standalone: false,
 })
 export class ParticipationComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
@@ -44,18 +44,14 @@ export class ParticipationComponent implements OnInit, OnDestroy {
   }
 
   public updateUserMarkSurveyAsComplete() {
-    if (this.userService.loggedInUser?.registrationSurveyCompleted === false) {
-      this.subscriptions.add(
-        this.userService
-          .updateUserDetails(this.userService.loggedInUser.establishmentUid, this.userService.loggedInUser.uid, {
-            ...this.userService.loggedInUser,
-            ...{ registrationSurveyCompleted: true },
-          })
-          .subscribe((data) => {
-            this.userService.loggedInUser = data;
-          }),
-      );
+    if (this.userService.loggedInUser?.registrationSurveyCompleted === true) {
+      return;
     }
+
+    const userUid = this.userService.loggedInUser.uid!;
+    const updates = { registrationSurveyCompleted: true };
+
+    this.subscriptions.add(this.userService.updateUserFlags(userUid, updates).subscribe());
   }
 
   public onSubmit() {

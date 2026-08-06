@@ -1,6 +1,6 @@
 /* jshint indent: 2 */
 const { Op } = require('sequelize');
-const { padEnd } = require('lodash');
+const lodash = require('lodash');
 const { sanitise } = require('../utils/db');
 const { UserAccountStatus } = require('../data/constants');
 
@@ -286,6 +286,12 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: 0,
         field: 'TrainingCoursesMessageViewedQuantity',
       },
+      viewedUserResearchQuestion: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+        field: 'ViewedUserResearchQuestion',
+      },
     },
     {
       tableName: '"User"',
@@ -499,7 +505,7 @@ module.exports = function (sequelize, DataTypes) {
       return null;
     }
 
-    const workplaceIdWithTrailingSpace = padEnd(workplaceId ?? '', 8, ' ');
+    const workplaceIdWithTrailingSpace = lodash.padEnd(workplaceId ?? '', 8, ' ');
     const establishmentWhereClause = workplaceId
       ? { NmdsID: [workplaceId, workplaceIdWithTrailingSpace] }
       : { postcode: postcode };
@@ -546,6 +552,36 @@ module.exports = function (sequelize, DataTypes) {
     }
 
     return userFound;
+  };
+
+  User.updateFlags = async function (userUid, updates) {
+    const userTableFlags = [
+      'registrationSurveyCompleted',
+      'lastViewedVacanciesAndTurnoverMessage',
+      'trainingCoursesMessageViewedQuantity',
+      'viewedUserResearchQuestion',
+    ];
+    const loginTableFlags = ['agreedUpdatedTerms'];
+
+    const userTableUpdates = lodash.pick(updates, userTableFlags);
+    const loginTableUpdates = lodash.pick(updates, loginTableFlags);
+
+    const userFound = await this.findOne({
+      where: {
+        uid: userUid,
+      },
+    });
+
+    if (!userFound) {
+      return;
+    }
+
+    await userFound.update(userTableUpdates);
+
+    if (!lodash.isEmpty(loginTableUpdates)) {
+      const userLogin = await userFound.getLogin();
+      await userLogin?.update(loginTableUpdates);
+    }
   };
 
   User.setDateForLastViewedVacanciesAndTurnoverMessage = async function (userUid) {
