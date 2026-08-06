@@ -186,7 +186,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
     const notAllTurnoverDataAnswered = [vacancies, leavers, starters].some((value) => !value);
     if (notAllTurnoverDataAnswered) {
-      const missingOnes = Object.entries({ vacancy: vacancies, starters, leavers })
+      const missingOnes = Object.entries({ starters, leavers, vacancy: vacancies })
         .filter(([_key, value]) => !value)
         .map(([key, _value]) => key);
 
