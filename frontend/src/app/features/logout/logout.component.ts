@@ -18,6 +18,8 @@ export class LogoutComponent {
     private authService: AuthService,
     private route: ActivatedRoute,
   ) {
+    this.got403FromServer = this.route?.snapshot?.data?.got403FromServer ?? false;
+
     if (this.authService.token) {
       if (this.jwt.isTokenExpired(this.authService.token)) {
         this.authService.frontendLogout();
@@ -25,9 +27,5 @@ export class LogoutComponent {
     }
     this.authService.frontendLogoutWithoutRouting();
     this.idleService.clear();
-  }
-
-  ngOnInit(): void {
-    this.got403FromServer = this.route?.snapshot?.data?.got403FromServer ?? false;
   }
 }
