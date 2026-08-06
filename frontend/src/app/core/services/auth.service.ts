@@ -120,6 +120,12 @@ export class AuthService {
     this.router.navigate(['/logged-out']);
   }
 
+  public frontendLogoutBy403(): void {
+    this.setPreviousUser();
+    this.unauthenticate();
+    this.router.navigate(['/logged-out-by-server']);
+  }
+
   public logoutByUser(): void {
     this.logoutUserFromServer().subscribe(
       (data) => {
