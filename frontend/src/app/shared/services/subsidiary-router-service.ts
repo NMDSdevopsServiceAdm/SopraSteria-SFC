@@ -74,7 +74,7 @@ export class SubsidiaryRouterService extends Router {
       return false;
     }
 
-    const timeBeforeStartScrolling = 400;
+    const timeBeforeStartScrolling = 350;
     const topOffset = 20;
 
     await delay(timeBeforeStartScrolling);

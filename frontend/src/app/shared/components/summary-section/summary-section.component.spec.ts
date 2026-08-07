@@ -224,16 +224,23 @@ fdescribe('Summary section', () => {
       expect(routerSpy).toHaveBeenCalledWith(['subsidiary', Establishment.uid, 'workplace']);
     });
 
-    it('should show the check cqc details message if checkCQCDetails banner is true and the showAddWorkplaceDetailsBanner is false', async () => {
+    it('should show the check cqc details message and a link with scroll action if checkCQCDetails banner is true and the showAddWorkplaceDetailsBanner is false', async () => {
       const overrides = {
         checkCqcDetails: true,
       };
 
-      const { getByTestId } = await setup(overrides);
+      const { getByTestId, navigateAndScrollSpy } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText('Your workplace details do not match your CQC details')).toBeTruthy();
+      const link = within(workplaceRow).getByText('Your workplace details do not match your CQC details');
+      expect(link).toBeTruthy();
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+
+      userEvent.click(link);
+
+      expect(navigateAndScrollSpy).toHaveBeenCalledWith(['/dashboard'], 'check-cqc-details-banner', {
+        fragment: 'workplace',
+      });
     });
 
     it('should show the total staff error if it is not available', async () => {
@@ -276,11 +283,16 @@ fdescribe('Summary section', () => {
         workerCount: 102,
       };
 
-      const { getByTestId } = await setup(overrides);
+      const { getByTestId, navigateAndScrollSpy } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText('Staff total does not match number of staff records')).toBeTruthy();
+      const link = within(workplaceRow).getByText('Staff total does not match number of staff records');
+      expect(link).toBeTruthy();
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+
+      userEvent.click(link);
+
+      expect(navigateAndScrollSpy).toHaveBeenCalledWith(['/dashboard'], 'workplace-details', { fragment: 'workplace' });
     });
 
     it('should not show the staff total does not match staff records warning when after eight weeks since first login is null', async () => {

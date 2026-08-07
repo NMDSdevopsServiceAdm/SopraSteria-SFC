@@ -130,10 +130,12 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'home' });
     }
 
-    if (scrollToId && !route) {
-      (this.router as SubsidiaryRouterService)?.navigateAndScrollToAnchor(['/dashboard'], scrollToId, {
-        fragment: 'training-and-qualifications',
-      });
+    if (scrollToId) {
+      const destinationUrl = route ?? ['/dashboard'];
+      const extras = route ? {} : { fragment };
+      const router = this.router as SubsidiaryRouterService;
+
+      router.navigateAndScrollToAnchor(destinationUrl, scrollToId, extras);
       return;
     }
 
@@ -174,6 +176,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     }
     if (this.showCheckCqcDetails) {
       this.sections[0].message = 'Your workplace details do not match your CQC details';
+      this.sections[0].scrollToId = 'check-cqc-details-banner';
       return;
     }
 
@@ -185,6 +188,8 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
     if (numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin() && this.canViewListOfWorkers) {
       this.sections[0].message = 'Staff total does not match number of staff records';
+      this.sections[0].scrollToId = 'workplace-details';
+
       return;
     }
 
