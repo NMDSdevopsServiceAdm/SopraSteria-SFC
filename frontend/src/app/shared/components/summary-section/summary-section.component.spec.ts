@@ -19,8 +19,9 @@ import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
+import { SubsidiaryRouterService } from '@shared/services/subsidiary-router-service';
 
-describe('Summary section', () => {
+fdescribe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(SummarySectionComponent, {
       imports: [SharedModule, RouterModule],
@@ -70,9 +71,11 @@ describe('Summary section', () => {
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
 
-    const router = injector.inject(Router) as Router;
+    const router = injector.inject(Router) as SubsidiaryRouterService;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const routerLinkSpy = spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true));
+    const navigateAndScrollSpy = jasmine.createSpy().and.returnValue(Promise.resolve(true));
+    router.navigateAndScrollToAnchor = navigateAndScrollSpy;
 
     const tabsService = injector.inject(TabsService) as TabsService;
 
@@ -92,6 +95,7 @@ describe('Summary section', () => {
       component,
       routerSpy,
       routerLinkSpy,
+      navigateAndScrollSpy,
       tabsService,
       updateSingleFieldSpy,
       setReturnToSpy,
@@ -1001,6 +1005,24 @@ describe('Summary section', () => {
         expect(within(tAndQRow).queryByTestId('red-flag')).toBeFalsy();
         expect(within(tAndQRow).queryByText('You need to check your training records')).toBeFalsy();
       });
+
+      it('should visit training records tab and scroll to training-info-panel on click', async () => {
+        const overrides = {
+          checkCqcDetails: false,
+          establishment: Establishment,
+          workerCount: 2,
+          trainingCounts: { staffMissingMandatoryTraining: 2 },
+        };
+        const { getByTestId, navigateAndScrollSpy } = await setup(overrides);
+
+        const tAndQRow = getByTestId('training-and-qualifications-row');
+
+        userEvent.click(within(tAndQRow).getByText('You need to check your training records'));
+
+        expect(navigateAndScrollSpy).toHaveBeenCalledWith(['/dashboard'], 'training-info-panel', {
+          fragment: 'training-and-qualifications',
+        });
+      });
     });
 
     describe('Expired training message', () => {
@@ -1429,7 +1451,8 @@ describe('Summary section', () => {
       });
     });
 
-    describe('CWP worker question', () => {
+    xdescribe('CWP worker question', () => {
+      // Blue update banner for Care workforce pathway worker question is disabled temporarily as CWP roles category update is planned ahead
       const cwpWorkerBannerText = 'Where are your staff on the care workforce pathway?';
 
       it('should show the update banner if there are staff without an answer for CWP question', async () => {

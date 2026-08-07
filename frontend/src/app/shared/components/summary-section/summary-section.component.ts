@@ -9,6 +9,7 @@ import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { TabsService } from '@core/services/tabs.service';
 import { DateUtil } from '@core/utils/date-util';
 import { FormatUtil } from '@core/utils/format-util';
+import { SubsidiaryRouterService } from '@shared/services/subsidiary-router-service';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
@@ -103,14 +104,10 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     this.setupUpdateBanner();
   }
 
-  public async onClick(
-    event: Event,
-    fragment: string,
-    route: string[],
-    skipTabSwitch: boolean = false,
-    message?: string,
-  ): Promise<void> {
+  public async onClick(event: Event, section: Section): Promise<void> {
     event.preventDefault();
+
+    const { fragment, route, skipTabSwitch = false, message, scrollToId } = section;
 
     if (message === NO_STAFF_RECORDS_MESSAGE) {
       const payload = {
@@ -131,6 +128,13 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
     if (this.setReturn) {
       this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'home' });
+    }
+
+    if (scrollToId && !route) {
+      (this.router as SubsidiaryRouterService)?.navigateAndScrollToAnchor(['/dashboard'], scrollToId, {
+        fragment: 'training-and-qualifications',
+      });
+      return;
     }
 
     if (this.isParentSubsidiaryView) {
@@ -262,8 +266,10 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     if (hasMissingMandatory || hasExpired) {
       this.sections[2].redFlag = true;
       this.sections[2].message = 'You need to check your training records';
+      this.sections[2].scrollToId = 'training-info-panel';
     } else if (hasExpiringSoon) {
       this.sections[2].message = 'You need to check your training records';
+      this.sections[2].scrollToId = 'training-info-panel';
     } else if (this.trainingCounts?.totalRecords === 0 && this.trainingCounts?.totalTraining == 0) {
       this.sections[2].link = false;
       this.sections[2].message = 'Manage your staff training and qualifications';
@@ -361,7 +367,10 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   public setupUpdateBanner() {
     this.setupUpdateBannerForPayAndPensionWorkplaceQuestions();
     this.setupUpdateBannerForCWPWorkplaceAwareness();
-    this.setupUpdateBannerForCWPWorkerQuestion();
+
+    // Blue update banner for Care workforce pathway worker question is disabled temporarily, as CWP roles category update is planned ahead
+    // this.setupUpdateBannerForCWPWorkerQuestion();
+
     this.setupUpdateBannerForDHAWorkplaceQuestion();
     this.setupUpdateBannerForDHAWorkerQuestion();
   }
@@ -488,13 +497,14 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   }
 }
 
-interface Section {
+export interface Section {
   linkText: string;
-  fragment: string;
-  message: string;
-  route: string[];
-  redFlag: boolean;
   link: boolean;
+  message: string;
+  fragment?: string;
+  route?: string[];
+  redFlag?: boolean;
   skipTabSwitch?: boolean;
   showMessageAsText?: boolean;
+  scrollToId?: string;
 }
