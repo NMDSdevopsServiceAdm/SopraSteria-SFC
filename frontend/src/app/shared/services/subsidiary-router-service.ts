@@ -1,6 +1,7 @@
 import { ViewportScroller } from '@angular/common';
 import { inject, Injectable } from '@angular/core';
 import { NavigationBehaviorOptions, NavigationExtras, Router, UrlTree } from '@angular/router';
+import { delay } from '@core/utils/time-util';
 
 import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
 
@@ -73,10 +74,13 @@ export class SubsidiaryRouterService extends Router {
       return false;
     }
 
-    await new Promise((resolve) => setTimeout(() => resolve(true), 0));
+    const timeBeforeStartScrolling = 400;
+    const topOffset = 20;
 
-    this.viewportScroller.setOffset([0, 20]);
-    this.viewportScroller.scrollToAnchor(targetElementId);
+    await delay(timeBeforeStartScrolling);
+
+    this.viewportScroller.setOffset([0, topOffset]);
+    this.viewportScroller.scrollToAnchor(targetElementId, { behavior: 'smooth' });
 
     return true;
   }

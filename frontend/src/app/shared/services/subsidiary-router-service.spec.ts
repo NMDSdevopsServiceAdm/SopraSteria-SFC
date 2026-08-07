@@ -6,7 +6,6 @@ import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
 import { SubsidiaryRouterService } from './subsidiary-router-service';
 import { provideHttpClient } from '@angular/common/http';
 import { ViewportScroller } from '@angular/common';
-import { ApplicationRef } from '@angular/core';
 
 describe('SubsidiaryRouterService', () => {
   let service: SubsidiaryRouterService;
@@ -242,7 +241,7 @@ describe('SubsidiaryRouterService', () => {
     const navigationExtras = { fragment: 'training-and-qualifications' };
     const targetElementId = 'training-info-panel';
 
-    it('should call navigate() and scroll to target element after navigation', async () => {
+    const setup = () => {
       const viewPortScroller = TestBed.inject(ViewportScroller);
 
       const { resolve, promise: navigatePromise } = createPromiseWithResolvers();
@@ -250,25 +249,26 @@ describe('SubsidiaryRouterService', () => {
       spyOn(service, 'navigate').and.returnValue(navigatePromise);
       const scrollToAnchorSpy = spyOn(viewPortScroller, 'scrollToAnchor');
 
+      return { scrollToAnchorSpy, resolve };
+    };
+
+    it('should call navigate() and scroll to target element after navigation', async () => {
+      const { scrollToAnchorSpy, resolve } = setup();
+
       const complete = service.navigateAndScrollToAnchor(route, targetElementId, navigationExtras);
 
       expect(service.navigate).toHaveBeenCalledWith(route, navigationExtras);
-      expect(scrollToAnchorSpy).not.toHaveBeenCalledWith(targetElementId);
+      expect(scrollToAnchorSpy).not.toHaveBeenCalled();
 
       resolve(true); // emulate navigation successful
 
       await complete;
 
-      expect(scrollToAnchorSpy).toHaveBeenCalledWith(targetElementId);
+      expect(scrollToAnchorSpy).toHaveBeenCalledWith(targetElementId, { behavior: 'smooth' });
     });
 
     it('should not try to scroll to target element if navigation failed', async () => {
-      const viewPortScroller = TestBed.inject(ViewportScroller);
-
-      const { resolve, promise: navigatePromise } = createPromiseWithResolvers();
-
-      spyOn(service, 'navigate').and.returnValue(navigatePromise);
-      const scrollToAnchorSpy = spyOn(viewPortScroller, 'scrollToAnchor');
+      const { scrollToAnchorSpy, resolve } = setup();
 
       const complete = service.navigateAndScrollToAnchor(route, targetElementId, navigationExtras);
 
@@ -278,7 +278,7 @@ describe('SubsidiaryRouterService', () => {
 
       await complete;
 
-      expect(scrollToAnchorSpy).not.toHaveBeenCalledWith(targetElementId);
+      expect(scrollToAnchorSpy).not.toHaveBeenCalled();
     });
   });
 });
