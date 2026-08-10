@@ -79,9 +79,6 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   };
 
   public isParent: boolean;
-  private careWorkforcePathwayLinkDisplaying: boolean;
-  private payAndPensionWorkplaceQuestionsLinkDisplaying: boolean;
-  private setReturn: boolean;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -93,11 +90,11 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getWorkplaceSummaryMessage();
-    this.showViewSummaryLinks(this.sections[0].linkText);
 
-    this.getStaffCreatedDate();
     this.getStaffSummaryMessage();
     this.getTrainingAndQualsSummary();
+    this.showViewSummaryLinks();
+
     this.isParent = this.workplace?.isParent;
     this.getOtherWorkplacesSummaryMessage();
 
@@ -107,27 +104,10 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   public async onClick(event: Event, section: Section): Promise<void> {
     event.preventDefault();
 
-    const { fragment, route, skipTabSwitch = false, message, scrollToId } = section;
+    const { fragment, route, skipTabSwitch = false, scrollToId, onClickHook } = section;
 
-    if (message === NO_STAFF_RECORDS_MESSAGE) {
-      const payload = {
-        property: 'lastStaffRecordMessageDismissedAt',
-        value: new Date(),
-      };
-      this.updateSingleEstablishmentField(payload);
-    }
-
-    if (this.payAndPensionWorkplaceQuestionsLinkDisplaying && fragment == 'workplace') {
-      this.payAndPensionService.setInPayAndPensionsMiniFlow(true);
-      this.setPayAndPensionsMiniFlowViewed();
-    }
-
-    if (this.careWorkforcePathwayLinkDisplaying && fragment == 'workplace') {
-      this.setCwpAwarenessQuestionViewed();
-    }
-
-    if (this.setReturn) {
-      this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'home' });
+    if (onClickHook) {
+      onClickHook();
     }
 
     if (scrollToId) {
@@ -233,34 +213,52 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
   public getStaffSummaryMessage(): void {
     if (!this.canViewListOfWorkers) {
-      this.showViewSummaryLinks(this.sections[1].linkText);
       return;
     }
 
-    const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
-    const staffRecordMessageDismissalExpiry = dayjs(this.workplace.lastStaffRecordMessageDismissedAt).add(12, 'M');
+    const oneYearAfterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
+    const oneYearAfterstaffRecordMessageDismissed = dayjs(this.workplace.lastStaffRecordMessageDismissedAt).add(
+      12,
+      'M',
+    );
+
     if (!this.workerCount) {
       this.sections[1].message = 'Start adding your staff records';
-    } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
+      return;
+    }
+
+    if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[1].message = 'Number of staff records does not match total staff';
-    } else if (this.noOfWorkersWhoRequireInternationalRecruitment > 0) {
+      return;
+    }
+
+    if (this.noOfWorkersWhoRequireInternationalRecruitment > 0) {
       this.showInternationalRecruitmentMessage();
-    } else if (
-      dayjs() >= afterWorkplaceCreated &&
+      return;
+    }
+
+    const today = dayjs();
+    const showNoStaffRecordsMessage =
       this.workplace.numberOfStaff > 10 &&
-      dayjs() >= this.getWorkerLatestCreatedDate() &&
-      (!this.workplace.lastStaffRecordMessageDismissedAt || dayjs() >= staffRecordMessageDismissalExpiry)
-    ) {
+      today >= oneYearAfterWorkplaceCreated &&
+      today >= this.oneYearAfterLatestWorkerCreatedDate() &&
+      (!this.workplace.lastStaffRecordMessageDismissedAt || today >= oneYearAfterstaffRecordMessageDismissed);
+
+    if (showNoStaffRecordsMessage) {
       this.sections[1].message = NO_STAFF_RECORDS_MESSAGE;
-    } else if (this.workersNotCompleted?.length > 0 && this.getStaffCreatedDate()) {
+      this.sections[1].onClickHook = () => this.updateLastStaffRecordMessageDismissedAt();
+      return;
+    }
+
+    if (this.workersNotCompleted?.length > 0 && this.workerNotCompletedOverOneMonth()) {
       this.sections[1].message = 'Add more details to your staff records';
       if (this.isParentSubsidiaryView) {
         this.sections[1].route = ['/staff-basic-records', this.workplace.uid];
       } else {
         this.sections[1].route = ['/staff-basic-records'];
       }
+      return;
     }
-    this.showViewSummaryLinks(this.sections[1].linkText);
   }
 
   public getTrainingAndQualsSummary(): void {
@@ -272,17 +270,23 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.sections[2].redFlag = true;
       this.sections[2].message = 'You need to check your training records';
       this.sections[2].scrollToId = 'training-info-panel';
-    } else if (hasExpiringSoon) {
+      return;
+    }
+
+    if (hasExpiringSoon) {
       this.sections[2].message = 'You need to check your training records';
       this.sections[2].scrollToId = 'training-info-panel';
-    } else if (this.trainingCounts?.totalRecords === 0 && this.trainingCounts?.totalTraining == 0) {
+      return;
+    }
+
+    if (this.trainingCounts?.totalRecords === 0 && this.trainingCounts?.totalTraining == 0) {
       this.sections[2].link = false;
       this.sections[2].message = 'Manage your staff training and qualifications';
+      return;
     }
-    this.showViewSummaryLinks(this.sections[2].linkText);
   }
 
-  getStaffCreatedDate() {
+  private workerNotCompletedOverOneMonth() {
     if (this.workersNotCompleted) {
       const filterDate = this.workersNotCompleted.filter(
         (workerDate: any) => dayjs() > dayjs(new Date(workerDate.created)).add(1, 'M'),
@@ -291,7 +295,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  getWorkerLatestCreatedDate() {
+  private oneYearAfterLatestWorkerCreatedDate() {
     const workerLatestCreatedDate = new Date(Math.max(...this.workersCreatedDate));
     const afterWorkerCreated = dayjs(workerLatestCreatedDate).add(12, 'M');
     return afterWorkerCreated;
@@ -309,34 +313,49 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     if (this.workplacesCount === 0) {
       this.otherWorkplacesSection.message = "You've not added any other workplaces yet";
       this.otherWorkplacesSection.link = false;
-      this.otherWorkplacesSection.orangeFlag = false;
-    } else if (this.showMissingCqcMessage) {
+      return;
+    }
+
+    if (this.showMissingCqcMessage) {
       this.otherWorkplacesSection.message = 'Have you added all of your workplaces?';
       this.otherWorkplacesSection.link = true;
       this.otherWorkplacesSection.orangeFlag = true;
-    } else if (this.workplacesNeedAttention) {
+      return;
+    }
+
+    if (this.workplacesNeedAttention) {
       this.otherWorkplacesSection.message = 'You need to check your other workplaces';
       this.otherWorkplacesSection.link = true;
       this.otherWorkplacesSection.redFlag = true;
-    } else {
-      this.otherWorkplacesSection.message = 'Check and update your other workplaces often';
-      this.otherWorkplacesSection.link = false;
-      this.otherWorkplacesSection.orangeFlag = false;
+      return;
     }
+
+    this.otherWorkplacesSection.message = 'Check and update your other workplaces often';
+    this.otherWorkplacesSection.link = false;
   }
 
-  public showViewSummaryLinks(linkText: string): void {
-    if (linkText === this.sections[0].linkText && !this.canViewEstablishment) {
+  public showViewSummaryLinks(): void {
+    if (!this.canViewEstablishment) {
       this.sections[0].link = false;
-    } else if (linkText === this.sections[1].linkText && !this.canViewListOfWorkers) {
+    }
+
+    if (!this.canViewListOfWorkers) {
       this.sections[1].link = false;
-    } else if (linkText === this.sections[2].linkText && !this.canViewListOfWorkers) {
       this.sections[2].link = false;
     }
   }
 
   private updateSingleEstablishmentField(dataToUpdate: any): void {
-    this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, dataToUpdate).subscribe((response) => {
+    this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, dataToUpdate).subscribe();
+  }
+
+  private updateLastStaffRecordMessageDismissedAt(): void {
+    const payload = {
+      property: 'lastStaffRecordMessageDismissedAt',
+      value: new Date(),
+    };
+
+    this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, payload).subscribe((response) => {
       if (!response?.data) {
         return;
       }
@@ -347,6 +366,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       }
     });
   }
+
   private setCwpAwarenessQuestionViewed(): void {
     const cwpData = {
       property: 'CWPAwarenessQuestionViewed',
@@ -509,7 +529,9 @@ export interface Section {
   fragment?: string;
   route?: string[];
   redFlag?: boolean;
+  orangeFlag?: boolean;
   skipTabSwitch?: boolean;
   showMessageAsText?: boolean;
   scrollToId?: string;
+  onClickHook?: () => void;
 }

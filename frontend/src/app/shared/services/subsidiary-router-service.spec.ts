@@ -224,7 +224,7 @@ describe('SubsidiaryRouterService', () => {
     });
   });
 
-  fdescribe('navigateAndScrollToAnchor', () => {
+  describe('navigateAndScrollToAnchor', () => {
     const createPromiseWithResolvers = () => {
       let resolve!: (value: boolean) => void;
       let reject!: (reason?: unknown) => void;

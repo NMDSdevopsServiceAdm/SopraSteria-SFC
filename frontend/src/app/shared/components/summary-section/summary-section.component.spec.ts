@@ -21,7 +21,7 @@ import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
 import { SubsidiaryRouterService } from '@shared/services/subsidiary-router-service';
 
-fdescribe('Summary section', () => {
+describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(SummarySectionComponent, {
       imports: [SharedModule, RouterModule],
@@ -462,6 +462,13 @@ fdescribe('Summary section', () => {
   });
 
   describe('staff record summary section', () => {
+    beforeEach(() => {
+      jasmine.clock().install();
+    });
+    afterEach(() => {
+      jasmine.clock().uninstall();
+    });
+
     it('should show staff record link', async () => {
       const { getByText } = await setup();
 
@@ -652,6 +659,8 @@ fdescribe('Summary section', () => {
       };
 
       const date = [dayjs().subtract(1, 'year')];
+      const mockTimeNow = new Date('2026-12-23T01:23:45Z');
+      jasmine.clock().mockDate(mockTimeNow);
 
       const overrides = {
         checkCqcDetails: false,
@@ -660,15 +669,21 @@ fdescribe('Summary section', () => {
         workerCreatedDate: date,
       };
 
-      const { fixture, getByTestId } = await setup(overrides);
+      const { fixture, getByTestId, updateSingleFieldSpy } = await setup(overrides);
 
       fixture.detectChanges();
 
       const staffRecordsRow = getByTestId('staff-records-row');
 
-      expect(
-        within(staffRecordsRow).getByText('You’ve not added any staff records in the last 12 months'),
-      ).toBeTruthy();
+      const link = within(staffRecordsRow).getByText('You’ve not added any staff records in the last 12 months');
+      expect(link).toBeTruthy();
+
+      userEvent.click(link);
+
+      expect(updateSingleFieldSpy).toHaveBeenCalledWith(establishment.uid, {
+        property: 'lastStaffRecordMessageDismissedAt',
+        value: mockTimeNow,
+      });
     });
 
     it('should not show "You’ve not added any staff records in the last 12 months" message when establishment has less than 10 staff and workplace created date and last worker added date is less than 12 months', async () => {
