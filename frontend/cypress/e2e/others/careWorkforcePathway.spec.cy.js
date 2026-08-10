@@ -102,7 +102,8 @@ describe('Care workforce pathway journey', { tags: '@others' }, () => {
     });
   });
 
-  describe('answer role category for workers from homepage panel', () => {
+  describe.skip('answer role category for workers from homepage panel', () => {
+    // Blue update banner for Care workforce pathway worker question is disabled temporarily, as CWP roles category update is planned ahead
     before(() => {
       testWorkers.forEach((workerName) => {
         cy.deleteTestWorkerFromDb(workerName);
