@@ -17,9 +17,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/internal/operators/take';
 
 @Component({
-    selector: 'app-user-account-edit-permissions',
-    templateUrl: './user-account-edit-permissions.component.html',
-    standalone: false
+  selector: 'app-user-account-edit-permissions',
+  templateUrl: './user-account-edit-permissions.component.html',
+  standalone: false,
 })
 export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
@@ -122,13 +122,14 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.userService.updateUserDetails(this.workplace.uid, this.user.uid, { ...this.user, ...props }).subscribe(
         (data) => {
-          this.router.navigate(['/workplace', this.workplace.uid, 'user', this.user.uid]);
           if (data.isPrimary) {
             name = this.user.fullname;
           }
-          if (name) {
-            this.alertService.addAlert({ type: 'success', message: `${name} is the new primary user` });
-          }
+          this.router.navigate(['/workplace', this.workplace.uid, 'user', this.user.uid]).then(() => {
+            if (name) {
+              this.alertService.addAlert({ type: 'success', message: `${name} is the new primary user` });
+            }
+          });
         },
 
         (error) => this.onError(error),

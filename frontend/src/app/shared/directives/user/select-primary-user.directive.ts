@@ -81,8 +81,12 @@ export class SelectPrimaryUserDirective implements OnInit, OnDestroy, AfterViewI
     this.subscriptions.add(
       this.userService.updateUserDetails(this.workplaceUid, selectedUser.uid, { ...selectedUser, ...props }).subscribe(
         (data) => {
-          this.navigateToNextPage();
-          this.alertService.addAlert({ type: 'success', message: `${selectedUser.fullname} is the new primary user` });
+          this.navigateToNextPage().then(() => {
+            this.alertService.addAlert({
+              type: 'success',
+              message: `${selectedUser.fullname} is the new primary user`,
+            });
+          });
         },
         (error) => this.onError(error),
       ),
@@ -156,5 +160,7 @@ export class SelectPrimaryUserDirective implements OnInit, OnDestroy, AfterViewI
   protected setBackButtonOrBreadcrumbs(): void {}
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected navigateToNextPage(): void {}
+  protected navigateToNextPage(): Promise<boolean> {
+    return Promise.resolve(true);
+  }
 }
