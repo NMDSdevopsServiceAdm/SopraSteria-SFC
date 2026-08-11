@@ -16,9 +16,9 @@ import { Subscription } from 'rxjs';
 import { take, withLatestFrom } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-user-account-view',
-  templateUrl: './user-account-view.component.html',
-  standalone: false,
+    selector: 'app-user-account-view',
+    templateUrl: './user-account-view.component.html',
+    standalone: false
 })
 export class UserAccountViewComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
@@ -88,11 +88,10 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.userService.resendActivationLink(this.user.uid).subscribe(
         () => {
-          this.router.navigate(this.return.url, { fragment: this.return.fragment }).then(() => {
-            this.alertService.addAlert({
-              type: 'success',
-              message: 'The user set-up email has been sent again.',
-            });
+          this.router.navigate(this.return.url, { fragment: this.return.fragment });
+          this.alertService.addAlert({
+            type: 'success',
+            message: 'The user set-up email has been sent again.',
           });
         },
         () => {

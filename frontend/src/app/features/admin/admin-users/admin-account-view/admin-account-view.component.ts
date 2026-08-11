@@ -16,9 +16,9 @@ import { take } from 'rxjs/operators';
 import { DeleteAdminUserComponent } from '../delete-admin-user/delete-admin-user.component';
 
 @Component({
-  selector: 'app-admin-account-view',
-  templateUrl: './admin-account-view.component.html',
-  standalone: false,
+    selector: 'app-admin-account-view',
+    templateUrl: './admin-account-view.component.html',
+    standalone: false
 })
 export class AdminAccountViewComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
@@ -83,11 +83,10 @@ export class AdminAccountViewComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.adminUsersService.resendActivationLinkAdmin(this.user.uid).subscribe(
         () => {
-          this.router.navigate(this.return.url).then(() => {
-            this.alertService.addAlert({
-              type: 'success',
-              message: 'The user set-up email has been sent again.',
-            });
+          this.router.navigate(this.return.url);
+          this.alertService.addAlert({
+            type: 'success',
+            message: 'The user set-up email has been sent again.',
           });
         },
         () => {

@@ -10,9 +10,9 @@ import { UserService } from '@core/services/user.service';
 import { SelectPrimaryUserDirective } from '@shared/directives/user/select-primary-user.directive';
 
 @Component({
-  selector: 'app-select-primary-user',
-  templateUrl: './select-primary-user.component.html',
-  standalone: false,
+    selector: 'app-select-primary-user',
+    templateUrl: './select-primary-user.component.html',
+    standalone: false
 })
 export class SelectPrimaryUserComponent extends SelectPrimaryUserDirective {
   constructor(
@@ -37,7 +37,7 @@ export class SelectPrimaryUserComponent extends SelectPrimaryUserDirective {
     this.breadcrumbService.show(journey);
   }
 
-  protected navigateToNextPage(): Promise<boolean> {
-    return this.router.navigate(['../'], { relativeTo: this.route });
+  protected navigateToNextPage(): void {
+    this.router.navigate(['../'], { relativeTo: this.route });
   }
 }

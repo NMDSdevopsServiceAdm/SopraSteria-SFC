@@ -11,14 +11,12 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 import { Dialog, DialogService } from '@core/services/dialog.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
-import {
-  ApprovalOrRejectionDialogComponent,
-} from '@features/admin/components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
+import { ApprovalOrRejectionDialogComponent } from '@features/admin/components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
 
 @Component({
-  selector: 'app-cqc-individual-main-service-change',
-  templateUrl: './cqc-individual-main-service-change.component.html',
-  standalone: false,
+    selector: 'app-cqc-individual-main-service-change',
+    templateUrl: './cqc-individual-main-service-change.component.html',
+    standalone: false
 })
 export class CqcIndividualMainServiceChangeComponent implements OnInit {
   public registration: CqcStatusChange;
@@ -70,9 +68,8 @@ export class CqcIndividualMainServiceChangeComponent implements OnInit {
 
         this.cqcStatusChangeService.CqcStatusChangeApproval(data).subscribe(
           () => {
-            this.router.navigate(['/sfcadmin', 'cqc-main-service-change']).then(() => {
-              this.showApprovalOrRejectionConfirmationAlert(isApproval);
-            });
+            this.router.navigate(['/sfcadmin', 'cqc-main-service-change']);
+            this.showApprovalOrRejectionConfirmationAlert(isApproval);
           },
           () => {
             this.approvalOrRejectionServerError = `There was an error completing the ${

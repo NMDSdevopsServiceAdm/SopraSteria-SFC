@@ -9,9 +9,9 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of, throwError } from 'rxjs';
-import { environment } from 'src/environments/environment';
 
 import { DeleteUserAccountComponent } from './delete-user-account.component';
+import { environment } from 'src/environments/environment';
 
 describe('DeleteUserAccountComponent', () => {
   async function setup() {
@@ -113,12 +113,7 @@ describe('DeleteUserAccountComponent', () => {
     fireEvent.click(deleteButton);
     component.fixture.detectChanges();
 
-    await component.fixture.whenStable();
-
-    expect(alertSpy).toHaveBeenCalledWith({
-      type: 'success',
-      message: 'John Doe has been deleted as a user',
-    });
+    expect(alertSpy).toHaveBeenCalledWith({ type: 'success', message: 'John Doe has been deleted as a user' });
   });
 
   it('should have an error alert when delete is unsuccessful', async () => {

@@ -14,9 +14,9 @@ import { UserService } from '@core/services/user.service';
 import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
 
 @Component({
-  selector: 'app-edit-admin-user',
-  templateUrl: 'edit-admin-user.component.html',
-  standalone: false,
+    selector: 'app-edit-admin-user',
+    templateUrl: 'edit-admin-user.component.html',
+    standalone: false
 })
 export class EditAdminUserComponent extends AccountDetailsDirective {
   public callToActionLabel = 'Save and return';
@@ -149,15 +149,14 @@ export class EditAdminUserComponent extends AccountDetailsDirective {
 
     this.adminUsersService.updateAdminUserDetails(this.user.uid, newAdminUser).subscribe(
       (data) => {
+        this.router.navigate(this.return.url);
         // if adminManager is editing their info, update the logged in user with new data
         if (this.loggedInUser.uid === data.uid) {
           this.userService.loggedInUser = { ...this.loggedInUser, ...data };
         }
-        this.router.navigate(this.return.url).then(() => {
-          this.alertService.addAlert({
-            type: 'success',
-            message: `The user details for ${data.fullname} have been updated`,
-          });
+        this.alertService.addAlert({
+          type: 'success',
+          message: `The user details for ${data.fullname} have been updated`,
         });
       },
       (error: HttpErrorResponse) => this.onError(error),
