@@ -55,7 +55,7 @@ describe('LogoutComponent', () => {
     expect(getByText('You have been signed out.')).toBeTruthy();
   });
 
-  it('should show a special message if signed out by 403 response from servr', async () => {
+  it('should show a special message if signed out by 403 response from server', async () => {
     const { getByText } = await setup({ activatedRoute: { snapshot: { data: { got403FromServer: true } } } });
     expect(
       getByText('You have been signed out due to inactivity or your account permissions changed recently.'),
