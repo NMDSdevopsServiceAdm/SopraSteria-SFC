@@ -271,7 +271,7 @@ describe('Summary section', () => {
       expect(within(workplaceRow).queryByTestId('red-flag')).toBeFalsy();
     });
 
-    it('should show the staff total does not match staff records warning when they do not match and it is after eight weeks since first login', async () => {
+    it('should show the staff total does not match staff records warning and a link with scroll action when they do not match and it is after eight weeks since first login', async () => {
       const establishment = {
         ...Establishment,
         eightWeeksFromFirstLogin: dayjs(new Date()).subtract(1, 'day').toString(),

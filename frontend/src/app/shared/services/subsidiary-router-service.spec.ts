@@ -1,5 +1,5 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { fakeAsync, flushMicrotasks, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Router, UrlTree } from '@angular/router';
 
 import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
