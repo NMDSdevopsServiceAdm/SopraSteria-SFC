@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule, UrlTree } from '@angular/router';
 import { Establishment, Leaver, Starter, Vacancy } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -13,13 +13,12 @@ import { SharedModule } from '@shared/shared.module';
   selector: 'app-add-update-starters-leavers-vacancies-data',
   templateUrl: './add-update-starters-leavers-vacancies-data.component.html',
   styleUrl: './add-update-starters-leavers-vacancies-data.component.scss',
-  imports: [SharedModule, CommonModule],
+  imports: [SharedModule, CommonModule, RouterModule],
 })
 export class AddUpdateStartersLeaversVacanciesDataComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private establishmentService: EstablishmentService,
     private backLinkService: BackLinkService,
     private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
     private alertService: AlertService,
@@ -28,17 +27,17 @@ export class AddUpdateStartersLeaversVacanciesDataComponent implements OnInit {
   public workplace: Establishment;
   public allPagesSubmitted: boolean = false;
   public todayOneYearAgo = DateUtil.getDateForOneYearAgo();
+  public returnTo: UrlTree;
   // public WorkplaceUpdateFlowType = WorkplaceUpdateFlowType;
   // public flowType: WorkplaceUpdateFlowType;
-  // private totalNumberOfStaff: number;
 
   public rows: SummaryListRow[] = [];
 
   ngOnInit(): void {
     this.workplace = this.route.snapshot.data.establishment;
-    this.workplace.leavers;
     this.backLinkService.showBackLink();
     this.setupRows();
+    this.setReturnTo();
   }
 
   private setupRows(): void {
@@ -67,6 +66,14 @@ export class AddUpdateStartersLeaversVacanciesDataComponent implements OnInit {
 
   public isArray(variable: any): boolean {
     return Array.isArray(variable);
+  }
+
+  public returnToHome(): void {
+    this.router.navigate(['/dashboard'], { fragment: 'home' });
+  }
+
+  public setReturnTo(): void {
+    this.returnTo = this.router.createUrlTree(['/dashboard'], { fragment: 'home' });
   }
 }
 
