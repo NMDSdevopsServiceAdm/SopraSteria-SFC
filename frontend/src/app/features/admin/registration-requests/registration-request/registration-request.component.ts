@@ -11,12 +11,14 @@ import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { RegistrationRequestDirective } from '@shared/directives/admin/registration-requests/registration-request.directive';
 
-import { ApprovalOrRejectionDialogComponent } from '../../components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
+import {
+  ApprovalOrRejectionDialogComponent,
+} from '../../components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
 
 @Component({
-    selector: 'app-registration-request',
-    templateUrl: './registration-request.component.html',
-    standalone: false
+  selector: 'app-registration-request',
+  templateUrl: './registration-request.component.html',
+  standalone: false,
 })
 export class RegistrationRequestComponent extends RegistrationRequestDirective {
   public workplaceIdForm: UntypedFormGroup;
@@ -64,11 +66,11 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
     });
 
     this.postcodeForm = new UntypedFormGroup({
-      postcode: new UntypedFormControl(this.registration.establishment.postcode , [
+      postcode: new UntypedFormControl(this.registration.establishment.postcode, [
         Validators.required,
         Validators.minLength(6),
         Validators.maxLength(8),
-        Validators.pattern(/^([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})$/)
+        Validators.pattern(/^([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})$/),
       ]),
     });
   }
@@ -99,10 +101,7 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
   }
 
   public updatePostcode(): void {
-
-
     if (this.postcode.invalid) {
-
       this.invalidPostcodeEntered = true;
       return;
     }
@@ -138,7 +137,6 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
   }
 
   private populateErrorPostcode(err) {
-
     const validationErrors = err.error;
 
     Object.keys(validationErrors).forEach((prop) => {
@@ -203,8 +201,9 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
 
         this.registrationsService.registrationApproval(body).subscribe(
           () => {
-            this.router.navigate(['/sfcadmin', 'registrations']);
-            this.showApprovalOrRejectionConfirmationAlert(isApproval);
+            this.router.navigate(['/sfcadmin', 'registrations']).then(() => {
+              this.showApprovalOrRejectionConfirmationAlert(isApproval);
+            });
           },
           (err) => {
             this.approvalOrRejectionServerError = `There was an error completing the ${

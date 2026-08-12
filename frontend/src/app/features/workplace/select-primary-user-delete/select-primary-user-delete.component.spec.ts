@@ -1,5 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -152,7 +151,7 @@ describe('SelectPrimaryUserDeleteComponent', () => {
     });
 
     it('should set success alert when submission is successful', async () => {
-      const { component, getByText, getByLabelText } = await setup();
+      const { component, getByText, getByLabelText, fixture } = await setup();
 
       const alertSpy = spyOn(component.alertService, 'addAlert').and.callThrough();
       const firstUserName = component.users[0].fullname;
@@ -163,7 +162,12 @@ describe('SelectPrimaryUserDeleteComponent', () => {
       const saveAndContinueButton = getByText('Save and continue');
       fireEvent.click(saveAndContinueButton);
 
-      expect(alertSpy).toHaveBeenCalledWith({ type: 'success', message: `${firstUserName} is the new primary user` });
+      await fixture.whenStable();
+
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `${firstUserName} is the new primary user`,
+      });
     });
   });
 
