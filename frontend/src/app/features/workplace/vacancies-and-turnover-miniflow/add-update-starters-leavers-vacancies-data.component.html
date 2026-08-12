@@ -1,0 +1,53 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-7">
+      <span class="govuk-caption-l" data-testid="caption">Workplace</span>
+      <h1 class="govuk-fieldset__heading asc-util__width-85-percent">Add your starters, leavers and vacancy data</h1>
+    </legend>
+
+    <p>
+      This information helps Skills for Care to evidence the levels of staff recruitment and retention challenges in the
+      sector.
+    </p>
+  </div>
+
+  @for (row of rows; track row.id) {
+    <div class="govuk-grid-column-full-from-desktop">
+      <dl class="govuk-summary-list govuk-summary-list--medium" [class]="{ 'govuk-summary-list--top-border': $first }">
+        <div class="govuk-summary-list__row" [attr.data-testid]="row.id">
+          <dt class="govuk-summary-list__key">
+            {{ row.label }}
+            <p class="govuk-hint govuk-!-margin-bottom-0">By job role, for permanent and temporary roles</p>
+          </dt>
+          <dd class="govuk-summary-list__value">
+            <ng-container
+              [ngTemplateOutlet]="summaryRecordValueForSLV"
+              [ngTemplateOutletContext]="{ slvValue: row.data }"
+            />
+          </dd>
+          <dd class="govuk-summary-list__actions">
+            <app-summary-record-change
+              [explanationText]="' ${row.id}'"
+              [link]="row.route"
+              [hasData]="row.data | hasValue"
+            ></app-summary-record-change>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  }
+</div>
+
+<ng-template #summaryRecordValueForSLV let-slvValue="slvValue">
+  <app-summary-record-value>
+    @if (isArray(slvValue) && slvValue?.length) {
+      <ul class="govuk-list govuk-!-margin-bottom-0">
+        @for (job of slvValue; track job) {
+          <li>{{ job | formatSLV }}</li>
+        }
+      </ul>
+    } @else {
+      {{ slvValue | closedEndedAnswer }}
+    }
+  </app-summary-record-value>
+</ng-template>
