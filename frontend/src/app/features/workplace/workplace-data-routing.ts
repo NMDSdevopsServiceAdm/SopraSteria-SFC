@@ -52,6 +52,8 @@ import { WorkplaceSleepInsGuard } from '@core/guards/workplace-sleep-ins/workpla
 import { TravelTimePayComponent } from './travel-time-pay/travel-time-pay.component';
 import { TravelTimePayResolver } from '@core/resolvers/travel-time-pay.resolver';
 import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workplace-pension/staff-opt-out-of-workplace-pension.component';
+import { AddUpdateStartersLeaversVacanciesDataComponent } from './vacancies-and-turnover-miniflow/add-update-starters-leavers-vacancies-data.component';
+import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 
 const workplaceFlowOnlyPages: Routes = [
   {
@@ -477,6 +479,66 @@ const workplaceSummary: Route = {
   ],
 };
 
+const startersLeaversVacanciesMiniFlow: Route = {
+  path: 'add-starters-leavers-vacancies-data',
+  canActivate: [CheckPermissionsGuard],
+  data: {
+    permissions: ['canEditEstablishment'],
+  },
+  children: [
+    {
+      path: '',
+      component: AddUpdateStartersLeaversVacanciesDataComponent,
+      data: {
+        title: 'Add your starters, leavers and vacancy data',
+      },
+      resolve: {
+        establishment: WorkplaceResolver,
+      },
+    },
+
+    {
+      path: 'update-starters',
+      component: UpdateStartersComponent,
+      canActivate: [CheckPermissionsGuard],
+      data: { permissions: ['canEditEstablishment'], title: 'Update starters', staffUpdatesView: true },
+    },
+
+    {
+      path: 'update-starter-job-roles',
+      component: SelectJobRolesToAddComponent,
+      canActivate: [CheckPermissionsGuard],
+      resolve: { jobs: JobsResolver },
+      data: {
+        permissions: ['canEditEstablishment'],
+        jobRoleType: JobRoleType.Starters,
+        title: 'Select job roles to add',
+      },
+    },
+
+    {
+      path: 'update-vacancies',
+      component: UpdateVacanciesComponent,
+      canActivate: [CheckPermissionsGuard],
+      data: { permissions: ['canEditEstablishment'], title: 'Update staff vacancies', staffUpdatesView: true },
+    },
+    {
+      path: 'update-vacancy-job-roles',
+      component: SelectJobRolesToAddComponent,
+      canActivate: [CheckPermissionsGuard],
+      resolve: { jobs: JobsResolver },
+      data: {
+        permissions: ['canEditEstablishment'],
+        jobRoleType: JobRoleType.Vacancies,
+        title: 'Select job roles to add',
+      },
+    },
+  ],
+};
+
 export const workplaceQuestionsForFundingPage: Routes = [...workplaceSummary.children];
 
-export const WorkplaceDataRoutes: Route = { path: 'workplace-data', children: [addWorkplaceDetails, workplaceSummary] };
+export const WorkplaceDataRoutes: Route = {
+  path: 'workplace-data',
+  children: [addWorkplaceDetails, workplaceSummary, startersLeaversVacanciesMiniFlow],
+};
