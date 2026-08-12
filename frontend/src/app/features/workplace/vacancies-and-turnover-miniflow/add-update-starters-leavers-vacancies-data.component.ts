@@ -24,23 +24,40 @@ export class AddUpdateStartersLeaversVacanciesDataComponent implements OnInit {
     private alertService: AlertService,
   ) {}
 
-  public workplace: Establishment = this.route.snapshot.data.establishment;
+  public workplace: Establishment;
+  public flowType: WorkplaceUpdateFlowType;
   public allPagesSubmitted: boolean = false;
   public todayOneYearAgo = DateUtil.getDateForOneYearAgo();
   public returnTo: UrlTree;
-  public WorkplaceUpdateFlowType = WorkplaceUpdateFlowType;
-  public flowType: WorkplaceUpdateFlowType = this.route.snapshot.data.flowType;
-
+  public heading: string;
+  public successfulAlert: string;
   public rows: SummaryListRow[] = [];
 
   ngOnInit(): void {
+    this.workplace = this.route.snapshot.data.establishment;
+    this.flowType = this.route.snapshot?.data?.flowType ?? WorkplaceUpdateFlowType.ADD_SLV;
     this.backLinkService.showBackLink();
-    this.setupRows();
+
+    this.setupText();
+    this.setupTable();
     this.setReturnTo();
+
     this.showAlertIfAllPagesSubmitted();
   }
 
-  private setupRows(): void {
+  private setupText(): void {
+    this.heading =
+      this.flowType === WorkplaceUpdateFlowType.ADD_SLV
+        ? 'Add your starters, leavers and vacancy data'
+        : 'Update your starters, leavers and vacancy data';
+
+    this.successfulAlert =
+      this.flowType === WorkplaceUpdateFlowType.ADD_SLV
+        ? 'Starters, leavers and vacancy data added'
+        : 'Starters, leavers and vacancy information saved';
+  }
+
+  private setupTable(): void {
     const oneYearAgo = DateUtil.getDateForOneYearAgo();
     this.rows = [
       {
@@ -71,7 +88,7 @@ export class AddUpdateStartersLeaversVacanciesDataComponent implements OnInit {
     if (allPagesSubmitted && !hasViewedSavedBanner) {
       this.alertService.addAlert({
         type: 'success',
-        message: 'Starters, leavers and vacancy data added',
+        message: this.successfulAlert,
       });
 
       this.vacanciesAndTurnoverService.hasViewedSavedBanner = true;
