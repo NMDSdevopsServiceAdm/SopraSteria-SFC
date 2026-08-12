@@ -19,6 +19,7 @@ import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
+import { SubsidiaryRouterService } from '@shared/services/subsidiary-router-service';
 
 describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
@@ -70,9 +71,11 @@ describe('Summary section', () => {
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
 
-    const router = injector.inject(Router) as Router;
+    const router = injector.inject(Router) as SubsidiaryRouterService;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const routerLinkSpy = spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true));
+    const navigateAndScrollSpy = jasmine.createSpy().and.returnValue(Promise.resolve(true));
+    router.navigateAndScrollToAnchor = navigateAndScrollSpy;
 
     const tabsService = injector.inject(TabsService) as TabsService;
 
@@ -92,6 +95,7 @@ describe('Summary section', () => {
       component,
       routerSpy,
       routerLinkSpy,
+      navigateAndScrollSpy,
       tabsService,
       updateSingleFieldSpy,
       setReturnToSpy,
@@ -220,16 +224,23 @@ describe('Summary section', () => {
       expect(routerSpy).toHaveBeenCalledWith(['subsidiary', Establishment.uid, 'workplace']);
     });
 
-    it('should show the check cqc details message if checkCQCDetails banner is true and the showAddWorkplaceDetailsBanner is false', async () => {
+    it('should show the check cqc details message and a link with scroll action if checkCQCDetails banner is true and the showAddWorkplaceDetailsBanner is false', async () => {
       const overrides = {
         checkCqcDetails: true,
       };
 
-      const { getByTestId } = await setup(overrides);
+      const { getByTestId, navigateAndScrollSpy } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText('Your workplace details do not match your CQC details')).toBeTruthy();
+      const link = within(workplaceRow).getByText('Your workplace details do not match your CQC details');
+      expect(link).toBeTruthy();
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+
+      userEvent.click(link);
+
+      expect(navigateAndScrollSpy).toHaveBeenCalledWith(['/dashboard'], 'check-cqc-details-banner', {
+        fragment: 'workplace',
+      });
     });
 
     it('should show the total staff error if it is not available', async () => {
@@ -260,7 +271,7 @@ describe('Summary section', () => {
       expect(within(workplaceRow).queryByTestId('red-flag')).toBeFalsy();
     });
 
-    it('should show the staff total does not match staff records warning when they do not match and it is after eight weeks since first login', async () => {
+    it('should show the staff total does not match staff records warning and a link with scroll action when they do not match and it is after eight weeks since first login', async () => {
       const establishment = {
         ...Establishment,
         eightWeeksFromFirstLogin: dayjs(new Date()).subtract(1, 'day').toString(),
@@ -272,11 +283,16 @@ describe('Summary section', () => {
         workerCount: 102,
       };
 
-      const { getByTestId } = await setup(overrides);
+      const { getByTestId, navigateAndScrollSpy } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText('Staff total does not match number of staff records')).toBeTruthy();
+      const link = within(workplaceRow).getByText('Staff total does not match number of staff records');
+      expect(link).toBeTruthy();
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+
+      userEvent.click(link);
+
+      expect(navigateAndScrollSpy).toHaveBeenCalledWith(['/dashboard'], 'workplace-details', { fragment: 'workplace' });
     });
 
     it('should not show the staff total does not match staff records warning when after eight weeks since first login is null', async () => {
@@ -446,6 +462,13 @@ describe('Summary section', () => {
   });
 
   describe('staff record summary section', () => {
+    beforeEach(() => {
+      jasmine.clock().install();
+    });
+    afterEach(() => {
+      jasmine.clock().uninstall();
+    });
+
     it('should show staff record link', async () => {
       const { getByText } = await setup();
 
@@ -636,6 +659,8 @@ describe('Summary section', () => {
       };
 
       const date = [dayjs().subtract(1, 'year')];
+      const mockTimeNow = new Date('2026-12-23T01:23:45Z');
+      jasmine.clock().mockDate(mockTimeNow);
 
       const overrides = {
         checkCqcDetails: false,
@@ -644,15 +669,21 @@ describe('Summary section', () => {
         workerCreatedDate: date,
       };
 
-      const { fixture, getByTestId } = await setup(overrides);
+      const { fixture, getByTestId, updateSingleFieldSpy } = await setup(overrides);
 
       fixture.detectChanges();
 
       const staffRecordsRow = getByTestId('staff-records-row');
 
-      expect(
-        within(staffRecordsRow).getByText('You’ve not added any staff records in the last 12 months'),
-      ).toBeTruthy();
+      const link = within(staffRecordsRow).getByText('You’ve not added any staff records in the last 12 months');
+      expect(link).toBeTruthy();
+
+      userEvent.click(link);
+
+      expect(updateSingleFieldSpy).toHaveBeenCalledWith(establishment.uid, {
+        property: 'lastStaffRecordMessageDismissedAt',
+        value: mockTimeNow,
+      });
     });
 
     it('should not show "You’ve not added any staff records in the last 12 months" message when establishment has less than 10 staff and workplace created date and last worker added date is less than 12 months', async () => {
@@ -1000,6 +1031,24 @@ describe('Summary section', () => {
         expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
         expect(within(tAndQRow).queryByTestId('red-flag')).toBeFalsy();
         expect(within(tAndQRow).queryByText('You need to check your training records')).toBeFalsy();
+      });
+
+      it('should visit training records tab and scroll to training-info-panel on click', async () => {
+        const overrides = {
+          checkCqcDetails: false,
+          establishment: Establishment,
+          workerCount: 2,
+          trainingCounts: { staffMissingMandatoryTraining: 2 },
+        };
+        const { getByTestId, navigateAndScrollSpy } = await setup(overrides);
+
+        const tAndQRow = getByTestId('training-and-qualifications-row');
+
+        userEvent.click(within(tAndQRow).getByText('You need to check your training records'));
+
+        expect(navigateAndScrollSpy).toHaveBeenCalledWith(['/dashboard'], 'training-info-panel', {
+          fragment: 'training-and-qualifications',
+        });
       });
     });
 
@@ -1429,7 +1478,8 @@ describe('Summary section', () => {
       });
     });
 
-    describe('CWP worker question', () => {
+    xdescribe('CWP worker question', () => {
+      // Blue update banner for Care workforce pathway worker question is disabled temporarily as CWP roles category update is planned ahead
       const cwpWorkerBannerText = 'Where are your staff on the care workforce pathway?';
 
       it('should show the update banner if there are staff without an answer for CWP question', async () => {

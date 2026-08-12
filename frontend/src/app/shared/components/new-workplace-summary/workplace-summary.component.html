@@ -2,6 +2,7 @@
   @if (!workplace?.showAddWorkplaceDetailsBanner) {
     <div [class.govuk-summary-list__warning]="noVacancyAndTurnoverData" data-testid="vacancies-and-turnover-section">
       <h2
+        id="vacancies-and-turnover"
         class="govuk-heading-m govuk-!-padding-top-1 govuk-!-margin-top-4"
         [ngClass]="{ 'govuk-!-margin-bottom-1': noVacancyAndTurnoverData }"
       >
@@ -97,7 +98,7 @@
     </div>
   }
   <div class="govuk-width-container govuk-!-margin-top-5">
-    <h2 class="govuk-heading-m govuk-!-margin-bottom-5">Workplace details</h2>
+    <h2 id="workplace-details" class="govuk-heading-m govuk-!-margin-bottom-5">Workplace details</h2>
   </div>
   <div data-testid="workplace-section">
     <dl class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0 govuk-summary-list--top-border">
@@ -208,7 +209,7 @@
       </div>
     </dl>
   </div>
-  <h2 class="govuk-heading-m govuk-!-padding-top-1">Services</h2>
+  <h2 id="services" class="govuk-heading-m govuk-!-padding-top-1">Services</h2>
   <dl
     class="govuk-summary-list govuk-summary-list--medium govuk-summary-list--top-border"
     data-testid="services-section"
@@ -451,7 +452,7 @@
   </dl>
 
   @if (!workplace?.showAddWorkplaceDetailsBanner) {
-    <h2 class="govuk-heading-m govuk-!-padding-top-1">Pay and benefits</h2>
+    <h2 id="pay-and-benefits" class="govuk-heading-m govuk-!-padding-top-1">Pay and benefits</h2>
     <dl
       class="govuk-summary-list govuk-summary-list--medium govuk-summary-list--top-border"
       data-testid="pay-and-benefits-section"
@@ -566,7 +567,7 @@
       </div>
     </dl>
 
-    <h2 class="govuk-heading-m govuk-!-padding-top-1">Staff development</h2>
+    <h2 id="staff-development" class="govuk-heading-m govuk-!-padding-top-1">Staff development</h2>
     <dl
       class="govuk-summary-list govuk-summary-list--medium govuk-summary-list--top-border"
       data-testid="staff-development-section"
@@ -635,7 +636,7 @@
       }
     </dl>
 
-    <h2 class="govuk-heading-m govuk-!-padding-top-1">Permissions</h2>
+    <h2 id="Permissions" class="govuk-heading-m govuk-!-padding-top-1">Permissions</h2>
     <dl
       class="govuk-summary-list govuk-summary-list--medium govuk-summary-list--top-border"
       data-testid="permissions-section"
