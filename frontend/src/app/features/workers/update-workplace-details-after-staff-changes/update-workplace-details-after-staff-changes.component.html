@@ -9,11 +9,12 @@
     <div class="govuk-grid-column-full">
       <div [class.govuk-summary-list__warning]="!allPagesVisited">
         <h2 class="govuk-heading-m">
-          Total number of staff, vacancies and {{ flowType === WorkplaceUpdateFlowType.ADD ? 'starters' : 'leavers' }}
+          Total number of staff, vacancies and
+          {{ flowType === WorkplaceUpdateFlowType.AFTER_ADD_STAFF ? 'starters' : 'leavers' }}
         </h2>
         <span *ngIf="!allPagesVisited" class="govuk-error-message govuk-summary-list__warning-message">
           This data does not update automatically when you
-          {{ flowType === WorkplaceUpdateFlowType.ADD ? 'add' : 'delete' }} staff records.
+          {{ flowType === WorkplaceUpdateFlowType.AFTER_ADD_STAFF ? 'add' : 'delete' }} staff records.
           <br />
           You need to check and change these yourself.
         </span>
@@ -59,7 +60,11 @@
             </dd>
           </div>
 
-          <div *ngIf="flowType === WorkplaceUpdateFlowType.ADD" class="govuk-summary-list__row" data-testid="starters">
+          <div
+            *ngIf="flowType === WorkplaceUpdateFlowType.AFTER_ADD_STAFF"
+            class="govuk-summary-list__row"
+            data-testid="starters"
+          >
             <dt class="govuk-summary-list__key">Starters in the last 12 months</dt>
             <dd class="govuk-summary-list__value">
               <app-summary-record-value>
@@ -86,7 +91,7 @@
           </div>
 
           <div
-            *ngIf="flowType === WorkplaceUpdateFlowType.DELETE"
+            *ngIf="flowType === WorkplaceUpdateFlowType.AFTER_DELETE_STAFF"
             class="govuk-summary-list__row"
             data-testid="leavers"
           >

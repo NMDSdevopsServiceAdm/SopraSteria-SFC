@@ -7,9 +7,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { VacanciesAndTurnoverService, WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
 
 @Component({
-    selector: 'app-update-workplace-details-after-staff-changes',
-    templateUrl: './update-workplace-details-after-staff-changes.component.html',
-    standalone: false
+  selector: 'app-update-workplace-details-after-staff-changes',
+  templateUrl: './update-workplace-details-after-staff-changes.component.html',
+  standalone: false,
 })
 export class UpdateWorkplaceDetailsAfterStaffChangesComponent implements OnInit {
   constructor(
@@ -42,7 +42,7 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent implements OnInit 
       this.alertService.addAlert({
         type: 'success',
         message: `Total number of staff, vacancies and ${
-          this.flowType === WorkplaceUpdateFlowType.ADD ? 'starters' : 'leavers'
+          this.flowType === WorkplaceUpdateFlowType.AFTER_ADD_STAFF ? 'starters' : 'leavers'
         } information saved`,
       });
 
