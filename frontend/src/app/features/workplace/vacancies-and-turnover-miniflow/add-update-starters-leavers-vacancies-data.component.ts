@@ -5,7 +5,7 @@ import { Establishment, Leaver, Starter, Vacancy } from '@core/model/establishme
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
+import { VacanciesAndTurnoverService, WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
 import { DateUtil } from '@core/utils/date-util';
 import { SharedModule } from '@shared/shared.module';
 
@@ -24,20 +24,20 @@ export class AddUpdateStartersLeaversVacanciesDataComponent implements OnInit {
     private alertService: AlertService,
   ) {}
 
-  public workplace: Establishment;
+  public workplace: Establishment = this.route.snapshot.data.establishment;
   public allPagesSubmitted: boolean = false;
   public todayOneYearAgo = DateUtil.getDateForOneYearAgo();
   public returnTo: UrlTree;
-  // public WorkplaceUpdateFlowType = WorkplaceUpdateFlowType;
-  // public flowType: WorkplaceUpdateFlowType;
+  public WorkplaceUpdateFlowType = WorkplaceUpdateFlowType;
+  public flowType: WorkplaceUpdateFlowType = this.route.snapshot.data.flowType;
 
   public rows: SummaryListRow[] = [];
 
   ngOnInit(): void {
-    this.workplace = this.route.snapshot.data.establishment;
     this.backLinkService.showBackLink();
     this.setupRows();
     this.setReturnTo();
+    this.showAlertIfAllPagesSubmitted();
   }
 
   private setupRows(): void {
@@ -64,8 +64,18 @@ export class AddUpdateStartersLeaversVacanciesDataComponent implements OnInit {
     ];
   }
 
-  public isArray(variable: any): boolean {
-    return Array.isArray(variable);
+  private showAlertIfAllPagesSubmitted(): void {
+    const allPagesSubmitted = this.vacanciesAndTurnoverService.allUpdatePagesSubmitted(this.flowType);
+    const hasViewedSavedBanner = this.vacanciesAndTurnoverService.hasViewedSavedBanner;
+
+    if (allPagesSubmitted && !hasViewedSavedBanner) {
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Starters, leavers and vacancy data added',
+      });
+
+      this.vacanciesAndTurnoverService.hasViewedSavedBanner = true;
+    }
   }
 
   public returnToHome(): void {
@@ -74,6 +84,10 @@ export class AddUpdateStartersLeaversVacanciesDataComponent implements OnInit {
 
   public setReturnTo(): void {
     this.returnTo = this.router.createUrlTree(['/dashboard'], { fragment: 'home' });
+  }
+
+  public isArray(variable: any): boolean {
+    return Array.isArray(variable);
   }
 }
 
