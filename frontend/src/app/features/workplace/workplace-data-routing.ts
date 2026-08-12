@@ -54,6 +54,7 @@ import { TravelTimePayResolver } from '@core/resolvers/travel-time-pay.resolver'
 import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workplace-pension/staff-opt-out-of-workplace-pension.component';
 import { AddUpdateStartersLeaversVacanciesDataComponent } from './vacancies-and-turnover-miniflow/add-update-starters-leavers-vacancies-data.component';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
+import { WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
 
 const workplaceFlowOnlyPages: Routes = [
   {
@@ -479,10 +480,11 @@ const workplaceSummary: Route = {
   ],
 };
 
-const startersLeaversVacanciesMiniFlow: Route = {
+const addStartersLeaversVacanciesMiniFlow: Route = {
   path: 'add-starters-leavers-vacancies-data',
   canActivate: [CheckPermissionsGuard],
   data: {
+    flowType: WorkplaceUpdateFlowType.ADD_SLV,
     permissions: ['canEditEstablishment'],
   },
   resolve: { jobs: JobsResolver },
@@ -555,5 +557,5 @@ export const workplaceQuestionsForFundingPage: Routes = [...workplaceSummary.chi
 
 export const WorkplaceDataRoutes: Route = {
   path: 'workplace-data',
-  children: [addWorkplaceDetails, workplaceSummary, startersLeaversVacanciesMiniFlow],
+  children: [addWorkplaceDetails, workplaceSummary, addStartersLeaversVacanciesMiniFlow],
 };
