@@ -25,10 +25,9 @@
             <p class="govuk-hint govuk-!-margin-bottom-0">By job role, for permanent and temporary roles</p>
           </dt>
           <dd class="govuk-summary-list__value">
-            <ng-container
-              [ngTemplateOutlet]="summaryRecordValueForSLV"
-              [ngTemplateOutletContext]="{ slvValue: row.data }"
-            />
+            <app-summary-record-value>
+              <app-display-slv-data [slvData]="row.data"></app-display-slv-data>
+            </app-summary-record-value>
           </dd>
           <dd class="govuk-summary-list__actions">
             <app-summary-record-change
@@ -55,17 +54,3 @@
     </div>
   </div>
 </div>
-
-<ng-template #summaryRecordValueForSLV let-slvValue="slvValue">
-  <app-summary-record-value>
-    @if (isArray(slvValue) && slvValue?.length) {
-      <ul class="govuk-list govuk-!-margin-bottom-0">
-        @for (job of slvValue; track job) {
-          <li>{{ job | formatSLV }}</li>
-        }
-      </ul>
-    } @else {
-      {{ slvValue | closedEndedAnswer }}
-    }
-  </app-summary-record-value>
-</ng-template>
