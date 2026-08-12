@@ -1,4 +1,5 @@
-import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
@@ -19,9 +20,9 @@ import { ProgressBarComponent } from '@shared/components/progress-bar/progress-b
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { of } from 'rxjs';
 
 import { MainJobRoleComponent } from './main-job-role.component';
+import { of } from 'rxjs';
 
 describe('MainJobRoleComponent', () => {
   async function setup(overrides: any = {}) {
@@ -100,9 +101,7 @@ describe('MainJobRoleComponent', () => {
             },
           },
         },
-        provideHttpClient(),
-        provideHttpClientTesting(),
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = setupTools.fixture.componentInstance;
@@ -264,14 +263,12 @@ describe('MainJobRoleComponent', () => {
           'mandatory-details',
         ]);
       });
-      it('should show a banner when a staff record has been successfully added', async () => {
-        const { getByText, alertSpy, fixture } = await setup({ addNewWorker: true });
 
+      it('should show a banner when a staff record has been successfully added', async () => {
+        const { getByText, alertSpy } = await setup({ addNewWorker: true });
         userEvent.click(getByText('Care providing roles'));
         userEvent.click(getByText('Care worker'));
         userEvent.click(getByText('Save this staff record'));
-
-        await fixture.whenStable();
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',

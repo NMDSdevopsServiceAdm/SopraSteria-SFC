@@ -1,11 +1,9 @@
-import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
-import { CancelOwnerShip, Establishment } from '@core/model/establishment.model';
-import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
-import { DialogService } from '@core/services/dialog.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -14,21 +12,22 @@ import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEsta
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
-import {
-  CancelDataOwnerDialogComponent,
-} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { of } from 'rxjs';
 
 import { Workplace } from '../../../core/model/my-workplaces.model';
 import { EstablishmentService } from '../../../core/services/establishment.service';
 import { MockParentSubsidiaryViewService } from '../../../core/test-utils/MockParentSubsidiaryViewService';
 import { workplaceBuilder } from '../../../core/test-utils/MockUserService';
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel.component';
+import { DialogService } from '@core/services/dialog.service';
+import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import { AlertService } from '@core/services/alert.service';
+import { of } from 'rxjs';
+import { CancelOwnerShip, Establishment } from '@core/model/establishment.model';
 
 describe('workplace-info-panel', () => {
   const establishment = workplaceBuilder() as Workplace;
@@ -425,6 +424,7 @@ describe('workplace-info-panel', () => {
 
         expect(within(document.body).queryByRole('dialog')).toBeFalsy();
       });
+
       it('should call cancelOwnership() to cancel the request when the "Cancel data owner request" clicked', async () => {
         const { component, getByText, fixture, changeOwnershipDetailsSpy, cancelOwnershipSpy, alertServiceSpy } =
           await setup({
@@ -443,16 +443,13 @@ describe('workplace-info-panel', () => {
         const cancelDataOwnerRequestButton = within(dialog).getByText('Cancel data owner request');
 
         fireEvent.click(cancelDataOwnerRequestButton);
-
-        await fixture.whenStable();
+        fixture.detectChanges();
 
         expect(cancelOwnershipSpy).toHaveBeenCalledWith(workplace.id, workplace.ownershipChangeRequestId[0], {
           approvalStatus: 'CANCELLED',
           notificationRecipientUid: component.primaryWorkplace.uid,
         } as CancelOwnerShip);
-
         expect(within(document.body).queryByRole('dialog')).toBeFalsy();
-
         expect(alertServiceSpy).toHaveBeenCalledWith({
           type: 'success',
           message: 'Request to change data owner has been cancelled ',

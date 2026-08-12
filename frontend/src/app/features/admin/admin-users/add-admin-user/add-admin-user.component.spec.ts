@@ -149,8 +149,6 @@ describe('AddAdminUserComponent', () => {
     fireEvent.click(getByText('Save admin user'));
     fixture.detectChanges();
 
-    await fixture.whenStable();
-
     expect(alertSpy).toHaveBeenCalledWith({
       type: 'success',
       message: 'Admin user has been added',
