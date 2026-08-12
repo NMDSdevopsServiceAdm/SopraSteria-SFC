@@ -7,7 +7,7 @@ import { SharedModule } from '@shared/shared.module';
 import { Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
+import { VacanciesAndTurnoverService, WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
 import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { AlertService } from '@core/services/alert.service';
 import { provideActivatedRouteWithRouterLink } from '@core/test-utils/MockActivatedRoute';
@@ -27,8 +27,8 @@ fdescribe('AddUpdateStartersLeaversVacanciesDataComponent', () => {
   });
 
   async function setup(overrides: any = {}) {
+    const flowType = overrides.flowType ?? WorkplaceUpdateFlowType.ADD_SLV;
     const workplace = { ...establishmentBuilder(), ...overrides.workplace };
-    // const flowType = overrides?.flowType || WorkplaceUpdateFlowType.ADD;
     const totalNumberOfStaff = overrides?.totalNumberOfStaff ?? 10;
     const alertSpy = jasmine.createSpy('addAlert').and.returnValue(Promise.resolve(true));
     const showBackLinkSpy = jasmine.createSpy('setBacklink').and.returnValue(Promise.resolve(true));
@@ -49,7 +49,7 @@ fdescribe('AddUpdateStartersLeaversVacanciesDataComponent', () => {
           useValue: { addAlert: alertSpy },
         },
         provideActivatedRouteWithRouterLink({
-          snapshot: { data: { totalNumberOfStaff, establishment: workplace } },
+          snapshot: { data: { establishment: workplace, flowType } },
         }),
         {
           provide: BackLinkService,
@@ -160,13 +160,22 @@ fdescribe('AddUpdateStartersLeaversVacanciesDataComponent', () => {
 
   describe('Add flow', () => {
     it('should show a heading and caption', async () => {
-      const { getByTestId, getByRole } = await setup();
+      const { getByTestId, getByRole } = await setup({ flowType: WorkplaceUpdateFlowType.ADD_SLV });
 
       const caption = getByTestId('caption');
       const heading = getByRole('heading', { level: 1 });
 
       expect(within(caption).getByText('Workplace'));
       expect(within(heading).getByText('Add your starters, leavers and vacancy data'));
+    });
+
+    it('should show an alert on page load when starters leavers vacancies are all submitted', async () => {
+      const { alertSpy } = await setup({
+        flowType: WorkplaceUpdateFlowType.ADD_SLV,
+        vacanciesAndTurnoverService: { allUpdatePagesSubmitted: () => true },
+      });
+
+      expect(alertSpy).toHaveBeenCalledWith({ type: 'success', message: 'Starters, leavers and vacancy data added' });
     });
   });
 });
