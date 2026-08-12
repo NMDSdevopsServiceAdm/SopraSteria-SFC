@@ -17,7 +17,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
-fdescribe('AddUpdateStartersLeaversVacanciesDataComponent', () => {
+describe('AddUpdateStartersLeaversVacanciesDataComponent', () => {
   beforeAll(() => {
     jasmine.clock().install();
   });
