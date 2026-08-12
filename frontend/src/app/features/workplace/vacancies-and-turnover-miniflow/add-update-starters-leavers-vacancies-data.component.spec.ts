@@ -15,8 +15,17 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { within } from '@testing-library/dom';
+import userEvent from '@testing-library/user-event';
 
 fdescribe('AddUpdateStartersLeaversVacanciesDataComponent', () => {
+  beforeAll(() => {
+    jasmine.clock().install();
+  });
+
+  afterAll(() => {
+    jasmine.clock().uninstall();
+  });
+
   async function setup(overrides: any = {}) {
     const workplace = { ...establishmentBuilder(), ...overrides.workplace };
     // const flowType = overrides?.flowType || WorkplaceUpdateFlowType.ADD;
@@ -75,39 +84,79 @@ fdescribe('AddUpdateStartersLeaversVacanciesDataComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should show a backlink', async () => {
+    const { showBackLinkSpy } = await setup();
+    expect(showBackLinkSpy).toHaveBeenCalled();
+  });
+
   const mockJobs = [
-    { jobId: 1, title: 'Care workers', total: 3 },
+    { jobId: 1, title: 'Care worker', total: 3 },
     { jobId: 2, title: 'Registered nurse', total: 2 },
   ];
-  //  component.workplace.vacancies = [
-  //   { jobId: 1, title: 'Administrative', total: 3 },
-  //   { jobId: 2, title: 'Nursing', total: 2 },
-  //   { jobId: 3, title: 'Other care providing role', total: 4, other: 'Special care worker' },
-  // ];
-  // component.canEditEstablishment = true;
-  // fixture.detectChanges();
 
-  // const vacanciesRow = getByTestId('vacancies');
-
-  // expect(within(vacanciesRow).queryByText('Change')).toBeTruthy();
-  // expect(within(vacanciesRow).queryByText(`3 x administrative`)).toBeTruthy();
-  // expect(within(vacanciesRow).queryByText('2 x nursing')).toBeTruthy();
-  // expect(within(vacanciesRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
-
-  ['starters', 'leavers', 'vacancies'].forEach((slv) => {
-    it(`should show a dash "-" with "Add" link when the value is empty for ${slv}`, async () => {
+  ['starters', 'leavers', 'vacancies'].forEach((slvKey) => {
+    it(`should show a dash "-" with "Add" link when the value is empty for ${slvKey}`, async () => {
       const { getByTestId } = await setup();
 
-      const row = getByTestId(slv);
+      const row = getByTestId(slvKey);
       expect(row).toBeTruthy();
       expect(within(row).getByText('-')).toBeTruthy();
 
       const addLink = within(row).getByText('Add');
-      expect(addLink.getAttribute('href')).toEqual(`/update-${slv}`);
+      expect(addLink.getAttribute('href')).toEqual(`/update-${slvKey}`);
+    });
+
+    it(`should show the current answer with "Change" link when got answer for ${slvKey}`, async () => {
+      const { getByTestId } = await setup({ workplace: { [slvKey]: mockJobs } });
+
+      const row = getByTestId(slvKey);
+      expect(row).toBeTruthy();
+      expect(within(row).queryByText(`3 x care worker`)).toBeTruthy();
+      expect(within(row).queryByText('2 x registered nurse')).toBeTruthy();
+
+      const changeLink = within(row).getByText('Change');
+      expect(changeLink.getAttribute('href')).toEqual(`/update-${slvKey}`);
     });
   });
 
-  it('should show a Back to home button and a cancel button', async () => {});
+  it('should show "Starters since (date of one year ago)" for the starters row', async () => {
+    jasmine.clock().mockDate(new Date('2027-12-25'));
+
+    const { getByTestId } = await setup();
+
+    const row = getByTestId('starters');
+    expect(within(row).getByText('Starters since 25 December 2026')).toBeTruthy();
+  });
+
+  it('should show "leavers since (date of one year ago)" for the leavers row', async () => {
+    jasmine.clock().mockDate(new Date('2027-08-12'));
+
+    const { getByTestId } = await setup();
+
+    const row = getByTestId('leavers');
+    expect(within(row).getByText('Leavers since 12 August 2026')).toBeTruthy();
+  });
+
+  it('should show "Current staff vacancies" for the vacancies row', async () => {
+    jasmine.clock().mockDate(new Date('2027-08-12'));
+
+    const { getByTestId } = await setup();
+
+    const row = getByTestId('vacancies');
+    expect(within(row).getByText('Current staff vacancies')).toBeTruthy();
+  });
+
+  it('should show a Back to home button and a cancel link', async () => {
+    const { getByRole, getByText, routerSpy } = await setup();
+
+    const button = getByRole('button', { name: 'Back to home' });
+    const cancelLink = getByText('Cancel');
+
+    expect(cancelLink.getAttribute('href')).toContain('/dashboard#home');
+    userEvent.click(button);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
+  });
 
   describe('Add flow', () => {
     it('should show a heading and caption', async () => {

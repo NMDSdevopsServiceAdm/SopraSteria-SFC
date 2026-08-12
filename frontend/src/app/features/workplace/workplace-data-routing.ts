@@ -485,6 +485,7 @@ const startersLeaversVacanciesMiniFlow: Route = {
   data: {
     permissions: ['canEditEstablishment'],
   },
+  resolve: { jobs: JobsResolver },
   children: [
     {
       path: '',
@@ -503,15 +504,30 @@ const startersLeaversVacanciesMiniFlow: Route = {
       canActivate: [CheckPermissionsGuard],
       data: { permissions: ['canEditEstablishment'], title: 'Update starters', staffUpdatesView: true },
     },
-
     {
       path: 'update-starter-job-roles',
       component: SelectJobRolesToAddComponent,
       canActivate: [CheckPermissionsGuard],
-      resolve: { jobs: JobsResolver },
       data: {
         permissions: ['canEditEstablishment'],
         jobRoleType: JobRoleType.Starters,
+        title: 'Select job roles to add',
+      },
+    },
+
+    {
+      path: 'update-leavers',
+      component: UpdateLeaversComponent,
+      canActivate: [CheckPermissionsGuard],
+      data: { permissions: ['canEditEstablishment'], title: 'Update leavers', staffUpdatesView: true },
+    },
+    {
+      path: 'update-leaver-job-roles',
+      component: SelectJobRolesToAddComponent,
+      canActivate: [CheckPermissionsGuard],
+      data: {
+        permissions: ['canEditEstablishment'],
+        jobRoleType: JobRoleType.Leavers,
         title: 'Select job roles to add',
       },
     },
@@ -526,7 +542,6 @@ const startersLeaversVacanciesMiniFlow: Route = {
       path: 'update-vacancy-job-roles',
       component: SelectJobRolesToAddComponent,
       canActivate: [CheckPermissionsGuard],
-      resolve: { jobs: JobsResolver },
       data: {
         permissions: ['canEditEstablishment'],
         jobRoleType: JobRoleType.Vacancies,
