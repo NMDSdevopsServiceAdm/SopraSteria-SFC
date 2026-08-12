@@ -3,6 +3,7 @@
 import { userPassword } from '../../support/configData';
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 
+
 describe('page after login', { tags: '@others' }, () => {
   const fullUserName = StandAloneEstablishment.editUserLoginName;
   const editUserId = StandAloneEstablishment.editUserId;
@@ -101,6 +102,7 @@ describe('page after login', { tags: '@others' }, () => {
     setUpUserAttributes('LastViewedVacanciesAndTurnoverMessage', null);
     cy.url().should('eq', Cypress.config().baseUrl + '/update-your-vacancies-and-turnover-data');
     cy.get('h1').should('contain', 'Your Workplace vacancies and turnover information');
+
     cy.get('a').contains('Continue').click();
 
     cy.url().should('eq', Cypress.config().baseUrl + '/dashboard');
