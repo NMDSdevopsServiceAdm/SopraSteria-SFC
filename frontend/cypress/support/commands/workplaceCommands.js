@@ -96,6 +96,17 @@ Cypress.Commands.add('resetWorkplaceCWPAnswers', (establishmentID) => {
   cy.task('multipleDbQueries', dbQueries);
 });
 
+Cypress.Commands.add('fillWorkplaceCWPAnswers', (establishmentID) => {
+  const queryString = `UPDATE cqc."Establishment"
+      SET "CareWorkforcePathwayWorkplaceAwarenessFK" = 1,
+          "CareWorkforcePathwayUseValue" = 'Yes',
+          "CWPAwarenessQuestionViewed" = true
+      WHERE "EstablishmentID" = $1;`;
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
 Cypress.Commands.add('resetWorkplaceDHAAnswers', (establishmentID) => {
   const queryStrings = [
     `UPDATE cqc."Establishment"
@@ -115,6 +126,28 @@ Cypress.Commands.add('resetWorkplaceDHAAnswers', (establishmentID) => {
   const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
 
   cy.task('multipleDbQueries', dbQueries);
+});
+
+Cypress.Commands.add('fillWorkplaceDHAAnswers', (establishmentID) => {
+  const queryString = `UPDATE cqc."Establishment"
+      SET "StaffDoDelegatedHealthcareActivitiesValue" = 'Yes',
+          "StaffWhatKindDelegatedHealthcareActivitiesValue" = 'Yes'
+      WHERE "EstablishmentID" = $1;`;
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
+Cypress.Commands.add('updateStaffTotalNumberToMatchActualWorkers', (establishmentID) => {
+  const queryString = `UPDATE cqc."Establishment" e
+      SET "NumberOfStaffValue" =
+        (SELECT COUNT(*) FROM cqc."Worker" w
+         WHERE "EstablishmentFK" = $1 AND "Archived" <> true)
+      WHERE "EstablishmentID" = $1
+      RETURNING *;`;
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
 });
 
 Cypress.Commands.add('setWorkplaceMainService', (establishmentID, mainServiceId) => {
