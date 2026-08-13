@@ -2,9 +2,9 @@
   <dt class="govuk-summary-list__key"></dt>
   <dd class="govuk-summary-list__value govuk-summary-list__message">
     <span class="govuk-!-margin-bottom-2 govuk-!-margin-top-2 govuk__flex">
-      <img *ngIf="icon" class="govuk-!-margin-right-1" src="/assets/images/{{ icon }}.svg" alt="" />{{
-        staffMismatchMessage
-      }}
+      @if (icon) {
+      <img class="govuk-!-margin-right-1" src="/assets/images/{{ icon }}.svg" alt="" />
+      }{{ staffMismatchMessage }}
     </span>
     @if (workplace.numberOfStaff !== 0) {
     <span class="govuk__nowrap">
