@@ -55,6 +55,7 @@ import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workp
 import { AddUpdateStartersLeaversVacanciesDataComponent } from './vacancies-and-turnover-miniflow/add-update-starters-leavers-vacancies-data.component';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
+import { resetVacanciesAndTurnoverService } from '@core/guards/reset-vacancies-and-turnover-service/reset-vacancies-and-turnover-service.guard';
 
 const workplaceFlowOnlyPages: Routes = [
   {
@@ -483,6 +484,7 @@ const workplaceSummary: Route = {
 const addStartersLeaversVacanciesMiniFlow: Route = {
   path: 'add-starters-leavers-vacancies-data',
   canActivate: [CheckPermissionsGuard],
+  canDeactivate: [resetVacanciesAndTurnoverService],
   data: {
     flowType: WorkplaceUpdateFlowType.ADD_SLV,
     permissions: ['canEditEstablishment'],
