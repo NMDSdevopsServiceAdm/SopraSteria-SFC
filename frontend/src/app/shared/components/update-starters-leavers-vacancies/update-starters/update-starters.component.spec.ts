@@ -704,7 +704,7 @@ describe('UpdateStartersComponent', () => {
         expectErrorMessageAppears(expectedErrorMessage2);
         expect(updateJobsSpy).not.toHaveBeenCalled();
 
-        const addJobRoleButton = getByRole('button', { name: 'Add job roles' });
+        const addJobRoleButton = getByRole('button', { name: 'Select job roles' });
         const buttonFocusSpy = spyOn(addJobRoleButton, 'focus');
 
         userEvent.click(getAllByText('Add a job role')[0]);
