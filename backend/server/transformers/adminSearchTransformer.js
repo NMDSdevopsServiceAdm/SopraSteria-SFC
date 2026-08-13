@@ -50,7 +50,7 @@ const EstablishmentTransformer = async (establishments) => {
 
 const UserTransformer = async (users) => {
   return users.map((user) => {
-    const parent = user.establishment.ParentID
+    const parent = user.establishment?.ParentID
       ? {
           nmdsId: user.establishment.Parent.nmdsId,
           name: user.establishment.Parent.NameValue,
