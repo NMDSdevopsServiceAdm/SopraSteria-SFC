@@ -1,6 +1,9 @@
 @if (workplace) {
   @if (!workplace?.showAddWorkplaceDetailsBanner) {
-    <div [class.govuk-summary-list__warning]="noVacancyAndTurnoverData" data-testid="vacancies-and-turnover-section">
+    <div
+      [class.govuk-summary-list__warning]="noVacancyAndTurnoverData"
+      data-testid="vacancies-and-turnover-section"
+    >
       <h2
         id="vacancies-and-turnover"
         class="govuk-heading-m govuk-!-padding-top-1 govuk-!-margin-top-4"
@@ -8,29 +11,129 @@
       >
         Vacancies and turnover
       </h2>
+
       @if (noVacancyAndTurnoverData) {
-        <span class="govuk-error-message govuk-summary-list__warning-message"
-          >You've not added any vacancy and turnover data</span
-        >
+        <span class="govuk-error-message govuk-summary-list__warning-message">
+          Add your starters, leavers and vacancy data
+        </span>
       }
-      <div [class.govuk-summary-list__warning]="noVacancyData" data-testid="vacancies">
-        <dl
-          class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0 govuk-summary-list--top-border"
+
+      <dl
+        class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0 govuk-summary-list--top-border"
+      >
+        <!-- Starters -->
+        <div
+          [class.govuk-summary-list__warning]="startersDataWarning"
+          data-testid="starters"
         >
           <div
             class="govuk-summary-list__row"
             [ngClass]="{
-              'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding': noVacancyData,
+              'govuk-summary-list__row--no-bottom-border': startersDataWarning,
+              'govuk-summary-list__row--no-bottom-padding': startersDataWarning
             }"
-            data-testid="vacancies-top-row"
+          >
+            <dt class="govuk-summary-list__key">Starters in the last 12 months</dt>
+
+            <dd class="govuk-summary-list__value">
+              <ng-container
+                [ngTemplateOutlet]="summaryRecordValueForSLV"
+                [ngTemplateOutletContext]="{ slvValue: workplace.starters }"
+              />
+            </dd>
+
+            @if (canEditEstablishment) {
+              <dd class="govuk-summary-list__actions">
+                <app-summary-record-change
+                  [explanationText]="' new starters'"
+                  [link]="'update-starters' | workplaceSummaryPath: workplace.uid"
+                  [hasData]="workplace.starters?.length"
+                  (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
+                ></app-summary-record-change>
+              </dd>
+            }
+          </div>
+
+          @if (startersDataWarning) {
+            <div class="govuk-summary-list__row govuk-summary-list__row--error-warning-message">
+              <dt
+                class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
+              >
+                {{ noStartersData ? 'Add your starters data' : 'Update your starters data' }}
+              </dt>
+              <dd class="govuk-summary-list__value"></dd>
+              <dd class="govuk-summary-list__actions"></dd>
+            </div>
+          }
+        </div>
+
+        <!-- Leavers -->
+        <div
+          [class.govuk-summary-list__warning]="leaversDataWarning"
+          data-testid="leavers"
+        >
+          <div
+            class="govuk-summary-list__row"
+            [ngClass]="{
+              'govuk-summary-list__row--no-bottom-border': leaversDataWarning,
+              'govuk-summary-list__row--no-bottom-padding': leaversDataWarning
+            }"
+          >
+            <dt class="govuk-summary-list__key">Leavers in the last 12 months</dt>
+
+            <dd class="govuk-summary-list__value">
+              <ng-container
+                [ngTemplateOutlet]="summaryRecordValueForSLV"
+                [ngTemplateOutletContext]="{ slvValue: workplace.leavers }"
+              />
+            </dd>
+
+            @if (canEditEstablishment) {
+              <dd class="govuk-summary-list__actions">
+                <app-summary-record-change
+                  [explanationText]="' leavers'"
+                  [link]="'update-leavers' | workplaceSummaryPath: workplace.uid"
+                  [hasData]="workplace.leavers?.length"
+                  (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
+                ></app-summary-record-change>
+              </dd>
+            }
+          </div>
+
+          @if (leaversDataWarning) {
+            <div class="govuk-summary-list__row govuk-summary-list__row--error-warning-message">
+              <dt
+                class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
+              >
+                {{ noLeaversData ? 'Add your leavers data' : 'Update your leavers data' }}
+              </dt>
+              <dd class="govuk-summary-list__value"></dd>
+              <dd class="govuk-summary-list__actions"></dd>
+            </div>
+          }
+        </div>
+
+        <!-- Vacancies -->
+        <div
+          [class.govuk-summary-list__warning]="vacancyDataWarning"
+          data-testid="vacancies"
+        >
+          <div
+            class="govuk-summary-list__row"
+            [ngClass]="{
+              'govuk-summary-list__row--no-bottom-border': vacancyDataWarning,
+              'govuk-summary-list__row--no-bottom-padding': vacancyDataWarning
+            }"
           >
             <dt class="govuk-summary-list__key">Current staff vacancies</dt>
+
             <dd class="govuk-summary-list__value">
               <ng-container
                 [ngTemplateOutlet]="summaryRecordValueForSLV"
                 [ngTemplateOutletContext]="{ slvValue: workplace.vacancies }"
               />
             </dd>
+
             @if (canEditEstablishment) {
               <dd class="govuk-summary-list__actions">
                 <app-summary-record-change
@@ -42,56 +145,17 @@
               </dd>
             }
           </div>
-          @if (noVacancyData) {
+
+          @if (vacancyDataWarning) {
             <div class="govuk-summary-list__row govuk-summary-list__row--error-warning-message">
-              <dt class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap">
-                You've not added any staff vacancy data
+              <dt
+                class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
+              >
+                {{ noVacancyData ? 'Add your vacancy data' : 'Update your vacancy data' }}
               </dt>
               <dd class="govuk-summary-list__value"></dd>
               <dd class="govuk-summary-list__actions"></dd>
             </div>
-          }
-        </dl>
-      </div>
-      <dl class="govuk-summary-list govuk-summary-list--medium">
-        <div class="govuk-summary-list__row" data-testid="starters">
-          <dt class="govuk-summary-list__key">Starters in the last 12 months</dt>
-          <dd class="govuk-summary-list__value">
-            <ng-container
-              [ngTemplateOutlet]="summaryRecordValueForSLV"
-              [ngTemplateOutletContext]="{ slvValue: workplace.starters }"
-            />
-          </dd>
-          @if (canEditEstablishment) {
-            <dd class="govuk-summary-list__actions">
-              <app-summary-record-change
-                [explanationText]="' new starters'"
-                [link]="'update-starters' | workplaceSummaryPath: workplace.uid"
-                [hasData]="workplace.starters?.length"
-                (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
-              ></app-summary-record-change>
-            </dd>
-          }
-        </div>
-        <div class="govuk-summary-list__row" data-testid="leavers">
-          <dt class="govuk-summary-list__key">Leavers in the last 12 months</dt>
-          <dd class="govuk-summary-list__value">
-            <app-summary-record-value>
-              <ng-container
-                [ngTemplateOutlet]="summaryRecordValueForSLV"
-                [ngTemplateOutletContext]="{ slvValue: workplace.leavers }"
-              />
-            </app-summary-record-value>
-          </dd>
-          @if (canEditEstablishment) {
-            <dd class="govuk-summary-list__actions">
-              <app-summary-record-change
-                [explanationText]="' leavers'"
-                [link]="'update-leavers' | workplaceSummaryPath: workplace.uid"
-                [hasData]="workplace.leavers?.length"
-                (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
-              ></app-summary-record-change>
-            </dd>
           }
         </div>
       </dl>
