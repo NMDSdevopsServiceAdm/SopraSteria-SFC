@@ -5,7 +5,6 @@
       data-testid="vacancies-and-turnover-section"
     >
       <h2
-        id="vacancies-and-turnover"
         class="govuk-heading-m govuk-!-padding-top-1 govuk-!-margin-top-4"
         [ngClass]="{ 'govuk-!-margin-bottom-1': noVacancyAndTurnoverData }"
       >
@@ -18,13 +17,13 @@
         </span>
       }
 
-      <dl
-        class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0 govuk-summary-list--top-border"
+      <!-- Starters -->
+      <div
+        [class.govuk-summary-list__warning]="startersDataWarning"
+        data-testid="starters"
       >
-        <!-- Starters -->
-        <div
-          [class.govuk-summary-list__warning]="startersDataWarning"
-          data-testid="starters"
+        <dl
+          class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0 govuk-summary-list--top-border"
         >
           <div
             class="govuk-summary-list__row"
@@ -33,7 +32,9 @@
               'govuk-summary-list__row--no-bottom-padding': startersDataWarning
             }"
           >
-            <dt class="govuk-summary-list__key">Starters in the last 12 months</dt>
+            <dt class="govuk-summary-list__key">
+              Starters in the last 12 months
+            </dt>
 
             <dd class="govuk-summary-list__value">
               <ng-container
@@ -65,13 +66,15 @@
               <dd class="govuk-summary-list__actions"></dd>
             </div>
           }
-        </div>
+        </dl>
+      </div>
 
-        <!-- Leavers -->
-        <div
-          [class.govuk-summary-list__warning]="leaversDataWarning"
-          data-testid="leavers"
-        >
+      <!-- Leavers -->
+      <div
+        [class.govuk-summary-list__warning]="leaversDataWarning"
+        data-testid="leavers"
+      >
+        <dl class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0">
           <div
             class="govuk-summary-list__row"
             [ngClass]="{
@@ -79,13 +82,17 @@
               'govuk-summary-list__row--no-bottom-padding': leaversDataWarning
             }"
           >
-            <dt class="govuk-summary-list__key">Leavers in the last 12 months</dt>
+            <dt class="govuk-summary-list__key">
+              Leavers in the last 12 months
+            </dt>
 
             <dd class="govuk-summary-list__value">
-              <ng-container
-                [ngTemplateOutlet]="summaryRecordValueForSLV"
-                [ngTemplateOutletContext]="{ slvValue: workplace.leavers }"
-              />
+              <app-summary-record-value>
+                <ng-container
+                  [ngTemplateOutlet]="summaryRecordValueForSLV"
+                  [ngTemplateOutletContext]="{ slvValue: workplace.leavers }"
+                />
+              </app-summary-record-value>
             </dd>
 
             @if (canEditEstablishment) {
@@ -111,13 +118,15 @@
               <dd class="govuk-summary-list__actions"></dd>
             </div>
           }
-        </div>
+        </dl>
+      </div>
 
-        <!-- Vacancies -->
-        <div
-          [class.govuk-summary-list__warning]="vacancyDataWarning"
-          data-testid="vacancies"
-        >
+      <!-- Vacancies -->
+      <div
+        [class.govuk-summary-list__warning]="vacancyDataWarning"
+        data-testid="vacancies"
+      >
+        <dl class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0">
           <div
             class="govuk-summary-list__row"
             [ngClass]="{
@@ -125,7 +134,9 @@
               'govuk-summary-list__row--no-bottom-padding': vacancyDataWarning
             }"
           >
-            <dt class="govuk-summary-list__key">Current staff vacancies</dt>
+            <dt class="govuk-summary-list__key">
+              Current staff vacancies
+            </dt>
 
             <dd class="govuk-summary-list__value">
               <ng-container
@@ -157,8 +168,8 @@
               <dd class="govuk-summary-list__actions"></dd>
             </div>
           }
-        </div>
-      </dl>
+        </dl>
+      </div>
     </div>
   }
   <div class="govuk-width-container govuk-!-margin-top-5">
