@@ -120,16 +120,18 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
 
   public checkVacancyAndTurnoverData(): void {
     const { vacancies, starters, leavers, vacanciesSavedAt, startersSavedAt, leaversSavedAt } = this.workplace;
+    console.log('this.worplace', this.workplace);
+    console.log('canEditEstablishment', this.canEditEstablishment);
 
-    // Check if each type of data is missing
+    // Identify which turnover sections have no data.
     this.noStartersData = !starters?.length;
     this.noLeaversData = !leavers?.length;
     this.noVacancyData = !vacancies?.length;
 
-    // Show the overall warning only when all three are missing
+    // Show the overall warning only when none of the three turnover sections have data.
     this.noVacancyAndTurnoverData = this.noStartersData && this.noLeaversData && this.noVacancyData;
 
-    // Check if existing data is more than one year old
+    // Identify data that has not been updated within the last 12 months.
     this.startersDataOutOfDate = DateUtil.isMoreThanOneYearAgo(startersSavedAt);
     this.leaversDataOutOfDate = DateUtil.isMoreThanOneYearAgo(leaversSavedAt);
     this.vacancyDataOutOfDate = DateUtil.isMoreThanOneYearAgo(vacanciesSavedAt);
