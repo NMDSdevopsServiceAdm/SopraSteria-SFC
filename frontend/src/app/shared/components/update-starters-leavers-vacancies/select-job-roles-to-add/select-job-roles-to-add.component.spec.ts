@@ -78,6 +78,13 @@ describe('SelectJobRolesToAddComponent', () => {
   pageStates.forEach(({ jobRoleType, selectedField, preselectedField }) => {
     describe(`${jobRoleType} version of page`, () => {
       describe('rendering', () => {
+        it('should show Workplace as the section heading', async () => {
+          const { getByTestId } = await setup();
+          const sectionHeading = getByTestId('section-heading');
+
+          expect(sectionHeading.textContent).toContain('Workplace');
+        });
+
         it('should display a page heading', async () => {
           const { getByRole } = await setup({ jobRoleType });
           const heading = getByRole('heading', { level: 1 });
