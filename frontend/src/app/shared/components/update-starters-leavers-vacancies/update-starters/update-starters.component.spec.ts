@@ -219,10 +219,10 @@ describe('UpdateStartersComponent', () => {
         ).toBeFalsy();
       });
 
-      it('should show "Add job roles" as the text of add job role button', async () => {
+      it('should show "Select job roles" as the text of add job role button', async () => {
         const { getByRole } = await setup({ workplace: mockFreshWorkplace });
 
-        const addButton = getByRole('button', { name: 'Add job roles' });
+        const addButton = getByRole('button', { name: 'Select job roles' });
 
         expect(addButton).toBeTruthy();
       });

@@ -10,6 +10,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { VacanciesAndTurnoverService, WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
 import { DateUtil } from '@core/utils/date-util';
 import { FormatUtil } from '@core/utils/format-util';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { JobRoleNumbersTableComponent } from '@shared/components/job-role-numbers-table/job-role-numbers-table.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 
@@ -54,6 +55,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   protected updatePage: WorkplaceUpdatePage;
   protected returnInEstablishmentService: URLStructure;
   protected staffUpdatesView: boolean;
+  public section: any;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -68,6 +70,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
 
   ngOnInit() {
     this.staffUpdatesView = this.route.snapshot?.data?.staffUpdatesView;
+    this.section = this.staffUpdatesView ? 'Workplace' : WorkplaceFlowSections.VACANCIES_AND_TURNOVER;
     this.returnInEstablishmentService = this.establishmentService.returnTo;
 
     this.setupForm();
