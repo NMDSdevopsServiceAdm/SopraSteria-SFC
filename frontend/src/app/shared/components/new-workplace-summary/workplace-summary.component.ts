@@ -19,6 +19,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-new-workplace-summary',
   templateUrl: './workplace-summary.component.html',
+  styleUrl: './workplace-summary.component.scss',
   providers: [I18nPluralPipe],
   standalone: false,
 })
@@ -48,6 +49,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   public vacancyDataOutOfDate: boolean;
 
   public noVacancyAndTurnoverData: boolean;
+  public allVacancyAndTurnoverDataOutOfDate: boolean;
 
   public numberOfStaffError: boolean;
   public numberOfStaffWarning: boolean;
@@ -120,24 +122,33 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
 
   public checkVacancyAndTurnoverData(): void {
     const { vacancies, starters, leavers, vacanciesSavedAt, startersSavedAt, leaversSavedAt } = this.workplace;
-    console.log('this.worplace', this.workplace);
-    console.log('canEditEstablishment', this.canEditEstablishment);
 
-    // Identify which turnover sections have no data.
+    // Check whether each section has no data.
     this.noStartersData = !starters?.length;
     this.noLeaversData = !leavers?.length;
     this.noVacancyData = !vacancies?.length;
 
-    // Show the overall warning only when none of the three turnover sections have data.
-    this.noVacancyAndTurnoverData = this.noStartersData && this.noLeaversData && this.noVacancyData;
-
-    // Identify data that has not been updated within the last 12 months.
+    // Check whether each section was last updated more than 12 months ago.
     this.startersDataOutOfDate = DateUtil.isMoreThanOneYearAgo(startersSavedAt);
     this.leaversDataOutOfDate = DateUtil.isMoreThanOneYearAgo(leaversSavedAt);
     this.vacancyDataOutOfDate = DateUtil.isMoreThanOneYearAgo(vacanciesSavedAt);
-    console.log(' this.startersDataOutOfDate', this.startersDataOutOfDate);
-    console.log(' this.leaversDataOutOfDate', this.leaversDataOutOfDate);
-    console.log(' this.vacancyDataOutOfDate', this.vacancyDataOutOfDate);
+
+    // All three sections have no data.
+    const noDataForAll = this.noStartersData && this.noLeaversData && this.noVacancyData;
+
+    // All three sections have data, but all three are more than 12 months old.
+    this.allVacancyAndTurnoverDataOutOfDate =
+      !this.noStartersData &&
+      !this.noLeaversData &&
+      !this.noVacancyData &&
+      this.startersDataOutOfDate &&
+      this.leaversDataOutOfDate &&
+      this.vacancyDataOutOfDate;
+
+    // Show the top-level warning for either:
+    // 1. all three sections have no data, or
+    // 2. all three sections have outdated data.
+    this.noVacancyAndTurnoverData = noDataForAll || this.allVacancyAndTurnoverDataOutOfDate;
   }
 
   get startersDataWarning(): boolean {
