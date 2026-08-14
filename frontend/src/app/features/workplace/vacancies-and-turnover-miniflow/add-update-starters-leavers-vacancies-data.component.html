@@ -1,0 +1,56 @@
+<div class="govuk-grid-row govuk-!-margin-bottom-3">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-7">
+      <span class="govuk-caption-l" data-testid="caption">Workplace</span>
+      <h1 class="govuk-fieldset__heading asc-util__width-85-percent">{{ heading }}</h1>
+    </legend>
+
+    <p>
+      This information helps Skills for Care to evidence the levels of staff recruitment and retention challenges in the
+      sector.
+    </p>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full-from-desktop">
+    @for (row of rows; track row.id) {
+      <dl
+        class="govuk-summary-list govuk-summary-list--medium"
+        [class]="{ 'govuk-summary-list--top-border': $first, 'govuk-!-margin-bottom-0': !$last }"
+      >
+        <div class="govuk-summary-list__row" [attr.data-testid]="row.id">
+          <dt class="govuk-summary-list__key">
+            {{ row.label }}
+            <p class="govuk-hint govuk-!-margin-bottom-0">By job role, for permanent and temporary roles</p>
+          </dt>
+          <dd class="govuk-summary-list__value">
+            <app-summary-record-value>
+              <app-display-slv-data [slvData]="row.data"></app-display-slv-data>
+            </app-summary-record-value>
+          </dd>
+          <dd class="govuk-summary-list__actions">
+            <app-summary-record-change
+              [explanationText]="' ' + row.id"
+              [link]="row.route"
+              [hasData]="row.data | hasValue"
+            ></app-summary-record-change>
+          </dd>
+        </div>
+      </dl>
+    }
+    <div class="govuk-button-group govuk-!-margin-top-8">
+      <button (click)="returnToHome()" type="submit" class="govuk-button govuk-!-margin-right-9">Back to home</button>
+
+      <a
+        [routerLink]="returnTo"
+        class="govuk-button govuk-button--link govuk-!-margin-left-9"
+        role="button"
+        draggable="false"
+        href="#"
+      >
+        Cancel
+      </a>
+    </div>
+  </div>
+</div>

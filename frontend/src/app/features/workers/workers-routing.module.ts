@@ -182,7 +182,7 @@ const routes: Routes = [
         component: UpdateWorkplaceDetailsAfterStaffChangesComponent,
         data: {
           title: 'Update workplace details',
-          flowType: WorkplaceUpdateFlowType.ADD,
+          flowType: WorkplaceUpdateFlowType.AFTER_ADD_STAFF,
         },
         resolve: {
           totalNumberOfStaff: TotalStaffRecordsResolver,
@@ -238,7 +238,7 @@ const routes: Routes = [
         component: UpdateWorkplaceDetailsAfterStaffChangesComponent,
         data: {
           title: 'Update workplace details',
-          flowType: WorkplaceUpdateFlowType.DELETE,
+          flowType: WorkplaceUpdateFlowType.AFTER_DELETE_STAFF,
         },
         resolve: {
           totalNumberOfStaff: TotalStaffRecordsResolver,

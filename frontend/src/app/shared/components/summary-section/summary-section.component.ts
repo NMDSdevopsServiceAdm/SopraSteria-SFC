@@ -180,6 +180,14 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.sections[0].message = 'Staff total does not match staff records added';
     } else if (!vacancies && !leavers && !starters) {
       this.sections[0].message = `You've not added any vacancy and turnover data`;
+      // TODO: put this link to "Add your starters, leavers and vacancy data" message when merged with grey summary panel changes
+      this.sections[0].route = [
+        'workplace',
+        this.workplace.uid,
+        'workplace-data',
+        'add-starters-leavers-vacancies-data',
+      ];
+      this.sections[0].skipTabSwitch = true;
     } else if (!vacancies && (leavers || starters)) {
       this.sections[0].message = `You've not added any staff vacancy data`;
     }

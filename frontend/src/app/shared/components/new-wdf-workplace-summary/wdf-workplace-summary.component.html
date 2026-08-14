@@ -458,10 +458,7 @@
       >
         <dt class="govuk-summary-list__key">Current staff vacancies</dt>
         <dd class="govuk-summary-list__value">
-          <ng-container
-            [ngTemplateOutlet]="summaryRecordValueForSLV"
-            [ngTemplateOutletContext]="{ slvValue: workplace.vacancies }"
-          />
+          <app-display-slv-data [slvData]="workplace.vacancies"></app-display-slv-data>
         </dd>
         @if (canEditEstablishment) {
           <dd class="govuk-summary-list__actions">
@@ -499,10 +496,7 @@
       >
         <dt class="govuk-summary-list__key">Starters in the last 12 months</dt>
         <dd class="govuk-summary-list__value">
-          <ng-container
-            [ngTemplateOutlet]="summaryRecordValueForSLV"
-            [ngTemplateOutletContext]="{ slvValue: workplace.starters }"
-          />
+          <app-display-slv-data [slvData]="workplace.starters"></app-display-slv-data>
         </dd>
         @if (canEditEstablishment) {
           <dd class="govuk-summary-list__actions">
@@ -540,10 +534,7 @@
       >
         <dt class="govuk-summary-list__key">Leavers in the last 12 months</dt>
         <dd class="govuk-summary-list__value">
-          <ng-container
-            [ngTemplateOutlet]="summaryRecordValueForSLV"
-            [ngTemplateOutletContext]="{ slvValue: workplace.leavers }"
-          />
+          <app-display-slv-data [slvData]="workplace.leavers"></app-display-slv-data>
         </dd>
         @if (canEditEstablishment) {
           <dd class="govuk-summary-list__actions">
@@ -794,18 +785,3 @@
     </ng-container>
   </dl>
 }
-
-<!-- reuse for vacancy / leaver / starter  -->
-<ng-template #summaryRecordValueForSLV let-slvValue="slvValue">
-  <app-summary-record-value>
-    @if (isArray(slvValue) && slvValue?.length) {
-      <ul class="govuk-list govuk-!-margin-bottom-0">
-        @for (job of slvValue; track job) {
-          <li>{{ job | formatSLV }}</li>
-        }
-      </ul>
-    } @else {
-      {{ slvValue | closedEndedAnswer }}
-    }
-  </app-summary-record-value>
-</ng-template>

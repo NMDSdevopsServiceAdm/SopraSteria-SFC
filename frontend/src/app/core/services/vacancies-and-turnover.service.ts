@@ -20,8 +20,7 @@ export class VacanciesAndTurnoverService {
   }
 
   public allUpdatePagesVisited(flowType: WorkplaceUpdateFlowType): boolean {
-    const pages =
-      flowType === WorkplaceUpdateFlowType.ADD ? addStaffWorkplaceUpdatePages : deleteStaffWorkplaceUpdatePages;
+    const pages = PagesForEachFlowType[flowType];
 
     return pages.every((page) => {
       return this.visitedPages.has(page);
@@ -33,8 +32,7 @@ export class VacanciesAndTurnoverService {
   }
 
   public allUpdatePagesSubmitted(flowType: WorkplaceUpdateFlowType): boolean {
-    const pages =
-      flowType === WorkplaceUpdateFlowType.ADD ? addStaffWorkplaceUpdatePages : deleteStaffWorkplaceUpdatePages;
+    const pages = PagesForEachFlowType[flowType];
 
     return pages.every((page) => {
       return this.submittedPages.has(page);
@@ -117,10 +115,25 @@ const deleteStaffWorkplaceUpdatePages = [
   WorkplaceUpdatePage.UPDATE_LEAVERS,
 ];
 
+const addUpdateSLVPages = [
+  WorkplaceUpdatePage.UPDATE_STARTERS,
+  WorkplaceUpdatePage.UPDATE_LEAVERS,
+  WorkplaceUpdatePage.UPDATE_VACANCIES,
+];
+
 export enum WorkplaceUpdateFlowType {
-  ADD = 'ADD',
-  DELETE = 'DELETE',
+  AFTER_ADD_STAFF = 'AFTER_ADD_STAFF',
+  AFTER_DELETE_STAFF = 'AFTER_DELETE_STAFF',
+  ADD_SLV = 'ADD_STARTERS_LEAVERS_VACANCIES',
+  UPDATE_SLV = 'UPDATE_STARTERS_LEAVERS_VACANCIES',
 }
+
+const PagesForEachFlowType = {
+  [WorkplaceUpdateFlowType.AFTER_ADD_STAFF]: addStaffWorkplaceUpdatePages,
+  [WorkplaceUpdateFlowType.AFTER_DELETE_STAFF]: deleteStaffWorkplaceUpdatePages,
+  [WorkplaceUpdateFlowType.ADD_SLV]: addUpdateSLVPages,
+  [WorkplaceUpdateFlowType.UPDATE_SLV]: addUpdateSLVPages,
+};
 
 export enum DoYouWantToAddOrDeleteAnswer {
   YES = 'Yes',
