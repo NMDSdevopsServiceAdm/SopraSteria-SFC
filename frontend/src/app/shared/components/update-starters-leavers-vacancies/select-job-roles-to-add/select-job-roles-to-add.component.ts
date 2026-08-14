@@ -6,12 +6,13 @@ import { Job, JobGroup } from '@core/model/job.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { JobService } from '@core/services/job.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { AccordionGroupComponent } from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
 
 @Component({
-    selector: 'app-select-job-roles-to-add',
-    templateUrl: './select-job-roles-to-add.component.html',
-    standalone: false
+  selector: 'app-select-job-roles-to-add',
+  templateUrl: './select-job-roles-to-add.component.html',
+  standalone: false,
 })
 export class SelectJobRolesToAddComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
@@ -35,6 +36,8 @@ export class SelectJobRolesToAddComponent implements OnInit {
 
   protected prefillData: Array<StarterLeaverVacancy> = [];
   protected selectedJobIds: number[] = [];
+  protected staffUpdatesView: boolean;
+  public section: any;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -45,6 +48,8 @@ export class SelectJobRolesToAddComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.staffUpdatesView = this.route.snapshot?.data?.staffUpdatesView;
+    this.section = this.staffUpdatesView ? 'Workplace' : WorkplaceFlowSections.VACANCIES_AND_TURNOVER;
     this.getJobs();
     this.setupJobRoleType();
     this.setupForm();
