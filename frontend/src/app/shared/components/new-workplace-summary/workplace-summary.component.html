@@ -10,7 +10,6 @@
       >
         Vacancies and turnover
       </h2>
-
       @if (noVacancyAndTurnoverData) {
         <span class="govuk-error-message govuk-summary-list__warning-message">
           {{
@@ -45,7 +44,6 @@
                 [ngTemplateOutletContext]="{ slvValue: workplace.starters }"
               />
             </dd>
-
             @if (canEditEstablishment) {
               <dd class="govuk-summary-list__actions">
                 <app-summary-record-change
@@ -57,7 +55,6 @@
               </dd>
             }
           </div>
-
           @if (startersDataWarning) {
             <div
               class="govuk-summary-list__row govuk-summary-list__row--error-warning-message"
@@ -99,7 +96,6 @@
                 [ngTemplateOutletContext]="{ slvValue: workplace.leavers }"
               />
             </dd>
-
             @if (canEditEstablishment) {
               <dd class="govuk-summary-list__actions">
                 <app-summary-record-change
@@ -111,7 +107,6 @@
               </dd>
             }
           </div>
-
           @if (leaversDataWarning) {
             <div
               class="govuk-summary-list__row govuk-summary-list__row--error-warning-message"
@@ -153,7 +148,6 @@
                 [ngTemplateOutletContext]="{ slvValue: workplace.vacancies }"
               />
             </dd>
-
             @if (canEditEstablishment) {
               <dd class="govuk-summary-list__actions">
                 <app-summary-record-change
@@ -165,7 +159,6 @@
               </dd>
             }
           </div>
-
           @if (vacancyDataWarning) {
             <div
               class="govuk-summary-list__row govuk-summary-list__row--error-warning-message"
