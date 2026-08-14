@@ -1364,6 +1364,15 @@ describe('NewWorkplaceSummaryComponent', () => {
   });
 
   describe('Vacancies and turnover section', () => {
+    beforeEach(() => {
+      jasmine.clock().install();
+      jasmine.clock().mockDate(new Date('2026-08-14'));
+    });
+
+    afterEach(() => {
+      jasmine.clock().uninstall();
+    });
+
     it('should not show the section if showAddWorkplaceDetailsBanner is true', async () => {
       const { component, fixture, queryByTestId } = await setup();
 
@@ -1431,7 +1440,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       );
     });
 
-    it('should not show a warning if there is a starters value', async () => {
+    it('should not show a top-level warning if there is a starters value', async () => {
       const { component, fixture, queryByText, getByTestId } = await setup();
 
       component.workplace.vacancies = null;
