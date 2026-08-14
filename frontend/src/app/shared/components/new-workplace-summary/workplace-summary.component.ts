@@ -19,7 +19,6 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-new-workplace-summary',
   templateUrl: './workplace-summary.component.html',
-  styleUrl: './workplace-summary.component.scss',
   providers: [I18nPluralPipe],
   standalone: false,
 })
