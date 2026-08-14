@@ -160,19 +160,6 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (numberOfStaff === undefined || numberOfStaff === null) {
-      this.sections[0].message = `You've not added your total number of staff`;
-      this.sections[0].redFlag = true;
-      return;
-    }
-
-    if (numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin() && this.canViewListOfWorkers) {
-      this.sections[0].message = 'Staff total does not match number of staff records';
-      this.sections[0].scrollToId = 'workplace-details';
-
-      return;
-    }
-
     const notAllTurnoverDataAnswered = [vacancies, leavers, starters].some((value) => !value);
     if (notAllTurnoverDataAnswered) {
       const missingOnes = Object.entries({ starters, leavers, vacancy: vacancies })
@@ -201,6 +188,19 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
       const message = `Update your ${FormatUtil.joinNouns(outdatedOnes)} data`;
       this.sections[0].message = message;
+      return;
+    }
+
+    if (numberOfStaff === undefined || numberOfStaff === null) {
+      this.sections[0].message = `You've not added your total number of staff`;
+      this.sections[0].redFlag = true;
+      return;
+    }
+
+    if (numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin() && this.canViewListOfWorkers) {
+      this.sections[0].message = 'Staff total does not match number of staff records';
+      this.sections[0].scrollToId = 'workplace-details';
+
       return;
     }
   }
