@@ -13,11 +13,13 @@
 
       @if (noVacancyAndTurnoverData) {
         <span class="govuk-error-message govuk-summary-list__warning-message">
-          Add your starters, leavers and vacancy data
+          {{
+            allVacancyAndTurnoverDataOutOfDate
+              ? 'Update your starters, leavers and vacancy data'
+              : 'Add your starters, leavers and vacancy data'
+          }}
         </span>
       }
-
-      <!-- Starters -->
       <div
         [class.govuk-summary-list__warning]="startersDataWarning"
         data-testid="starters"
@@ -28,7 +30,8 @@
           <div
             class="govuk-summary-list__row"
             [ngClass]="{
-              'govuk-summary-list__row--no-bottom-border': startersDataWarning,
+              'govuk-summary-list__row--no-bottom-border':
+                startersDataWarning || leaversDataWarning,
               'govuk-summary-list__row--no-bottom-padding': startersDataWarning
             }"
           >
@@ -56,7 +59,9 @@
           </div>
 
           @if (startersDataWarning) {
-            <div class="govuk-summary-list__row govuk-summary-list__row--error-warning-message">
+            <div
+              class="govuk-summary-list__row govuk-summary-list__row--error-warning-message"
+            >
               <dt
                 class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
               >
@@ -68,31 +73,31 @@
           }
         </dl>
       </div>
-
-      <!-- Leavers -->
       <div
         [class.govuk-summary-list__warning]="leaversDataWarning"
         data-testid="leavers"
       >
-        <dl class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0">
-          <div
-            class="govuk-summary-list__row"
-            [ngClass]="{
-              'govuk-summary-list__row--no-bottom-border': leaversDataWarning,
-              'govuk-summary-list__row--no-bottom-padding': leaversDataWarning
-            }"
-          >
+      <dl
+      class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0"
+    >
+      <div
+        class="govuk-summary-list__row"
+        [ngClass]="{
+          'govuk-summary-list__row--no-bottom-border':
+            leaversDataWarning || vacancyDataWarning,
+          'govuk-summary-list__row--no-bottom-padding': leaversDataWarning,
+          'vacancy-turnover-warning-top-border': leaversDataWarning
+        }"
+      >
             <dt class="govuk-summary-list__key">
               Leavers in the last 12 months
             </dt>
 
             <dd class="govuk-summary-list__value">
-              <app-summary-record-value>
-                <ng-container
-                  [ngTemplateOutlet]="summaryRecordValueForSLV"
-                  [ngTemplateOutletContext]="{ slvValue: workplace.leavers }"
-                />
-              </app-summary-record-value>
+              <ng-container
+                [ngTemplateOutlet]="summaryRecordValueForSLV"
+                [ngTemplateOutletContext]="{ slvValue: workplace.leavers }"
+              />
             </dd>
 
             @if (canEditEstablishment) {
@@ -108,7 +113,9 @@
           </div>
 
           @if (leaversDataWarning) {
-            <div class="govuk-summary-list__row govuk-summary-list__row--error-warning-message">
+            <div
+              class="govuk-summary-list__row govuk-summary-list__row--error-warning-message"
+            >
               <dt
                 class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
               >
@@ -120,18 +127,19 @@
           }
         </dl>
       </div>
-
-      <!-- Vacancies -->
       <div
         [class.govuk-summary-list__warning]="vacancyDataWarning"
         data-testid="vacancies"
       >
-        <dl class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0">
+        <dl
+          class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0"
+        >
           <div
             class="govuk-summary-list__row"
             [ngClass]="{
               'govuk-summary-list__row--no-bottom-border': vacancyDataWarning,
-              'govuk-summary-list__row--no-bottom-padding': vacancyDataWarning
+              'govuk-summary-list__row--no-bottom-padding': vacancyDataWarning,
+              'vacancy-turnover-warning-top-border': vacancyDataWarning
             }"
           >
             <dt class="govuk-summary-list__key">
@@ -158,7 +166,9 @@
           </div>
 
           @if (vacancyDataWarning) {
-            <div class="govuk-summary-list__row govuk-summary-list__row--error-warning-message">
+            <div
+              class="govuk-summary-list__row govuk-summary-list__row--error-warning-message"
+            >
               <dt
                 class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
               >
