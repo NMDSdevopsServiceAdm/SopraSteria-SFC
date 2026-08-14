@@ -36,7 +36,7 @@ export class SelectJobRolesToAddComponent implements OnInit {
 
   protected prefillData: Array<StarterLeaverVacancy> = [];
   protected selectedJobIds: number[] = [];
-  protected staffUpdatesView: boolean;
+  public flowType?: string;
   public section: any;
 
   constructor(
@@ -48,8 +48,8 @@ export class SelectJobRolesToAddComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.staffUpdatesView = this.route.snapshot?.data?.staffUpdatesView;
-    this.section = this.staffUpdatesView ? 'Workplace' : WorkplaceFlowSections.VACANCIES_AND_TURNOVER;
+    this.flowType = this.route.snapshot?.data?.flowType;
+    this.section = this.flowType ? 'Workplace' : WorkplaceFlowSections.VACANCIES_AND_TURNOVER;
     this.getJobs();
     this.setupJobRoleType();
     this.setupForm();

@@ -10,6 +10,7 @@ import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { JobRoleType, SelectJobRolesToAddComponent } from './select-job-roles-to-add.component';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 describe('SelectJobRolesToAddComponent', () => {
   const mockAvailableJobs = MockJobRoles;
@@ -31,6 +32,7 @@ describe('SelectJobRolesToAddComponent', () => {
               data: {
                 jobs: mockAvailableJobs,
                 jobRoleType: override.jobRoleType,
+                flowType: override.flowType,
               },
             },
           },
@@ -62,6 +64,24 @@ describe('SelectJobRolesToAddComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('section heading', () => {
+    it('should set section to Workplace when flowType is provided', async () => {
+      const { component } = await setup({
+        flowType: 'ADD_STARTERS_LEAVERS_VACANCIES',
+      });
+
+      expect(component.flowType).toBe('ADD_STARTERS_LEAVERS_VACANCIES');
+      expect(component.section).toBe('Workplace');
+    });
+
+    it('should set section to Vacancies and turnover when flowType is not provided', async () => {
+      const { component } = await setup();
+
+      expect(component.flowType).toBeUndefined();
+      expect(component.section).toBe(WorkplaceFlowSections.VACANCIES_AND_TURNOVER);
+    });
+  });
+
   const pageStates = [
     {
       jobRoleType: JobRoleType.Vacancies,
@@ -78,13 +98,6 @@ describe('SelectJobRolesToAddComponent', () => {
   pageStates.forEach(({ jobRoleType, selectedField, preselectedField }) => {
     describe(`${jobRoleType} version of page`, () => {
       describe('rendering', () => {
-        it('should show Workplace as the section heading', async () => {
-          const { getByTestId } = await setup();
-          const sectionHeading = getByTestId('section-heading');
-
-          expect(sectionHeading.textContent).toContain('Workplace');
-        });
-
         it('should display a page heading', async () => {
           const { getByRole } = await setup({ jobRoleType });
           const heading = getByRole('heading', { level: 1 });
