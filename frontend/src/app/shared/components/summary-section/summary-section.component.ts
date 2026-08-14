@@ -168,6 +168,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
       const message = `Add your ${FormatUtil.joinNouns(missingOnes)} data`;
       this.sections[0].message = message;
+      this.sections[0].scrollToId = 'vacancies-and-turnover';
       return;
     }
 
@@ -188,6 +189,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
       const message = `Update your ${FormatUtil.joinNouns(outdatedOnes)} data`;
       this.sections[0].message = message;
+      this.sections[0].scrollToId = 'vacancies-and-turnover';
       return;
     }
 
