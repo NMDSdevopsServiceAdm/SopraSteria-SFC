@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocationSearchResponse } from '@core/model/location.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { LocationService } from '@core/services/location.service';
@@ -17,7 +17,7 @@ import { RegulatedByCQCDirective } from '@features/workplace-find-and-select/reg
 export class RegulatedByCqcComponent extends RegulatedByCQCDirective {
   constructor(
     private workplaceService: WorkplaceService,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: UntypedFormBuilder,
     protected locationService: LocationService,
@@ -25,7 +25,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQCDirective {
     protected router: Router,
     private establishmentService: EstablishmentService,
   ) {
-    super(backService, errorSummaryService, formBuilder, locationService, route, router);
+    super(backLinkService, errorSummaryService, formBuilder, locationService, route, router);
   }
 
   protected init() {
@@ -35,7 +35,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQCDirective {
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink(this.establishmentService.returnTo);
+    this.backLinkService.showBackLink();
   }
 
   get return() {

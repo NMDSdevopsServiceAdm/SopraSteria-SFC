@@ -4,16 +4,16 @@ import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-employed-from-outside-uk-existing-workers',
-    templateUrl: './employed-from-outside-uk-existing-workers.component.html',
-    standalone: false
+  selector: 'app-employed-from-outside-uk-existing-workers',
+  templateUrl: './employed-from-outside-uk-existing-workers.component.html',
+  standalone: false,
 })
 export class EmployedFromOutsideUkExistingWorkersComponent implements OnInit {
   public workplaceUid: string;
@@ -37,7 +37,7 @@ export class EmployedFromOutsideUkExistingWorkersComponent implements OnInit {
     private errorSummaryService: ErrorSummaryService,
     private alertService: AlertService,
     private internationalRecruitmentService: InternationalRecruitmentService,
-    private backService: BackService,
+    private backLinkService: BackLinkService,
   ) {
     this.form = this.formBuilder.group({
       workers: this.formBuilder.array([]),
@@ -161,7 +161,7 @@ export class EmployedFromOutsideUkExistingWorkersComponent implements OnInit {
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: this.existingStaffHealthAndCareVisaUrl });
+    this.backLinkService.showBackLink();
   }
 
   ngOnDestroy(): void {

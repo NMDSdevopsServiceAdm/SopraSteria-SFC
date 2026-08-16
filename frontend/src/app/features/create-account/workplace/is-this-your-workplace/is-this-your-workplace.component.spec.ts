@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { LocationService } from '@core/services/location.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -19,7 +19,7 @@ describe('IsThisYourWorkplaceComponent', () => {
     const setupTools = await render(IsThisYourWorkplaceComponent, {
       imports: [SharedModule, RouterModule, RegistrationModule],
       providers: [
-        BackService,
+        BackLinkService,
         {
           provide: RegistrationService,
           useValue: {

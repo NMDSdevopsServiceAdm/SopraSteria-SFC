@@ -3,11 +3,13 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
-import { CouldNotFindWorkplaceAddressDirective } from '@shared/directives/create-workplace/could-not-find-workplace-address/could-not-find-workplace-address.directive';
+import {
+  CouldNotFindWorkplaceAddressDirective,
+} from '@shared/directives/create-workplace/could-not-find-workplace-address/could-not-find-workplace-address.directive';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject } from 'rxjs';
@@ -21,7 +23,7 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
       imports: [SharedModule, RouterModule, AddWorkplaceModule, FormsModule, ReactiveFormsModule],
       providers: [
         CouldNotFindWorkplaceAddressDirective,
-        BackService,
+        BackLinkService,
         {
           provide: EstablishmentService,
           useValue: {
@@ -194,14 +196,12 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
   describe('setBackLink()', () => {
     it('should set the correct back link when in the parent flow', async () => {
       const { component, fixture } = await setup();
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+      const backLinkSpy = spyOn(component.backLinkService, 'showBackLink');
 
       component.setBackLink();
       fixture.detectChanges();
 
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['add-workplace', 'find-workplace-address'],
-      });
+      expect(backLinkSpy).toHaveBeenCalled();
     });
   });
 });

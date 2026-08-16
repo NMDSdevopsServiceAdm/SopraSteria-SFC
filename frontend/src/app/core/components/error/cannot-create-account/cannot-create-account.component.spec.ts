@@ -1,7 +1,7 @@
-import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -12,7 +12,7 @@ describe('CannotCreateAccountComponent', () => {
     const { fixture, getByTestId } = await render(CannotCreateAccountComponent, {
       imports: [SharedModule, RouterModule],
       providers: [
-        BackService,
+        BackLinkService,
         {
           provide: ActivatedRoute,
           useValue: {

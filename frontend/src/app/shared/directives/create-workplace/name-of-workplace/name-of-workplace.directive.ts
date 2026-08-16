@@ -3,7 +3,6 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -27,7 +26,6 @@ export class NameOfWorkplaceDirective implements OnInit, AfterViewInit {
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
-    public backService: BackService,
     protected backLinkService: BackLinkService,
     protected router: Router,
     protected route: ActivatedRoute,

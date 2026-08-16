@@ -1,17 +1,17 @@
-import { getTestBed } from '@angular/core/testing';
-import { FastTrackPayUpdatesComponent } from './fast-track-pay-updates.component';
-import { fireEvent, render } from '@testing-library/angular';
-import { BackService } from '@core/services/back.service';
-import { BackLinkService } from '@core/services/backLink.service';
-import { WorkerService } from '@core/services/worker.service';
-import { ActivatedRoute, Router } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import userEvent from '@testing-library/user-event';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { BackLinkService } from '@core/services/backLink.service';
+import { WorkerService } from '@core/services/worker.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
+
+import { FastTrackPayUpdatesComponent } from './fast-track-pay-updates.component';
 
 describe('FastTrackPayUpdatesComponent', () => {
   const workersWithSingleJobRole = {
@@ -85,7 +85,7 @@ describe('FastTrackPayUpdatesComponent', () => {
     const setupTools = await render(FastTrackPayUpdatesComponent, {
       imports: [SharedModule, ReactiveFormsModule],
       providers: [
-        BackService,
+        BackLinkService,
         {
           provide: ActivatedRoute,
           useValue: {

@@ -5,7 +5,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
@@ -24,7 +24,7 @@ describe('UserAccountEditPermissionsComponent', () => {
     const { fixture, getByText } = await render(UserAccountEditPermissionsComponent, {
       imports: [RouterModule, WorkplaceModule],
       providers: [
-        BackService,
+        BackLinkService,
         AlertService,
         WindowRef,
         {

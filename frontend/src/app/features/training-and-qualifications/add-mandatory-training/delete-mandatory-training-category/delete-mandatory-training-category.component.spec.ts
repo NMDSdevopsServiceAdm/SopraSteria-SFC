@@ -3,7 +3,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -11,7 +11,9 @@ import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService'
 import { MockRouter } from '@core/test-utils/MockRouter';
 import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 import { mockMandatoryTraining, MockTrainingService } from '@core/test-utils/MockTrainingService';
-import { AddMandatoryTrainingModule } from '@features/training-and-qualifications/add-mandatory-training/add-mandatory-training.module';
+import {
+  AddMandatoryTrainingModule,
+} from '@features/training-and-qualifications/add-mandatory-training/add-mandatory-training.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -32,7 +34,7 @@ describe('DeleteMandatoryTrainingCategoryComponent', () => {
       declarations: [],
       providers: [
         AlertService,
-        BackService,
+        BackLinkService,
         WindowRef,
         {
           provide: TrainingService,

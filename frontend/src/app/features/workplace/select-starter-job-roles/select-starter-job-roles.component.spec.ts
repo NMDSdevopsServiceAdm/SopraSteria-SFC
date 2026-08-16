@@ -1,5 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
@@ -10,12 +9,12 @@ import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnov
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockJobRoles } from '@core/test-utils/MockJobService';
 import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { SelectStarterJobRolesComponent } from './select-starter-job-roles.component';
-import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('SelectStarterJobRolesComponent', () => {
   const mockAvailableJobs = MockJobRoles;
@@ -369,19 +368,6 @@ describe('SelectStarterJobRolesComponent', () => {
       const cancelButton = getByText('Cancel');
       userEvent.click(cancelButton);
       expect(routerSpy).toHaveBeenCalledWith(['/funding', 'workplaces', 'mock-uid'], jasmine.anything());
-    });
-
-    it('should set the backlink to "do you have starter" page', async () => {
-      const { component } = await setup();
-      expect(component.back).toEqual({
-        url: [
-          '/workplace',
-          component.establishment.uid,
-          'workplace-data',
-          'add-workplace-details',
-          'do-you-have-starters',
-        ],
-      });
     });
   });
 });

@@ -2,16 +2,16 @@ import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import { SelectPrimaryUserDirective } from '@shared/directives/user/select-primary-user.directive';
 
 @Component({
-    selector: 'app-select-primary-user-delete',
-    templateUrl: './select-primary-user-delete.component.html',
-    standalone: false
+  selector: 'app-select-primary-user-delete',
+  templateUrl: './select-primary-user-delete.component.html',
+  standalone: false,
 })
 export class SelectPrimaryUserDeleteComponent extends SelectPrimaryUserDirective {
   constructor(
@@ -22,7 +22,7 @@ export class SelectPrimaryUserDeleteComponent extends SelectPrimaryUserDirective
     protected route: ActivatedRoute,
     protected router: Router,
     public alertService: AlertService,
-    public backService: BackService,
+    public backLinkService: BackLinkService,
   ) {
     super(formBuilder, errorSummaryService, userService, establishmentService, router, route, alertService);
   }
@@ -32,10 +32,7 @@ export class SelectPrimaryUserDeleteComponent extends SelectPrimaryUserDirective
   }
 
   protected setBackButtonOrBreadcrumbs(): void {
-    const userDetailsLink = this.router.url.split('/');
-    userDetailsLink.pop();
-
-    this.backService.setBackLink({ url: userDetailsLink });
+    this.backLinkService.showBackLink();
   }
 
   protected navigateToNextPage(): void {

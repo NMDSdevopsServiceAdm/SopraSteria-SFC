@@ -1,21 +1,21 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Leaver } from '@core/model/establishment.model';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockJobRoles } from '@core/test-utils/MockJobService';
 import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { SelectLeaverJobRolesComponent } from './select-leaver-job-roles.component';
-import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('SelectLeaverJobRolesComponent', () => {
   const mockAvailableJobs = MockJobRoles;
@@ -28,11 +28,17 @@ describe('SelectLeaverJobRolesComponent', () => {
     const availableJobs = override.availableJobs ?? mockAvailableJobs;
     const selectedLeavers = override.selectedLeavers ?? null;
 
+    const backLinkSpy = jasmine.createSpyObj('BackLinkService', ['showBackLink']);
+
     const renderResults = await render(SelectLeaverJobRolesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
+        {
+          provide: BackLinkService,
+          useValue: backLinkSpy,
+        },
         {
           provide: EstablishmentService,
           useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnToUrl, {
@@ -78,6 +84,7 @@ describe('SelectLeaverJobRolesComponent', () => {
       routerSpy,
       setSelectedLeaversSpy,
       getSelectedLeaversSpy,
+      backLinkSpy,
       vacanciesAndTurnoverService,
       ...renderResults,
     };
@@ -397,16 +404,11 @@ describe('SelectLeaverJobRolesComponent', () => {
     });
 
     it('should set the backlink to "do you have leavers" page', async () => {
-      const { component } = await setup();
-      expect(component.back).toEqual({
-        url: [
-          '/workplace',
-          component.establishment.uid,
-          'workplace-data',
-          'add-workplace-details',
-          'do-you-have-leavers',
-        ],
-      });
+      const { component, backLinkSpy } = await setup();
+
+      component.setBackLink();
+
+      expect(backLinkSpy.showBackLink).toHaveBeenCalled();
     });
   });
 });

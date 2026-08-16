@@ -1,10 +1,5 @@
 @if ((form.invalid || serverError) && submitted) {
-  <app-error-summary
-    [formErrorsMap]="formErrorsMap"
-    [form]="form"
-    [serverError]="serverError"
-  >
-  </app-error-summary>
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form" [serverError]="serverError"> </app-error-summary>
 }
 <div class="govuk-grid-row" id="server-error">
   <div class="govuk-grid-column-full-from-desktop">

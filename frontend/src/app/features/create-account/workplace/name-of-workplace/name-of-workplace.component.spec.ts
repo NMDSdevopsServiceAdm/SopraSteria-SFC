@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
@@ -17,7 +17,7 @@ describe('NameOfWorkplaceComponent', () => {
     const component = await render(NameOfWorkplaceComponent, {
       imports: [SharedModule, RouterModule, RegistrationModule],
       providers: [
-        BackService,
+        BackLinkService,
         {
           provide: EstablishmentService,
           useValue: {},

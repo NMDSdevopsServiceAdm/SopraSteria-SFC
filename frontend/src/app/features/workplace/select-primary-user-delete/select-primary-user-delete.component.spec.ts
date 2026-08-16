@@ -1,5 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -181,7 +180,7 @@ describe('SelectPrimaryUserDeleteComponent', () => {
   describe('Back link', () => {
     it('should set the back link to user details page', async () => {
       const { component, router } = await setup();
-      const backLinkSpy = spyOn(component.backService, 'setBackLink');
+      const backLinkSpy = spyOn(component.backLinkService, 'showBackLink');
 
       Object.defineProperty(router, 'url', {
         get: () => 'workplace/123/user/abc123/change-primary-user-to-delete',
@@ -189,9 +188,7 @@ describe('SelectPrimaryUserDeleteComponent', () => {
 
       component.ngOnInit();
 
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: ['workplace', '123', 'user', 'abc123'],
-      });
+      expect(backLinkSpy).toHaveBeenCalled();
     });
   });
 

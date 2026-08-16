@@ -1,10 +1,9 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { provideRouter, Router, RouterModule } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -176,14 +175,12 @@ describe('SelectWorkplaceComponent', () => {
   describe('setBackLink()', () => {
     it('should set the back link to the create-account url when no returnTo state is passed, while in the registration flow', async () => {
       const { component } = await setup();
-      const backService = TestBed.inject(BackService) as BackService;
-      const backLinkSpy = spyOn(backService, 'setBackLink');
+      const backLinkService = TestBed.inject(BackLinkService) as BackLinkService;
+      const backLinkSpy = spyOn(backLinkService, 'showBackLink');
 
       component.setBackLink();
 
-      expect(backLinkSpy).toHaveBeenCalledWith({
-        url: [`workplace/${component.workplace.uid}/regulated-by-cqc`],
-      });
+      expect(backLinkSpy).toHaveBeenCalled();
     });
   });
 });

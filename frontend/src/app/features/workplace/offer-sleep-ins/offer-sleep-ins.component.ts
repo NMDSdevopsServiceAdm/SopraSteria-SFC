@@ -1,15 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { WorkplaceQuestion } from '../question/question.component';
 import { UntypedFormBuilder } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
+import { AlertService } from '@core/services/alert.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
-import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
-import { AlertService } from '@core/services/alert.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
   selector: 'app-offer-sleep-ins',
@@ -29,7 +30,7 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
-    public backService: BackService,
+    public backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     protected route: ActivatedRoute,
@@ -37,7 +38,7 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
     protected alertService: AlertService,
     protected previousRouteService: PreviousRouteService,
   ) {
-    super(formBuilder, router, backService, errorSummaryService, establishmentService);
+    super(formBuilder, router, backLinkService, errorSummaryService, establishmentService);
   }
 
   init(): void {
@@ -163,17 +164,7 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
   }
 
   public setBackLink(): void {
-    const isInWorkflow = !this.return;
-
-    const previousPage = this.previousRouteService.getPreviousPage();
-    const previousPageWasWhatDhaOrServiceUsers = previousPage === this.previousQuestionPage;
-
-    if (isInWorkflow || previousPageWasWhatDhaOrServiceUsers || this.inPayAndPensionsMiniFlow) {
-      this.back = { url: this.previousRoute };
-    } else {
-      this.back = this.return;
-    }
-    this.backService.setBackLink(this.back);
+    this.backLinkService.showBackLink();
   }
 
   public addAlert(): void {

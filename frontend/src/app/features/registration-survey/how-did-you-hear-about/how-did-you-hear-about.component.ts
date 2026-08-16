@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { URLStructure } from '@core/model/url.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { RegistrationSurveyService } from '@core/services/registration-survey.service';
 
 @Component({
-    selector: 'app-how-did-you-hear-about',
-    templateUrl: './how-did-you-hear-about.component.html',
-    standalone: false
+  selector: 'app-how-did-you-hear-about',
+  templateUrl: './how-did-you-hear-about.component.html',
+  standalone: false,
 })
 export class HowDidYouHearAboutComponent implements OnInit {
   public nextPage: URLStructure = { url: ['/registration-survey', 'thank-you'] };
@@ -28,14 +28,14 @@ export class HowDidYouHearAboutComponent implements OnInit {
   public form: UntypedFormGroup;
 
   constructor(
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected registrationSurveyService: RegistrationSurveyService,
     private formBuilder: UntypedFormBuilder,
     private router: Router,
   ) {}
 
   ngOnInit(): void {
-    this.setBackLink(this.return);
+    this.setBackLink();
     this.setupForm();
   }
 
@@ -76,7 +76,7 @@ export class HowDidYouHearAboutComponent implements OnInit {
     this.registrationSurveyService.submitSurvey();
   }
 
-  protected setBackLink(returnTo): void {
-    this.backService.setBackLink(returnTo);
+  protected setBackLink() {
+    this.backLinkService.showBackLink();
   }
 }

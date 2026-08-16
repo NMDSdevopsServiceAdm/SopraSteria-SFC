@@ -153,6 +153,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
         this.workplace.uid,
         'care-workforce-pathway-awareness',
       );
+      this.sections[0].skipTabSwitch = true;
       this.careWorkforcePathwayLinkDisplaying = true;
       this.setReturn = true;
       this.sections[0].showMessageAsText = !this.canEditEstablishment;

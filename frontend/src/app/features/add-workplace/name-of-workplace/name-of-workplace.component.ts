@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -9,14 +8,13 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import { NameOfWorkplaceDirective } from '@shared/directives/create-workplace/name-of-workplace/name-of-workplace.directive';
 
 @Component({
-    selector: 'app-name-of-workplace',
-    templateUrl: '../../../shared/directives/create-workplace/name-of-workplace/name-of-workplace.component.html',
-    standalone: false
+  selector: 'app-name-of-workplace',
+  templateUrl: '../../../shared/directives/create-workplace/name-of-workplace/name-of-workplace.component.html',
+  standalone: false,
 })
 export class NameOfWorkplaceComponent extends NameOfWorkplaceDirective {
   constructor(
     protected formBuilder: UntypedFormBuilder,
-    public backService: BackService,
     protected backLinkService: BackLinkService,
     protected router: Router,
     protected route: ActivatedRoute,
@@ -24,16 +22,7 @@ export class NameOfWorkplaceComponent extends NameOfWorkplaceDirective {
     public workplaceService: WorkplaceService,
     protected establishmentService: EstablishmentService,
   ) {
-    super(
-      formBuilder,
-      backService,
-      backLinkService,
-      router,
-      route,
-      errorSummaryService,
-      workplaceService,
-      establishmentService,
-    );
+    super(formBuilder, backLinkService, router, route, errorSummaryService, workplaceService, establishmentService);
   }
 
   protected init(): void {

@@ -3,23 +3,23 @@ import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RegistrationPayload } from '@core/model/registration.model';
-import { BackService } from '@core/services/back.service';
+import { InviteResponse } from '@core/model/userDetails.model';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 import { ConfirmAccountDetailsDirective } from '@shared/directives/user/confirm-account-details.directive';
 import { combineLatest } from 'rxjs';
-import { InviteResponse } from '@core/model/userDetails.model';
 
 @Component({
-    selector: 'app-confirm-account-details',
-    templateUrl: './confirm-account-details.component.html',
-    standalone: false
+  selector: 'app-confirm-account-details',
+  templateUrl: './confirm-account-details.component.html',
+  standalone: false,
 })
 export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirective {
   public flow: any;
   constructor(
-    private backService: BackService,
+    private backLinkService: BackLinkService,
     private registrationService: RegistrationService,
     private router: Router,
     private userService: UserService,
@@ -52,15 +52,17 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
         this.registrationService.loginCredentials$,
         this.registrationService.securityDetails$,
         this.registrationService.userResearchInviteResponse$,
-      ]).subscribe(([userDetails, locationAddress, service, loginCredentials, securityDetails, userResearchInviteResponse]) => {
-        this.userDetails = userDetails;
-        this.locationAddress = locationAddress;
-        this.service = service;
-        this.loginCredentials = loginCredentials;
-        this.securityDetails = securityDetails;
-        this.userResearchInviteResponse = userResearchInviteResponse;
-        this.setAccountDetails();
-      }),
+      ]).subscribe(
+        ([userDetails, locationAddress, service, loginCredentials, securityDetails, userResearchInviteResponse]) => {
+          this.userDetails = userDetails;
+          this.locationAddress = locationAddress;
+          this.service = service;
+          this.loginCredentials = loginCredentials;
+          this.securityDetails = securityDetails;
+          this.userResearchInviteResponse = userResearchInviteResponse;
+          this.setAccountDetails();
+        },
+      ),
     );
   }
 
@@ -119,7 +121,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/registration/create-security-question'] });
+    this.backLinkService.showBackLink();
   }
 
   private generatePayload(): RegistrationPayload {

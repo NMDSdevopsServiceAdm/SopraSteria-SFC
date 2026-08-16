@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { LocationService } from '@core/services/location.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
@@ -18,7 +18,7 @@ describe('UsernamePasswordComponent', () => {
     const component = await render(UsernamePasswordComponent, {
       imports: [SharedModule, RouterModule, RegistrationModule],
       providers: [
-        BackService,
+        BackLinkService,
         {
           provide: LocationService,
           useClass: MockLocationService,

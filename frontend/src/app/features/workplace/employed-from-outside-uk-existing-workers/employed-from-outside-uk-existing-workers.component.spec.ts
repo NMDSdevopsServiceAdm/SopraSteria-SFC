@@ -1,11 +1,10 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { provideRouter, Router, RouterModule } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -101,8 +100,8 @@ describe('EmployedFromOutsideUkExistingWorkersComponent', () => {
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const updateWorkersSpy = spyOn(establishmentService, 'updateWorkers').and.returnValue(of(null));
 
-    const backService = injector.inject(BackService) as BackService;
-    const backLinkSpy = spyOn(backService, 'setBackLink');
+    const backLinkService = injector.inject(BackLinkService) as BackLinkService;
+    const backLinkSpy = spyOn(backLinkService, 'showBackLink');
 
     const internationalRecruitmentService = injector.inject(
       InternationalRecruitmentService,
@@ -168,9 +167,7 @@ describe('EmployedFromOutsideUkExistingWorkersComponent', () => {
 
     component.setBackLink();
 
-    expect(backLinkSpy).toHaveBeenCalledWith({
-      url: ['/workplace', component.workplaceUid, 'health-and-care-visa-existing-workers'],
-    });
+    expect(backLinkSpy).toHaveBeenCalled();
   });
 
   describe('On submit, ', () => {

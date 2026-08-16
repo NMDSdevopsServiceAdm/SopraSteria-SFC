@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Service } from '@core/model/services.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -12,9 +11,9 @@ import {
 } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 
 @Component({
-    selector: 'app-select-main-service-create-account',
-    templateUrl: '../../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
-    standalone: false
+  selector: 'app-select-main-service-create-account',
+  templateUrl: '../../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
+  standalone: false,
 })
 export class SelectMainServiceComponent extends SelectMainServiceDirective {
   public isRegulated: boolean;
@@ -23,7 +22,6 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
 
   constructor(
     public registrationService: RegistrationService,
-    public backService: BackService,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: UntypedFormBuilder,
@@ -31,7 +29,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     protected workplaceService: WorkplaceService,
     private route: ActivatedRoute,
   ) {
-    super(backService, backLinkService, errorSummaryService, formBuilder, router, workplaceService);
+    super(backLinkService, errorSummaryService, formBuilder, router, workplaceService);
   }
 
   protected init(): void {

@@ -4,7 +4,6 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { URLStructure } from '@core/model/url.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
@@ -36,7 +35,6 @@ export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
-    public backService: BackService,
     protected backLinkService: BackLinkService,
     protected router: Router,
     protected route: ActivatedRoute,

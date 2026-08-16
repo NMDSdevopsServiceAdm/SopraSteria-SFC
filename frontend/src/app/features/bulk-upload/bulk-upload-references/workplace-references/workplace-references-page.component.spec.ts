@@ -4,7 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Workplace } from '@core/model/my-workplaces.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -67,7 +67,7 @@ describe('WorkplaceReferencesComponent', () => {
             },
           },
         },
-        BackService,
+        BackLinkService,
         UntypedFormBuilder,
         ErrorSummaryService,
         AdminSkipService,

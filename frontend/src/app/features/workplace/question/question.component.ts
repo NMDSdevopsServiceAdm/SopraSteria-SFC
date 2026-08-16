@@ -4,11 +4,11 @@ import { NavigationExtras, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ProgressBarUtil } from '@core/utils/progress-bar-util';
-import { isNull, isEqual } from 'lodash';
+import { isEqual, isNull } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -50,7 +50,7 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
   ) {}
@@ -82,14 +82,7 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
   }
 
   protected setBackLink(): void {
-    if (this.return) {
-      this.back = this.return;
-    } else {
-      this.back = this.isInAddDetailsFlow
-        ? { url: this.previousRoute }
-        : { url: ['/dashboard'], fragment: 'workplace' };
-    }
-    this.backService.setBackLink(this.back);
+    this.backLinkService.showBackLink();
   }
 
   ngOnDestroy() {

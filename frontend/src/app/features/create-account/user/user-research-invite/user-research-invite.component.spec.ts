@@ -3,7 +3,6 @@ import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { InviteResponse } from '@core/model/userDetails.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { SharedModule } from '@shared/shared.module';
@@ -15,7 +14,7 @@ import { UserResearchInviteComponent } from './user-research-invite.component';
 
 describe('UserResearchInviteComponent', () => {
   async function setup(overrides: any = {}) {
-    const showBackLinkSpy = jasmine.createSpy('setBacklink').and.returnValue(Promise.resolve(true));
+    const showBackLinkSpy = jasmine.createSpy('showBackLink').and.returnValue(Promise.resolve(true));
     const registrationFlow = overrides?.registrationFlow ?? true;
     const mockUserResearchInviteResponse = overrides?.mockUserResearchInviteResponse ?? null;
 
@@ -24,7 +23,7 @@ describe('UserResearchInviteComponent', () => {
     const setupTools = await render(UserResearchInviteComponent, {
       imports: [SharedModule, ReactiveFormsModule, FormsModule, RouterModule],
       providers: [
-        BackService,
+        BackLinkService,
         provideHttpClient(),
         {
           provide: ActivatedRoute,

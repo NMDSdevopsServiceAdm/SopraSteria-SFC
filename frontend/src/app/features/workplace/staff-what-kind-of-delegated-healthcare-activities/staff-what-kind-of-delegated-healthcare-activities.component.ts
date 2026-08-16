@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { WorkplaceQuestion } from '../question/question.component';
 import { FormArray, FormControl, UntypedFormBuilder } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activities.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
+import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
-import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activities.model';
-import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
-import { PreviousRouteService } from '@core/services/previous-route.service';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
   selector: 'app-staff-what-kind-of-delegated-healthcare-activities',
@@ -31,17 +31,16 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Workp
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     protected careWorkforcePathwayService: CareWorkforcePathwayService,
     protected route: ActivatedRoute,
     private alertService: AlertService,
     private delegatedHealthcareActivitiesService: DelegatedHealthcareActivitiesService,
-    private previousRouteService: PreviousRouteService,
     protected payAndPensionService: PayAndPensionService,
   ) {
-    super(formBuilder, router, backService, errorSummaryService, establishmentService);
+    super(formBuilder, router, backLinkService, errorSummaryService, establishmentService);
   }
 
   init(): void {
@@ -197,18 +196,7 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Workp
   }
 
   protected setBackLink(): void {
-    const isInWorkflow = !this.return;
-
-    const previousPage = this.previousRouteService.getPreviousPage();
-    const previousPageWasStaffDoDHA = previousPage === 'staff-do-delegated-healthcare-activities';
-
-    if (isInWorkflow || previousPageWasStaffDoDHA) {
-      this.back = { url: this.previousRoute };
-    } else {
-      this.back = this.return;
-    }
-
-    this.backService.setBackLink(this.back);
+    this.backLinkService.showBackLink();
   }
 
   ngOnDestroy(): void {

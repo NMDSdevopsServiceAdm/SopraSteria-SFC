@@ -5,7 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationSearchResponse } from '@core/model/location.model';
 import { URLStructure } from '@core/model/url.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
@@ -33,7 +32,6 @@ export class FindYourWorkplaceDirective implements OnInit, AfterViewInit, OnDest
 
   constructor(
     protected router: Router,
-    public backService: BackService,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected route: ActivatedRoute,

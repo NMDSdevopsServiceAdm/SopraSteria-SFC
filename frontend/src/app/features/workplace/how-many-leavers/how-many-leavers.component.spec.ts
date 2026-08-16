@@ -1,25 +1,24 @@
-import { provideHttpClient } from '@angular/common/http';
-import dayjs from 'dayjs';
-
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Leaver } from '@core/model/establishment.model';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
 import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 import { FormatUtil } from '@core/utils/format-util';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import dayjs from 'dayjs';
 
 import { HowManyLeaversComponent } from './how-many-leavers.component';
-import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
-import { PayAndPensionService } from '@core/services/pay-and-pension.service';
-import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
 
 describe('HowManyLeaversComponent', () => {
   const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(dayjs().subtract(1, 'years').toDate());
@@ -41,7 +40,7 @@ describe('HowManyLeaversComponent', () => {
     const workplace = override.workplace ?? {};
 
     const selectedJobRoles = override.noLocalStorageData ? null : override.selectedJobRoles ?? mockSelectedJobRoles;
-
+    const backLinkServiceSpy = jasmine.createSpyObj('BacklinkService', ['showBackLink']);
     const isInAddDetailsFlow = true;
 
     const renderResults = await render(HowManyLeaversComponent, {
@@ -49,6 +48,10 @@ describe('HowManyLeaversComponent', () => {
       providers: [
         patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
+        {
+          provide: BackLinkService,
+          useValue: backLinkServiceSpy,
+        },
         {
           provide: EstablishmentService,
           useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, null, workplace),
@@ -93,6 +96,7 @@ describe('HowManyLeaversComponent', () => {
       router,
       routerSpy,
       updateJobsSpy,
+      backLinkServiceSpy,
       vacanciesAndTurnoverService,
       ...renderResults,
     };
@@ -361,16 +365,11 @@ describe('HowManyLeaversComponent', () => {
 
     describe('backlink', () => {
       it('should set the backlink to job role selection page', async () => {
-        const { component } = await setup();
-        expect(component.back).toEqual({
-          url: [
-            '/workplace',
-            component.establishment.uid,
-            'workplace-data',
-            'add-workplace-details',
-            'select-leaver-job-roles',
-          ],
-        });
+        const { component, backLinkServiceSpy } = await setup();
+
+        component.setBackLink();
+
+        expect(backLinkServiceSpy.showBackLink).toHaveBeenCalled();
       });
     });
 

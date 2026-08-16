@@ -2,23 +2,23 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of, throwError } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 import { DeleteUserAccountComponent } from './delete-user-account.component';
-import { environment } from 'src/environments/environment';
 
 describe('DeleteUserAccountComponent', () => {
   async function setup() {
     const component = await render(DeleteUserAccountComponent, {
       imports: [SharedModule, RouterModule],
       providers: [
-        BackService,
+        BackLinkService,
         {
           provide: UserService,
           useClass: MockUserService,
@@ -138,15 +138,13 @@ describe('DeleteUserAccountComponent', () => {
     expect(cancelButton.getAttribute('href')).toEqual('/workplace/asdfg12345/user/12345asdfg');
   });
 
-  it('should navigate to previous page when back link is clicked', async () => {
+  it('should show the back link', async () => {
     const { component, componentInstance } = await setup();
-    const backLinkSpy = spyOn(componentInstance.backService, 'setBackLink');
+    const backLinkSpy = spyOn(componentInstance.backLinkService, 'showBackLink');
 
     componentInstance.setBackLink();
     component.fixture.detectChanges();
 
-    expect(backLinkSpy).toHaveBeenCalledWith({
-      url: ['/workplace/asdfg12345/user/12345asdfg'],
-    });
+    expect(backLinkSpy).toHaveBeenCalled();
   });
 });

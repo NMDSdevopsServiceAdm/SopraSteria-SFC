@@ -2,7 +2,6 @@ import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angula
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceInterfaceService } from '@core/services/workplace-interface.service';
@@ -25,7 +24,6 @@ export class NewRegulatedByCqcDirective implements OnInit, AfterViewInit {
     protected formBuilder: UntypedFormBuilder,
     protected errorSummaryService: ErrorSummaryService,
     protected workplaceInterfaceService: WorkplaceInterfaceService,
-    public backService: BackService,
     protected backLinkService: BackLinkService,
     protected route: ActivatedRoute,
     protected router: Router,

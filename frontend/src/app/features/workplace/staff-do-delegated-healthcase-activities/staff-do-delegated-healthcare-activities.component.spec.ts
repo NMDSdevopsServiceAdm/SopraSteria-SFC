@@ -4,7 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -15,13 +15,13 @@ import {
 } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
 
 import { StaffDoDelegatedHealthcareActivitiesComponent } from './staff-do-delegated-healthcare-activities.component';
-import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
   const labels = ['Yes', 'No', 'I do not know'];
@@ -31,7 +31,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
 
   async function setup(overrides: any = {}) {
     const routerSpy = jasmine.createSpy().and.resolveTo(true);
-    const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
+    const backServiceSpy = jasmine.createSpyObj('BackLinkService', ['showBackLink']);
     const workerHasDHAAnswered = overrides.someWorkersHasDHAAnswered ?? true;
 
     const isInAddDetailsFlow = !overrides?.establishmentService?.returnTo;
@@ -46,7 +46,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
           useFactory: MockEstablishmentServiceWithOverrides.factory(overrides.establishmentService ?? {}),
         },
         {
-          provide: BackService,
+          provide: BackLinkService,
           useValue: backServiceSpy,
         },
         {
@@ -271,9 +271,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
     it('should set the back link to the service users question', async () => {
       const { backServiceSpy } = await setup(overrides);
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'workplace-data', 'add-workplace-details', 'service-users'],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
     });
 
     describe('user skips the question', () => {

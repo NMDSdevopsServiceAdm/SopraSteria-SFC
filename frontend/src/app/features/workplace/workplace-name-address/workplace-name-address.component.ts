@@ -3,7 +3,6 @@ import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { LocationAddress } from '@core/model/location.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -13,16 +12,16 @@ import {
 } from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
 
 @Component({
-    selector: 'app-workplace-name-address',
-    templateUrl: '../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html',
-    standalone: false
+  selector: 'app-workplace-name-address',
+  templateUrl:
+    '../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html',
+  standalone: false,
 })
 export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective {
   public workplace: Establishment;
 
   constructor(
     private workplaceService: WorkplaceService,
-    protected backService: BackService,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: UntypedFormBuilder,
@@ -30,7 +29,7 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     protected router: Router,
     private establishmentService: EstablishmentService,
   ) {
-    super(backService, backLinkService, errorSummaryService, formBuilder, route, router, workplaceService);
+    super(backLinkService, errorSummaryService, formBuilder, route, router, workplaceService);
   }
 
   protected init(): void {
@@ -58,7 +57,7 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink(this.establishmentService.returnTo);
+    this.backLinkService.showBackLink();
   }
 
   get return() {

@@ -1,27 +1,27 @@
-import { of } from 'rxjs';
-
 import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { Alert } from '@core/model/alert.model';
+import { AlertService } from '@core/services/alert.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
-import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
-import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, within } from '@testing-library/angular';
-import userEvent from '@testing-library/user-event';
-import { TravelTimePayComponent } from './travel-time-pay.component';
-import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import {
   MockPayAndPensionService,
   mockPayAndPensionsGroup1ProgressBarSections,
 } from '@core/test-utils/MockPayAndPensionService';
-import { Alert } from '@core/model/alert.model';
-import { AlertService } from '@core/services/alert.service';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
+import { of } from 'rxjs';
+
+import { TravelTimePayComponent } from './travel-time-pay.component';
 
 describe('TravelTimePayComponent', () => {
   const travelTimePayOptions = [
@@ -44,7 +44,7 @@ describe('TravelTimePayComponent', () => {
 
   async function setup(overrides: any = {}) {
     const isInAddDetailsFlow = !overrides.returnToUrl;
-    const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
+    const backServiceSpy = jasmine.createSpyObj('BackLinkService', ['showBackLink']);
 
     const setupTools = await render(TravelTimePayComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -73,7 +73,7 @@ describe('TravelTimePayComponent', () => {
           },
         },
         {
-          provide: BackService,
+          provide: BackLinkService,
           useValue: backServiceSpy,
         },
         WindowRef,
@@ -220,9 +220,7 @@ describe('TravelTimePayComponent', () => {
         'add-workplace-details',
         'how-many-leavers',
       ]);
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'workplace-data', 'add-workplace-details', 'how-many-leavers'],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
     });
 
     it('should navigate to benefits-statutory-sick-pay page when user skips the question', async () => {
@@ -302,10 +300,7 @@ describe('TravelTimePayComponent', () => {
     it('should set the previous page to workplace summary', async () => {
       const { backServiceSpy } = await setup(overrides);
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/dashboard'],
-        fragment: 'workplace',
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
     });
 
     it('should show a "Save and return" cta button and "Cancel" link', async () => {
@@ -403,9 +398,7 @@ describe('TravelTimePayComponent', () => {
     it('should set the previous page to how-do-you-pay-for-sleep-ins when in the pay and pension mini flow', async () => {
       const { backServiceSpy } = await setup(overrides);
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'workplace-data', 'workplace-summary', 'how-do-you-pay-for-sleep-ins'],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
     });
 
     it('should show the "Save and continue" and "Skip this question cta buttons', async () => {

@@ -1,22 +1,23 @@
-import { fireEvent, render, within } from '@testing-library/angular';
-import { ChangeDataPermissionsComponent } from './change-data-permissions.component';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { establishmentBuilder, MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Establishment } from '../../../../mockdata/establishment';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { SharedModule } from '@shared/shared.module';
-import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { getTestBed } from '@angular/core/testing';
-import { BackService } from '@core/services/back.service';
-import { of } from 'rxjs';
-import { WindowRef } from '@core/services/window.ref';
-import { AlertService } from '@core/services/alert.service';
-import { PreviousRouteService } from '@core/services/previous-route.service';
-import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
-import { DataPermissions } from '@core/model/my-workplaces.model';
 import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { DataPermissions } from '@core/model/my-workplaces.model';
+import { AlertService } from '@core/services/alert.service';
+import { BackLinkService } from '@core/services/backLink.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { PreviousRouteService } from '@core/services/previous-route.service';
+import { WindowRef } from '@core/services/window.ref';
+import { establishmentBuilder, MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
+import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
+import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render, within } from '@testing-library/angular';
+import { of } from 'rxjs';
+
+import { Establishment } from '../../../../mockdata/establishment';
+import { ChangeDataPermissionsComponent } from './change-data-permissions.component';
 
 describe('ChangeDataPermissionsComponent', () => {
   const establishment = establishmentBuilder() as Establishment;
@@ -37,7 +38,7 @@ describe('ChangeDataPermissionsComponent', () => {
   };
 
   const setup = async (overrides: any = {}) => {
-    const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
+    const backServiceSpy = jasmine.createSpyObj('BackLinkService', ['showBackLink']);
     const setupTools = await render(ChangeDataPermissionsComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       declarations: [ChangeDataPermissionsComponent],
@@ -51,7 +52,7 @@ describe('ChangeDataPermissionsComponent', () => {
           useFactory: MockEstablishmentServiceWithOverrides.factory(overrides.establishmentService ?? {}),
         },
         {
-          provide: BackService,
+          provide: BackLinkService,
           useValue: backServiceSpy,
         },
         {
@@ -180,11 +181,10 @@ describe('ChangeDataPermissionsComponent', () => {
       expect(workplaceNameEl.textContent).toContain(subsidiaryWorkplace.name);
     });
 
-    it('should set the back link to "All your workplaces" page', async () => {
+    it('should show the back link', async () => {
       const { backServiceSpy } = await setup({ previousUrl });
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'view-all-workplaces'],
-      });
+
+      expect(backServiceSpy.showBackLink).toHaveBeenCalled();
     });
 
     it('should show the correct labels for the radio buttons', async () => {
@@ -351,12 +351,10 @@ describe('ChangeDataPermissionsComponent', () => {
       expect(getAllByText(parentWorkplace.name).length).toEqual(2);
     });
 
-    it('should set the back link to "All your workplaces" page', async () => {
+    it('should show the back link', async () => {
       const { backServiceSpy } = await setup({ previousUrl });
 
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/dashboard'],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalled();
     });
 
     it('should show the correct labels for the radio buttons', async () => {

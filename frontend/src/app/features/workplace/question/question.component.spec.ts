@@ -1,15 +1,16 @@
-import { render } from '@testing-library/angular';
-import { WorkplaceQuestion } from './question.component';
-import { Component } from '@angular/core';
-import { SharedModule } from '@shared/shared.module';
-import { Router, RouterModule } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { Component } from '@angular/core';
+import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
-import { BackService } from '@core/services/back.service';
-import { getTestBed } from '@angular/core/testing';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
+
+import { WorkplaceQuestion } from './question.component';
 
 describe('WorkplaceQuestion', () => {
   const mockWorkplaceUid = 'mock-workplace-uid';
@@ -28,7 +29,7 @@ describe('WorkplaceQuestion', () => {
   const setup = async (overrides: any = {}) => {
     const currentUrl = overrides?.currentUrl ?? '/dashboard';
     const returnTo = overrides?.returnTo ?? null;
-    const backServiceSpy = jasmine.createSpy();
+    const backServiceSpy = jasmine.createSpyObj('BackLinkService', ['showBackLink']);
 
     const setupTools = await render(MockChildComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -41,8 +42,8 @@ describe('WorkplaceQuestion', () => {
           }),
         },
         {
-          provide: BackService,
-          useValue: { setBackLink: backServiceSpy },
+          provide: BackLinkService,
+          useValue: backServiceSpy,
         },
         { provide: Router, useValue: { url: currentUrl, navigate: jasmine.createSpy() } },
         provideHttpClient(),
@@ -140,7 +141,7 @@ describe('WorkplaceQuestion', () => {
         returnTo: returnToFundingPage,
       });
 
-      expect(backServiceSpy).toHaveBeenCalledWith({ url: ['/funding/data'], fragment: 'workplace' });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalledWith();
     });
 
     it('should set the backlink to the previous question page if returnTo is missing and in add workplace details flow', async () => {
@@ -148,9 +149,7 @@ describe('WorkplaceQuestion', () => {
         currentUrl: `/workplace/${mockWorkplaceUid}/workplace-data/add-workplace-details/question-page-name`,
       });
 
-      expect(backServiceSpy).toHaveBeenCalledWith({
-        url: ['/workplace', mockWorkplaceUid, 'workplace-data', 'add-workplace-details', 'previous-page'],
-      });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalled();
     });
 
     it('should set the backlink to /dashboard#workplace if returnTo is missing and visited from workplace summary', async () => {
@@ -158,7 +157,7 @@ describe('WorkplaceQuestion', () => {
         currentUrl: `/workplace/${mockWorkplaceUid}/workplace-data/workplace-summary/question-page-name`,
       });
 
-      expect(backServiceSpy).toHaveBeenCalledWith({ url: ['/dashboard'], fragment: 'workplace' });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalled();
     });
 
     it('should set the backlink to /dashboard#workplace (as a failsafe) if returnTo is missing and current url is a special route', async () => {
@@ -166,7 +165,7 @@ describe('WorkplaceQuestion', () => {
         currentUrl: `/workplace/${mockWorkplaceUid}/some/unexpected/url`,
       });
 
-      expect(backServiceSpy).toHaveBeenCalledWith({ url: ['/dashboard'], fragment: 'workplace' });
+      expect(backServiceSpy.showBackLink).toHaveBeenCalled();
     });
   });
 

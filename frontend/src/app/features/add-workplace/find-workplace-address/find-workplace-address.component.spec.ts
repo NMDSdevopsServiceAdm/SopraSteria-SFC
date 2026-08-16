@@ -3,7 +3,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { provideRouter, Router, RouterModule } from '@angular/router';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
@@ -20,7 +20,7 @@ describe('FindWorkplaceAddressComponent', () => {
     const component = await render(FindWorkplaceAddressComponent, {
       imports: [SharedModule, RouterModule, RegistrationModule, ReactiveFormsModule],
       providers: [
-        BackService,
+        BackLinkService,
         {
           provide: LocationService,
           useClass: MockLocationService,

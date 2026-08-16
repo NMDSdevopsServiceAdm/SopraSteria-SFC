@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -10,16 +9,15 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectWorkplaceDirective } from '@shared/directives/create-workplace/select-workplace/select-workplace.directive';
 
 @Component({
-    selector: 'app-select-workplace',
-    templateUrl: '../../../shared/directives/create-workplace/select-workplace/select-workplace.component.html',
-    standalone: false
+  selector: 'app-select-workplace',
+  templateUrl: '../../../shared/directives/create-workplace/select-workplace/select-workplace.component.html',
+  standalone: false,
 })
 export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   public workplace: Establishment;
   private back: string;
 
   constructor(
-    protected backService: BackService,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: UntypedFormBuilder,
@@ -28,7 +26,7 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
     public establishmentService: EstablishmentService,
     public workplaceService: WorkplaceService,
   ) {
-    super(backService, backLinkService, errorSummaryService, formBuilder, router, route, workplaceService);
+    super(backLinkService, errorSummaryService, formBuilder, router, route, workplaceService);
   }
 
   protected init(): void {
@@ -55,7 +53,7 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: [this.back] });
+    this.backLinkService.showBackLink();
   }
 
   get return() {

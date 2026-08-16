@@ -8,7 +8,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { Workplace } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -20,11 +20,11 @@ import { take } from 'rxjs/operators';
 import { BulkUploadReferencesDirective } from '../bulk-upload-references.directive';
 
 @Component({
-    selector: 'app-bu-workplace-references-page',
-    templateUrl: 'workplace-references.component.html',
-    styleUrls: ['../references.component.scss'],
-    providers: [I18nPluralPipe],
-    standalone: false
+  selector: 'app-bu-workplace-references-page',
+  templateUrl: 'workplace-references.component.html',
+  styleUrls: ['../references.component.scss'],
+  providers: [I18nPluralPipe],
+  standalone: false,
 })
 export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
   private primaryWorkplace: Establishment;
@@ -35,14 +35,14 @@ export class WorkplaceReferencesComponent extends BulkUploadReferencesDirective 
     private activatedRoute: ActivatedRoute,
     protected establishmentService: EstablishmentService,
     protected bulkUploadService: BulkUploadService,
-    protected backService: BackService,
+    protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     private breadcrumbService: BreadcrumbService,
     protected alertService: AlertService,
   ) {
-    super(errorSummaryService, formBuilder, alertService, backService, router);
+    super(errorSummaryService, formBuilder, alertService, backLinkService, router);
   }
 
   ngOnInit(): void {

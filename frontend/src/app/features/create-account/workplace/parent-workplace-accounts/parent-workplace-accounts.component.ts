@@ -1,15 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 
 @Component({
-    selector: 'app-parent-workplace-accounts',
-    templateUrl: './parent-workplace-accounts.component.html',
-    standalone: false
+  selector: 'app-parent-workplace-accounts',
+  templateUrl: './parent-workplace-accounts.component.html',
+  standalone: false,
 })
 export class ParentWorkplaceAccounts implements OnInit {
   public insideFlow: boolean;
@@ -20,7 +19,6 @@ export class ParentWorkplaceAccounts implements OnInit {
   public userAccountSections: string[];
 
   constructor(
-    protected backService: BackService,
     public backLinkService: BackLinkService,
     public registrationService: RegistrationsService,
     protected router: Router,

@@ -4,7 +4,6 @@ import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { InviteResponse } from '@core/model/userDetails.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { SharedModule } from '@shared/shared.module';
@@ -18,7 +17,7 @@ describe('ActivateAccountUserResearchInviteComponent', () => {
   const mockActivationToken = 'mock-token-uuid';
 
   async function setup(overrides: any = {}) {
-    const showBackLinkSpy = jasmine.createSpy('setBacklink').and.returnValue(Promise.resolve(true));
+    const showBackLinkSpy = jasmine.createSpy('showBackLink').and.returnValue(Promise.resolve(true));
     const insideActivationFlow = overrides?.insideActivationFlow ?? true;
     const mockUserResearchInviteResponse = overrides?.mockUserResearchInviteResponse ?? null;
 
@@ -27,7 +26,6 @@ describe('ActivateAccountUserResearchInviteComponent', () => {
     const setupTools = await render(ActivateAccountUserResearchInviteComponent, {
       imports: [SharedModule, ReactiveFormsModule, FormsModule, RouterModule],
       providers: [
-        BackService,
         provideHttpClient(),
         provideHttpClientTesting(),
         {
