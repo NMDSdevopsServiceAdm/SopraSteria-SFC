@@ -58,6 +58,7 @@ describe('Parent staff records page as edit user', { tags: '@staffRecords' }, ()
       cy.get('app-navigate-to-workplace-dropdown select').select(targetSubsidiary.name);
 
       cy.url().should('contain', 'subsidiary');
+      onHomePage.clickTab('Home');
       cy.get('h1').should('contain', targetSubsidiary.name);
 
       onHomePage.clickTab('Staff records');
