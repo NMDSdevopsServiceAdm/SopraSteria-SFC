@@ -1,23 +1,23 @@
-import { ComponentFixture, getTestBed, TestBed } from '@angular/core/testing';
-
-import { AddUpdateStartersLeaversVacanciesDataComponent } from './add-update-starters-leavers-vacancies-data.component';
-import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
-import { render } from '@testing-library/angular';
-import { SharedModule } from '@shared/shared.module';
-import { Router, RouterModule } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { VacanciesAndTurnoverService, WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
-import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
-import { AlertService } from '@core/services/alert.service';
-import { provideActivatedRouteWithRouterLink } from '@core/test-utils/MockActivatedRoute';
-import { BackLinkService } from '@core/services/backLink.service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { AlertService } from '@core/services/alert.service';
+import { BackLinkService } from '@core/services/backLink.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { VacanciesAndTurnoverService, WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
+import { provideActivatedRouteWithRouterLink } from '@core/test-utils/MockActivatedRoute';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
-describe('AddUpdateStartersLeaversVacanciesDataComponent', () => {
+import { AddUpdateStartersLeaversVacanciesDataComponent } from './add-update-starters-leavers-vacancies-data.component';
+
+fdescribe('AddUpdateStartersLeaversVacanciesDataComponent', () => {
   beforeAll(() => {
     jasmine.clock().install();
   });
@@ -29,7 +29,6 @@ describe('AddUpdateStartersLeaversVacanciesDataComponent', () => {
   async function setup(overrides: any = {}) {
     const flowType = overrides.flowType ?? WorkplaceUpdateFlowType.ADD_SLV;
     const workplace = { ...establishmentBuilder(), ...overrides.workplace };
-    const totalNumberOfStaff = overrides?.totalNumberOfStaff ?? 10;
     const alertSpy = jasmine.createSpy('addAlert').and.returnValue(Promise.resolve(true));
     const showBackLinkSpy = jasmine.createSpy('setBacklink').and.returnValue(Promise.resolve(true));
 
@@ -176,6 +175,44 @@ describe('AddUpdateStartersLeaversVacanciesDataComponent', () => {
       });
 
       expect(alertSpy).toHaveBeenCalledWith({ type: 'success', message: 'Starters, leavers and vacancy data added' });
+    });
+  });
+
+  describe('Update flow', () => {
+    it('should show a heading and caption', async () => {
+      const { getByTestId, getByRole } = await setup({ flowType: WorkplaceUpdateFlowType.UPDATE_SLV });
+
+      const caption = getByTestId('caption');
+      const heading = getByRole('heading', { level: 1 });
+
+      expect(within(caption).getByText('Workplace'));
+      expect(within(heading).getByText('Update your starters, leavers and vacancy data'));
+    });
+
+    it('should show "Review and confirm" for the link of each row', async () => {
+      const { getByTestId } = await setup({
+        flowType: WorkplaceUpdateFlowType.UPDATE_SLV,
+      });
+
+      ['starters', 'leavers', 'vacancies'].forEach((slvKey) => {
+        const row = getByTestId(slvKey);
+        expect(row).toBeTruthy();
+
+        const changeLink = within(row).getByText('Review and confirm');
+        expect(changeLink.getAttribute('href')).toEqual(`/update-${slvKey}`);
+      });
+    });
+
+    it('should show an alert on page load when starters leavers vacancies are all submitted', async () => {
+      const { alertSpy } = await setup({
+        flowType: WorkplaceUpdateFlowType.UPDATE_SLV,
+        vacanciesAndTurnoverService: { allUpdatePagesSubmitted: () => true },
+      });
+
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Starters, leavers and vacancy information saved',
+      });
     });
   });
 });
