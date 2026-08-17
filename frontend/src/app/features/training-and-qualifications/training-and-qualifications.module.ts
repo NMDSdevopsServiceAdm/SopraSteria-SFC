@@ -11,8 +11,6 @@ import { ExpiringSoonTrainingComponent } from './expiring-soon-training/expiring
 import { MissingMandatoryTrainingStatusComponent } from './missing-mandatory-training/missing-mandatory-training-status.component';
 import { TrainingAndQualificationsRoutingModule } from './training-and-qualifications-routing.module';
 import { PdfTraininAndQualificationActionList } from '@features/pdf/training-and-qualification-action-list/training-and-qualification-action-list.component';
-import { SelectTrainingCategoryComponent } from './add-edit-training/select-training-category/select-training-category.component';
-import { SelectQualificationTypeComponent } from './add-edit-qualification/select-qualification-type/select-qualification-type.component';
 import { PdfTrainingAndQualificationTitleComponent } from '@features/pdf/pdf-training-and-qualification-title/pdf-training-and-qualification-title.component';
 
 @NgModule({
@@ -20,17 +18,15 @@ import { PdfTrainingAndQualificationTitleComponent } from '@features/pdf/pdf-tra
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    SharedModule,
     OverlayModule,
     TrainingAndQualificationsRoutingModule,
+    SharedModule,
   ],
   declarations: [
     ExpiredTrainingComponent,
     ExpiringSoonTrainingComponent,
     MissingMandatoryTrainingStatusComponent,
     PdfTraininAndQualificationActionList,
-    SelectTrainingCategoryComponent,
-    SelectQualificationTypeComponent,
     PdfTrainingAndQualificationTitleComponent,
   ],
   providers: [GetTrainingByStatusResolver, MissingMandatoryTrainingResolver],
