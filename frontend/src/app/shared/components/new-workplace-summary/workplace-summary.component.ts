@@ -1,6 +1,3 @@
-import { sortBy } from 'lodash';
-import { Subscription } from 'rxjs';
-
 import { I18nPluralPipe } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
@@ -10,11 +7,14 @@ import { URLStructure } from '@core/model/url.model';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
+import { DateUtil } from '@core/utils/date-util';
 import { WorkplaceUtil } from '@core/utils/workplace-util';
-import { PayAndPensionService } from '@core/services/pay-and-pension.service';
+import { sortBy } from 'lodash';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-new-workplace-summary',
@@ -38,8 +38,18 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   private capacities: any;
   public hasCapacity: boolean;
   public capacityMessages = [];
-  public noVacancyAndTurnoverData: boolean;
+
+  public noStartersData: boolean;
+  public noLeaversData: boolean;
   public noVacancyData: boolean;
+
+  public startersDataOutOfDate: boolean;
+  public leaversDataOutOfDate: boolean;
+  public vacancyDataOutOfDate: boolean;
+
+  public noVacancyAndTurnoverData: boolean;
+  public allVacancyAndTurnoverDataOutOfDate: boolean;
+
   public numberOfStaffError: boolean;
   public numberOfStaffWarning: boolean;
   public typeOfEmployer: string;
@@ -110,9 +120,46 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   public checkVacancyAndTurnoverData(): void {
-    const { vacancies, starters, leavers } = this.workplace;
-    this.noVacancyAndTurnoverData = !vacancies && !starters && !leavers;
-    this.noVacancyData = !vacancies && (!!leavers || !!starters);
+    const { vacancies, starters, leavers, vacanciesSavedAt, startersSavedAt, leaversSavedAt } = this.workplace;
+
+    // Check whether each section has no data.
+    this.noStartersData = !starters?.length;
+    this.noLeaversData = !leavers?.length;
+    this.noVacancyData = !vacancies?.length;
+
+    // Check whether each section was last updated more than 12 months ago.
+    this.startersDataOutOfDate = DateUtil.isMoreThanOneYearAgo(startersSavedAt);
+    this.leaversDataOutOfDate = DateUtil.isMoreThanOneYearAgo(leaversSavedAt);
+    this.vacancyDataOutOfDate = DateUtil.isMoreThanOneYearAgo(vacanciesSavedAt);
+
+    // All three sections have no data.
+    const noDataForAll = this.noStartersData && this.noLeaversData && this.noVacancyData;
+
+    // All three sections have data, but all three are more than 12 months old.
+    this.allVacancyAndTurnoverDataOutOfDate =
+      !this.noStartersData &&
+      !this.noLeaversData &&
+      !this.noVacancyData &&
+      this.startersDataOutOfDate &&
+      this.leaversDataOutOfDate &&
+      this.vacancyDataOutOfDate;
+
+    // Show the top-level warning for either:
+    // 1. all three sections have no data, or
+    // 2. all three sections have outdated data.
+    this.noVacancyAndTurnoverData = noDataForAll || this.allVacancyAndTurnoverDataOutOfDate;
+  }
+
+  get startersDataWarning(): boolean {
+    return !this.noVacancyAndTurnoverData && (this.noStartersData || this.startersDataOutOfDate);
+  }
+
+  get leaversDataWarning(): boolean {
+    return !this.noVacancyAndTurnoverData && (this.noLeaversData || this.leaversDataOutOfDate);
+  }
+
+  get vacancyDataWarning(): boolean {
+    return !this.noVacancyAndTurnoverData && (this.noVacancyData || this.vacancyDataOutOfDate);
   }
 
   private checkIfWorkplaceIsAwareOfCareWorkforcePathway(): void {

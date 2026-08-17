@@ -151,6 +151,7 @@ import { FormatMoneyWithDecimalsPipe } from './pipes/format-money-with-decimals.
 import { NewPillWithLinkComponent } from './components/new-pill-with-link/new-pill-with-link.component';
 import { NewAutoSuggestComponent } from './components/auto-suggest-new/new-auto-suggest.component';
 import { SearchInputAutoSuggestComponent } from './components/search-input-auto-suggest/search-input-auto-suggest.component';
+import { UpdateBannerComponent } from './components/update-banner/update-banner.component';
 
 @NgModule({
   imports: [
@@ -308,6 +309,7 @@ import { SearchInputAutoSuggestComponent } from './components/search-input-auto-
     DecimalInputWithButtonsComponent,
     FormatMoneyWithDecimalsPipe,
     NewPillWithLinkComponent,
+    UpdateBannerComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -447,6 +449,7 @@ import { SearchInputAutoSuggestComponent } from './components/search-input-auto-
     WorkplaceSummaryPathPipe,
     FormatMoneyWithDecimalsPipe,
     NewPillWithLinkComponent,
+    UpdateBannerComponent,
   ],
   providers: [
     DialogService,

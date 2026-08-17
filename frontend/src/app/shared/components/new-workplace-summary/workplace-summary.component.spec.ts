@@ -1,5 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -14,6 +13,7 @@ import { UserService } from '@core/services/user.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockCareWorkforcePathwayService, MockCWPUseReasons } from '@core/test-utils/MockCareWorkforcePathwayService';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
+import { mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 import {
   establishmentBuilder,
   MockEstablishmentService,
@@ -25,7 +25,6 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
-import { mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 
 const SectionId = {
   Workplace: 'workplace-section',
@@ -1365,6 +1364,15 @@ describe('NewWorkplaceSummaryComponent', () => {
   });
 
   describe('Vacancies and turnover section', () => {
+    beforeEach(() => {
+      jasmine.clock().install();
+      jasmine.clock().mockDate(new Date('2026-08-14'));
+    });
+
+    afterEach(() => {
+      jasmine.clock().uninstall();
+    });
+
     it('should not show the section if showAddWorkplaceDetailsBanner is true', async () => {
       const { component, fixture, queryByTestId } = await setup();
 
@@ -1385,66 +1393,165 @@ describe('NewWorkplaceSummaryComponent', () => {
 
       const section = getByTestId(SectionId.VacanciesAndTurnover);
 
-      expect(getByText(`You've not added any vacancy and turnover data`)).toBeTruthy();
+      expect(getByText('Add your starters, leavers and vacancy data')).toBeTruthy();
       expect(section.getAttribute('class')).toContain('govuk-summary-list__warning');
       expect(within(section).getByText('Vacancies and turnover').getAttribute('class')).toContain(
         'govuk-!-margin-bottom-1',
       );
     });
 
-    it('should not show a warning if there is a vacancies value', async () => {
+    it('should not show a top-level warning if there is a vacancies value', async () => {
       const { component, fixture, queryByText, getByTestId } = await setup();
 
       component.workplace.vacancies = `Don't know`;
       component.workplace.leavers = null;
       component.workplace.starters = null;
       component.canEditEstablishment = true;
+
       component.checkVacancyAndTurnoverData();
       fixture.detectChanges();
 
       const section = getByTestId(SectionId.VacanciesAndTurnover);
 
-      expect(queryByText(`You've not added any vacancy and turnover data`)).toBeFalsy();
+      expect(queryByText('Add your starters, leavers and vacancy data')).toBeFalsy();
       expect(section.getAttribute('class')).not.toContain('govuk-summary-list__warning');
       expect(within(section).getByText('Vacancies and turnover').getAttribute('class')).not.toContain(
         'govuk-!-margin-bottom-1',
       );
     });
 
-    it('should not show a warning if there is a leavers value', async () => {
+    it('should not show a top-level warning if there is a leavers value', async () => {
       const { component, fixture, queryByText, getByTestId } = await setup();
 
       component.workplace.vacancies = null;
       component.workplace.leavers = `Don't know`;
       component.workplace.starters = null;
       component.canEditEstablishment = true;
+
       component.checkVacancyAndTurnoverData();
       fixture.detectChanges();
 
       const section = getByTestId(SectionId.VacanciesAndTurnover);
 
-      expect(queryByText(`You've not added any vacancy and turnover data`)).toBeFalsy();
+      expect(queryByText('Add your starters, leavers and vacancy data')).toBeFalsy();
       expect(section.getAttribute('class')).not.toContain('govuk-summary-list__warning');
       expect(within(section).getByText('Vacancies and turnover').getAttribute('class')).not.toContain(
         'govuk-!-margin-bottom-1',
       );
     });
 
-    it('should not show a warning if there is a starters value', async () => {
+    it('should not show a top-level warning if there is a starters value', async () => {
       const { component, fixture, queryByText, getByTestId } = await setup();
 
       component.workplace.vacancies = null;
       component.workplace.leavers = null;
       component.workplace.starters = `Don't know`;
       component.canEditEstablishment = true;
+
       component.checkVacancyAndTurnoverData();
       fixture.detectChanges();
 
       const section = getByTestId(SectionId.VacanciesAndTurnover);
 
-      expect(queryByText(`You've not added any vacancy and turnover data`)).toBeFalsy();
+      expect(queryByText('Add your starters, leavers and vacancy data')).toBeFalsy();
       expect(section.getAttribute('class')).not.toContain('govuk-summary-list__warning');
       expect(within(section).getByText('Vacancies and turnover').getAttribute('class')).not.toContain(
+        'govuk-!-margin-bottom-1',
+      );
+    });
+
+    it('should not show a top-level warning if only starters data is out of date', async () => {
+      const { component, fixture, queryByText, getByTestId } = await setup();
+
+      component.workplace.vacancies = `Don't know`;
+      component.workplace.leavers = `Don't know`;
+      component.workplace.starters = `Don't know`;
+
+      component.workplace.vacanciesSavedAt = '2026-08-01';
+      component.workplace.leaversSavedAt = '2026-08-01';
+      component.workplace.startersSavedAt = '2024-01-01';
+
+      component.canEditEstablishment = true;
+      component.checkVacancyAndTurnoverData();
+      fixture.detectChanges();
+
+      const section = getByTestId(SectionId.VacanciesAndTurnover);
+
+      expect(queryByText('Update your starters, leavers and vacancy data')).toBeFalsy();
+      expect(section.getAttribute('class')).not.toContain('govuk-summary-list__warning');
+      expect(within(section).getByText('Vacancies and turnover').getAttribute('class')).not.toContain(
+        'govuk-!-margin-bottom-1',
+      );
+    });
+
+    it('should not show a top-level warning if only leavers data is out of date', async () => {
+      const { component, fixture, queryByText, getByTestId } = await setup();
+
+      component.workplace.vacancies = `Don't know`;
+      component.workplace.leavers = `Don't know`;
+      component.workplace.starters = `Don't know`;
+
+      component.workplace.vacanciesSavedAt = '2026-08-01';
+      component.workplace.leaversSavedAt = '2024-01-01';
+      component.workplace.startersSavedAt = '2026-08-01';
+
+      component.canEditEstablishment = true;
+      component.checkVacancyAndTurnoverData();
+      fixture.detectChanges();
+
+      const section = getByTestId(SectionId.VacanciesAndTurnover);
+
+      expect(queryByText('Update your starters, leavers and vacancy data')).toBeFalsy();
+      expect(section.getAttribute('class')).not.toContain('govuk-summary-list__warning');
+      expect(within(section).getByText('Vacancies and turnover').getAttribute('class')).not.toContain(
+        'govuk-!-margin-bottom-1',
+      );
+    });
+
+    it('should not show a top-level warning if only vacancy data is out of date', async () => {
+      const { component, fixture, queryByText, getByTestId } = await setup();
+
+      component.workplace.vacancies = `Don't know`;
+      component.workplace.leavers = `Don't know`;
+      component.workplace.starters = `Don't know`;
+
+      component.workplace.vacanciesSavedAt = '2024-01-01';
+      component.workplace.leaversSavedAt = '2026-08-01';
+      component.workplace.startersSavedAt = '2026-08-01';
+
+      component.canEditEstablishment = true;
+      component.checkVacancyAndTurnoverData();
+      fixture.detectChanges();
+
+      const section = getByTestId(SectionId.VacanciesAndTurnover);
+
+      expect(queryByText('Update your starters, leavers and vacancy data')).toBeFalsy();
+      expect(section.getAttribute('class')).not.toContain('govuk-summary-list__warning');
+      expect(within(section).getByText('Vacancies and turnover').getAttribute('class')).not.toContain(
+        'govuk-!-margin-bottom-1',
+      );
+    });
+
+    it('should show a top-level warning if all vacancy and turnover data is out of date', async () => {
+      const { component, fixture, getByText, getByTestId } = await setup();
+
+      component.workplace.vacancies = `Don't know`;
+      component.workplace.leavers = `Don't know`;
+      component.workplace.starters = `Don't know`;
+
+      component.workplace.vacanciesSavedAt = '2024-01-01';
+      component.workplace.leaversSavedAt = '2024-01-01';
+      component.workplace.startersSavedAt = '2024-01-01';
+
+      component.canEditEstablishment = true;
+      component.checkVacancyAndTurnoverData();
+      fixture.detectChanges();
+
+      const section = getByTestId(SectionId.VacanciesAndTurnover);
+
+      expect(getByText('Update your starters, leavers and vacancy data')).toBeTruthy();
+      expect(section.getAttribute('class')).toContain('govuk-summary-list__warning');
+      expect(within(section).getByText('Vacancies and turnover').getAttribute('class')).toContain(
         'govuk-!-margin-bottom-1',
       );
     });
@@ -1544,16 +1651,17 @@ describe('NewWorkplaceSummaryComponent', () => {
         component.workplace.leavers = null;
         component.workplace.starters = `Don't know`;
         component.canEditEstablishment = true;
+
         component.checkVacancyAndTurnoverData();
         fixture.detectChanges();
 
-        const vacanciesRow = getByTestId('vacancies');
+        const vacanciesSection = getByTestId('vacancies');
+        const vacanciesTopRow = getByTestId('vacancies-top-row');
 
-        expect(getByText(`You've not added any staff vacancy data`)).toBeTruthy();
-        expect(vacanciesRow.getAttribute('class')).toContain('govuk-summary-list__warning');
-        expect(within(vacanciesRow).getByTestId('vacancies-top-row').getAttribute('class')).toContain(
-          'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
-        );
+        expect(getByText('Add your vacancy data')).toBeTruthy();
+        expect(vacanciesSection.getAttribute('class')).toContain('govuk-summary-list__warning');
+        expect(vacanciesTopRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-border');
+        expect(vacanciesTopRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-padding');
       });
 
       it('should show warning message if there is no vacancy value but there is a leavers value', async () => {
@@ -1563,16 +1671,18 @@ describe('NewWorkplaceSummaryComponent', () => {
         component.workplace.leavers = 'None';
         component.workplace.starters = null;
         component.canEditEstablishment = true;
+
         component.checkVacancyAndTurnoverData();
         fixture.detectChanges();
 
-        const vacanciesRow = getByTestId('vacancies');
+        const vacanciesSection = getByTestId('vacancies');
+        const vacanciesTopRow = getByTestId('vacancies-top-row');
 
-        expect(getByText(`You've not added any staff vacancy data`)).toBeTruthy();
-        expect(vacanciesRow.getAttribute('class')).toContain('govuk-summary-list__warning');
-        expect(within(vacanciesRow).getByTestId('vacancies-top-row').getAttribute('class')).toContain(
-          'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
-        );
+        expect(getByText('Add your vacancy data')).toBeTruthy();
+        expect(vacanciesSection.getAttribute('class')).toContain('govuk-summary-list__warning');
+
+        expect(vacanciesTopRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-border');
+        expect(vacanciesTopRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-padding');
       });
 
       it('should clear selected job roles on navigation to update vacancies page', async () => {

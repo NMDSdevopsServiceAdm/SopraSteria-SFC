@@ -190,8 +190,11 @@ export interface Establishment {
   payAndPensionsMiniFlowViewed?: boolean;
   updatePayForMultiStaffViewed?: boolean;
   fastTrackPayByJobRolesViewed?: boolean;
+  vacanciesSavedAt?: string;
+  startersSavedAt?: string;
+  leaversSavedAt?: string;
+  lastStaffRecordMessageDismissedAt?: Date;
 }
-
 export interface UpdateJobsRequest {
   leavers?: Leaver[] | string;
   starters?: Starter[] | string;

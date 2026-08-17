@@ -1,7 +1,8 @@
-import dayjs from 'dayjs';
-import { FormatUtil } from './format-util';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { DateValidator } from '@shared/validators/date.validator';
+import dayjs from 'dayjs';
+
+import { FormatUtil } from './format-util';
 
 export type FormGroupDateValues = { day: number; month: number; year: number };
 
@@ -10,6 +11,10 @@ export class DateUtil {
     const today = new Date();
     today.setFullYear(today.getFullYear() - 1);
     return FormatUtil.formatDateToLocaleDateString(today);
+  }
+
+  public static isMoreThanOneYearAgo(date: string | Date | dayjs.Dayjs | undefined): boolean {
+    return dayjs(date).isBefore(DateUtil.getDateForOneYearAgo(), 'day');
   }
 
   public static toDayjs(input: string | FormGroupDateValues): dayjs.Dayjs {

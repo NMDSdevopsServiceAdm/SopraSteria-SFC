@@ -1,13 +1,19 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
+import { UpdateBannerProps } from '@core/model/update-banner.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { TabsService } from '@core/services/tabs.service';
+import { DateUtil } from '@core/utils/date-util';
+import { FormatUtil } from '@core/utils/format-util';
+import { SubsidiaryRouterService } from '@shared/services/subsidiary-router-service';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
+
+const NO_STAFF_RECORDS_MESSAGE = 'You’ve not added any staff records in the last 12 months';
 
 @Component({
   selector: 'app-summary-section',
@@ -34,6 +40,8 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   @Input() noOfWorkersWithDelegatedHealthcareUnanswered: number;
   @Input() workplacesNeedAttention: boolean;
   @Input() showCheckCqcDetails: boolean;
+
+  public updateBanner: WritableSignal<UpdateBannerProps | null> = signal(null);
 
   public sections: Section[] = [
     {
@@ -71,9 +79,6 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   };
 
   public isParent: boolean;
-  private careWorkforcePathwayLinkDisplaying: boolean;
-  private payAndPensionWorkplaceQuestionsLinkDisplaying: boolean;
-  private setReturn: boolean;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -85,26 +90,33 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getWorkplaceSummaryMessage();
-    this.getStaffCreatedDate();
+
     this.getStaffSummaryMessage();
     this.getTrainingAndQualsSummary();
+    this.showViewSummaryLinks();
+
     this.isParent = this.workplace?.isParent;
     this.getOtherWorkplacesSummaryMessage();
+
+    this.setupUpdateBanner();
   }
 
-  public async onClick(event: Event, fragment: string, route: string[], skipTabSwitch: boolean = false): Promise<void> {
+  public async onClick(event: Event, section: Section): Promise<void> {
     event.preventDefault();
-    if (this.payAndPensionWorkplaceQuestionsLinkDisplaying && fragment == 'workplace') {
-      this.payAndPensionService.setInPayAndPensionsMiniFlow(true);
-      this.setPayAndPensionsMiniFlowViewed();
+
+    const { fragment, route, skipTabSwitch = false, scrollToId, onClickHook } = section;
+
+    if (onClickHook) {
+      onClickHook();
     }
 
-    if (this.careWorkforcePathwayLinkDisplaying && fragment == 'workplace') {
-      this.setCwpAwarenessQuestionViewed();
-    }
+    if (scrollToId) {
+      const destinationUrl = route ?? ['/dashboard'];
+      const extras = route ? {} : { fragment };
+      const router = this.router as SubsidiaryRouterService;
 
-    if (this.setReturn) {
-      this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'home' });
+      router.navigateAndScrollToAnchor(destinationUrl, scrollToId, extras);
+      return;
     }
 
     if (this.isParentSubsidiaryView) {
@@ -132,157 +144,151 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       vacancies,
       starters,
       leavers,
-      mainService,
-      payAndPensionsMiniFlowViewed,
+      vacanciesSavedAt,
+      startersSavedAt,
+      leaversSavedAt,
     } = this.workplace;
     this.sections[0].redFlag = false;
+
     if (showAddWorkplaceDetailsBanner) {
-      this.sections[0].message = 'Add more details to your workplace';
-    } else if (
-      this.payAndPensionService.showSleepInsQuestions(mainService.payAndPensionsGroup) &&
-      !payAndPensionsMiniFlowViewed
-    ) {
-      this.sections[0].message = "We've added some Workplace questions";
-      this.sections[0].skipTabSwitch = true;
-      this.sections[0].route = this.establishmentService.buildPathForWorkplaceSummary(this.workplace.uid, 'pensions');
-      this.setReturn = true;
-      this.payAndPensionWorkplaceQuestionsLinkDisplaying = true;
-    } else if (!this.workplace.CWPAwarenessQuestionViewed && !this.workplace.careWorkforcePathwayWorkplaceAwareness) {
-      this.sections[0].message = 'How aware of the CWP is your workplace?';
-      this.sections[0].route = this.establishmentService.buildPathForWorkplaceSummary(
-        this.workplace.uid,
-        'care-workforce-pathway-awareness',
-      );
-      this.careWorkforcePathwayLinkDisplaying = true;
-      this.setReturn = true;
-      this.sections[0].showMessageAsText = !this.canEditEstablishment;
-    } else if (
-      !this.workplace.staffDoDelegatedHealthcareActivities &&
-      this.workplace.mainService.canDoDelegatedHealthcareActivities
-    ) {
-      this.sections[0].message = 'Do your staff carry out delegated healthcare activities?';
-      this.sections[0].route = this.establishmentService.buildPathForWorkplaceSummary(
-        this.workplace.uid,
-        'staff-do-delegated-healthcare-activities',
-      );
-      this.setReturn = true;
-      this.sections[0].showMessageAsText = !this.canEditEstablishment;
-    } else if (this.showCheckCqcDetails) {
-      this.sections[0].message = 'You need to check your CQC details';
-    } else if (numberOfStaff === undefined || numberOfStaff === null) {
+      this.sections[0].message = 'Finish adding your workplace data';
+      return;
+    }
+    if (this.showCheckCqcDetails) {
+      this.sections[0].message = 'Your workplace details do not match your CQC details';
+      this.sections[0].scrollToId = 'check-cqc-details-banner';
+      return;
+    }
+
+    const notAllTurnoverDataAnswered = [vacancies, leavers, starters].some((value) => !value);
+    if (notAllTurnoverDataAnswered) {
+      const missingOnes = Object.entries({ starters, leavers, vacancy: vacancies })
+        .filter(([_key, value]) => !value)
+        .map(([key, _value]) => key);
+
+      const message = `Add your ${FormatUtil.joinNouns(missingOnes)} data`;
+      this.sections[0].message = message;
+      this.sections[0].scrollToId = 'vacancies-and-turnover';
+      return;
+    }
+
+    const vacanciesOverOneYear = DateUtil.isMoreThanOneYearAgo(vacanciesSavedAt);
+    const startersOverOneYear = DateUtil.isMoreThanOneYearAgo(startersSavedAt);
+    const leaversOverOneYear = DateUtil.isMoreThanOneYearAgo(leaversSavedAt);
+
+    const someDataOutdated = [vacanciesOverOneYear, startersOverOneYear, leaversOverOneYear].some((x) => x);
+
+    if (someDataOutdated) {
+      const outdatedOnes = [
+        ['starters', startersOverOneYear],
+        ['leavers', leaversOverOneYear],
+        ['vacancy', vacanciesOverOneYear],
+      ]
+        .filter(([_key, outdated]) => outdated)
+        .map(([key, _outdated]) => key) as string[];
+
+      const message = `Update your ${FormatUtil.joinNouns(outdatedOnes)} data`;
+      this.sections[0].message = message;
+      this.sections[0].scrollToId = 'vacancies-and-turnover';
+      return;
+    }
+
+    if (numberOfStaff === undefined || numberOfStaff === null) {
       this.sections[0].message = `You've not added your total number of staff`;
       this.sections[0].redFlag = true;
-    } else if (
-      numberOfStaff !== this.workerCount &&
-      this.afterEightWeeksFromFirstLogin() &&
-      this.canViewListOfWorkers
-    ) {
-      this.sections[0].message = 'Staff total does not match staff records added';
-    } else if (!vacancies && !leavers && !starters) {
-      this.sections[0].message = `You've not added any vacancy and turnover data`;
-    } else if (!vacancies && (leavers || starters)) {
-      this.sections[0].message = `You've not added any staff vacancy data`;
+      return;
     }
-    this.showViewSummaryLinks(this.sections[0].linkText);
+
+    if (numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin() && this.canViewListOfWorkers) {
+      this.sections[0].message = 'Staff total does not match number of staff records';
+      this.sections[0].scrollToId = 'workplace-details';
+
+      return;
+    }
   }
 
   private afterEightWeeksFromFirstLogin(): boolean {
     const eightWeeksFromFirstLogin =
       this.workplace.eightWeeksFromFirstLogin && new Date(this.workplace.eightWeeksFromFirstLogin) < new Date();
-
     return eightWeeksFromFirstLogin;
   }
 
   public getStaffSummaryMessage(): void {
     if (!this.canViewListOfWorkers) {
-      this.showViewSummaryLinks(this.sections[1].linkText);
       return;
     }
 
-    const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
+    const oneYearAfterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
+    const oneYearAfterstaffRecordMessageDismissed = dayjs(this.workplace.lastStaffRecordMessageDismissedAt).add(
+      12,
+      'M',
+    );
+
     if (!this.workerCount) {
-      this.sections[1].message = 'You can start to add your staff records now';
-    } else if (this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0) {
-      this.sections[1].message = 'Where are your staff on the care workforce pathway?';
-      this.sections[1].skipTabSwitch = true;
-      this.sections[1].route = [
-        '/workplace',
-        this.workplace.uid,
-        'staff-record',
-        'care-workforce-pathway-workers-summary',
-      ];
-      this.sections[1].showMessageAsText = !this.canEditWorker;
-    } else if (
-      this.workplace.staffDoDelegatedHealthcareActivities !== 'No' &&
-      this.workplace.mainService.canDoDelegatedHealthcareActivities &&
-      this.noOfWorkersWithDelegatedHealthcareUnanswered > 0
-    ) {
-      this.sections[1].message = 'Who carries out delegated healthcare activities?';
-      this.sections[1].skipTabSwitch = true;
-      this.sections[1].route = [
-        '/workplace',
-        this.workplace.uid,
-        'staff-record',
-        'who-carry-out-delegated-healthcare-activities',
-      ];
-      this.sections[1].showMessageAsText = !this.canEditWorker;
-    } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
-      this.sections[1].message = 'Staff records added does not match staff total';
-    } else if (this.noOfWorkersWhoRequireInternationalRecruitment > 0) {
+      this.sections[1].message = 'Start adding your staff records';
+      return;
+    }
+
+    if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
+      this.sections[1].message = 'Number of staff records does not match total staff';
+      return;
+    }
+
+    if (this.noOfWorkersWhoRequireInternationalRecruitment > 0) {
       this.showInternationalRecruitmentMessage();
-    } else if (
-      dayjs() >= afterWorkplaceCreated &&
+      return;
+    }
+
+    const today = dayjs();
+    const showNoStaffRecordsMessage =
       this.workplace.numberOfStaff > 10 &&
-      dayjs() >= this.getWorkerLatestCreatedDate()
-    ) {
-      this.sections[1].message = 'No staff records added in the last 12 months';
-    } else if (this.workersNotCompleted?.length > 0 && this.getStaffCreatedDate()) {
-      this.sections[1].message = 'Some records only have mandatory data added';
+      today >= oneYearAfterWorkplaceCreated &&
+      today >= this.oneYearAfterLatestWorkerCreatedDate() &&
+      (!this.workplace.lastStaffRecordMessageDismissedAt || today >= oneYearAfterstaffRecordMessageDismissed);
+
+    if (showNoStaffRecordsMessage) {
+      this.sections[1].message = NO_STAFF_RECORDS_MESSAGE;
+      this.sections[1].onClickHook = () => this.updateLastStaffRecordMessageDismissedAt();
+      return;
+    }
+
+    if (this.workersNotCompleted?.length > 0 && this.workerNotCompletedOverOneMonth()) {
+      this.sections[1].message = 'Add more details to your staff records';
       if (this.isParentSubsidiaryView) {
         this.sections[1].route = ['/staff-basic-records', this.workplace.uid];
       } else {
         this.sections[1].route = ['/staff-basic-records'];
       }
+      return;
     }
-    this.showViewSummaryLinks(this.sections[1].linkText);
   }
 
   public getTrainingAndQualsSummary(): void {
-    if (this.trainingCounts?.staffMissingMandatoryTraining) {
+    const hasMissingMandatory = this.trainingCounts?.staffMissingMandatoryTraining;
+    const hasExpired = this.trainingCounts?.totalExpiredTraining;
+    const hasExpiringSoon = this.trainingCounts?.totalExpiringTraining;
+
+    if (hasMissingMandatory || hasExpired) {
       this.sections[2].redFlag = true;
-      this.sections[2].message = `${this.trainingCounts.staffMissingMandatoryTraining} staff ${
-        this.trainingCounts.staffMissingMandatoryTraining > 1 ? 'are' : 'is'
-      } missing mandatory training`;
-      this.sections[2].route = [
-        '/workplace',
-        this.workplace.uid,
-        'training-and-qualifications',
-        'missing-mandatory-training',
-      ];
-    } else if (this.trainingCounts?.totalExpiredTraining) {
-      this.sections[2].redFlag = true;
-      this.sections[2].message = `${this.trainingCounts.totalExpiredTraining} training record${
-        this.trainingCounts.totalExpiredTraining > 1 ? 's have' : ' has'
-      } expired`;
-      this.sections[2].route = ['/workplace', this.workplace.uid, 'training-and-qualifications', 'expired-training'];
-    } else if (this.trainingCounts?.totalExpiringTraining) {
-      this.sections[2].message = `${this.trainingCounts.totalExpiringTraining} training record${
-        this.trainingCounts.totalExpiringTraining > 1 ? 's expire' : ' expires'
-      } soon`;
-      this.sections[2].route = [
-        '/workplace',
-        this.workplace.uid,
-        'training-and-qualifications',
-        'expires-soon-training',
-      ];
-    } else if (this.trainingCounts?.totalRecords === 0 && this.trainingCounts?.totalTraining == 0) {
+      this.sections[2].message = 'You need to check your training records';
+      this.sections[2].scrollToId = 'training-info-panel';
+      return;
+    }
+
+    if (hasExpiringSoon) {
+      this.sections[2].message = 'You need to check your training records';
+      this.sections[2].scrollToId = 'training-info-panel';
+      return;
+    }
+
+    if (this.trainingCounts?.totalRecords === 0 && this.trainingCounts?.totalTraining == 0) {
       this.sections[2].link = false;
       this.sections[2].message = 'Manage your staff training and qualifications';
+      return;
     }
-    this.showViewSummaryLinks(this.sections[2].linkText);
   }
 
-  getStaffCreatedDate() {
+  private workerNotCompletedOverOneMonth() {
     if (this.workersNotCompleted) {
       const filterDate = this.workersNotCompleted.filter(
         (workerDate: any) => dayjs() > dayjs(new Date(workerDate.created)).add(1, 'M'),
@@ -291,7 +297,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  getWorkerLatestCreatedDate() {
+  private oneYearAfterLatestWorkerCreatedDate() {
     const workerLatestCreatedDate = new Date(Math.max(...this.workersCreatedDate));
     const afterWorkerCreated = dayjs(workerLatestCreatedDate).add(12, 'M');
     return afterWorkerCreated;
@@ -309,36 +315,58 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     if (this.workplacesCount === 0) {
       this.otherWorkplacesSection.message = "You've not added any other workplaces yet";
       this.otherWorkplacesSection.link = false;
-      this.otherWorkplacesSection.orangeFlag = false;
-    } else if (this.showMissingCqcMessage) {
+      return;
+    }
+
+    if (this.showMissingCqcMessage) {
       this.otherWorkplacesSection.message = 'Have you added all of your workplaces?';
       this.otherWorkplacesSection.link = true;
       this.otherWorkplacesSection.orangeFlag = true;
-    } else if (this.workplacesNeedAttention) {
+      return;
+    }
+
+    if (this.workplacesNeedAttention) {
       this.otherWorkplacesSection.message = 'You need to check your other workplaces';
       this.otherWorkplacesSection.link = true;
       this.otherWorkplacesSection.redFlag = true;
-    } else {
-      this.otherWorkplacesSection.message = 'Check and update your other workplaces often';
-      this.otherWorkplacesSection.link = false;
-      this.otherWorkplacesSection.orangeFlag = false;
+      return;
     }
+
+    this.otherWorkplacesSection.message = 'Check and update your other workplaces often';
+    this.otherWorkplacesSection.link = false;
   }
 
-  public showViewSummaryLinks(linkText: string): void {
-    if (linkText === this.sections[0].linkText && !this.canViewEstablishment) {
+  public showViewSummaryLinks(): void {
+    if (!this.canViewEstablishment) {
       this.sections[0].link = false;
-    } else if (linkText === this.sections[1].linkText && !this.canViewListOfWorkers) {
+    }
+
+    if (!this.canViewListOfWorkers) {
       this.sections[1].link = false;
-    } else if (linkText === this.sections[2].linkText && !this.canViewListOfWorkers) {
       this.sections[2].link = false;
     }
   }
 
   private updateSingleEstablishmentField(dataToUpdate: any): void {
-    this.subscriptions.add(
-      this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, dataToUpdate).subscribe(),
-    );
+    this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, dataToUpdate).subscribe();
+  }
+
+  private updateLastStaffRecordMessageDismissedAt(): void {
+    const payload = {
+      property: 'lastStaffRecordMessageDismissedAt',
+      value: new Date(),
+    };
+
+    this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, payload).subscribe((response) => {
+      if (!response?.data) {
+        return;
+      }
+
+      const { lastStaffRecordMessageDismissedAt } = response.data;
+      if (lastStaffRecordMessageDismissedAt) {
+        this.workplace.lastStaffRecordMessageDismissedAt = lastStaffRecordMessageDismissedAt;
+      }
+    });
   }
 
   private setCwpAwarenessQuestionViewed(): void {
@@ -363,18 +391,149 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     this.router.navigate(['/workplace', 'view-all-workplaces']);
   }
 
+  public setupUpdateBanner() {
+    this.setupUpdateBannerForPayAndPensionWorkplaceQuestions();
+    this.setupUpdateBannerForCWPWorkplaceAwareness();
+
+    // Blue update banner for Care workforce pathway worker question is disabled temporarily, as CWP roles category update is planned ahead
+    // this.setupUpdateBannerForCWPWorkerQuestion();
+
+    this.setupUpdateBannerForDHAWorkplaceQuestion();
+    this.setupUpdateBannerForDHAWorkerQuestion();
+  }
+
+  private setupUpdateBannerForPayAndPensionWorkplaceQuestions() {
+    if (this.updateBanner()) {
+      return;
+    }
+
+    const { mainService, payAndPensionsMiniFlowViewed } = this.workplace;
+    const showBanner =
+      this.payAndPensionService.showSleepInsQuestions(mainService.payAndPensionsGroup) &&
+      !payAndPensionsMiniFlowViewed &&
+      this.canEditEstablishment;
+
+    if (showBanner) {
+      this.updateBanner.set({
+        content: 'New questions about pay and pensions',
+        linkText: 'Answer questions',
+        linkAriaDescription: ' about pay and pensions',
+        linkTo: this.establishmentService.buildPathForWorkplaceSummary(this.workplace.uid, 'pensions'),
+        onLinkClicked: () => {
+          this.payAndPensionService.setInPayAndPensionsMiniFlow(true);
+          this.setPayAndPensionsMiniFlowViewed();
+          this.setReturnToHomeTab();
+        },
+      });
+    }
+  }
+
+  private setupUpdateBannerForCWPWorkplaceAwareness() {
+    if (this.updateBanner()) {
+      return;
+    }
+
+    const { CWPAwarenessQuestionViewed, careWorkforcePathwayWorkplaceAwareness } = this.workplace;
+
+    if (!CWPAwarenessQuestionViewed && !careWorkforcePathwayWorkplaceAwareness && this.canEditEstablishment) {
+      this.updateBanner.set({
+        content: 'How aware of the care workforce pathway is your workplace?',
+        linkText: 'Answer questions',
+        linkAriaDescription: ' about How aware of the care workforce pathway is your workplace',
+        linkTo: this.establishmentService.buildPathForWorkplaceSummary(
+          this.workplace.uid,
+          'care-workforce-pathway-awareness',
+        ),
+        onLinkClicked: () => {
+          this.setCwpAwarenessQuestionViewed();
+          this.setReturnToHomeTab();
+        },
+      });
+    }
+  }
+
+  private setupUpdateBannerForCWPWorkerQuestion() {
+    if (this.updateBanner()) {
+      return;
+    }
+    const showBanner = this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0 && this.canEditWorker;
+
+    if (showBanner) {
+      this.updateBanner.set({
+        content: 'Where are your staff on the care workforce pathway?',
+        linkText: 'Answer questions',
+        linkAriaDescription: ' about Where are your staff on the care workforce pathway',
+        linkTo: ['/workplace', this.workplace.uid, 'staff-record', 'care-workforce-pathway-workers-summary'],
+      });
+    }
+  }
+
+  private setupUpdateBannerForDHAWorkplaceQuestion() {
+    if (this.updateBanner()) {
+      return;
+    }
+    const showBanner =
+      !this.workplace.staffDoDelegatedHealthcareActivities &&
+      this.workplace.mainService.canDoDelegatedHealthcareActivities &&
+      this.canEditEstablishment;
+
+    if (showBanner) {
+      this.updateBanner.set({
+        content: 'Do your staff carry out delegated healthcare activities?',
+        linkTo: this.establishmentService.buildPathForWorkplaceSummary(
+          this.workplace.uid,
+          'staff-do-delegated-healthcare-activities',
+        ),
+        linkAriaDescription: ' about Do your staff carry out delegated healthcare activities?',
+        onLinkClicked: () => {
+          this.setReturnToHomeTab();
+        },
+      });
+    }
+  }
+
+  private setupUpdateBannerForDHAWorkerQuestion() {
+    if (this.updateBanner()) {
+      return;
+    }
+
+    const showBanner =
+      this.workplace.staffDoDelegatedHealthcareActivities !== 'No' &&
+      this.workplace.mainService.canDoDelegatedHealthcareActivities &&
+      this.noOfWorkersWithDelegatedHealthcareUnanswered > 0 &&
+      this.canEditWorker;
+
+    if (showBanner) {
+      this.updateBanner.set({
+        content: 'Who carries out delegated healthcare activities?',
+        linkTo: ['/workplace', this.workplace.uid, 'staff-record', 'who-carry-out-delegated-healthcare-activities'],
+        linkAriaDescription: ' about Who carries out delegated healthcare activities?',
+        onLinkClicked: () => {
+          this.setReturnToHomeTab();
+        },
+      });
+    }
+  }
+
+  private setReturnToHomeTab() {
+    this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'home' });
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 }
 
-interface Section {
+export interface Section {
   linkText: string;
-  fragment: string;
-  message: string;
-  route: string[];
-  redFlag: boolean;
   link: boolean;
+  message: string;
+  fragment?: string;
+  route?: string[];
+  redFlag?: boolean;
+  orangeFlag?: boolean;
   skipTabSwitch?: boolean;
   showMessageAsText?: boolean;
+  scrollToId?: string;
+  onClickHook?: () => void;
 }
