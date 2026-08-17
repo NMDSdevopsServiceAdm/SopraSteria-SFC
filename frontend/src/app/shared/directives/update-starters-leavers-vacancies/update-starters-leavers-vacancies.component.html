@@ -12,6 +12,7 @@
   <div class="govuk-grid-column-two-thirds">
     <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
       <fieldset class="govuk-fieldset">
+        <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
         <h1 class="govuk-heading-l">{{ heading }}</h1>
 
         <div
@@ -56,7 +57,7 @@
           </app-job-role-numbers-table>
 
           <div
-            class="govuk-form-group govuk-!-margin-top-6"
+            class="govuk-form-group govuk-!-margin-top-4"
             [class.govuk-form-group--error]="submitted && form.get('noOrDoNotKnow').errors"
           >
             <p
@@ -67,7 +68,7 @@
               <span class="govuk-visually-hidden">Error:</span>
               {{ getFirstErrorMessage('noOrDoNotKnow') }}
             </p>
-
+            <div class="govuk-!-margin-bottom-3 govuk-body-l"><strong>or</strong></div>
             <div class="govuk-radios">
               <div class="govuk-radios__item" *ngFor="let option of radioButtonOptions; let index = index">
                 <input

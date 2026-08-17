@@ -30,7 +30,7 @@ export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirec
 
     if (!this.questionPreviouslyAnswered) {
       this.heading = `Add the number of staff who've started SINCE ${todayOneYearAgo}`;
-      this.addJobRoleButtonText = 'Add job roles';
+      this.addJobRoleButtonText = 'Select job roles';
     } else {
       this.heading = `Update the number of staff who've started SINCE ${todayOneYearAgo}`;
       this.addJobRoleButtonText = 'Add more job roles';
