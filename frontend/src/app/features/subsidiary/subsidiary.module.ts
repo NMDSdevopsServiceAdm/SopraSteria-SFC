@@ -32,6 +32,7 @@ import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-su
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/no-of-workers-with-delegated-healthcare-activities-unanswered.resolver';
 import { TravelTimePayResolver } from '@core/resolvers/travel-time-pay.resolver';
+import { WorkplaceModule } from '@features/workplace/workplace.module';
 
 @NgModule({
   imports: [
@@ -42,6 +43,7 @@ import { TravelTimePayResolver } from '@core/resolvers/travel-time-pay.resolver'
     SubsidiaryRoutingModule,
     BenchmarksModule,
     DataAreaTabModule,
+    WorkplaceModule,
   ],
   declarations: [
     ViewSubsidiaryHomeComponent,
