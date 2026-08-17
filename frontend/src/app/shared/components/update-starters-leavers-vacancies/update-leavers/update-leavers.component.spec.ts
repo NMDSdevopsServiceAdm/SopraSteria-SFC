@@ -230,19 +230,19 @@ describe('UpdateLeaversComponent', () => {
       expect(addButton).toBeTruthy();
     });
 
-    it('should show the "Add job roles" if there are no jobs selected', async () => {
+    it('should show the "Select job roles" if there are no jobs selected', async () => {
       const { getByRole } = await setup({ leaversFromSelectJobRolePages: null, workplace: mockWorkplace });
-      const addButton = getByRole('button', { name: 'Add job roles' });
+      const addButton = getByRole('button', { name: 'Select job roles' });
 
       expect(addButton).toBeTruthy();
     });
 
-    it('should navigate to update-leaver-job-roles when "Add job roles" is clicked', async () => {
+    it('should navigate to update-leaver-job-roles when "Select job roles" is clicked', async () => {
       const { getByRole, routerSpy, component } = await setup({
         leaversFromSelectJobRolePages: null,
         workplace: mockWorkplace,
       });
-      const addButton = getByRole('button', { name: 'Add job roles' });
+      const addButton = getByRole('button', { name: 'Select job roles' });
 
       fireEvent.click(addButton);
 
