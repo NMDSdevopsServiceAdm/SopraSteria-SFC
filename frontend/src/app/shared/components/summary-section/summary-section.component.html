@@ -45,8 +45,6 @@
           }
           @if (section.link && !section.showMessageAsText) {
             <a (click)="onClick($event, section)" href="#"> {{ section.message }}</a>
-              {{ section.message }}</a
-            >
           } @else {
             <span>{{ section.message }}</span>
           }
