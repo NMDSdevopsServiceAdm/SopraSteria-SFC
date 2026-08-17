@@ -12,9 +12,9 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
 
 @Component({
-    selector: 'app-add-admin-user',
-    templateUrl: 'add-admin-user.component.html',
-    standalone: false
+  selector: 'app-add-admin-user',
+  templateUrl: 'add-admin-user.component.html',
+  standalone: false,
 })
 export class AddAdminUserComponent extends AccountDetailsDirective {
   public callToActionLabel = 'Save admin user';
@@ -130,8 +130,9 @@ export class AddAdminUserComponent extends AccountDetailsDirective {
 
     this.adminUsersService.createAdminUser(newAdminUser).subscribe(
       () => {
-        this.router.navigate(this.return.url);
-        this.alertService.addAlert({ type: 'success', message: 'Admin user has been added' });
+        this.router.navigate(this.return.url).then(() => {
+          this.alertService.addAlert({ type: 'success', message: 'Admin user has been added' });
+        });
       },
       (error: HttpErrorResponse) => this.onError(error),
     );

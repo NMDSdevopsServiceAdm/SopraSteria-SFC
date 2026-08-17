@@ -14,11 +14,11 @@ const OWNERSHIP_APPROVED = 'OWNERCHANGEAPPROVED';
 const OWNERSHIP_REJECTED = 'OWNERCHANGEREJECTED';
 
 @Component({
-    selector: 'app-notification-owner-change',
-    templateUrl: './notification-owner-change.component.html',
-    styleUrls: ['../notification/notification.component.scss'],
-    providers: [DialogService, Overlay],
-    standalone: false
+  selector: 'app-notification-owner-change',
+  templateUrl: './notification-owner-change.component.html',
+  styleUrls: ['../notification/notification.component.scss'],
+  providers: [DialogService, Overlay],
+  standalone: false,
 })
 export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
@@ -123,11 +123,12 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
                         this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
                         this.establishmentService.setState(workplace);
                         this.establishmentService.setPrimaryWorkplace(workplace);
-                        this.router.navigate(['/dashboard']);
-                        this.alertService.addAlert({
-                          type: 'success',
-                          message: `Your decision to transfer ownership of data has been sent to
-                      ${this.ownerShipRequestedTo} `,
+                        this.router.navigate(['/dashboard']).then(() => {
+                          this.alertService.addAlert({
+                            type: 'success',
+                            message: `Your decision to transfer ownership of data has been sent to
+                        ${this.ownerShipRequestedTo} `,
+                          });
                         });
                       }
                     });
@@ -179,11 +180,12 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
               this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
                 this.notificationsService.notifications = notify.notifications;
               });
-              this.router.navigate(['/dashboard']);
-              this.alertService.addAlert({
-                type: 'success',
-                message: `Your decision to transfer ownership of data has been sent to
-                  ${this.ownerShipRequestedTo} `,
+              this.router.navigate(['/dashboard']).then(() => {
+                this.alertService.addAlert({
+                  type: 'success',
+                  message: `Your decision to transfer ownership of data has been sent to
+                    ${this.ownerShipRequestedTo} `,
+                });
               });
             }
           },

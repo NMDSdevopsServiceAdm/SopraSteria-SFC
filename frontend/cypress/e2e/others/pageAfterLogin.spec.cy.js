@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-
 import { userPassword } from '../../support/configData';
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
+
 
 describe('page after login', { tags: '@others' }, () => {
   const fullUserName = StandAloneEstablishment.editUserLoginName;

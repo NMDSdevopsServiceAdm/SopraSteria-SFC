@@ -11,9 +11,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-move-workplace-dialog',
-    templateUrl: './move-workplace-dialog.component.html',
-    standalone: false
+  selector: 'app-move-workplace-dialog',
+  templateUrl: './move-workplace-dialog.component.html',
+  standalone: false,
 })
 export class MoveWorkplaceDialogComponent extends DialogComponent implements OnInit, OnDestroy {
   public dataPermissions: DataPermissions[];
@@ -158,11 +158,12 @@ export class MoveWorkplaceDialogComponent extends DialogComponent implements OnI
       this.establishmentService.adminMoveWorkplace(parentAndSubWorkplaces).subscribe(
         () => {
           {
-            this.router.navigate(['/dashboard']);
             const parentName = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'parentName') || null;
-            this.alertService.addAlert({
-              type: 'success',
-              message: `${this.workplace.name} is now linked to ${parentName}.`,
+            this.router.navigate(['/dashboard']).then(() => {
+              this.alertService.addAlert({
+                type: 'success',
+                message: `${this.workplace.name} is now linked to ${parentName}.`,
+              });
             });
             this.closeDialogWindow(event, true);
           }

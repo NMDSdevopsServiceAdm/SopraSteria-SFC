@@ -8,13 +8,15 @@ import { Dialog, DialogService } from '@core/services/dialog.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
-import { ApprovalOrRejectionDialogComponent } from '@features/admin/components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
+import {
+  ApprovalOrRejectionDialogComponent,
+} from '@features/admin/components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
 import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
-    selector: 'app-parent-request-individual',
-    templateUrl: './parent-request-individual.component.html',
-    standalone: false
+  selector: 'app-parent-request-individual',
+  templateUrl: './parent-request-individual.component.html',
+  standalone: false,
 })
 export class ParentRequestIndividualComponent implements OnInit, OnDestroy {
   public registration: any;
@@ -63,8 +65,9 @@ export class ParentRequestIndividualComponent implements OnInit, OnDestroy {
         this.subscriptions.add(
           this.parentRequestsService.parentApproval(data).subscribe(
             () => {
-              this.router.navigate(['/sfcadmin', 'parent-requests']);
-              this.showApprovalOrRejectionConfirmationAlert(isApproval);
+              this.router.navigate(['/sfcadmin', 'parent-requests']).then(() => {
+                this.showApprovalOrRejectionConfirmationAlert(isApproval);
+              });
             },
             () => {
               this.approvalOrRejectionServerError = `There was an error completing the ${

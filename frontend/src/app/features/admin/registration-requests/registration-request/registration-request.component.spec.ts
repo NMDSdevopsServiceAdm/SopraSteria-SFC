@@ -1,5 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -811,6 +810,8 @@ describe('RegistrationRequestComponent', () => {
 
       fireEvent.click(approvalConfirmButton);
 
+      await fixture.whenStable();
+
       expect(alertServiceSpy).toHaveBeenCalledWith({
         type: 'success',
         message: `The workplace '${component.registration.establishment.name}' has been approved`,
@@ -929,6 +930,8 @@ describe('RegistrationRequestComponent', () => {
       const rejectionConfirmButton = within(dialog).getByText('Reject this request');
 
       fireEvent.click(rejectionConfirmButton);
+
+      await fixture.whenStable();
 
       expect(alertServiceSpy).toHaveBeenCalledWith({
         type: 'success',
