@@ -347,12 +347,9 @@ describe('Summary section', () => {
     });
 
     const testCasesForAddYourVacancyStarterLeaverMessages = [
-      { vacancies: null, starters: null, leavers: null, expected: 'Add your starters, leavers and vacancy data' },
-
       { vacancies: null, starters: null, leavers: 'None', expected: 'Add your starters and vacancy data' },
       { vacancies: null, starters: 'None', leavers: null, expected: 'Add your leavers and vacancy data' },
       { vacancies: 'None', starters: null, leavers: null, expected: 'Add your starters and leavers data' },
-
       { vacancies: null, starters: `Don't know`, leavers: 'None', expected: 'Add your vacancy data' },
       { vacancies: 'With Jobs', starters: null, leavers: 'None', expected: 'Add your starters data' },
       { vacancies: 'With Jobs', starters: 'None', leavers: null, expected: 'Add your leavers data' },
@@ -374,6 +371,27 @@ describe('Summary section', () => {
         expect(within(workplaceRow).getByText(expectedWarningMessage)).toBeTruthy();
         expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
       });
+    });
+
+    it(`should show a link to Add SLV mini flow when starters leavers and vacancies are all empty`, async () => {
+      const establishment = { ...Establishment, leavers: undefined, vacancies: undefined, starters: undefined };
+      const expectedWarningMessage = 'Add your starters, leavers and vacancy data';
+      const expectLinkTo = ['workplace', Establishment.uid, 'workplace-data', 'add-starters-leavers-vacancies-data'];
+
+      const overrides = {
+        checkCqcDetails: false,
+        establishment,
+      };
+
+      const { getByTestId, routerSpy } = await setup(overrides);
+
+      const workplaceRow = getByTestId('workplace-row');
+      expect(within(workplaceRow).getByText(expectedWarningMessage)).toBeTruthy();
+      expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+
+      const link = within(workplaceRow).getByText(expectedWarningMessage);
+      userEvent.click(link);
+      expect(routerSpy).toHaveBeenCalledWith(expectLinkTo);
     });
 
     describe('Update your starter, leaver and vacancy data', () => {
@@ -458,6 +476,37 @@ describe('Summary section', () => {
           });
         },
       );
+
+      it(`should show a link to Update SLV mini flow when starters leavers and vacancies are all more than 1 year ago`, async () => {
+        const establishment = {
+          ...Establishment,
+          vacanciesSavedAt: moreThanOneYearAgo,
+          startersSavedAt: moreThanOneYearAgo,
+          leaversSavedAt: moreThanOneYearAgo,
+        };
+        const expectedWarningMessage = 'Update your starters, leavers and vacancy data';
+        const expectLinkTo = [
+          'workplace',
+          Establishment.uid,
+          'workplace-data',
+          'update-starters-leavers-vacancies-data',
+        ];
+
+        const overrides = {
+          checkCqcDetails: false,
+          establishment,
+        };
+
+        const { getByTestId, routerSpy } = await setup(overrides);
+
+        const workplaceRow = getByTestId('workplace-row');
+        expect(within(workplaceRow).getByText(expectedWarningMessage)).toBeTruthy();
+        expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+
+        const link = within(workplaceRow).getByText(expectedWarningMessage);
+        userEvent.click(link);
+        expect(routerSpy).toHaveBeenCalledWith(expectLinkTo);
+      });
     });
   });
 
