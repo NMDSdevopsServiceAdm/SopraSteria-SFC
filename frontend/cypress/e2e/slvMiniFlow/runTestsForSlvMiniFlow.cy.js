@@ -36,7 +36,7 @@ export const runTestsForSLVMiniFlow = (mockEstablishmentData) => {
 
       cy.get('[data-testid="starters"]').contains('Add').click();
 
-      cy.contains('button', 'Add job roles').click();
+      cy.contains('button', 'Select job roles').click();
       cy.addJobRoles(jobRolesToAdd);
       cy.updateJobRoleTotal(jobRolesToAdd, 'type');
       cy.contains('button', 'Save and return').click();
