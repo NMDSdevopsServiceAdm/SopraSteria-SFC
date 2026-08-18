@@ -17,7 +17,7 @@ import userEvent from '@testing-library/user-event';
 
 import { AddUpdateStartersLeaversVacanciesDataComponent } from './add-update-starters-leavers-vacancies-data.component';
 
-fdescribe('AddUpdateStartersLeaversVacanciesDataComponent', () => {
+describe('AddUpdateStartersLeaversVacanciesDataComponent', () => {
   beforeAll(() => {
     jasmine.clock().install();
   });
