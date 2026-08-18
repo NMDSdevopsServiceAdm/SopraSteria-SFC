@@ -278,6 +278,7 @@ const routes: Routes = [
           permissions: ['canEditEstablishment'],
           jobRoleType: JobRoleType.Vacancies,
           title: 'Select job roles to add',
+          hideSectionHeading: true,
         },
       },
       {
@@ -289,6 +290,7 @@ const routes: Routes = [
           permissions: ['canEditEstablishment'],
           jobRoleType: JobRoleType.Starters,
           title: 'Select job roles to add',
+          hideSectionHeading: true,
         },
       },
     ],
@@ -333,6 +335,7 @@ const routes: Routes = [
           permissions: ['canEditEstablishment'],
           jobRoleType: JobRoleType.Vacancies,
           title: 'Select job roles to add',
+          hideSectionHeading: true,
         },
       },
       {
@@ -355,6 +358,7 @@ const routes: Routes = [
           permissions: ['canEditEstablishment'],
           jobRoleType: JobRoleType.Leavers,
           title: 'Select job roles to add',
+          hideSectionHeading: true,
         },
       },
     ],
