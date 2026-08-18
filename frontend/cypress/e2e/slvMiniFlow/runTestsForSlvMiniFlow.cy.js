@@ -66,6 +66,11 @@ export const runTestsForSLVMiniFlow = (mockEstablishmentData) => {
     });
 
     it('should show a message to guide user to a mini flow to update starters leavers vacancies', () => {
+      if (mockEstablishmentData.id === SubEstablishmentNotDataOwner.id) {
+        cy.get('app-navigate-to-workplace-dropdown select').select(mockEstablishmentData.name);
+        cy.url().should('contain', 'subsidiary');
+      }
+
       cy.get('h1').should('contain', mockEstablishmentData.name);
 
       cy.get('[data-testid="summaryBox"]').contains('Update your starters, leavers and vacancy data').click();
