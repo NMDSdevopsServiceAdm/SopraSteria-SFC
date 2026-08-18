@@ -55,6 +55,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   protected updatePage: WorkplaceUpdatePage;
   protected returnInEstablishmentService: URLStructure;
   protected staffUpdatesView: boolean;
+  protected hideSectionHeading: boolean;
   public section: any;
 
   constructor(
@@ -70,7 +71,13 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
 
   ngOnInit() {
     this.staffUpdatesView = this.route.snapshot?.data?.staffUpdatesView;
-    this.section = this.staffUpdatesView ? 'Workplace' : WorkplaceFlowSections.VACANCIES_AND_TURNOVER;
+    this.hideSectionHeading = this.route.snapshot?.data?.hideSectionHeading;
+
+    this.section = this.hideSectionHeading
+      ? ''
+      : this.staffUpdatesView
+      ? 'Workplace'
+      : WorkplaceFlowSections.VACANCIES_AND_TURNOVER;
     this.returnInEstablishmentService = this.establishmentService.returnTo;
 
     this.setupForm();
