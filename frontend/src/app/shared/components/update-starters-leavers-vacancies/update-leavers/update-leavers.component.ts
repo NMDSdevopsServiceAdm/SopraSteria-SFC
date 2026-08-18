@@ -36,7 +36,7 @@ export class UpdateLeaversComponent extends UpdateStartersLeaversVacanciesDirect
       this.addJobRoleButtonText = 'Add more job roles';
       this.heading = `Update ${headingBaseText}`;
     } else {
-      this.addJobRoleButtonText = 'Add job roles';
+      this.addJobRoleButtonText = 'Select job roles';
       this.heading = `Add ${headingBaseText}`;
     }
 

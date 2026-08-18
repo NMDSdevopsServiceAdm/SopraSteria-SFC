@@ -5,6 +5,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { VacanciesAndTurnoverService, WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
+import { DateUtil } from '@core/utils/date-util';
 
 @Component({
   selector: 'app-update-workplace-details-after-staff-changes',
@@ -27,6 +28,7 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent implements OnInit 
   public WorkplaceUpdateFlowType = WorkplaceUpdateFlowType;
   public flowType: WorkplaceUpdateFlowType;
   private totalNumberOfStaff: number;
+  public oneYearAgo = DateUtil.getDateForOneYearAgo();
 
   ngOnInit(): void {
     this.flowType = this.route.snapshot?.data?.flowType;

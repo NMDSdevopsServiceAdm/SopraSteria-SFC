@@ -7,14 +7,15 @@ import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { VacanciesAndTurnoverService, WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
+import { provideActivatedRouteWithRouterLink } from '@core/test-utils/MockActivatedRoute';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
+import { DateUtil } from '@core/utils/date-util';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes.component';
-import { provideActivatedRouteWithRouterLink } from '@core/test-utils/MockActivatedRoute';
 
 describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -186,20 +187,6 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     });
   });
 
-  describe('Sub heading', () => {
-    it('should include starters in sub heading when on added staff version of page', async () => {
-      const { getByText } = await setup();
-
-      expect(getByText('Total number of staff, vacancies and starters')).toBeTruthy();
-    });
-
-    it('should include leavers in sub heading when on deleted staff version of page', async () => {
-      const { getByText } = await setup({ flowType: WorkplaceUpdateFlowType.AFTER_DELETE_STAFF });
-
-      expect(getByText('Total number of staff, vacancies and leavers')).toBeTruthy();
-    });
-  });
-
   describe('Number of staff', () => {
     it('should show the correct wording', async () => {
       const { getByTestId } = await setup();
@@ -308,13 +295,13 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     });
   });
 
-  describe('Starters in the last 12 months', () => {
+  describe('Starters since one year ago', () => {
     it('should show the correct wording', async () => {
       const { getByTestId } = await setup();
 
       const startersRow = getByTestId('starters');
 
-      expect(within(startersRow).getByText('Starters in the last 12 months')).toBeTruthy();
+      expect(within(startersRow).getByText(`Starters since ${DateUtil.getDateForOneYearAgo()}`)).toBeTruthy();
     });
 
     it('should show dash and have Add link when starters is null', async () => {
@@ -383,13 +370,15 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     });
   });
 
-  describe('Leavers in the last 12 months', () => {
+  describe('Leavers since one year ago', () => {
     it('should show the correct wording', async () => {
-      const { getByTestId } = await setup({ flowType: WorkplaceUpdateFlowType.AFTER_DELETE_STAFF });
+      const { getByTestId } = await setup({
+        flowType: WorkplaceUpdateFlowType.AFTER_DELETE_STAFF,
+      });
 
-      const startersRow = getByTestId('leavers');
+      const leaversRow = getByTestId('leavers');
 
-      expect(within(startersRow).getByText('Leavers in the last 12 months')).toBeTruthy();
+      expect(within(leaversRow).getByText(`Leavers since ${DateUtil.getDateForOneYearAgo()}`)).toBeTruthy();
     });
 
     it('should show dash and have Add link when leavers is null', async () => {

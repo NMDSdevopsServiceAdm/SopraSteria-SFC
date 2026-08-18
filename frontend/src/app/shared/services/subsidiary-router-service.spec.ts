@@ -5,6 +5,7 @@ import { Router, UrlTree } from '@angular/router';
 import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
 import { SubsidiaryRouterService } from './subsidiary-router-service';
 import { provideHttpClient } from '@angular/common/http';
+import { ViewportScroller } from '@angular/common';
 
 describe('SubsidiaryRouterService', () => {
   let service: SubsidiaryRouterService;
@@ -220,6 +221,64 @@ describe('SubsidiaryRouterService', () => {
 
         expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
       });
+    });
+  });
+
+  describe('navigateAndScrollToAnchor', () => {
+    const createPromiseWithResolvers = () => {
+      let resolve!: (value: boolean) => void;
+      let reject!: (reason?: unknown) => void;
+
+      const promise = new Promise<boolean>((res, rej) => {
+        resolve = res;
+        reject = rej;
+      });
+
+      return { promise, resolve, reject };
+    };
+
+    const route = ['dashboard'];
+    const navigationExtras = { fragment: 'training-and-qualifications' };
+    const targetElementId = 'training-info-panel';
+
+    const setup = () => {
+      const viewPortScroller = TestBed.inject(ViewportScroller);
+
+      const { resolve, promise: navigatePromise } = createPromiseWithResolvers();
+
+      spyOn(service, 'navigate').and.returnValue(navigatePromise);
+      const scrollToAnchorSpy = spyOn(viewPortScroller, 'scrollToAnchor');
+
+      return { scrollToAnchorSpy, resolve };
+    };
+
+    it('should call navigate() and scroll to target element after navigation', async () => {
+      const { scrollToAnchorSpy, resolve } = setup();
+
+      const complete = service.navigateAndScrollToAnchor(route, targetElementId, navigationExtras);
+
+      expect(service.navigate).toHaveBeenCalledWith(route, navigationExtras);
+      expect(scrollToAnchorSpy).not.toHaveBeenCalled();
+
+      resolve(true); // emulate navigation successful
+
+      await complete;
+
+      expect(scrollToAnchorSpy).toHaveBeenCalledWith(targetElementId, { behavior: 'smooth' });
+    });
+
+    it('should not try to scroll to target element if navigation failed', async () => {
+      const { scrollToAnchorSpy, resolve } = setup();
+
+      const complete = service.navigateAndScrollToAnchor(route, targetElementId, navigationExtras);
+
+      expect(service.navigate).toHaveBeenCalledWith(route, navigationExtras);
+
+      resolve(false); // emulate navigation failed
+
+      await complete;
+
+      expect(scrollToAnchorSpy).not.toHaveBeenCalled();
     });
   });
 });

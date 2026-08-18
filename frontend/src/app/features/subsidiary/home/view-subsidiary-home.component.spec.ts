@@ -348,7 +348,7 @@ describe('ViewSubsidiaryHomeComponent', () => {
           establishment,
         });
 
-        const link = getByText('Add more details to your workplace');
+        const link = getByText('Finish adding your workplace data');
 
         expect(link).toBeTruthy();
         fireEvent.click(link);

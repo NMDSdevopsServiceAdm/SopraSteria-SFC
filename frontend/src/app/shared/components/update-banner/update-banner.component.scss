@@ -1,0 +1,14 @@
+.asc-update-banner__content {
+  display: flex;
+  align-items: flex-start;
+
+  img.asc-update-banner__image {
+    margin-left: -3px;
+    margin-right: 12px;
+  }
+
+  a.asc-update-banner__link {
+    margin-left: 24px;
+    min-width: 130px;
+  }
+}

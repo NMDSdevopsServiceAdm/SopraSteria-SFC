@@ -1,10 +1,23 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
-import { RequireCWPAnswerForSomeWorkersGuard } from '@core/guards/require-cwp-answer-for-some-workers/require-cwp-answer-for-some-workers.guard';
+import {
+  redirectIfLinkedToTrainingCourse,
+} from '@core/guards/redirect-if-linked-to-training-course/redirect-if-linked-to-training-course.guard';
+import {
+  RequireCWPAnswerForSomeWorkersGuard,
+} from '@core/guards/require-cwp-answer-for-some-workers/require-cwp-answer-for-some-workers.guard';
 import { AvailableQualificationsResolver } from '@core/resolvers/available-qualification.resolver';
-import { GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/get-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
+import {
+  GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+} from '@core/resolvers/careWorkforcePathway/get-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
+import {
+  GetDelegatedHealthcareActivitiesResolver,
+} from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
+import {
+  GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
+} from '@core/resolvers/delegated-healthcare-activities/get-workers-with-delegated-healthcare-activities-unanswered.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
@@ -14,23 +27,60 @@ import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/trainin
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
 import { TrainingRecordsForCategoryResolver } from '@core/resolvers/training-records-for-category.resolver';
+import { TrainingCourseResolver, TrainingCoursesToLoad } from '@core/resolvers/training/training-course.resolver';
+import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
+import {
+  WorkerHasAnyTrainingOrQualificationsResolver,
+} from '@core/resolvers/worker-has-any-training-or-qualifications.resolver';
 import { WorkerReasonsForLeavingResolver } from '@core/resolvers/worker-reasons-for-leaving.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
+import { WorkersByJobRoleResolver } from '@core/resolvers/workers-by-job-role.resolver';
+import { WorkersMainJobRolesResolver } from '@core/resolvers/workers-main-job-roles.resolver';
+import { WorkersWithPayDataResolver } from '@core/resolvers/workers-with-pay-data.resolver';
 import { WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
-import { SelectQualificationTypeComponent } from '@features/training-and-qualifications/add-edit-qualification/select-qualification-type/select-qualification-type.component';
-import { SelectTrainingCategoryComponent } from '@features/training-and-qualifications/add-edit-training/select-training-category/select-training-category.component';
-import { ViewTrainingComponent } from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
-import { UpdateLeaversComponent } from '@shared/components/update-starters-leavers-vacancies/update-leavers/update-leavers.component';
-import { UpdateStartersComponent } from '@shared/components/update-starters-leavers-vacancies/update-starters/update-starters.component';
-import { UpdateVacanciesComponent } from '@shared/components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
+import {
+  SelectQualificationTypeComponent,
+} from '@features/training-and-qualifications/add-edit-qualification/select-qualification-type/select-qualification-type.component';
+import {
+  SelectTrainingCategoryComponent,
+} from '@features/training-and-qualifications/add-edit-training/select-training-category/select-training-category.component';
+import {
+  IncludeTrainingCourseDetailsComponent,
+} from '@features/training-and-qualifications/include-training-course-details/include-training-course-details.component';
+import {
+  SelectTrainingCourseForWorkerTraining,
+} from '@features/training-and-qualifications/select-training-course-for-worker-training/select-training-course-for-worker-training.component';
+import {
+  TrainingCourseMatchingLayoutComponent,
+} from '@features/training-and-qualifications/training-course/training-course-matching-layout/training-course-matching-layout.component';
+import { FastTrackPayUpdatesComponent } from '@features/workers/fast-track-pay-updates/fast-track-pay-updates.component';
+import {
+  ViewTrainingComponent,
+} from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
+import {
+  UpdateLeaversComponent,
+} from '@shared/components/update-starters-leavers-vacancies/update-leavers/update-leavers.component';
+import {
+  UpdateStartersComponent,
+} from '@shared/components/update-starters-leavers-vacancies/update-starters/update-starters.component';
+import {
+  UpdateVacanciesComponent,
+} from '@shared/components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
+
 import {
   JobRoleType,
   SelectJobRolesToAddComponent,
 } from '../../shared/components/update-starters-leavers-vacancies/select-job-roles-to-add/select-job-roles-to-add.component';
-import { AddEditQualificationComponent } from '../training-and-qualifications/add-edit-qualification/add-edit-qualification.component';
+import {
+  AddEditQualificationComponent,
+} from '../training-and-qualifications/add-edit-qualification/add-edit-qualification.component';
 import { AddEditTrainingComponent } from '../training-and-qualifications/add-edit-training/add-edit-training.component';
-import { DeleteRecordComponent } from '../training-and-qualifications/new-training-qualifications-record/delete-record/delete-record.component';
-import { NewTrainingAndQualificationsRecordComponent } from '../training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record.component';
+import {
+  DeleteRecordComponent,
+} from '../training-and-qualifications/new-training-qualifications-record/delete-record/delete-record.component';
+import {
+  NewTrainingAndQualificationsRecordComponent,
+} from '../training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-another-staff-record.component';
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training/apprenticeship-training.component';
@@ -38,8 +88,13 @@ import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-week
 import { BasicRecordsSaveSuccessComponent } from './basic-records-save-success/basic-records-save-success.component';
 import { BritishCitizenshipComponent } from './british-citizenship/british-citizenship.component';
 import { CareCertificateComponent } from './care-certificate/care-certificate.component';
-import { CareWorkforcePathwayWorkersSummaryComponent as CareWorkforcePathwayWorkersSummaryComponent } from './care-workforce-pathway-workers-summary/care-workforce-pathway-workers-summary.component';
+import {
+  CareWorkforcePathwayWorkersSummaryComponent as CareWorkforcePathwayWorkersSummaryComponent,
+} from './care-workforce-pathway-workers-summary/care-workforce-pathway-workers-summary.component';
 import { CareWorkforcePathwayRoleComponent } from './care-workforce-pathway/care-workforce-pathway.component';
+import {
+  CarryOutDelegatedHealthcareActivitiesComponent,
+} from './carry-out-delegated-healthcare-activities/carry-out-delegated-healthcare-activities.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
@@ -47,14 +102,19 @@ import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.com
 import { DeleteAnotherStaffRecordComponent } from './delete-another-staff-record/delete-another-staff-record.component';
 import { DeleteStaffRecordComponent } from './delete-staff-record/delete-staff-record.component';
 import { DisabilityComponent } from './disability/disability.component';
+import {
+  DoYouWantToDowloadTrainAndQualsComponent,
+} from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/employed-from-outside-uk.component';
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
+import { FastTrackConfirmationPageComponent } from './fast-track-confirmation-page/fast-track-confirmation-page.component';
 import { GenderComponent } from './gender/gender.component';
 import { HealthAndCareVisaComponent } from './health-and-care-visa/health-and-care-visa.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
-import { IncludeTrainingCourseDetailsComponent } from '@features/training-and-qualifications/include-training-course-details/include-training-course-details.component';
-import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
+import {
+  Level2AdultSocialCareCertificateComponent,
+} from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
@@ -67,32 +127,25 @@ import { OtherQualificationsLevelComponent } from './other-qualifications-level/
 import { OtherQualificationsComponent } from './other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
-import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
+import {
+  SocialCareQualificationLevelComponent,
+} from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
-import { UpdateTotalNumberOfStaffComponent } from './update-workplace-details-after-staff-changes/update-total-number-of-staff/update-total-number-of-staff.component';
-import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
-import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
-import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { CarryOutDelegatedHealthcareActivitiesComponent } from './carry-out-delegated-healthcare-activities/carry-out-delegated-healthcare-activities.component';
-import { WhoCarryOutDelegatedHealthcareActivitiesComponent } from './who-carry-out-delegated-healthcare-activities/who-carry-out-delegated-healthcare-activities.component';
-import { GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/get-workers-with-delegated-healthcare-activities-unanswered.resolver';
-import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
-import { WorkerHasAnyTrainingOrQualificationsResolver } from '@core/resolvers/worker-has-any-training-or-qualifications.resolver';
-import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
-import { TrainingCourseResolver, TrainingCoursesToLoad } from '@core/resolvers/training/training-course.resolver';
-import { TrainingCourseMatchingLayoutComponent } from '@features/training-and-qualifications/training-course/training-course-matching-layout/training-course-matching-layout.component';
-import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qualifications/select-training-course-for-worker-training/select-training-course-for-worker-training.component';
-import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
-import { redirectIfLinkedToTrainingCourse } from '@core/guards/redirect-if-linked-to-training-course/redirect-if-linked-to-training-course.guard';
-import { FastTrackConfirmationPageComponent } from './fast-track-confirmation-page/fast-track-confirmation-page.component';
-import { FastTrackPayUpdatesComponent } from '@features/workers/fast-track-pay-updates/fast-track-pay-updates.component';
-import { WorkersByJobRoleResolver } from '@core/resolvers/workers-by-job-role.resolver';
 import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff/update-pay-for-multiple-staff.component';
-import { WorkersWithPayDataResolver } from '@core/resolvers/workers-with-pay-data.resolver';
-import { WorkersMainJobRolesResolver } from '@core/resolvers/workers-main-job-roles.resolver';
+import {
+  UpdateTotalNumberOfStaffComponent,
+} from './update-workplace-details-after-staff-changes/update-total-number-of-staff/update-total-number-of-staff.component';
+import {
+  UpdateWorkplaceDetailsAfterStaffChangesComponent,
+} from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
+import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
+import {
+  WhoCarryOutDelegatedHealthcareActivitiesComponent,
+} from './who-carry-out-delegated-healthcare-activities/who-carry-out-delegated-healthcare-activities.component';
+import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 
 const editTrainingRecordRoute = {
   path: 'training/:trainingRecordId',
@@ -198,13 +251,23 @@ const routes: Routes = [
         path: 'update-vacancies',
         component: UpdateVacanciesComponent,
         canActivate: [CheckPermissionsGuard],
-        data: { permissions: ['canEditEstablishment'], title: 'Update staff vacancies', staffUpdatesView: true },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Update staff vacancies',
+          staffUpdatesView: true,
+          hideSectionHeading: true,
+        },
       },
       {
         path: 'update-starters',
         component: UpdateStartersComponent,
         canActivate: [CheckPermissionsGuard],
-        data: { permissions: ['canEditEstablishment'], title: 'Update staff vacancies', staffUpdatesView: true },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Update staff vacancies',
+          staffUpdatesView: true,
+          hideSectionHeading: true,
+        },
       },
       {
         path: 'update-vacancy-job-roles',
@@ -215,6 +278,7 @@ const routes: Routes = [
           permissions: ['canEditEstablishment'],
           jobRoleType: JobRoleType.Vacancies,
           title: 'Select job roles to add',
+          hideSectionHeading: true,
         },
       },
       {
@@ -226,6 +290,7 @@ const routes: Routes = [
           permissions: ['canEditEstablishment'],
           jobRoleType: JobRoleType.Starters,
           title: 'Select job roles to add',
+          hideSectionHeading: true,
         },
       },
     ],
@@ -254,7 +319,12 @@ const routes: Routes = [
         path: 'update-vacancies',
         component: UpdateVacanciesComponent,
         canActivate: [CheckPermissionsGuard],
-        data: { permissions: ['canEditEstablishment'], title: 'Update staff vacancies', staffUpdatesView: true },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Update staff vacancies',
+          staffUpdatesView: true,
+          hideSectionHeading: true,
+        },
       },
       {
         path: 'update-vacancy-job-roles',
@@ -265,13 +335,19 @@ const routes: Routes = [
           permissions: ['canEditEstablishment'],
           jobRoleType: JobRoleType.Vacancies,
           title: 'Select job roles to add',
+          hideSectionHeading: true,
         },
       },
       {
         path: 'update-leavers',
         component: UpdateLeaversComponent,
         canActivate: [CheckPermissionsGuard],
-        data: { permissions: ['canEditEstablishment'], title: 'Update leavers', staffUpdatesView: true },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Update leavers',
+          staffUpdatesView: true,
+          hideSectionHeading: true,
+        },
       },
       {
         path: 'update-leaver-job-roles',
@@ -282,6 +358,7 @@ const routes: Routes = [
           permissions: ['canEditEstablishment'],
           jobRoleType: JobRoleType.Leavers,
           title: 'Select job roles to add',
+          hideSectionHeading: true,
         },
       },
     ],

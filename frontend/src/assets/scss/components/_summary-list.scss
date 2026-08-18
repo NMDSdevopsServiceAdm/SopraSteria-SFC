@@ -121,6 +121,10 @@
   }
 }
 
+.vacancy-turnover-warning-top-border {
+  border-top: 1px solid govuk-colour('mid-grey');
+}
+
 .govuk-summary-list__error {
   padding-left: 15px;
   border-left: 10px solid #d4351c;

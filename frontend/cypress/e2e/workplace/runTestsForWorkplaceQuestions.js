@@ -69,7 +69,7 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
         const testId = slvType;
         cy.get(`[data-testid="${testId}"]`).contains('Add').click();
 
-        cy.contains('button', 'Add job roles').click();
+        cy.contains('button', 'Select job roles').click();
         cy.addJobRoles(jobRoles);
         cy.updateJobRoleTotal(jobRoles, 'type');
 

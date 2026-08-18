@@ -691,7 +691,7 @@ describe('NewHomeTabComponent', () => {
         };
         const { getByText, tabsServiceSpy } = await setup(overrides);
 
-        const link = getByText('Add more details to your workplace');
+        const link = getByText('Finish adding your workplace data');
 
         expect(link).toBeTruthy();
         fireEvent.click(link);
@@ -706,7 +706,7 @@ describe('NewHomeTabComponent', () => {
         };
         const { getByText } = await setup(overrides);
 
-        expect(getByText('You need to check your CQC details')).toBeTruthy();
+        expect(getByText('Your workplace details do not match your CQC details')).toBeTruthy();
       });
     });
 

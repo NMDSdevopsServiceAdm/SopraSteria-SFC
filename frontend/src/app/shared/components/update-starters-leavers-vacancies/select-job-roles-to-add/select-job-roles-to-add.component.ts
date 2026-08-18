@@ -7,7 +7,9 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { JobService } from '@core/services/job.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
-import { AccordionGroupComponent } from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
+import {
+  AccordionGroupComponent,
+} from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
 
 @Component({
   selector: 'app-select-job-roles-to-add',
@@ -36,6 +38,7 @@ export class SelectJobRolesToAddComponent implements OnInit {
 
   protected prefillData: Array<StarterLeaverVacancy> = [];
   protected selectedJobIds: number[] = [];
+  protected hideSectionHeading: boolean;
   public flowType?: string;
   public section: any;
 
@@ -49,7 +52,13 @@ export class SelectJobRolesToAddComponent implements OnInit {
 
   ngOnInit() {
     this.flowType = this.route.snapshot?.data?.flowType;
-    this.section = this.flowType ? 'Workplace' : WorkplaceFlowSections.VACANCIES_AND_TURNOVER;
+    this.hideSectionHeading = this.route.snapshot?.data?.hideSectionHeading;
+
+    this.section = this.hideSectionHeading
+      ? ''
+      : this.flowType
+      ? 'Workplace'
+      : WorkplaceFlowSections.VACANCIES_AND_TURNOVER;
     this.getJobs();
     this.setupJobRoleType();
     this.setupForm();

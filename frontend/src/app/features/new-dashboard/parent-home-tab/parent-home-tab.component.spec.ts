@@ -415,7 +415,7 @@ describe('ParentHomeTabComponent', () => {
         };
         const { getByText, tabsServiceSpy } = await setup(overrides);
 
-        const link = getByText('Add more details to your workplace');
+        const link = getByText('Finish adding your workplace data');
         fireEvent.click(link);
 
         expect(link).toBeTruthy();
@@ -432,7 +432,7 @@ describe('ParentHomeTabComponent', () => {
         component.canViewEstablishment = true;
         fixture.detectChanges();
 
-        expect(getByText('You need to check your CQC details')).toBeTruthy();
+        expect(getByText('Your workplace details do not match your CQC details')).toBeTruthy();
       });
     });
 
