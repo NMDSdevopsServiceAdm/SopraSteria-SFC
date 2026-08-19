@@ -248,6 +248,32 @@ Cypress.Commands.add('changeWorkplaceWDFAnswersTimestamp', (establishmentID, new
   cy.task('dbQuery', { queryString: queryString, parameters: parameters });
 });
 
+Cypress.Commands.add(
+  'insertDummyAnswerForStartersLeaversVacancies',
+  (establishmentID, newDate = '2019-01-01 00:00:00') => {
+    const allDateFields = ['Vacancies', 'Starters', 'Leavers'].flatMap((field) => [
+      field + 'SavedAt',
+      field + 'ChangedAt',
+    ]);
+    const fieldUpdates = allDateFields.map((field) => `"${field}" = $2`).join(', ');
+
+    const queryStrings = [
+      `UPDATE cqc."Establishment"
+        SET
+          "VacanciesValue" = 'None',
+          "StartersValue" = 'None',
+          "LeaversValue" = 'None',
+          ${fieldUpdates}
+      WHERE "EstablishmentID" = $1;`,
+    ];
+
+    const parameters = [establishmentID, newDate];
+    const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+
+    cy.task('multipleDbQueries', dbQueries);
+  },
+);
+
 Cypress.Commands.add('insertDummyAnswerForWorkplaceWDFAnswers', (establishmentID) => {
   const queryStrings = [
     `UPDATE cqc."Establishment"

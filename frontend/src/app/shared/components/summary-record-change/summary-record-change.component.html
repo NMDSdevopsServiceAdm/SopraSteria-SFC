@@ -1,8 +1,11 @@
 <a [routerLink]="link" (click)="setReturn()">
-  <ng-container *ngIf="!hasData">
+  @if (overrideLabelText) {
+    {{ overrideLabelText }}
+  } @else if (!hasData) {
     Add
     <span class="govuk-visually-hidden"> for</span>
-  </ng-container>
-  <ng-container *ngIf="hasData"> Change</ng-container>
+  } @else {
+    Change
+  }
   <span class="govuk-visually-hidden">{{ explanationText }}</span>
 </a>

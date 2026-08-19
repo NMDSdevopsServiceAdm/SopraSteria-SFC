@@ -4,7 +4,6 @@ import { ActivatedRoute, Router, RouterModule, UrlTree } from '@angular/router';
 import { Establishment, Leaver, Starter, Vacancy } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { VacanciesAndTurnoverService, WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
 import { DateUtil } from '@core/utils/date-util';
 import { SharedModule } from '@shared/shared.module';
@@ -32,6 +31,7 @@ export class AddUpdateStartersLeaversVacanciesDataComponent implements OnInit {
   public heading: string;
   public successfulAlert: string;
   public rows: SummaryListRow[] = [];
+  public WorkplaceUpdateFlowType = WorkplaceUpdateFlowType;
 
   ngOnInit(): void {
     this.workplace = this.route.snapshot.data.establishment;
@@ -101,10 +101,6 @@ export class AddUpdateStartersLeaversVacanciesDataComponent implements OnInit {
 
   public setReturnTo(): void {
     this.returnTo = this.router.createUrlTree(['/dashboard'], { fragment: 'home' });
-  }
-
-  public isArray(variable: any): boolean {
-    return Array.isArray(variable);
   }
 }
 

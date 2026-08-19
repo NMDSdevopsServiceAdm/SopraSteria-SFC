@@ -161,6 +161,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     }
 
     const notAllTurnoverDataAnswered = [vacancies, leavers, starters].some((value) => !value);
+
     if (notAllTurnoverDataAnswered) {
       const missingOnes = Object.entries({ starters, leavers, vacancy: vacancies })
         .filter(([_key, value]) => !value)
@@ -168,7 +169,20 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
       const message = `Add your ${FormatUtil.joinNouns(missingOnes)} data`;
       this.sections[0].message = message;
-      this.sections[0].scrollToId = 'vacancies-and-turnover';
+
+      const linkToAddSLVMiniFlow = [vacancies, leavers, starters].every((value) => !value);
+      if (linkToAddSLVMiniFlow) {
+        this.sections[0].route = [
+          'workplace',
+          this.workplace.uid,
+          'workplace-data',
+          'add-starters-leavers-vacancies-data',
+        ];
+        this.sections[0].skipTabSwitch = true;
+      } else {
+        this.sections[0].scrollToId = 'vacancies-and-turnover';
+      }
+
       return;
     }
 
@@ -177,6 +191,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     const leaversOverOneYear = DateUtil.isMoreThanOneYearAgo(leaversSavedAt);
 
     const someDataOutdated = [vacanciesOverOneYear, startersOverOneYear, leaversOverOneYear].some((x) => x);
+    const linkToUpdateSLVMiniFlow = [vacanciesOverOneYear, startersOverOneYear, leaversOverOneYear].every((x) => x);
 
     if (someDataOutdated) {
       const outdatedOnes = [
@@ -189,7 +204,18 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
       const message = `Update your ${FormatUtil.joinNouns(outdatedOnes)} data`;
       this.sections[0].message = message;
-      this.sections[0].scrollToId = 'vacancies-and-turnover';
+
+      if (linkToUpdateSLVMiniFlow) {
+        this.sections[0].route = [
+          'workplace',
+          this.workplace.uid,
+          'workplace-data',
+          'update-starters-leavers-vacancies-data',
+        ];
+        this.sections[0].skipTabSwitch = true;
+      } else {
+        this.sections[0].scrollToId = 'vacancies-and-turnover';
+      }
       return;
     }
 
