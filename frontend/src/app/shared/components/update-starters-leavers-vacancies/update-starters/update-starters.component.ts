@@ -38,7 +38,7 @@ export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirec
       this.addJobRoleButtonText = 'Select more job roles';
     }
 
-    this.reminderText = `<strong>Only</strong> include starters from ${todayOneYearAgo} to today.`;
+    this.reminderText = `<strong>ONLY</strong> include starters from ${todayOneYearAgo} to today.`;
     this.radioButtonOptions = !this.questionPreviouslyAnswered
       ? [
           {

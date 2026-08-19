@@ -30,7 +30,7 @@ export class UpdateLeaversComponent extends UpdateStartersLeaversVacanciesDirect
   protected setupTexts(): void {
     const todayOneYearAgo = this.getDateForOneYearAgo();
 
-    this.reminderText = `<strong>Only</strong> include leavers from ${todayOneYearAgo} to today.`;
+    this.reminderText = `<strong>ONLY</strong> include leavers from ${todayOneYearAgo} to today.`;
 
     const headingBaseText = `the number of staff who've left SINCE ${todayOneYearAgo}`;
 

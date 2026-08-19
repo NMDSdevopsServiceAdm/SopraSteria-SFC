@@ -13,7 +13,7 @@ import {
 export class UpdateVacanciesComponent extends UpdateStartersLeaversVacanciesDirective {
   public revealText =
     'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.';
-  public reminderText = `<strong>Only</strong> include current vacancies for permanent and temporary job roles.`;
+  public reminderText = `<strong>ONLY</strong> include current vacancies for permanent and temporary job roles.`;
   public tableTitle = 'Current staff vacancies';
   public totalNumberDescription = 'Total number of vacancies';
 
