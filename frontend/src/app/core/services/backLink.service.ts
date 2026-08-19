@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { parseUrl } from '@core/utils/url-util';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
-import parse from 'url-parse';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +15,7 @@ export class BackLinkService {
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
-        map(() => parse(this.router.url).pathname),
+        map(() => parseUrl(this.router.url).pathname),
         distinctUntilChanged(),
       )
       .subscribe(() => {
