@@ -481,6 +481,59 @@ const workplaceSummary: Route = {
   ],
 };
 
+const slvMiniflowCommonPages = [
+  {
+    path: 'update-starters',
+    component: UpdateStartersComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: { permissions: ['canEditEstablishment'], title: 'Update starters', staffUpdatesView: true },
+  },
+  {
+    path: 'update-starter-job-roles',
+    component: SelectJobRolesToAddComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      jobRoleType: JobRoleType.Starters,
+      title: 'Select job roles to add',
+    },
+  },
+
+  {
+    path: 'update-leavers',
+    component: UpdateLeaversComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: { permissions: ['canEditEstablishment'], title: 'Update leavers', staffUpdatesView: true },
+  },
+  {
+    path: 'update-leaver-job-roles',
+    component: SelectJobRolesToAddComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      jobRoleType: JobRoleType.Leavers,
+      title: 'Select job roles to add',
+    },
+  },
+
+  {
+    path: 'update-vacancies',
+    component: UpdateVacanciesComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: { permissions: ['canEditEstablishment'], title: 'Update staff vacancies', staffUpdatesView: true },
+  },
+  {
+    path: 'update-vacancy-job-roles',
+    component: SelectJobRolesToAddComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      jobRoleType: JobRoleType.Vacancies,
+      title: 'Select job roles to add',
+    },
+  },
+];
+
 const addStartersLeaversVacanciesMiniFlow: Route = {
   path: 'add-starters-leavers-vacancies-data',
   canActivate: [CheckPermissionsGuard],
@@ -501,57 +554,31 @@ const addStartersLeaversVacanciesMiniFlow: Route = {
         establishment: WorkplaceResolver,
       },
     },
+    ...slvMiniflowCommonPages,
+  ],
+};
 
+const updateStartersLeaversVacanciesMiniFlow: Route = {
+  path: 'update-starters-leavers-vacancies-data',
+  canActivate: [CheckPermissionsGuard],
+  canDeactivate: [resetVacanciesAndTurnoverService],
+  data: {
+    flowType: WorkplaceUpdateFlowType.UPDATE_SLV,
+    permissions: ['canEditEstablishment'],
+  },
+  resolve: { jobs: JobsResolver },
+  children: [
     {
-      path: 'update-starters',
-      component: UpdateStartersComponent,
-      canActivate: [CheckPermissionsGuard],
-      data: { permissions: ['canEditEstablishment'], title: 'Update starters', staffUpdatesView: true },
-    },
-    {
-      path: 'update-starter-job-roles',
-      component: SelectJobRolesToAddComponent,
-      canActivate: [CheckPermissionsGuard],
+      path: '',
+      component: AddUpdateStartersLeaversVacanciesDataComponent,
       data: {
-        permissions: ['canEditEstablishment'],
-        jobRoleType: JobRoleType.Starters,
-        title: 'Select job roles to add',
+        title: 'Update your starters, leavers and vacancy data',
+      },
+      resolve: {
+        establishment: WorkplaceResolver,
       },
     },
-
-    {
-      path: 'update-leavers',
-      component: UpdateLeaversComponent,
-      canActivate: [CheckPermissionsGuard],
-      data: { permissions: ['canEditEstablishment'], title: 'Update leavers', staffUpdatesView: true },
-    },
-    {
-      path: 'update-leaver-job-roles',
-      component: SelectJobRolesToAddComponent,
-      canActivate: [CheckPermissionsGuard],
-      data: {
-        permissions: ['canEditEstablishment'],
-        jobRoleType: JobRoleType.Leavers,
-        title: 'Select job roles to add',
-      },
-    },
-
-    {
-      path: 'update-vacancies',
-      component: UpdateVacanciesComponent,
-      canActivate: [CheckPermissionsGuard],
-      data: { permissions: ['canEditEstablishment'], title: 'Update staff vacancies', staffUpdatesView: true },
-    },
-    {
-      path: 'update-vacancy-job-roles',
-      component: SelectJobRolesToAddComponent,
-      canActivate: [CheckPermissionsGuard],
-      data: {
-        permissions: ['canEditEstablishment'],
-        jobRoleType: JobRoleType.Vacancies,
-        title: 'Select job roles to add',
-      },
-    },
+    ...slvMiniflowCommonPages,
   ],
 };
 
@@ -559,5 +586,10 @@ export const workplaceQuestionsForFundingPage: Routes = [...workplaceSummary.chi
 
 export const WorkplaceDataRoutes: Route = {
   path: 'workplace-data',
-  children: [addWorkplaceDetails, workplaceSummary, addStartersLeaversVacanciesMiniFlow],
+  children: [
+    addWorkplaceDetails,
+    workplaceSummary,
+    addStartersLeaversVacanciesMiniFlow,
+    updateStartersLeaversVacanciesMiniFlow,
+  ],
 };

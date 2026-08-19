@@ -34,6 +34,7 @@
               [explanationText]="' ' + row.id"
               [link]="row.route"
               [hasData]="row.data | hasValue"
+              [overrideLabelText]="flowType === WorkplaceUpdateFlowType.UPDATE_SLV ? 'Review and confirm' : null"
             ></app-summary-record-change>
           </dd>
         </div>
