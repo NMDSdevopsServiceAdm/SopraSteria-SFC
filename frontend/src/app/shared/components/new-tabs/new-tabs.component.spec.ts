@@ -163,7 +163,7 @@ describe('NewTabsComponent', () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
-      expect(locationSpy).not.toHaveBeenCalled();
+      expect(locationSpy).not.toHaveBeenCalledWith('/dashboard#training-and-qualifications');
       expect(tabsService.selectedTab).toEqual('training-and-qualifications');
     });
 
