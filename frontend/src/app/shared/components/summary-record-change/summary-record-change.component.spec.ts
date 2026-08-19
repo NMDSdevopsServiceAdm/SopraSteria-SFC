@@ -52,12 +52,12 @@ describe('SummaryRecordChangeComponent', () => {
     expect(queryByText('test')).toBeTruthy();
   });
 
-  it('should render the given label text when overrideLabelText is provided', async () => {
+  it('should render the given label text when overrideLabelText is provided and hasData is true', async () => {
     const { queryByText } = await setup({ overrideLabelText: 'Review and confirm', hasData: true });
     expect(queryByText('Review and confirm')).toBeTruthy();
   });
 
-  it('should render the given label text when overrideLabelText is provided', async () => {
+  it('should render the given label text when overrideLabelText is provided and hasData is false', async () => {
     const { queryByText } = await setup({ overrideLabelText: 'Review and confirm', hasData: false });
     expect(queryByText('Review and confirm')).toBeTruthy();
   });
