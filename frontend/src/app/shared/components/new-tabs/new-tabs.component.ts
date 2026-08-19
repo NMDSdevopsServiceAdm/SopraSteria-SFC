@@ -83,7 +83,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
   private handleMainDashboardTabChange(navigationEvent: NavigationEnd): boolean {
     const tabInUrl = this.getTabSlugFromMainDashboardUrl(navigationEvent);
     if (tabInUrl && this.tabs[this.currentTab]?.slug !== tabInUrl) {
-      this.tabsService.selectedTab = tabInUrl;
+      this.tabsService.changeTabWithoutNavigation(tabInUrl);
       return true;
     }
     return false;
