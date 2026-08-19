@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { jobOptionsEnum } from '@core/model/establishment.model';
 import { WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
-import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
+import {
+  UpdateStartersLeaversVacanciesDirective,
+} from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
 
 @Component({
   selector: 'app-update-starters',
@@ -32,21 +34,32 @@ export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirec
       this.heading = `Add the number of staff who've started SINCE ${todayOneYearAgo}`;
       this.addJobRoleButtonText = 'Select job roles';
     } else {
-      this.heading = `Update the number of staff who've started SINCE ${todayOneYearAgo}`;
-      this.addJobRoleButtonText = 'Add more job roles';
+      this.heading = `Update the number of staff who've started in the last 12 months`;
+      this.addJobRoleButtonText = 'Select more job roles';
     }
 
-    this.reminderText = `Remember to <strong>SUBTRACT</strong> or <strong>REMOVE</strong> any staff who started <br><strong>before ${todayOneYearAgo}</strong>.`;
-    this.radioButtonOptions = [
-      {
-        label: `No staff started on or after ${todayOneYearAgo}`,
-        value: jobOptionsEnum.NONE,
-      },
-      {
-        label: `I do not know if any staff started on or after ${todayOneYearAgo}`,
-        value: jobOptionsEnum.DONT_KNOW,
-      },
-    ];
+    this.reminderText = `<strong>Only</strong> include starters from ${todayOneYearAgo} to today.`;
+    this.radioButtonOptions = !this.questionPreviouslyAnswered
+      ? [
+          {
+            label: `No staff started on or after ${todayOneYearAgo}`,
+            value: jobOptionsEnum.NONE,
+          },
+          {
+            label: `I do not know if any staff started on or after ${todayOneYearAgo}`,
+            value: jobOptionsEnum.DONT_KNOW,
+          },
+        ]
+      : [
+          {
+            label: `No staff started in the last 12 months`,
+            value: jobOptionsEnum.NONE,
+          },
+          {
+            label: `I do not know if any staff started in the last 12 months`,
+            value: jobOptionsEnum.DONT_KNOW,
+          },
+        ];
 
     this.messageWhenNoJobRoleSelected = {
       None: `No staff started on or after ${todayOneYearAgo}.`,
