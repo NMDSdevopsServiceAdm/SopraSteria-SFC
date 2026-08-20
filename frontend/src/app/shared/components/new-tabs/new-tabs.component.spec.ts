@@ -150,7 +150,7 @@ describe('NewTabsComponent', () => {
       expect(routerSpy).not.toHaveBeenCalled();
     });
 
-    it('should update the selected tab but NOT to replace the browser history when using router.nagivate to visit another tab', async () => {
+    it('should update the selected tab but NOT to replace the browser history when using router.navigate to visit another tab', async () => {
       const { fixture, locationSpy, router, tabsService } = await setup();
 
       expect(tabsService.selectedTab).toEqual('home');
