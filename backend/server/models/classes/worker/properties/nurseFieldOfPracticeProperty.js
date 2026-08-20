@@ -31,7 +31,7 @@ exports.NurseFieldOfPracticeProperty = class NurseFieldOfPracticeProperty extend
     }
     const fieldIds = fields.map((field) => field.id);
 
-    const validFieldsFound = await models.NurseFieldOfPractice.findAll({
+    const validFieldsFound = await models.nurseFieldOfPractice.findAll({
       attributes: ['id', 'label'],
       where: { id: fieldIds },
       order: [['seq', 'ASC']],
@@ -52,12 +52,12 @@ exports.NurseFieldOfPracticeProperty = class NurseFieldOfPracticeProperty extend
         return { nurseFieldOfPracticeID: field.id };
       });
       return {
-        additionalModels: { WorkerNurseFieldsOfPractice: items },
+        additionalModels: { workerNurseFieldsOfPractice: items },
       };
     }
 
     return {
-      additionalModels: { WorkerNurseFieldsOfPractice: [] },
+      additionalModels: { workerNurseFieldsOfPractice: [] },
     };
   }
 
