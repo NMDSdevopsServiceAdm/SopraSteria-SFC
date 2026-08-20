@@ -62,6 +62,7 @@ const { dhaRouter } = require('./server/routes/delegatedHealthcareActivities');
 const { cmsRouter } = require('./server/routes/cms');
 const { trainingProvidersRouter } = require('./server/routes/trainingProviders');
 const { travelTimePayOptionsRouter } = require('./server/routes/travelTimePayOptions');
+const { nurseFieldOfPracticeRouter } = require('./server/routes/nurseFieldOfPractice');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -269,6 +270,7 @@ app.use('/api/delegatedHealthcareActivities', [refCacheMiddleware.refcache, dhaR
 app.use('/api/cms', [refCacheMiddleware.refcache, cmsRouter]);
 app.use('/api/trainingProviders', [refCacheMiddleware.refcache, trainingProvidersRouter]);
 app.use('/api/travelTimePayOptions', [refCacheMiddleware.refcache, travelTimePayOptionsRouter]);
+app.use('/api/nurseFieldOfPractice', [refCacheMiddleware.refcache, nurseFieldOfPracticeRouter]);
 
 // transaction endpoints
 app.use('/api/errors', errors);
