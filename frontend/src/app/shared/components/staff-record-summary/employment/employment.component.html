@@ -94,14 +94,14 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Nursing and Midwifery Council category</dt>
     <dd class="govuk-summary-list__value">
-      {{ (worker.registeredNurse | nursingCategoriesText) || '-' }}
+      {{ worker.nurseFieldOfPractice?.[0]?.label || '-' }}
     </dd>
     @if (canEditWorker) {
     <dd class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' nursing and midwifery council category'"
         [link]="getRoutePath('nursing-category', wdfView)"
-        [hasData]="!!worker.registeredNurse"
+        [hasData]="!!worker.nurseFieldOfPractice"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
