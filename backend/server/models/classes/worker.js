@@ -339,6 +339,10 @@ class Worker extends EntityValidator {
     return this._properties.get('RegisteredNurse') ? this._properties.get('RegisteredNurse').property : null;
   }
 
+  get nurseFieldOfPractice() {
+    return this._properties.get('NurseFieldOfPractice') ? this._properties.get('NurseFieldOfPractice').property : null;
+  }
+
   get healthAndCareVisa() {
     return this._properties.get('HealthAndCareVisa') ? this._properties.get('HealthAndCareVisa').property : null;
   }
@@ -403,7 +407,8 @@ class Worker extends EntityValidator {
           });
         }
         if (mainJob && mainJob.jobId !== 23 && !otherRegNurse) {
-          document.registeredNurse = null;
+          // document.registeredNurse = null;
+          document.nurseFieldOfPractice = null;
         }
         // If their job isn't a social worker - remove the approved mental health worker
         if (mainJob && mainJob.jobId !== 27 && !otherSocialWorker) {
@@ -832,6 +837,7 @@ class Worker extends EntityValidator {
             // now - work through any additional models having processed all properties (first delete and then re-create)
             const additionalModels = this._properties.additionalModels;
             const additionalModelsByname = Object.keys(additionalModels);
+
             const deleteMmodelPromises = [];
             additionalModelsByname.forEach(async (thisModelByName) => {
               deleteMmodelPromises.push(
@@ -1035,6 +1041,14 @@ class Worker extends EntityValidator {
         this._updatedBy = fetchResults.updatedBy;
         this._lastWdfEligibility = fetchResults.lastWdfEligibility;
         this._wdfEligible = fetchResults.wdfEligible;
+
+        const nurseFieldOfPractice = await fetchResults.getNurseFieldOfPractice({
+          attributes: ['id', 'label'],
+          raw: true,
+        });
+        if (nurseFieldOfPractice && nurseFieldOfPractice?.length > 0) {
+          fetchResults.nurseFieldOfPractice = nurseFieldOfPractice;
+        }
 
         // if history of the Worker is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)

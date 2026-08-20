@@ -4,7 +4,7 @@ module.exports = function (sequelize, DataTypes) {
   const WorkerNurseFieldsOfPractice = sequelize.define(
     'WorkerNurseFieldsOfPractice',
     {
-      WorkerID: {
+      workerID: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
@@ -17,7 +17,14 @@ module.exports = function (sequelize, DataTypes) {
           key: 'id',
         },
       },
-      NurseFieldOfPracticeID: {
+
+      // alias to allow Worker class save() method to work
+      workerFk: {
+        type: DataTypes.INTEGER,
+        field: 'WorkerID',
+      },
+
+      nurseFieldOfPracticeID: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
@@ -41,11 +48,11 @@ module.exports = function (sequelize, DataTypes) {
 
   WorkerNurseFieldsOfPractice.associate = (models) => {
     WorkerNurseFieldsOfPractice.belongsTo(models.worker, {
-      foreignKey: 'WorkerID',
+      foreignKey: 'workerID',
       targetKey: 'id',
     });
     WorkerNurseFieldsOfPractice.belongsTo(models.NurseFieldOfPractice, {
-      foreignKey: 'NurseFieldOfPracticeID',
+      foreignKey: 'nurseFieldOfPracticeID',
       targetKey: 'id',
     });
   };
