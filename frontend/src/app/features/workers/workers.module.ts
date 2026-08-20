@@ -92,6 +92,7 @@ import { FastTrackConfirmationPageComponent } from './fast-track-confirmation-pa
 import { FastTrackPayUpdatesComponent } from '@features/workers/fast-track-pay-updates/fast-track-pay-updates.component';
 import { WorkersByJobRoleResolver } from '@core/resolvers/workers-by-job-role.resolver';
 import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff/update-pay-for-multiple-staff.component';
+import { AllNurseFieldsOfPracticeResolver } from '@core/resolvers/nurse-field-of-practice.resolver';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -185,6 +186,7 @@ import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-st
     WorkerHasAnyTrainingOrQualificationsResolver,
     DownloadCertificateService,
     WorkersByJobRoleResolver,
+    AllNurseFieldsOfPracticeResolver,
   ],
 })
 export class WorkersModule {}
