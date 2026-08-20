@@ -2,7 +2,7 @@
 
 module.exports = function (sequelize, DataTypes) {
   const WorkerNurseFieldsOfPractice = sequelize.define(
-    'WorkerNurseFieldsOfPractice',
+    'workerNurseFieldsOfPractice',
     {
       workerID: {
         type: DataTypes.INTEGER,
@@ -51,7 +51,7 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'workerID',
       targetKey: 'id',
     });
-    WorkerNurseFieldsOfPractice.belongsTo(models.NurseFieldOfPractice, {
+    WorkerNurseFieldsOfPractice.belongsTo(models.nurseFieldOfPractice, {
       foreignKey: 'nurseFieldOfPracticeID',
       targetKey: 'id',
     });

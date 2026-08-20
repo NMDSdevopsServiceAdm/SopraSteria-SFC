@@ -1,6 +1,6 @@
 module.exports = function (sequelize, DataTypes) {
   const NurseFieldOfPractice = sequelize.define(
-    'NurseFieldOfPractice',
+    'nurseFieldOfPractice',
     {
       id: {
         type: DataTypes.INTEGER,
@@ -44,7 +44,7 @@ module.exports = function (sequelize, DataTypes) {
 
   NurseFieldOfPractice.associate = (models) => {
     NurseFieldOfPractice.belongsToMany(models.worker, {
-      through: 'WorkerNurseFieldsOfPractice',
+      through: 'workerNurseFieldsOfPractice',
       foreignKey: 'nurseFieldOfPracticeID',
       sourceKey: 'id',
       as: 'workers',
