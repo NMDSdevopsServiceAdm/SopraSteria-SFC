@@ -1,5 +1,6 @@
 import { Contracts } from './contracts.enum';
 import { Job, JobRole } from './job.model';
+import { NurseFieldOfPractice } from './nurse-field-of-practice.model';
 import { WDFValue } from './wdf.model';
 
 export interface Worker {
@@ -83,7 +84,7 @@ export interface Worker {
     qualificationId: number;
     title?: string;
   };
-  registeredNurse: string;
+  nurseFieldOfPractice?: NurseFieldOfPractice[];
   created?: string;
   updated?: string;
   completed?: boolean;
