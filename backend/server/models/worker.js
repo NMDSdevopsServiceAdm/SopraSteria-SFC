@@ -1195,8 +1195,8 @@ module.exports = function (sequelize, DataTypes) {
       onDelete: 'CASCADE',
     });
 
-    Worker.belongsToMany(models.NurseFieldOfPractice, {
-      through: 'WorkerNurseFieldsOfPractice',
+    Worker.belongsToMany(models.nurseFieldOfPractice, {
+      through: 'workerNurseFieldsOfPractice',
       foreignKey: 'workerID',
       sourceKey: 'id',
       as: 'nurseFieldOfPractice',
