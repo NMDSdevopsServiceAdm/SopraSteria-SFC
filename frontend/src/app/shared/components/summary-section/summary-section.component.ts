@@ -412,6 +412,14 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     this.updateSingleEstablishmentField(payAndPensionData);
   }
 
+  private setNursesQuestionsMiniFlowViewed(): void {
+    const nursesQuestionData = {
+      property: 'nursesQuestionsMiniFlowViewed',
+      value: true,
+    };
+    this.updateSingleEstablishmentField(nursesQuestionData);
+  }
+
   public navigateToYourOtherWorkplaces(event: Event, yourOtherWorkplacesSortValue: string) {
     event.preventDefault();
     localStorage.setItem('yourOtherWorkplacesSortValue', yourOtherWorkplacesSortValue);
@@ -474,15 +482,18 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
             fragment: 'staff-records',
           });
 
-    this.updateBanner.set({
-      content: "Review and confirm your nurses' NMC fields of practice",
-      linkText: 'Review details',
-      linkAriaDescription: 'about nurses questions',
-      linkTo,
-      onLinkClicked: () => {
-        this.setReturnToHomeTab();
-      },
-    });
+    if (!this.workplace.nursesQuestionsMiniFlowViewed && this.canEditEstablishment) {
+      this.updateBanner.set({
+        content: "Review and confirm your nurses' NMC fields of practice",
+        linkText: 'Review details',
+        linkAriaDescription: 'about nurses questions',
+        linkTo,
+        onLinkClicked: () => {
+          this.setNursesQuestionsMiniFlowViewed();
+          this.setReturnToHomeTab();
+        },
+      });
+    }
   }
 
   private setupUpdateBannerForCWPWorkplaceAwareness() {
