@@ -407,7 +407,6 @@ class Worker extends EntityValidator {
           });
         }
         if (mainJob && mainJob.jobId !== 23 && !otherRegNurse) {
-          // document.registeredNurse = null;
           document.nurseFieldOfPractice = null;
         }
         // If their job isn't a social worker - remove the approved mental health worker
