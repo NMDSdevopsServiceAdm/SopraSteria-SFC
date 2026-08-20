@@ -8,24 +8,24 @@
       <div class="govuk-form-group govuk-!-margin-bottom-4">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <span class="govuk-caption-l">Employment details</span>
-            <h1 class="govuk-fieldset__heading">
-              Which category is this nurse registered under with the Nursing and Midwifery Council?
-            </h1>
+            <span data-testid="section-heading" class="govuk-caption-l">{{ sectionHeading }}</span>
+            <h1 class="govuk-fieldset__heading">What is their Nursing and Midwifery Council field of practice?</h1>
           </legend>
-          <div class="govuk-radios">
-            @for (category of nursingCategories; track category; let i = $index) {
-              <div class="govuk-radios__item">
+          <div class="govuk-checkboxes" [formArrayName]="'nurseFieldOfPractice'">
+            @for (field of allNurseFieldsOfPractice; track field.id; let i = $index) {
+              @let id = `nurseFieldOfPractice-${i}`;
+
+              <div class="govuk-checkboxes__item">
                 <input
-                  class="govuk-radios__input"
-                  id="nursingCategory-{{ i }}"
-                  [formControlName]="'nursingCategory'"
-                  name="nursingCategory"
-                  type="radio"
-                  [value]="category"
+                  class="govuk-checkboxes__input"
+                  [id]="id"
+                  name="nurseFieldOfPractice"
+                  [formControlName]="i"
+                  type="checkbox"
+                  [value]="field.id"
                 />
-                <label class="govuk-label govuk-radios__label" for="nursingCategory-{{ i }}">
-                  {{ category | nursingCategoriesText }}
+                <label class="govuk-label govuk-checkboxes__label" [for]="id">
+                  {{ field.label }}
                 </label>
               </div>
             }
@@ -39,7 +39,7 @@
           <app-progress-bar
             data-testid="progress-bar"
             [sections]="staffRecordSections"
-            [currentSection]="'Employment details'"
+            [currentSection]="section"
           ></app-progress-bar>
         </div>
       </div>

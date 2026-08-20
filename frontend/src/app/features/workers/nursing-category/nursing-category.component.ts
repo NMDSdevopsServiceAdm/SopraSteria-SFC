@@ -7,6 +7,8 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
+import { NurseFieldOfPractice } from '@core/model/nurse-field-of-practice.model';
+import { WorkerFlowSections } from '@core/utils/progress-bar-util';
 
 @Component({
   selector: 'app-nursing-category',
@@ -14,13 +16,9 @@ import { QuestionComponent } from '../question/question.component';
   standalone: false,
 })
 export class NursingCategoryComponent extends QuestionComponent {
-  public nursingCategories = [
-    'Adult Nurse',
-    'Mental Health Nurse',
-    'Learning Disabilities Nurse',
-    `Children's Nurse`,
-    'Enrolled Nurse',
-  ];
+  public allNurseFieldsOfPractice: NurseFieldOfPractice[];
+  public section: WorkerFlowSections = WorkerFlowSections.EMPLOYMENT_DETAILS;
+  public sectionHeading: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -32,18 +30,33 @@ export class NursingCategoryComponent extends QuestionComponent {
     protected establishmentService: EstablishmentService,
   ) {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
-
-    this.form = this.formBuilder.group({
-      nursingCategory: null,
-    });
+    this.allNurseFieldsOfPractice = this.route.snapshot.data?.allNurseFieldsOfPractice ?? [];
+    this.setupForm();
   }
 
   init() {
-    if (this.worker.registeredNurse) {
+    this.sectionHeading = this.section;
+
+    this.setupForm();
+
+    if (this.worker.nurseFieldOfPractice) {
       this.prefill();
     }
 
     this.next = this.insideFlow ? this.getRoutePath('recruited-from') : this.getSummaryRoute();
+  }
+
+  private get chosenFields(): Array<NurseFieldOfPractice> {
+    const { nurseFieldOfPractice } = this.form.value;
+
+    return this.allNurseFieldsOfPractice.filter((_field, index) => nurseFieldOfPractice[index]);
+  }
+
+  private setupForm(): void {
+    const choices = this.allNurseFieldsOfPractice.map(() => null);
+    this.form = this.formBuilder.group({
+      nurseFieldOfPractice: this.formBuilder.array(choices),
+    });
   }
 
   private getSummaryRoute(): string[] {
@@ -52,18 +65,25 @@ export class NursingCategoryComponent extends QuestionComponent {
   }
 
   private prefill(): void {
+    if (!this.worker.nurseFieldOfPractice?.length) {
+      this.return;
+    }
+    const currentValues = new Set(this.worker.nurseFieldOfPractice?.map((field) => field.id));
+
+    const checkboxValues = this.allNurseFieldsOfPractice.map((field) => currentValues.has(field.id));
+
     this.form.patchValue({
-      nursingCategory: this.worker.registeredNurse,
+      nurseFieldOfPractice: checkboxValues,
     });
   }
 
   generateUpdateProps() {
-    const { nursingCategory } = this.form.value;
+    const formHasChanged = this.form.dirty;
 
-    return nursingCategory
-      ? {
-          registeredNurse: nursingCategory,
-        }
-      : null;
+    if (!formHasChanged) {
+      return null;
+    }
+
+    return { nurseFieldOfPractice: this.chosenFields };
   }
 }
