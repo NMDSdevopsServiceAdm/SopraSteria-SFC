@@ -1028,6 +1028,11 @@ module.exports = function (sequelize, DataTypes) {
         field: '"LastStaffRecordMessageDismissedAt"',
         allowNull: true,
       },
+      nursesQuestionsMiniFlowViewed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'NursesQuestionsMiniFlowViewed',
+      },
     },
     {
       defaultScope: {
