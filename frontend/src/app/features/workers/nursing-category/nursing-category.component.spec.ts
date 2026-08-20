@@ -19,7 +19,7 @@ const mockFieldsOfPractice = [
   { id: 4, label: "Children's nursing" },
 ];
 
-fdescribe('NursingCategoryComponent', () => {
+describe('NursingCategoryComponent', () => {
   async function setup(overrides: any = {}) {
     const insideFlow = overrides?.insideFlow ?? true;
     const previousAnswer = overrides?.previousAnswer;
@@ -96,6 +96,14 @@ fdescribe('NursingCategoryComponent', () => {
     expect(getByRole('heading', { level: 1 }).textContent).toContain(
       'What is their Nursing and Midwifery Council field of practice?',
     );
+  });
+
+  it('should show a link to nursing and midwifery council register', async () => {
+    const { getByRole } = await setup();
+
+    const expectedLinkText = /Search the Nursing and Midwifery Council register/;
+
+    expect(getByRole('link', { name: expectedLinkText })).toBeTruthy();
   });
 
   describe('caption (section heading)', () => {
