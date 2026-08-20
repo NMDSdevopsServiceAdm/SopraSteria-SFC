@@ -1197,9 +1197,9 @@ module.exports = function (sequelize, DataTypes) {
 
     Worker.belongsToMany(models.NurseFieldOfPractice, {
       through: 'WorkerNurseFieldsOfPractice',
-      foreignKey: 'WorkerID',
+      foreignKey: 'workerID',
       sourceKey: 'id',
-      as: 'NurseFieldOfPractice',
+      as: 'nurseFieldOfPractice',
     });
   };
   Worker.permAndTempCountForEstablishment = function (establishmentId) {

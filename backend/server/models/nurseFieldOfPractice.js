@@ -45,7 +45,7 @@ module.exports = function (sequelize, DataTypes) {
   NurseFieldOfPractice.associate = (models) => {
     NurseFieldOfPractice.belongsToMany(models.worker, {
       through: 'WorkerNurseFieldsOfPractice',
-      foreignKey: 'NurseFieldOfPracticeID',
+      foreignKey: 'nurseFieldOfPracticeID',
       sourceKey: 'id',
       as: 'workers',
     });
