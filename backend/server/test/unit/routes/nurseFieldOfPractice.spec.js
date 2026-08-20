@@ -3,6 +3,7 @@ const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 const models = require('../../../models');
 const { getAllNurseFieldsOfPractice } = require('../../../routes/nurseFieldOfPractice');
+const { MockNurseFieldsOfPractice } = require('../mockdata/nurseFieldOfPractice');
 
 describe('/nurseFieldOfPractice', () => {
   describe('getAllNurseFieldsOfPractice', () => {
@@ -11,20 +12,7 @@ describe('/nurseFieldOfPractice', () => {
       url: '/api/nurseFieldOfPractice',
     };
 
-    const mockFields = [
-      {
-        id: 1,
-        label: 'Adult nursing',
-      },
-      {
-        id: 2,
-        label: 'Mental health nursing',
-      },
-      {
-        id: 4,
-        label: "Children's nursing",
-      },
-    ];
+    const mockFields = MockNurseFieldsOfPractice;
 
     afterEach(() => {
       sinon.restore();
