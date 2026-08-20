@@ -16,6 +16,7 @@ import { WdfStaffRecordStatusMessageComponent } from './wdf-staff-record-status-
 import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.component';
 import { WdfStaffSummaryComponent } from './wdf-staff-summary/wdf-staff-summary.component';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-workplaces-summary.component';
+import { AllNurseFieldsOfPracticeResolver } from '@core/resolvers/nurse-field-of-practice.resolver';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, FundingRoutingModule],
@@ -29,6 +30,6 @@ import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-work
     FundingRequirementsComponent,
     LearnMoreAboutFundingComponent,
   ],
-  providers: [WorkerResolver, WorkplaceResolver, JobsResolver],
+  providers: [WorkerResolver, WorkplaceResolver, JobsResolver, AllNurseFieldsOfPracticeResolver],
 })
 export class FundingModule {}
