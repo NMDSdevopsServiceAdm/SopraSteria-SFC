@@ -150,6 +150,23 @@ describe('NewTabsComponent', () => {
       expect(routerSpy).not.toHaveBeenCalled();
     });
 
+    it('should update the selected tab but NOT to replace the browser history when using router.navigate to visit another tab', async () => {
+      const { fixture, locationSpy, router, tabsService } = await setup();
+
+      expect(tabsService.selectedTab).toEqual('home');
+
+      const routerEvent$ = router.events as BehaviorSubject<any>;
+      routerEvent$.next(
+        new NavigationEnd(2, '/dashboard#training-and-qualifications', '/dashboard#training-and-qualifications'),
+      );
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(locationSpy).not.toHaveBeenCalledWith('/dashboard#training-and-qualifications');
+      expect(tabsService.selectedTab).toEqual('training-and-qualifications');
+    });
+
     it('should navigate to the correct tab when a tab is clicked from a different page', async () => {
       const { fixture, getByTestId, locationSpy, routerSpy } = await setup({ dashboardView: false });
 
