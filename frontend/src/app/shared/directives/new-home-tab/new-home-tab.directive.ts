@@ -38,7 +38,7 @@ window.dataLayer = window.dataLayer || [];
 export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   @Input() workplace: Establishment;
   @Input() meta: Meta;
-
+  public workers: Worker[];
   public subscriptions: Subscription = new Subscription();
   public benchmarksMessage: string;
   public canViewWorkplaces: boolean;
@@ -105,6 +105,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   ngOnInit(): void {
     this.workersCreatedDate = this.route.snapshot.data.workers?.workersCreatedDate;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
+    this.workers = this.route.snapshot.data?.workers?.listOfAllWorkers;
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
     this.workersNotCompleted = this.route.snapshot.data.workers?.workersNotCompleted;
     this.noOfWorkersWhoRequireInternationalRecruitment =
