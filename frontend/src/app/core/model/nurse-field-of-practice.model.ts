@@ -6,3 +6,5 @@ export interface NurseFieldOfPractice {
 export interface GetAllNurseFieldsOfPracticeResponse {
   allNurseFieldsOfPractice: NurseFieldOfPractice[];
 }
+
+export const RegisteredNurseJobRoleId = 23;
