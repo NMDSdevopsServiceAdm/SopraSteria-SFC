@@ -110,6 +110,7 @@ class Establishment extends EntityValidator {
     this._updatePayForMultiStaffViewed = null;
     this._fastTrackPayByJobRolesViewed = null;
     this._lastStaffRecordMessageDismissedAt = null;
+    this._nursesQuestionsMiniFlowViewed = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -457,6 +458,9 @@ class Establishment extends EntityValidator {
   get lastStaffRecordMessageDismissedAt() {
     return this._lastStaffRecordMessageDismissedAt;
   }
+  get nursesQuestionsMiniFlowViewed() {
+    return this._nursesQuestionsMiniFlowViewed;
+  }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
   _initialise() {
@@ -694,6 +698,9 @@ class Establishment extends EntityValidator {
         if ('payAndPensionsMiniFlowViewed' in document) {
           this._payAndPensionsMiniFlowViewed = document.payAndPensionsMiniFlowViewed;
         }
+        if ('nursesQuestionsMiniFlowViewed' in document) {
+          this._nursesQuestionsMiniFlowViewed = document.nursesQuestionsMiniFlowViewed;
+        }
       }
 
       // allow for deep restoration of entities (associations - namely Worker here)
@@ -927,6 +934,7 @@ class Establishment extends EntityValidator {
           ...(this._payAndPensionsMiniFlowViewed ? { payAndPensionsMiniFlowViewed: true } : {}),
           updatePayForMultiStaffViewed: this._updatePayForMultiStaffViewed,
           fastTrackPayByJobRolesViewed: this._fastTrackPayByJobRolesViewed,
+          nursesQuestionsMiniFlowViewed: this._nursesQuestionsMiniFlowViewed,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1172,6 +1180,7 @@ class Establishment extends EntityValidator {
             ...(this._payAndPensionsMiniFlowViewed ? { payAndPensionsMiniFlowViewed: true } : {}),
             updatePayForMultiStaffViewed: this._updatePayForMultiStaffViewed,
             fastTrackPayByJobRolesViewed: this._fastTrackPayByJobRolesViewed,
+            nursesQuestionsMiniFlowViewed: this._nursesQuestionsMiniFlowViewed,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1499,6 +1508,7 @@ class Establishment extends EntityValidator {
         this._startersSavedAt = fetchResults.StartersSavedAt;
         this._leaversSavedAt = fetchResults.LeaversSavedAt;
         this._lastStaffRecordMessageDismissedAt = fetchResults.lastStaffRecordMessageDismissedAt;
+        this._nursesQuestionsMiniFlowViewed = fetchResults.nursesQuestionsMiniFlowViewed;
 
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
@@ -1978,6 +1988,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.startersSavedAt = this._startersSavedAt;
         myDefaultJSON.leaversSavedAt = this._leaversSavedAt;
         myDefaultJSON.lastStaffRecordMessageDismissedAt = this.lastStaffRecordMessageDismissedAt;
+        myDefaultJSON.nursesQuestionsMiniFlowViewed = this.nursesQuestionsMiniFlowViewed;
       }
 
       if (this.showSharingPermissionsBanner !== null) {
