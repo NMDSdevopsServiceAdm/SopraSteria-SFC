@@ -15,7 +15,12 @@ exports.NurseFieldOfPracticeProperty = class NurseFieldOfPracticeProperty extend
   async restoreFromJson(document) {
     const propertyInDocument = document.nurseFieldOfPractice;
 
-    if (!propertyInDocument === undefined) {
+    if (!propertyInDocument) {
+      return;
+    }
+
+    if (propertyInDocument === []) {
+      this.property = [];
       return;
     }
 
