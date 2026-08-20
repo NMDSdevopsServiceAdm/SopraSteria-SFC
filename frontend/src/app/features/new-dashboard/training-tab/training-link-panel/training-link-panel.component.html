@@ -1,30 +1,31 @@
-<div *ngIf="workers?.length" class="govuk-grid-row govuk-!-margin-bottom-7">
+@if (workers?.length) {
+<div class="govuk-grid-row govuk-!-margin-bottom-7">
   <div class="govuk-grid-column-one-third govuk-!-padding-left-0">
-    <ng-container *ngIf="totalRecords">
-      <a
-        class="govuk-list govuk__flex govuk__align-items-center govuk-!-margin-left-3"
-        role="button"
-        draggable="false"
-        href="/download/{{ now | date: 'yyyy-MM-dd' }}-training-report.xls"
-        (click)="downloadTrainingReport($event)"
-      >
-        <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
-          Download training report
-        </span>
-      </a>
-      <ng-container *ngIf="isParent">
-        <a
-          class="govuk-list govuk__flex govuk__align-items-center govuk-!-margin-left-3"
-          role="button"
-          draggable="false"
-          href="/download/{{ now | date: 'yyyy-MM-dd' }}-parent-training-report.xls"
-          (click)="downloadParentTrainingReport($event)"
-        >
-          <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1 govuk__nowrap">
-            Download parent training report
-          </span>
-        </a>
-      </ng-container>
-    </ng-container>
+    @if (totalRecords) {
+    <a
+      class="govuk-list govuk__flex govuk__align-items-center govuk-!-margin-left-3"
+      role="button"
+      draggable="false"
+      href="/download/{{ now | date: 'yyyy-MM-dd' }}-training-report.xls"
+      (click)="downloadTrainingReport($event)"
+    >
+      <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
+        Download training report
+      </span>
+    </a>
+    @if (isParent) {
+    <a
+      class="govuk-list govuk__flex govuk__align-items-center govuk-!-margin-left-3"
+      role="button"
+      draggable="false"
+      href="/download/{{ now | date: 'yyyy-MM-dd' }}-parent-training-report.xls"
+      (click)="downloadParentTrainingReport($event)"
+    >
+      <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1 govuk__nowrap">
+        Download parent training report
+      </span>
+    </a>
+    } }
   </div>
 </div>
+}

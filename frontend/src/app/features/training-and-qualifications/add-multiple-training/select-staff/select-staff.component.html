@@ -1,34 +1,39 @@
-<app-select-staff-error-summary *ngIf="submitted && error" [formErrorsMap]="errorsMap">
-</app-select-staff-error-summary>
+@if (submitted && error) {
+  <app-select-staff-error-summary [formErrorsMap]="errorsMap"> </app-select-staff-error-summary>
+}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-7">
       <span class="govuk-caption-l" data-testid="caption">Add multiple training records</span>
-      <h1 class="govuk-fieldset__heading" data-testid="heading" style="width:85%">Select all those who you want to add a record for</h1>
+      <h1 class="govuk-fieldset__heading" data-testid="heading" style="width: 85%">
+        Select all those who you want to add a record for
+      </h1>
     </legend>
 
-    <div *ngIf="showSearchBar" class="govuk-!-margin-bottom-6">
-      <app-search-input
-        label="Search for staff by name or ID number"
-        (emitInput)="handleSearch($event)"
-        [showClearResults]="false"
-      ></app-search-input>
-    </div>
+    @if (showSearchBar) {
+      <div class="govuk-!-margin-bottom-6">
+        <app-search-input
+          label="Search for staff by name or ID number"
+          (emitInput)="handleSearch($event)"
+          [showClearResults]="false"
+        ></app-search-input>
+      </div>
+    }
   </div>
 </div>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <ng-container *ngIf="searchResults">
+    @if (searchResults) {
       <div class="govuk-!-margin-bottom-8" data-testid="searchResults">
-        <ng-container *ngIf="searchResults.length > 0; else noResults">
+        @if (searchResults.length > 0) {
           <div class="govuk-!-font-size-19 govuk-!-margin-bottom-5">
             <span class="govuk-!-font-weight-bold">Showing search results</span>
             <a href="#" (click)="handleResetSearch($event)" class="govuk-util__float-right"> Clear search results</a>
           </div>
           <dl class="govuk-summary-list govuk-summary-list--top-border">
-            <ng-container *ngFor="let worker of searchResults">
+            @for (worker of searchResults; track worker.uid) {
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">{{ worker.nameOrId }}</dt>
                 <dd class="govuk-summary-list__value">{{ worker.mainJob.title }}</dd>
@@ -38,10 +43,9 @@
                   }}</a>
                 </dd>
               </div>
-            </ng-container>
+            }
           </dl>
-        </ng-container>
-        <ng-template #noResults>
+        } @else {
           <div class="govuk-!-font-size-19 govuk-!-margin-bottom-4">
             <span class="govuk-!-font-weight-bold">There are no matching results</span>
             <a href="#" (click)="handleResetSearch($event)" class="govuk-util__float-right"> Clear search results</a>
@@ -51,9 +55,9 @@
               <dd class="govuk-summary-list__value">Make sure that your spelling is correct.</dd>
             </div>
           </dl>
-        </ng-template>
+        }
       </div>
-    </ng-container>
+    }
 
     <div [class.govuk-form-group--error]="submitted && error" #table>
       <div class="govuk-!-font-size-19 govuk-!-margin-bottom-5">
@@ -66,11 +70,13 @@
         >
       </div>
       <div>
-        <span *ngIf="submitted && error" class="govuk-error-message" id="selectStaff-error"
-          ><span class="govuk-visually-hidden">Error:</span> {{ this.errorsMap[0].type[0].message }}</span
-        >
+        @if (submitted && error) {
+          <span class="govuk-error-message" id="selectStaff-error"
+            ><span class="govuk-visually-hidden">Error:</span> {{ this.errorsMap[0].type[0].message }}</span
+          >
+        }
         <dl class="govuk-summary-list govuk-summary-list--top-border">
-          <ng-container *ngFor="let worker of paginatedWorkers">
+          @for (worker of paginatedWorkers; track worker.uid) {
             <div class="govuk-summary-list__row">
               <dt class="govuk-summary-list__key">{{ worker.nameOrId }}</dt>
               <dd class="govuk-summary-list__value">{{ worker.mainJob.title }}</dd>
@@ -80,7 +86,7 @@
                 }}</a>
               </dd>
             </div>
-          </ng-container>
+          }
         </dl>
       </div>
     </div>

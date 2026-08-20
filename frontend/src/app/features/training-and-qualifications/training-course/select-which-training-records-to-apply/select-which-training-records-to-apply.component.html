@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+@if (submitted && form.invalid) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" novalidate>
   <div class="govuk-grid-row">
@@ -17,15 +19,12 @@
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && trainingRecordsToApply.errors">
         <div class="govuk-radios govuk-!-margin-bottom-6">
-          <span
-            *ngIf="submitted && trainingRecordsToApply.errors"
-            id="trainingRecordsToApply-error"
-            class="govuk-error-message"
-          >
+          @if (submitted && trainingRecordsToApply.errors) {
+          <span id="trainingRecordsToApply-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             {{ getFirstErrorMessage('trainingRecordsToApply') }}
           </span>
-          @for(option of radioButtonOptions; track option.value; let index = $index) {
+          } @for(option of radioButtonOptions; track option.value; let index = $index) {
           <div class="govuk-radios__item">
             <input
               class="govuk-radios__input"

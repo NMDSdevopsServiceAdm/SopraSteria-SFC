@@ -6,7 +6,7 @@ import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 @Injectable()
-export class GetTrainingByStatusResolver  {
+export class GetTrainingByStatusResolver {
   constructor(
     private router: Router,
     private trainingService: TrainingService,
@@ -18,7 +18,7 @@ export class GetTrainingByStatusResolver  {
     const primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
 
     const status = route.data.training;
-    const state = this.router.getCurrentNavigation()?.extras.state;
+    const state = this.router.currentNavigation()?.extras.state;
     const paginationParams = { pageIndex: 0, itemsPerPage: 15 };
 
     return this.trainingService.getAllTrainingByStatus(workplaceUid, status, paginationParams).pipe(

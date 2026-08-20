@@ -37,7 +37,9 @@ describe('NotificationListComponent', () => {
             useClass: MockBreadcrumbService,
           },
           provideRouter([]),
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
     const injector = getTestBed();

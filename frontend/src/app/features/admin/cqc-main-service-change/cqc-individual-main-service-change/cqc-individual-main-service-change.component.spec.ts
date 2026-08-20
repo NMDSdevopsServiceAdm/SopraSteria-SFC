@@ -500,7 +500,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
       const dialogMessage = `You're about to approve this CQC main service change`;
 
       fireEvent.click(approveButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
 
@@ -515,7 +515,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
       const workplaceName = component.registration.establishment.name;
 
       fireEvent.click(approveButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
 
@@ -530,7 +530,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
       const approveButton = getByText('Approve');
 
       fireEvent.click(approveButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const approvalConfirmButton = within(dialog).getByText('Approve this change');
@@ -556,7 +556,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
       const approveButton = getByText('Approve');
 
       fireEvent.click(approveButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const approvalConfirmButton = within(dialog).getByText('Approve this change');
@@ -576,7 +576,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
       const workplaceName = component.registration.establishment.name;
 
       fireEvent.click(approveButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const approvalConfirmButton = within(dialog).getByText('Approve this change');
@@ -598,7 +598,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
       const dialogMessage = `You're about to reject this CQC main service change`;
 
       fireEvent.click(rejectButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
 
@@ -613,7 +613,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
       const workplaceName = component.registration.establishment.name;
 
       fireEvent.click(rejectButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
 
@@ -628,7 +628,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
       const rejectButton = getByText('Reject');
 
       fireEvent.click(rejectButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const rejectConfirmButton = within(dialog).getByText('Reject this change');
@@ -654,7 +654,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
       const rejectButton = getByText('Reject');
 
       fireEvent.click(rejectButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const rejectionConfirmButton = within(dialog).getByText('Reject this change');
@@ -674,7 +674,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
       const rejectButton = getByText('Reject');
 
       fireEvent.click(rejectButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const rejectionConfirmButton = within(dialog).getByText('Reject this change');

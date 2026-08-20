@@ -1,16 +1,15 @@
 <app-new-dashboard-header tab="home" [workplace]="workplace"></app-new-dashboard-header>
 <div class="govuk-width-container govuk-!-margin-top-7">
-  <ng-container *ngIf="isParentApprovedBannerViewed === false; else standardAlert">
-    <app-alert
-      data-testid="parentApprovedBanner"
-      [linkTextForAlert]="'What you can do as a parent workplace'"
-      (notifyAlertLinkClicked)="goToAboutParentsLink($event)"
-      [noFloatRight]="true"
-    ></app-alert>
-  </ng-container>
-  <ng-template #standardAlert>
-    <app-alert></app-alert>
-  </ng-template>
+  @if (isParentApprovedBannerViewed === false) {
+  <app-alert
+    data-testid="parentApprovedBanner"
+    [linkTextForAlert]="'What you can do as a parent workplace'"
+    (notifyAlertLinkClicked)="goToAboutParentsLink($event)"
+    [noFloatRight]="true"
+  ></app-alert>
+  } @else {
+  <app-alert></app-alert>
+  }
 </div>
 <app-summary-section
   [workplace]="workplace"
@@ -39,25 +38,24 @@
     <div class="govuk-grid-column-full govuk-!-padding-left-2 govuk-!-padding-right-2">
       <div class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/bulk-upload.svg'" title="Bulk upload">
-          <ng-container *ngIf="canBulkUpload; else noLink">
-            <a
-              class="govuk-link--no-visited-state govuk-link govuk-heading-s asc-card-link"
-              routerLink="/bulk-upload"
-              href="#"
-              data-testid="bulkUploadLink"
-              >Bulk upload your data</a
-            >
-          </ng-container>
-
-          <ng-template #noLink>
-            <p class="govuk-heading-s asc-card-link">Bulk upload your data</p>
-          </ng-template>
+          @if (canBulkUpload) {
+          <a
+            class="govuk-link--no-visited-state govuk-link govuk-heading-s asc-card-link"
+            routerLink="/bulk-upload"
+            href="#"
+            data-testid="bulkUploadLink"
+            >Bulk upload your data</a
+          >
+          } @else {
+          <p class="govuk-heading-s asc-card-link">Bulk upload your data</p>
+          }
 
           <p class="govuk-!-margin-0 asc-card-description">Add your data using CSV files.</p>
         </app-card>
       </div>
 
-      <div *ngIf="canViewReports" class="govuk-grid-column-one-third asc-card-padding">
+      @if (canViewReports) {
+      <div class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/access-funding.svg'" title="Access funding">
           <a
             class="govuk-link--no-visited-state govuk-link govuk-heading-s asc-card-link"
@@ -71,6 +69,7 @@
           </p>
         </app-card>
       </div>
+      }
 
       <div class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/benchmarks.svg'" title="Benchmarks">
@@ -79,10 +78,9 @@
             class="govuk-link--no-visited-state govuk-link govuk-heading-s asc-card-link"
             href="#"
           >
-            <ng-container *ngIf="bigThreeServices && hasBenchmarkComparisonData; else notBigThreeServices">
-              Compare your workplace<span class="asc-card-break"><br /></span>on staff pay and retention</ng-container
-            >
-            <ng-template #notBigThreeServices>See how you compare against other workplaces</ng-template>
+            @if (bigThreeServices && hasBenchmarkComparisonData) { Compare your workplace<span class="asc-card-break"
+              ><br /></span
+            >on staff pay and retention } @else { See how you compare against other workplaces }
           </a>
           <p class="govuk-!-margin-0 asc-card-description">
             {{ benchmarksMessage }}
@@ -121,7 +119,8 @@
           </p></app-card
         >
       </div>
-      <div *ngIf="article" class="govuk-grid-column-one-third asc-card-padding">
+      @if (article) {
+      <div class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/news.svg'" title="News">
           <a
             class="govuk-link--no-visited-state govuk-link govuk-heading-s asc-card-link"
@@ -137,10 +136,12 @@
           </p></app-card
         >
       </div>
+      }
     </div>
   </div>
 
-  <div *ngIf="canRunLocalAuthorityReport && workplace" data-cy="download-report" class="govuk-grid-row">
+  @if (canRunLocalAuthorityReport && workplace) {
+  <div data-cy="download-report" class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <div class="asc-link-box">
         <a
@@ -154,4 +155,5 @@
       </div>
     </div>
   </div>
+  }
 </div>

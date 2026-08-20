@@ -1,4 +1,5 @@
-<div *ngIf="usefulLinkRecruitment" class="govuk-grid-row" data-testid="usefulLinkRecruitmentTestId">
+@if (usefulLinkRecruitment) {
+<div class="govuk-grid-row" data-testid="usefulLinkRecruitmentTestId">
   <div class="govuk-width-container govuk-!-padding-4">
     <h2 class="govuk-heading-m govuk-!-margin-top-7">
       {{ usefulLinkRecruitment.title }}
@@ -6,3 +7,4 @@
     <div class="asc-cms-content" [innerHTML]="usefulLinkRecruitment.content"></div>
   </div>
 </div>
+}

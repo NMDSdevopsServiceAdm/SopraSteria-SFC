@@ -29,7 +29,7 @@ import { HealthAndCareVisaExistingWorkers } from './health-and-care-visa-existin
 import { PreviousRouteService } from '@core/services/previous-route.service';
 import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
 
-let outsideOrInsideUkUrl = `/workplace/mocked-uid/employed-from-outside-or-inside-uk`;
+const outsideOrInsideUkUrl = `/workplace/mocked-uid/employed-from-outside-or-inside-uk`;
 
 describe('HealthAndCareVisaExistingWorkers', () => {
   async function setup(

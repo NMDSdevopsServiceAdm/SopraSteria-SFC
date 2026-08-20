@@ -29,28 +29,32 @@
       data-testid="selectedTemplateId"
     >
       <option value="">Select a template</option>
-      <option *ngFor="let template of templates" [value]="template.id">{{ template.name }}</option>
+      @for (template of templates; track template.id) {
+        <option [value]="template.id">{{ template.name }}</option>
+      }
     </select>
   </div>
 </div>
-<div *ngIf="showDragAndDrop" data-testid="dragAndDrop" class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <app-drag-and-drop-upload (fileUploadEvent)="validateFile($event)"></app-drag-and-drop-upload>
-
-    <a
-      *ngIf="nmdsIdsFileData"
-      class="govuk-list govuk-list--inline govuk__flex govuk-!-margin-top-5"
-      role="button"
-      draggable="false"
-      href="#"
-      (click)="downloadTargetedEmailsReport($event)"
-    >
-      <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
-        Download targeted emails report
-      </span>
-    </a>
+@if (showDragAndDrop) {
+  <div data-testid="dragAndDrop" class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <app-drag-and-drop-upload (fileUploadEvent)="validateFile($event)"></app-drag-and-drop-upload>
+      @if (nmdsIdsFileData) {
+        <a
+          class="govuk-list govuk-list--inline govuk__flex govuk-!-margin-top-5"
+          role="button"
+          draggable="false"
+          href="#"
+          (click)="downloadTargetedEmailsReport($event)"
+        >
+          <img alt="" src="/assets/images/icon-download.svg" /><span class="govuk-!-margin-left-1">
+            Download targeted emails report
+          </span>
+        </a>
+      }
+    </div>
   </div>
-</div>
+}
 <div class="govuk-grid-row govuk-!-margin-top-9">
   <div class="govuk-grid-column-two-thirds">
     <button

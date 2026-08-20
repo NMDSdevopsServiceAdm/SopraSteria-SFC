@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { ErrorHandler, NgModule } from '@angular/core';
+import { ErrorHandler, NgModule, provideZoneChangeDetection } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
@@ -162,6 +162,7 @@ import { PasswordSavedConfirmationComponent } from '@shared/components/password-
     PasswordSavedConfirmationComponent,
   ],
   providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
     AuthGuard,
     AdminSkipService,
     BenchmarksV2Service,

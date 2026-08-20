@@ -49,9 +49,12 @@ describe('ErrorSummaryComponent', () => {
       };
 
       it('should not include an index number in the item key by default', async () => {
+        spyOn(console, 'warn'); // suppress WARN: 'NG0955 from Angular v21.
+
         // This is the existing behaviour before change.
         // Can't be sure if any component is depending on this,
         // so keep this behaviour as the default, and setup with addIndexKeyToFormArrayErrors=true only when needed
+
         const { component } = await setup({ form: buildMockForm() });
 
         component.form.setValue({ numbers: [0, 5, 20] });

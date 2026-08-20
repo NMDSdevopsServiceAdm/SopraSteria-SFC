@@ -223,7 +223,6 @@ describe('NumberInputWithButtonsComponent', () => {
 
       it('should hide the minus button when value reached minimum', async () => {
         const { fixture, getByRole, queryByTestId } = await setup({ min: 1 });
-        fixture.autoDetectChanges();
 
         const inputBox = getByRole('textbox') as HTMLInputElement;
 
@@ -231,6 +230,7 @@ describe('NumberInputWithButtonsComponent', () => {
         expect(queryByTestId('minus-button-number-input')).toBeTruthy();
 
         await clickMinusButton();
+        fixture.detectChanges();
 
         expect(queryByTestId('minus-button-number-input')).toBeFalsy();
       });

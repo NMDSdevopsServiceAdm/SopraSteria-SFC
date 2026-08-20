@@ -1,17 +1,18 @@
 <h2>Select your file</h2>
-<app-validation-error-message
-  *ngIf="invalidFileErrorMessage"
-  [errorMessage]="invalidFileErrorMessage"
-></app-validation-error-message>
+@if (invalidFileErrorMessage) {
+<app-validation-error-message [errorMessage]="invalidFileErrorMessage"></app-validation-error-message>
+}
 <form #formEl novalidate [formGroup]="form" id="server-error">
   <div
     class="govuk-form-group govuk-!-margin-bottom-0 govuk-!-margin-top-2"
     [class.govuk-form-group--error]="form.invalid && submitted"
   >
     <label class="govuk-label govuk-visually-hidden" for="drag-and-drop">Drag and drop your file here or </label>
-    <span *ngIf="form.invalid && submitted" id="fileUpload-error" class="govuk-error-message">
+    @if (form.invalid && submitted) {
+    <span id="fileUpload-error" class="govuk-error-message">
       <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('fileUpload') }}
     </span>
+    }
     <ngx-dropzone
       id="drag-and-drop"
       (change)="onSelect($event)"

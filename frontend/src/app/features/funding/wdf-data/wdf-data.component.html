@@ -1,16 +1,14 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-8">
-      <ng-container *ngIf="viewingSub; else primaryWorkplacePreHeader">
-        <span class="govuk-caption-xl">{{ primaryWorkplaceName }}</span>
-        <span class="govuk-caption-xl">(Workplace ID: {{ primaryWorkplaceNmdsId | removeTrailingWhitespace }})</span>
-      </ng-container>
-      <ng-template #primaryWorkplacePreHeader>
-        <span class="govuk-caption-xl">{{ workplace?.name }}</span>
-        <span class="govuk-caption-xl">(Workplace ID: {{ workplace?.nmdsId | removeTrailingWhitespace }})</span>
-      </ng-template>
-      <ng-container *ngIf="viewingSub; else mainWorkplace"> {{ workplace?.name }}: data </ng-container>
-      <ng-template #mainWorkplace> Your data </ng-template>
+      @if (viewingSub) {
+      <span class="govuk-caption-xl">{{ primaryWorkplaceName }}</span>
+      <span class="govuk-caption-xl">(Workplace ID: {{ primaryWorkplaceNmdsId | removeTrailingWhitespace }})</span>
+      } @else {
+      <span class="govuk-caption-xl">{{ workplace?.name }}</span>
+      <span class="govuk-caption-xl">(Workplace ID: {{ workplace?.nmdsId | removeTrailingWhitespace }})</span>
+      } @if (viewingSub) {
+      {{ workplace?.name }}: data } @else { Your data }
     </h1>
   </div>
 </div>
@@ -35,8 +33,8 @@
 <span data-testid="tabSection">
   <app-select-view-panel [tabs]="tabs" (handleTabChange)="handleTabChange($event)" [activeTabIndex]="activeTab.index">
   </app-select-view-panel>
+  @if (activeTab.index === 0 && workplace) {
   <app-wdf-workplace-summary
-    *ngIf="activeTab.index === 0 && workplace"
     data-testid="workplaceSummaryTab"
     [workplace]="workplace"
     [workerCount]="workerCount"
@@ -44,19 +42,18 @@
     [overallWdfEligibility]="wdfEligibilityStatus.overall"
     (allFieldsConfirmed)="getWdfReport()"
   ></app-wdf-workplace-summary>
-
+  } @if (activeTab.index === 1 && workers && workplace) {
   <app-wdf-staff-summary
-    *ngIf="activeTab.index === 1 && workers && workplace"
     data-testid="staffRecordsTab"
     [workplace]="workplace"
     [workers]="workers"
     [workerCount]="workerCount"
     [overallWdfEligibility]="wdfEligibilityStatus.overall"
   ></app-wdf-staff-summary>
-
+  } @if (isParent && activeTab.index === 2) {
   <app-wdf-workplaces-summary
-    *ngIf="isParent && activeTab.index === 2"
     data-testid="yourOtherWorkplacesTab"
     [workplaces]="subsidiaryWorkplaces"
   ></app-wdf-workplaces-summary>
+  }
 </span>

@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
-import { Subscription } from 'rxjs';
-import { Observable } from 'rxjs-compat';
+import { Observable, Subscription } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
@@ -27,10 +26,10 @@ import { WorkerService } from '@core/services/worker.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 
 @Component({
-    selector: 'app-add-edit-qualification',
-    templateUrl: './add-edit-qualification.component.html',
-    styleUrls: ['./add-edit-qualification.component.scss'],
-    standalone: false
+  selector: 'app-add-edit-qualification',
+  templateUrl: './add-edit-qualification.component.html',
+  styleUrls: ['./add-edit-qualification.component.scss'],
+  standalone: false,
 })
 export class AddEditQualificationComponent implements OnInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;

@@ -124,7 +124,7 @@ describe('DragAndDropFilesListComponent', () => {
   it('should show an error message if there are two of the same type', async () => {
     const { component, fixture, getByTestId } = await setup();
 
-    const dummyFiles = [EstablishmentFile, EstablishmentFile];
+    const dummyFiles = [EstablishmentFile, { ...EstablishmentFile }];
     component.uploadedFiles = dummyFiles as ValidatedFile[];
     component.preValidateCheck();
     fixture.detectChanges();
@@ -147,7 +147,7 @@ describe('DragAndDropFilesListComponent', () => {
   it('should show invalid file type error before duplicate error', async () => {
     const { component, fixture, getByTestId } = await setup();
 
-    component.uploadedFiles = [OtherFile, EstablishmentFile, EstablishmentFile] as ValidatedFile[];
+    component.uploadedFiles = [OtherFile, EstablishmentFile, { ...EstablishmentFile }] as ValidatedFile[];
     component.preValidateCheck();
     fixture.detectChanges();
     const validationMsg = getByTestId('validationErrorMsg');

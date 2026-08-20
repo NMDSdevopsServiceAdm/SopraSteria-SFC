@@ -26,15 +26,15 @@ const workers = [
     name: 'Worker One',
     uid: 'mock-uid-1',
     missingTraining: [
-      { id: 1, category: 'Category 1' },
-      { id: 2, category: 'Category 2' },
-      { id: 3, category: 'Category 3' },
+      { id: 1, category: 'Category 1', uid: 'training-uid-1' },
+      { id: 2, category: 'Category 2', uid: 'training-uid-2' },
+      { id: 3, category: 'Category 3', uid: 'training-uid-3' },
     ],
   },
   {
     name: 'Worker Two',
     uid: 'mock-uid-2',
-    missingTraining: [{ id: 1, category: 'Category 1' }],
+    missingTraining: [{ id: 1, category: 'Category 1', uid: 'training-uid-b1' }],
   },
 ];
 

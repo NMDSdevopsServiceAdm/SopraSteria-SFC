@@ -36,7 +36,7 @@
     id="accordion-with-summary-sections-content-1"
   >
     <div class="govuk-radios">
-      <ng-container *ngFor="let item of items">
+      @for (item of items; track item.id) {
         <div class="govuk-radios__item" data-testid="radioButton">
           <input
             class="govuk-radios__input"
@@ -51,7 +51,7 @@
             item.label
           }}</label>
         </div>
-      </ng-container>
+      }
     </div>
   </div>
 </div>

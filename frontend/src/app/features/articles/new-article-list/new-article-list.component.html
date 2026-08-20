@@ -1,17 +1,20 @@
-<div *ngIf="articleList?.length > 0">
-  <h3 class="govuk-heading-s">ASC-WDS news</h3>
-  <ul class="govuk-list govuk-!-margin-bottom-6">
-    <li
-      class="govuk-!-margin-bottom-3 govuk__flex govuk__justify-content-space-between"
-      [ngClass]="{ 'govuk-!-font-weight-bold': article.slug === currentArticleSlug }"
-      *ngFor="let article of articleList"
-    >
-      <div>
-        <a [routerLink]="['/articles', article.slug]">{{ article.title }}</a>
-      </div>
-      <div class="govuk-!-margin-left-2">
-        <img src="/assets/images/small_blue_arrow.svg" alt="" />
-      </div>
-    </li>
-  </ul>
-</div>
+@if (articleList?.length > 0) {
+  <div>
+    <h3 class="govuk-heading-s">ASC-WDS news</h3>
+    <ul class="govuk-list govuk-!-margin-bottom-6">
+      @for (article of articleList; track article.slug) {
+        <li
+          class="govuk-!-margin-bottom-3 govuk__flex govuk__justify-content-space-between"
+          [ngClass]="{ 'govuk-!-font-weight-bold': article.slug === currentArticleSlug }"
+        >
+          <div>
+            <a [routerLink]="['/articles', article.slug]">{{ article.title }}</a>
+          </div>
+          <div class="govuk-!-margin-left-2">
+            <img src="/assets/images/small_blue_arrow.svg" alt="" />
+          </div>
+        </li>
+      }
+    </ul>
+  </div>
+}

@@ -5,7 +5,7 @@ phases:
     commands:
       - COMMIT_HASH=$(cat commit_hash.txt | cut -c 1-7)
       - echo $COMMIT_HASH
-      - cd frontend/dist
+      - cd frontend/dist/browser
       - aws s3 cp --recursive . s3://sfc-frontend-build-artifacts/$COMMIT_HASH/prod
 
 

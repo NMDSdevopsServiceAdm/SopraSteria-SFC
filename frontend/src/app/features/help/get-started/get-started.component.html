@@ -32,7 +32,8 @@
     <div class="asc-cms-content" [innerHTML]="wizards[currentIndex].content"></div>
 
     <div class="govuk-!-margin-top-7">
-      <div *ngIf="!isFirst" class="govuk-grid-column-one-half govuk-util__float-left govuk-!-padding-left-0">
+      @if (!isFirst) {
+      <div class="govuk-grid-column-one-half govuk-util__float-left govuk-!-padding-left-0">
         <a
           class="govuk-util__float-left"
           href="#"
@@ -43,7 +44,8 @@
           <div class="govuk-link govuk-!-padding-left-3">{{ wizards[currentIndex - 1].title }}</div>
         </a>
       </div>
-      <div *ngIf="!isLast" class="govuk-grid-column-one-half govuk-util__float-right">
+      } @if (!isLast) {
+      <div class="govuk-grid-column-one-half govuk-util__float-right">
         <a
           class="govuk-util__float-right govuk-util__align-right"
           href="#"
@@ -56,6 +58,7 @@
           </div>
         </a>
       </div>
+      }
     </div>
   </div>
 </div>

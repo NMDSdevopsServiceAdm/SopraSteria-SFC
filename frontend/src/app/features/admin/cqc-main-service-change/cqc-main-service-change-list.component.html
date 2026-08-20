@@ -3,14 +3,13 @@
     <h2 class="govuk-heading-m">CQC main service change</h2>
   </div>
   <div class="govuk-grid-column-two-thirds">
-    <ng-container *ngIf="pendingCQCMainServiceChanges.length === 0; else cqcRequestsTable">
-      <p data-testid="noRequestsText">There are no CQC main service change requests at the moment.</p>
-    </ng-container>
-    <ng-template #cqcRequestsTable>
-      <app-approvals-table
-        [pendingApprovals]="pendingCQCMainServiceChanges"
-        [routerLinkUrl]="'cqc-main-service-change'"
-      ></app-approvals-table>
-    </ng-template>
+    @if (pendingCQCMainServiceChanges.length === 0) {
+    <p data-testid="noRequestsText">There are no CQC main service change requests at the moment.</p>
+    } @else {
+    <app-approvals-table
+      [pendingApprovals]="pendingCQCMainServiceChanges"
+      [routerLinkUrl]="'cqc-main-service-change'"
+    ></app-approvals-table>
+    }
   </div>
 </div>

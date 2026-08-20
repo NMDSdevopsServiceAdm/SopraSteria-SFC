@@ -1,8 +1,6 @@
-<app-error-summary
-  *ngIf="submitted && (form.invalid || serverError)"
-  [form]="form"
-  [serverError]="serverError"
-></app-error-summary>
+@if (submitted && (form.invalid || serverError)) {
+  <app-error-summary [form]="form" [serverError]="serverError"></app-error-summary>
+}
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
@@ -14,7 +12,7 @@
             <h1 class="govuk-fieldset__heading">Permissions</h1>
           </legend>
           <div class="govuk-radios">
-            <ng-container *ngFor="let item of roleRadios; let i = index">
+            @for (item of roleRadios; track item.label; let i = $index) {
               <div class="govuk-radios__item">
                 <input
                   class="govuk-radios__input"
@@ -28,26 +26,27 @@
                   {{ item.label }}
                 </label>
               </div>
-              <div
-                *ngIf="user?.displayStatus !== 'Pending' && item.value === 'Edit'"
-                class="govuk-radios__conditional"
-                [class.govuk-radios__conditional--hidden]="form.get('role').value !== 'Edit'"
-                id="role-conditional-{{ i }}"
-              >
-                <div class="govuk-checkboxes">
-                  <div class="govuk-checkboxes__item">
-                    <input
-                      class="govuk-checkboxes__input"
-                      id="primary"
-                      name="primary"
-                      type="checkbox"
-                      [formControlName]="'primary'"
-                    />
-                    <label class="govuk-label govuk-checkboxes__label" for="primary">Make primary user</label>
+              @if (user?.displayStatus !== 'Pending' && item.value === 'Edit') {
+                <div
+                  class="govuk-radios__conditional"
+                  [class.govuk-radios__conditional--hidden]="form.get('role').value !== 'Edit'"
+                  id="role-conditional-{{ i }}"
+                >
+                  <div class="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                      <input
+                        class="govuk-checkboxes__input"
+                        id="primary"
+                        name="primary"
+                        type="checkbox"
+                        [formControlName]="'primary'"
+                      />
+                      <label class="govuk-label govuk-checkboxes__label" for="primary">Make primary user</label>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </ng-container>
+              }
+            }
           </div>
         </fieldset>
       </div>

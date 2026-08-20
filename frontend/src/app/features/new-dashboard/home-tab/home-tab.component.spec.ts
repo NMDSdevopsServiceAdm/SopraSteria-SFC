@@ -24,9 +24,7 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
 import { NewDashboardHeaderComponent } from '@shared/components/new-dashboard-header/dashboard-header.component';
-import {
-  OwnershipChangeMessageDialogComponent,
-} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -443,7 +441,7 @@ describe('NewHomeTabComponent', () => {
 
         const dataRequestPendingLink = getByText('Data request pending');
         fireEvent.click(dataRequestPendingLink);
-        fixture.detectChanges();
+        await fixture.whenStable();
 
         const dialog = await within(document.body).findByRole('dialog');
         const cancelDataOwnerRequestButton = within(dialog).getByText('Cancel data owner request');

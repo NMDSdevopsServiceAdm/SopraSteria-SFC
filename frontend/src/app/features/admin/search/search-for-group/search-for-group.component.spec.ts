@@ -37,7 +37,9 @@ describe('SearchForGroupComponent', () => {
         WindowRef,
         SearchService,
         AlertService,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const mockSearchResult = buildMockAdminSearchWorkplace(isLocked, isParent, hasSubs);
@@ -162,7 +164,7 @@ describe('SearchForGroupComponent', () => {
       const searchResults = within(getByTestId('group-search-results'));
       fireEvent.click(searchResults.getByText('The One and Only'));
 
-      await expect(switchWorkplaceSpy).toHaveBeenCalledWith('c93920e7-b373-40d3-8202-ad77f40f4629', '', 'H1003112');
+      expect(switchWorkplaceSpy).toHaveBeenCalledWith('c93920e7-b373-40d3-8202-ad77f40f4629', '', 'H1003112');
     });
 
     describe('Dropdowns', async () => {
@@ -314,8 +316,9 @@ describe('SearchForGroupComponent', () => {
 
       it('should show number of results message if results returned in plural when more than 1', async () => {
         const { searchGroupsSpy, fixture, getByTestId, queryByText, mockSearchResult } = await setup();
+        const mockSearchResult2 = { ...mockSearchResult, uid: 'mock-uid-2' };
 
-        searchGroupsSpy.and.returnValue(of([mockSearchResult, mockSearchResult]));
+        searchGroupsSpy.and.returnValue(of([mockSearchResult, mockSearchResult2]));
 
         const searchButton = getByTestId('searchButton');
         fireEvent.click(searchButton);

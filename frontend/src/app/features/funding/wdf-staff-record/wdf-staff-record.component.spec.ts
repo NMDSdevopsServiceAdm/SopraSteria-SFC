@@ -15,7 +15,7 @@ import { createMockWdfReport } from '@core/test-utils/MockReportService';
 import { MockWorkerService, workerBuilder, workerWithWdf } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-import { Observable } from 'rxjs';
+import { from, Observable } from 'rxjs';
 
 import { FundingModule } from '../funding.module';
 import { WdfStaffRecordComponent } from './wdf-staff-record.component';
@@ -32,7 +32,7 @@ describe('WdfStaffRecordComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            params: Observable.from([{ id: 123 }]),
+            params: from([{ id: 123 }]),
             snapshot: {
               data: {
                 worker: {},

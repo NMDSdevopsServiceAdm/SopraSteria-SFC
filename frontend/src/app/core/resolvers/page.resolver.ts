@@ -1,15 +1,18 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
-import { Page } from '@core/model/page.model';
+import { Pages } from '@core/model/page.model';
 import { PagesService } from '@core/services/pages.service';
 import { Observable, of } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 
 @Injectable()
-export class PageResolver  {
-  constructor(private router: Router, private pagesService: PagesService) {}
+export class PageResolver {
+  constructor(
+    private router: Router,
+    private pagesService: PagesService,
+  ) {}
 
-  resolve(route: ActivatedRouteSnapshot): Observable<null | Page[]> {
+  resolve(route: ActivatedRouteSnapshot): Observable<null | Pages> | undefined {
     const lastUrlSegmentIndex = route.url.length - 1;
     const slug = route.url[lastUrlSegmentIndex].path;
 

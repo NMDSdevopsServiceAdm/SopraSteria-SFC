@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
+@if (submitted && form.invalid) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
+}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
@@ -19,27 +21,27 @@
         </div>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getWorkplace.errors">
-          <span *ngIf="submitted && getWorkplace.errors" id="workplace-error" class="govuk-error-message">
+          @if (submitted && getWorkplace.errors) {
+          <span id="workplace-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             {{ getFormErrorMessage('workplace', 'required') }}
           </span>
-          <ng-container *ngIf="locationAddresses.length > 4; else radioButtonForm">
-            <label class="govuk-label" for="postcode"> Addresses </label>
-            <app-select-workplace-dropdown-form
-              data-testid="dropdown-form"
-              [submitted]="submitted"
-              [form]="form"
-              [locationAddresses]="locationAddresses"
-              (clicked)="onLocationChange($event)"
-            ></app-select-workplace-dropdown-form>
-          </ng-container>
-          <ng-template #radioButtonForm>
-            <app-select-workplace-radio-button-form
-              data-testid="radio-button-form"
-              [form]="form"
-              [locationAddresses]="locationAddresses"
-            ></app-select-workplace-radio-button-form>
-          </ng-template>
+          } @if (locationAddresses.length > 4) {
+          <label class="govuk-label" for="postcode"> Addresses </label>
+          <app-select-workplace-dropdown-form
+            data-testid="dropdown-form"
+            [submitted]="submitted"
+            [form]="form"
+            [locationAddresses]="locationAddresses"
+            (clicked)="onLocationChange($event)"
+          ></app-select-workplace-dropdown-form>
+          } @else {
+          <app-select-workplace-radio-button-form
+            data-testid="radio-button-form"
+            [form]="form"
+            [locationAddresses]="locationAddresses"
+          ></app-select-workplace-radio-button-form>
+          }
         </div>
 
         <p class="govuk-!-margin-top-2">
@@ -52,7 +54,8 @@
       <app-registration-submit-buttons [insideFlow]="insideFlow" [returnRoute]="flow"></app-registration-submit-buttons>
     </form>
   </div>
-  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+  @if (insideFlow) {
+  <div class="govuk-grid-column-one-third">
     <div class="govuk-!-margin-left-8">
       <app-progress-bar
         data-testid="progress-bar-1"
@@ -60,13 +63,15 @@
         [sections]="workplaceSections"
         [currentSection]="'Confirm workplace'"
       ></app-progress-bar>
+      @if (!isParent) {
       <app-progress-bar
-        *ngIf="!isParent"
         data-testid="progress-bar-2"
         [header]="'User account'"
         [sections]="userAccountSections"
         [currentSection]="'Confirm workplace'"
       ></app-progress-bar>
+      }
     </div>
   </div>
+  }
 </div>

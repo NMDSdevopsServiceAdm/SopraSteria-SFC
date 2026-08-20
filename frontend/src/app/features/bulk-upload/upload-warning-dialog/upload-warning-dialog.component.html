@@ -18,16 +18,14 @@
   <tfoot>
     <tr class="govuk-table__row">
       <td class="govuk-!-padding-top-2">
-        <app-report-download-link
-          *ngIf="displayDownloadLink(data.establishmentsFile)"
-          [fileType]="data.establishmentsFile.fileType"
-        ></app-report-download-link>
+        @if (displayDownloadLink(data.establishmentsFile)) {
+        <app-report-download-link [fileType]="data.establishmentsFile.fileType"></app-report-download-link>
+        }
       </td>
       <td class="govuk-!-padding-top-2">
-        <app-report-download-link
-          *ngIf="displayDownloadLink(data.workersFile)"
-          [fileType]="data.workersFile.fileType"
-        ></app-report-download-link>
+        @if (displayDownloadLink(data.workersFile)) {
+        <app-report-download-link [fileType]="data.workersFile.fileType"></app-report-download-link>
+        }
       </td>
     </tr>
   </tfoot>
@@ -38,6 +36,4 @@
 </p>
 
 <button (click)="close(true)" class="govuk-button">Continue upload</button>
-<button (click)="close(false)" class="govuk-button govuk-button--link govuk-util__float-right">
-  Cancel
-</button>
+<button (click)="close(false)" class="govuk-button govuk-button--link govuk-util__float-right">Cancel</button>

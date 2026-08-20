@@ -1,22 +1,25 @@
 <dl class="govuk-list--tab">
   <div class="govuk-list--tab__column">
-    <dt data-testid="totalStaffNumber" *ngIf="totalStaff | hasValue">
-      {{ totalStaff }}
-    </dt>
+    @if (totalStaff | hasValue) {
+      <dt data-testid="totalStaffNumber">
+        {{ totalStaff }}
+      </dt>
+    }
     <dd data-testid="totalStaffText">
       <span>{{ (totalStaff | hasValue) ? ' total number of staff' : 'Total number of staff is missing' }}</span>
     </dd>
     <dd data-testid="totalStaffLink">
-      <a
-        *ngIf="canEditEstablishment"
-        [routerLink]="['/workplace', workplace.uid, 'staff-record', 'total-staff']"
-        class="govuk-!-font-size-19 govuk-!-font-weight-regular govuk-!-padding-right-9 govuk-!-margin-right-9"
-        [ngClass]="{ 'govuk-!-padding-right-9 govuk-!-margin-right-9': !(totalStaff | hasValue) }"
-        (click)="setReturn()"
-      >
-        {{ (totalStaff | hasValue) ? 'Change' : 'Add' }}
-        <span class="govuk-visually-hidden"> total number of staff</span>
-      </a>
+      @if (canEditEstablishment) {
+        <a
+          [routerLink]="['/workplace', workplace.uid, 'staff-record', 'total-staff']"
+          class="govuk-!-font-size-19 govuk-!-font-weight-regular govuk-!-padding-right-9 govuk-!-margin-right-9"
+          [ngClass]="{ 'govuk-!-padding-right-9 govuk-!-margin-right-9': !(totalStaff | hasValue) }"
+          (click)="setReturn()"
+        >
+          {{ (totalStaff | hasValue) ? 'Change' : 'Add' }}
+          <span class="govuk-visually-hidden"> total number of staff</span>
+        </a>
+      }
     </dd>
   </div>
   <div class="govuk-list--tab__column">
@@ -33,7 +36,7 @@
     </dd>
   </div>
 
-  <ng-container *ngIf="(totalStaff | hasValue) && totalStaff !== totalWorkers">
+  @if ((totalStaff | hasValue) && totalStaff !== totalWorkers) {
     <div class="govuk-list--tab__column">
       <dt data-testid="changeNumber">
         <img
@@ -41,10 +44,11 @@
           alt="Missing or expired record alert"
           class="govuk-!-margin-right-1"
         />
-        <ng-container *ngIf="totalStaff > totalWorkers; else totalDelete">
+        @if (totalStaff > totalWorkers) {
           {{ totalStaff - totalWorkers }}
-        </ng-container>
-        <ng-template #totalDelete> {{ totalWorkers - totalStaff }} </ng-template>
+        } @else {
+          {{ totalWorkers - totalStaff }}
+        }
       </dt>
       <dd data-testid="changeText">
         staff
@@ -53,10 +57,12 @@
           <ng-template ngPluralCase="=1">record</ng-template>
           <ng-template ngPluralCase="other">records</ng-template>
         </ng-container>
-        to
-        <ng-container *ngIf="totalStaff > totalWorkers; else deleteText">add</ng-container>
-        <ng-template #deleteText>delete</ng-template>
+        @if (totalStaff > totalWorkers) {
+          to add
+        } @else {
+          to delete
+        }
       </dd>
     </div>
-  </ng-container>
+  }
 </dl>

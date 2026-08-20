@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { ADD_USER_API, API_PATTERN } from '@core/constants/constants';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 import { AuthService } from './auth.service';
 

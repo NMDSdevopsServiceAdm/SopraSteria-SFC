@@ -6,7 +6,7 @@ import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 @Injectable()
-export class MissingMandatoryTrainingResolver  {
+export class MissingMandatoryTrainingResolver {
   constructor(
     private router: Router,
     private trainingService: TrainingService,
@@ -17,7 +17,7 @@ export class MissingMandatoryTrainingResolver  {
     const workplaceUid = route.paramMap.get('establishmentuid');
     const primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
 
-    const state = this.router.getCurrentNavigation()?.extras.state;
+    const state = this.router.currentNavigation()?.extras.state;
     const paginationParams = { pageIndex: 0, itemsPerPage: 15 };
 
     return this.trainingService.getMissingMandatoryTraining(workplaceUid, paginationParams).pipe(

@@ -7,7 +7,8 @@
   </div>
 </div>
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds" *ngIf="notification">
+  @if (notification) {
+  <div class="govuk-grid-column-two-thirds">
     <h2 class="govuk-heading-s govuk-util__inline-block govuk-!-margin-right-1">From:</h2>
     <p class="govuk-util__inline-block">
       {{ notification.typeContent.requestorName ? notification.typeContent.requestorName : 'Skills For Care' }},
@@ -17,50 +18,51 @@
     <div data-testid="subject">
       <h2 class="govuk-heading-s govuk-util__inline-block govuk-!-margin-right-1">Subject:</h2>
       <p class="govuk-util__inline-block">
-        {{ notification?.type | notificationType }}<span *ngIf="showStatus">: {{ approvalStatus }}</span>
+        {{ notification?.type | notificationType }}@if (showStatus) {
+        <span>: {{ approvalStatus }}</span>
+        }
       </p>
     </div>
   </div>
+  }
 </div>
-<ng-container *ngIf="notification">
-  <div *ngIf="notification.type === 'OWNERCHANGE'" data-testid="OWNERCHANGE">
-    <app-notification-owner-change
-      [notification]="notification"
-      [events]="eventsSubject.asObservable()"
-    ></app-notification-owner-change>
-  </div>
-  <div
-    *ngIf="
-      notification.type === 'LINKTOPARENTREQUEST' ||
-      notification.type === 'LINKTOPARENTAPPROVED' ||
-      notification.type === 'LINKTOPARENTREJECTED'
-    "
-    data-testid="LINKTOPARENT"
-  >
-    <app-notification-link-to-parent
-      [notification]="notification"
-      [events]="eventsSubject.asObservable()"
-    ></app-notification-link-to-parent>
-  </div>
-  <div *ngIf="notification.type === 'DELINKTOPARENT'" data-testid="DELINKTOPARENT">
-    <app-notification-delink-to-parent [notification]="notification"></app-notification-delink-to-parent>
-  </div>
-  <div *ngIf="notification.type === 'BECOMEAPARENT'" data-testid="BECOMEAPARENT">
-    <app-notification-become-a-parent [notification]="notification"></app-notification-become-a-parent>
-  </div>
-  <div class="govuk-grid-row" *ngIf="displayActionButtons" data-testid="actionButtons">
-    <div class="govuk-grid-column-two-thirds">
-      <div class="govuk-!-margin-top-6 notificationButtons">
-        <button (click)="approveRequest()" type="submit" class="govuk-button">Approve request</button>
-        <span class="govuk-visually-hidden">or</span>
-        <button
-          (click)="rejectRequest($event)"
-          type="button"
-          class="govuk-button govuk-button--secondary govuk-util__float-right"
-        >
-          Reject request
-        </button>
-      </div>
+@if (notification) { @if (notification.type === 'OWNERCHANGE') {
+<div data-testid="OWNERCHANGE">
+  <app-notification-owner-change
+    [notification]="notification"
+    [events]="eventsSubject.asObservable()"
+  ></app-notification-owner-change>
+</div>
+} @if ( notification.type === 'LINKTOPARENTREQUEST' || notification.type === 'LINKTOPARENTAPPROVED' || notification.type
+=== 'LINKTOPARENTREJECTED' ) {
+<div data-testid="LINKTOPARENT">
+  <app-notification-link-to-parent
+    [notification]="notification"
+    [events]="eventsSubject.asObservable()"
+  ></app-notification-link-to-parent>
+</div>
+} @if (notification.type === 'DELINKTOPARENT') {
+<div data-testid="DELINKTOPARENT">
+  <app-notification-delink-to-parent [notification]="notification"></app-notification-delink-to-parent>
+</div>
+} @if (notification.type === 'BECOMEAPARENT') {
+<div data-testid="BECOMEAPARENT">
+  <app-notification-become-a-parent [notification]="notification"></app-notification-become-a-parent>
+</div>
+} @if (displayActionButtons) {
+<div class="govuk-grid-row" data-testid="actionButtons">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-!-margin-top-6 notificationButtons">
+      <button (click)="approveRequest()" type="submit" class="govuk-button">Approve request</button>
+      <span class="govuk-visually-hidden">or</span>
+      <button
+        (click)="rejectRequest($event)"
+        type="button"
+        class="govuk-button govuk-button--secondary govuk-util__float-right"
+      >
+        Reject request
+      </button>
     </div>
   </div>
-</ng-container>
+</div>
+} }

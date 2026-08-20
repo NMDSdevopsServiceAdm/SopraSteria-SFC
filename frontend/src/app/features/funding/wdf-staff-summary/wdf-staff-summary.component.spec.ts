@@ -30,6 +30,12 @@ describe('WdfStaffSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const establishment = establishmentBuilder() as Establishment;
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
+    const allWorkers = [
+      ...workers,
+      ...Array(15)
+        .fill(null)
+        .map((_) => workerBuilder()),
+    ] as Worker[];
 
     const setupTools = await render(WdfStaffSummaryComponent, {
       imports: [BrowserModule, SharedModule, FundingModule, RouterModule],
@@ -75,7 +81,7 @@ describe('WdfStaffSummaryComponent', () => {
     const workerService = injector.inject(WorkerService) as WorkerService;
 
     const getAllWorkersSpy = spyOn(workerService, 'getAllWorkers').and.returnValue(
-      of({ workers: [...workers, ...workers, ...workers, ...workers, ...workers, ...workers], workerCount: 18 }),
+      of({ workers: allWorkers, workerCount: 18 }),
     );
 
     return {

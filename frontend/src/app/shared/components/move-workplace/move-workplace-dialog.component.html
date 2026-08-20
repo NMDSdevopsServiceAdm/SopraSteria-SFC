@@ -1,10 +1,6 @@
-<app-error-summary
-  *ngIf="submitted && (form.invalid || serverError)"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
-  [serverError]="serverError"
->
-</app-error-summary>
+@if (submitted && (form.invalid || serverError)) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form" [serverError]="serverError"> </app-error-summary>
+}
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" autocomplete="off">
   <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
@@ -14,14 +10,12 @@
       </legend>
       <div class="govuk-form-group">
         <label class="govuk-label" for="parentNameOrPostCode">Parent name or postcode</label>
-        <span
-          *ngIf="submitted && form.get('parentNameOrPostCode').invalid"
-          id="parentNameOrPostCode-error"
-          class="govuk-error-message"
-        >
+        @if (submitted && form.get('parentNameOrPostCode').invalid) {
+        <span id="parentNameOrPostCode-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
           {{ getFirstErrorMessage('parentNameOrPostCode') }}
         </span>
+        }
 
         <app-auto-suggest
           [formGroup]="form"

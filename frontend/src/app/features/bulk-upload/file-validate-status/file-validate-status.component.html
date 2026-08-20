@@ -1,21 +1,26 @@
-<p *ngIf="errors === 0" class="govuk-file-validate-status--success">
-  <ng-container *ngIf="warnings === 0">This file has passed.</ng-container>
-  <ng-container *ngIf="warnings" [ngPlural]="warnings">
+@if (errors === 0) {
+<p class="govuk-file-validate-status--success">
+  @if (warnings === 0) { This file has passed. } @if (warnings) {
+  <ng-container [ngPlural]="warnings">
     <ng-template ngPluralCase="=1">This file has passed, but there is {{ warnings }} warning.</ng-template>
     <ng-template ngPluralCase="other">This file has passed, but there are {{ warnings }} warnings.</ng-template>
-    <a [routerLink]="['error-report']" >View warnings</a></ng-container
+    <a [routerLink]="['error-report']">View warnings</a></ng-container
   >
+  }
 </p>
-<p *ngIf="errors" class="govuk-file-validate-status--error">
+} @if (errors) {
+<p class="govuk-file-validate-status--error">
   There
   <ng-container [ngPlural]="errors">
     <ng-template ngPluralCase="=1">is {{ errors }} error </ng-template>
     <ng-template ngPluralCase="other">are {{ errors }} errors </ng-template>
   </ng-container>
-  <ng-container *ngIf="warnings" [ngPlural]="warnings">
+  @if (warnings) {
+  <ng-container [ngPlural]="warnings">
     and {{ warnings }}
     <ng-template ngPluralCase="=1"> warning </ng-template>
     <ng-template ngPluralCase="other"> warnings </ng-template>
   </ng-container>
-  in this file.
+  } in this file.
 </p>
+}

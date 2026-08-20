@@ -1,11 +1,12 @@
+@if (submitted && (form.invalid || isOwnershipError)) {
 <app-error-summary
-  *ngIf="submitted && (form.invalid || isOwnershipError)"
   [formErrorsMap]="formErrorsMap"
   [form]="form"
   [serverError]="serverError"
   data-testid="changeDataOwnerErrorSummary"
 >
 </app-error-summary>
+}
 <div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -23,12 +24,11 @@
           >{{ ownershipFromName }}, {{ ownershipFromPostCode }}</span
         >.
       </p>
-      <ng-container *ngIf="isParent; else subWorkplaceText">
-        <p class="govuk-body">As the data owner, you'll be able to see and edit their:</p>
-      </ng-container>
-      <ng-template #subWorkplaceText>
-        <p class="govuk-body">As the data owner, you'll be able to see and edit your own:</p>
-      </ng-template>
+      @if (isParent) {
+      <p class="govuk-body">As the data owner, you'll be able to see and edit their:</p>
+      } @else {
+      <p class="govuk-body">As the data owner, you'll be able to see and edit your own:</p>
+      }
 
       <ul class="govuk-list govuk-list--bullet">
         <li>workplace details</li>
@@ -53,13 +53,11 @@
               do you want them to have <span class="govuk-!-font-weight-bold">view only access</span> to?
             </p>
 
-            <span
-              *ngIf="submitted && form.get('dataPermission').errors"
-              id="dataPermission-error"
-              class="govuk-error-message"
-            >
+            @if (submitted && form.get('dataPermission').errors) {
+            <span id="dataPermission-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('dataPermission', 'required') }}
             </span>
+            }
             <div class="govuk-radios" data-module="govuk-radios">
               <div class="govuk-radios__item">
                 <input
@@ -115,24 +113,23 @@
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-two-thirds govuk-!-margin-top-5">
             <button type="submit" class="govuk-button" data-module="govuk-button">Send change request</button>
-            <ng-container *ngIf="isParent; else subWorkplace"
-              ><a
-                href="#"
-                [routerLink]="['/workplace/view-all-workplaces']"
-                class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
-                data-testid="cancelLink"
-                >Cancel</a
-              ></ng-container
+            @if (isParent) {
+            <a
+              href="#"
+              [routerLink]="['/workplace/view-all-workplaces']"
+              class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
+              data-testid="cancelLink"
+              >Cancel</a
             >
-            <ng-template #subWorkplace>
-              <a
-                href="#"
-                [routerLink]="['/dashboard']"
-                class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
-                data-testid="cancelLink"
-                >Cancel</a
-              >
-            </ng-template>
+            } @else {
+            <a
+              href="#"
+              [routerLink]="['/dashboard']"
+              class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
+              data-testid="cancelLink"
+              >Cancel</a
+            >
+            }
           </div>
         </div>
       </form>

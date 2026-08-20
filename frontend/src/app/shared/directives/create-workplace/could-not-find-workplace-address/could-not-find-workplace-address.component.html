@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+@if (submitted && form.invalid) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
@@ -15,15 +17,12 @@
           Do you want to try find {{ isParent ? 'the' : 'your' }} workplace with a different postcode?
         </h4>
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
-          <span
-            *ngIf="submitted && this.form.get('useDifferentPostcode').errors"
-            id="useDifferentPostcode-error"
-            data-testid="errorMessage"
-            class="govuk-error-message"
-          >
+          @if (submitted && this.form.get('useDifferentPostcode').errors) {
+          <span id="useDifferentPostcode-error" data-testid="errorMessage" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             {{ getErrorMessage('useDifferentPostcode') }}
           </span>
+          }
           <div class="govuk-radios govuk-radios--conditional">
             <div class="govuk-radios__item">
               <input
@@ -57,7 +56,8 @@
       <button class="govuk-button govuk-!-margin-top-5" type="submit">Continue</button>
     </form>
   </div>
-  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+  @if (insideFlow) {
+  <div class="govuk-grid-column-one-third">
     <div class="govuk-util__float-right">
       <app-progress-bar
         data-testid="progress-bar-1"
@@ -65,13 +65,15 @@
         [sections]="workplaceSections"
         [currentSection]="'Find workplace'"
       ></app-progress-bar>
+      @if (this.flow.includes('registration')) {
       <app-progress-bar
-        *ngIf="this.flow.includes('registration')"
         data-testid="progress-bar-2"
         [header]="'User account'"
         [sections]="userAccountSections"
         [currentSection]="'Find workplace'"
       ></app-progress-bar>
+      }
     </div>
   </div>
+  }
 </div>

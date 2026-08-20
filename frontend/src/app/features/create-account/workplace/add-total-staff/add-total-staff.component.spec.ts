@@ -32,7 +32,7 @@ describe('AddTotalStaffComponent', () => {
               parent: {
                 url: [
                   {
-                    path: overrides.registrationFlow ?? true ? 'registration' : 'confirm-details',
+                    path: (overrides.registrationFlow ?? true) ? 'registration' : 'confirm-details',
                   },
                 ],
               },
@@ -132,13 +132,14 @@ describe('AddTotalStaffComponent', () => {
     const { component } = await setup();
     const form = component.fixture.componentInstance.form;
     const continueButton = component.getByText('Continue');
-    const registrationService = component.fixture.componentInstance.registrationService.totalStaff$;
+    const totalStaff$ = component.fixture.componentInstance.registrationService.totalStaff$;
 
     form.controls['totalStaff'].setValue('12');
     fireEvent.click(continueButton);
 
     expect(form.valid).toBeTruthy();
-    expect(registrationService).toEqual(new BehaviorSubject('12'));
+    expect(totalStaff$).toBeInstanceOf(BehaviorSubject);
+    expect(totalStaff$.value).toEqual('12');
   });
 
   describe('progress bar', () => {

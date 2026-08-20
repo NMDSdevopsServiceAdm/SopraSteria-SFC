@@ -1,21 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
+import { Notification } from '@core/model/notifications.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 
 @Component({
-    selector: 'app-notification-list',
-    templateUrl: './notification-list.component.html',
-    standalone: false
+  selector: 'app-notification-list',
+  templateUrl: './notification-list.component.html',
+  standalone: false,
 })
 export class NotificationListComponent implements OnInit {
   public workplace: Establishment;
   public notificationsForDeletion: Array<any> = [];
-  public notifications = [];
+  public notifications: Array<Notification> = [];
   public ownerChangeRequestUID;
   public form;
   public allBoxesChecked = false;

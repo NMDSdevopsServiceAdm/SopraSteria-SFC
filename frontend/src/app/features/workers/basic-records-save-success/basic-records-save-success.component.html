@@ -11,8 +11,8 @@
       <li>Add a full staff record.</li>
     </ul>
     <div class="govuk-button-group">
+      @if (returnTo) {
       <a
-        *ngIf="returnTo"
         [routerLink]="returnTo.link"
         [fragment]="returnTo.fragment"
         role="button"
@@ -21,6 +21,7 @@
       >
         {{ returnTo.label }}
       </a>
+      }
     </div>
   </div>
 </div>

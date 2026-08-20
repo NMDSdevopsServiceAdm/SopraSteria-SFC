@@ -1,191 +1,190 @@
 <div class="govuk-grid-row" #content>
   <div class="govuk-grid-column-full">
-    <ng-container *ngIf="trainingCategoryToDisplay.length > 0; else noTraining">
+    @if (trainingCategoryToDisplay.length > 0) {
       <h1 class="govuk-heading-l govuk-!-font-size-27">{{ trainingType }}</h1>
-      <div
-        *ngFor="let trainingCategory of trainingCategories"
-        [attr.data-testid]="trainingCategory.category + '-section'"
-      >
-        <label
-          [attr.data-testid]="'category-' + trainingCategory.category"
-          class="govuk-!-margin-bottom-2 govuk-heading-m"
-          >{{ trainingCategory.category }}</label
-        >
-        <span aria-live="polite">
-          <app-validation-error-message
-            *ngIf="certificateErrors?.[trainingCategory.category]"
-            [errorMessage]="certificateErrors?.[trainingCategory.category]"
-          ></app-validation-error-message>
-        </span>
-        <table class="govuk-table asc-training-and-quals-table govuk-!-margin-bottom-7">
-          <caption class="govuk-visually-hidden">
-            {{
-              trainingCategory.category
-            }}
-          </caption>
-          <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header" scope="col" style="width: 30%">Training or course name</th>
-              <th scope="col" class="govuk-table__header" scope="col" style="width: 13.5%">Accredited</th>
-              <th scope="col" class="govuk-table__header" scope="col" style="width: 20%">Completion date</th>
-              <th scope="col" class="govuk-table__header" scope="col" style="width: 17.5%">Expiry date</th>
-              <th scope="col" class="govuk-table__header" scope="col" style="width: 19%">Certificate</th>
-            </tr>
-          </thead>
-          <tbody class="govuk-table__body">
-            <tr
-              class="govuk-table__row"
-              *ngFor="let trainingRecord of trainingCategory.trainingRecords"
-              [attr.data-testid]="trainingRecord.uid"
-            >
-              <td class="govuk-table__cell">
-                <ng-container *ngIf="canEditWorker; else viewOnly">
-                  <ng-container *ngIf="!trainingRecord.uid; else showLink"> - </ng-container>
-                  <ng-template #showLink>
-                    <a
-                      class="govuk-link--no-visited-state"
-                      [attr.data-testid]="'Title-' + trainingRecord.uid"
-                      [routerLink]="[
-                        '../training',
-                        trainingRecord.uid,
-                        {
-                          trainingCategory: trainingRecord.trainingCategory | json,
-                        },
-                      ]"
-                      >{{ trainingRecord.title ? trainingRecord.title : 'Missing training name (Add)' }}</a
-                    >
-                  </ng-template>
-                </ng-container>
-                <ng-template #viewOnly>
-                  <span [attr.data-testid]="'Title-no-link-' + trainingRecord.uid">
-                    {{ trainingRecord.title ? trainingRecord.title : 'Missing training name' }}
-                  </span>
-                </ng-template>
-              </td>
-              <td class="govuk-table__cell" [attr.data-testid]="'accredited-' + trainingRecord.uid">
-                {{ trainingRecord?.accredited ? trainingRecord.accredited : '-' }}
-              </td>
-              <td class="govuk-table__cell" [attr.data-testid]="'completion-date-' + trainingRecord.uid">
-                {{ trainingRecord?.completed ? (trainingRecord.completed | date: 'dd MMM y') : '-' }}
-              </td>
-              <td class="govuk-table__cell" [attr.data-testid]="'expiry-date-' + trainingRecord.uid">
-                @let doesNotexpires = trainingRecord.doesNotExpire ? 'Does not expire' : '-';
-                @let expiryDate =
-                  trainingRecord?.expires ? (trainingRecord.expires | date: 'dd MMM y') : doesNotexpires;
-                {{ expiryDate }}
-                <div
-                  *ngIf="trainingRecord?.trainingStatus === trainingStatusService.EXPIRED && trainingRecord.expires"
-                  [attr.data-testid]="'status-expired-' + trainingRecord.uid"
-                  class="govuk-!-padding-top-1"
-                >
-                  <img
-                    src="/assets/images/flag-red.png"
-                    alt="red expired flag"
-                    class="govuk-util__vertical-align-top"
-                  />
-
-                  Expired
-                </div>
-                <div
-                  *ngIf="trainingRecord?.trainingStatus === trainingStatusService.EXPIRING && trainingRecord.expires"
-                  [attr.data-testid]="'status-expiring-' + trainingRecord.uid"
-                  class="govuk-!-padding-top-1"
-                >
-                  <img
-                    src="/assets/images/flag-orange.png"
-                    alt="yellow expires soon flag"
-                    class="govuk-util__vertical-align-top"
-                  />
-                  Expires soon
-                </div>
-              </td>
-              <td class="govuk-table__cell">
-                <ng-container *ngIf="canEditWorker">
-                  <span *ngIf="trainingRecord.trainingCertificates?.length === 1">
-                    <a
-                      href="#"
-                      class="govuk-link govuk-link--no-visited-state"
-                      (click)="handleDownloadCertificate($event, trainingRecord)"
-                    >
-                      <img
-                        alt=""
-                        src="/assets/images/icon-download.svg"
-                        class="govuk-util__vertical-align-bottom"
-                      /><span class="govuk-!-margin-left-1">Download</span>
-                      <span class="govuk-visually-hidden"
-                        >the certificate {{ trainingRecord.trainingCertificates[0].filename }}</span
-                      >
-                    </a>
-                  </span>
-                  <span *ngIf="trainingRecord.trainingCertificates?.length > 1">
-                    <a
-                      [routerLink]="['../training', trainingRecord.uid]"
-                      class="govuk-link govuk-link--no-visited-state"
-                    >
-                      Select a download
-                    </a>
-                  </span>
-                  <span *ngIf="trainingRecord.trainingCertificates?.length === 0">
-                    <app-select-upload-file
-                      accept=".pdf"
-                      buttonText="Upload file"
-                      buttonClasses="govuk-!-margin-bottom-0 govuk-!-padding-top-1 govuk-!-padding-bottom-1"
-                      (selectFiles)="handleUploadCertificate($event, trainingRecord)"
-                    ></app-select-upload-file>
-                  </span>
-                </ng-container>
-
-                <ng-container *ngIf="pdfRenderingMode">
-                  <ng-container *ngIf="trainingRecord.trainingCertificates?.length > 0; else notUploaded">
-                    Uploaded
-                  </ng-container>
-                  <ng-template #notUploaded> Not uploaded </ng-template>
-                </ng-container>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </ng-container>
-    <ng-template #noTraining>
-      <ng-container *ngIf="isMandatoryTraining; else notMandatoryTraining">
+      @for (trainingCategory of trainingCategories; track trainingCategory.category) {
+        <div [attr.data-testid]="trainingCategory.category + '-section'">
+          <label
+            [attr.data-testid]="'category-' + trainingCategory.category"
+            class="govuk-!-margin-bottom-2 govuk-heading-m"
+            >{{ trainingCategory.category }}</label
+          >
+          <span aria-live="polite">
+            @if (certificateErrors?.[trainingCategory.category]) {
+              <app-validation-error-message
+                [errorMessage]="certificateErrors?.[trainingCategory.category]"
+              ></app-validation-error-message>
+            }
+          </span>
+          <table class="govuk-table asc-training-and-quals-table govuk-!-margin-bottom-7">
+            <caption class="govuk-visually-hidden">
+              {{
+                trainingCategory.category
+              }}
+            </caption>
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header" scope="col" style="width: 30%">Training or course name</th>
+                <th scope="col" class="govuk-table__header" scope="col" style="width: 13.5%">Accredited</th>
+                <th scope="col" class="govuk-table__header" scope="col" style="width: 20%">Completion date</th>
+                <th scope="col" class="govuk-table__header" scope="col" style="width: 17.5%">Expiry date</th>
+                <th scope="col" class="govuk-table__header" scope="col" style="width: 19%">Certificate</th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              @for (trainingRecord of trainingCategory.trainingRecords; track trainingRecord.uid) {
+                <tr class="govuk-table__row" [attr.data-testid]="trainingRecord.uid">
+                  <td class="govuk-table__cell">
+                    @if (canEditWorker) {
+                      @if (!trainingRecord.uid) {
+                        -
+                      } @else {
+                        <a
+                          class="govuk-link--no-visited-state"
+                          [attr.data-testid]="'Title-' + trainingRecord.uid"
+                          [routerLink]="[
+                            '../training',
+                            trainingRecord.uid,
+                            {
+                              trainingCategory: trainingRecord.trainingCategory | json,
+                            },
+                          ]"
+                          >{{ trainingRecord.title ? trainingRecord.title : 'Missing training name (Add)' }}</a
+                        >
+                      }
+                    } @else {
+                      <span [attr.data-testid]="'Title-no-link-' + trainingRecord.uid">
+                        {{ trainingRecord.title ? trainingRecord.title : 'Missing training name' }}
+                      </span>
+                    }
+                  </td>
+                  <td class="govuk-table__cell" [attr.data-testid]="'accredited-' + trainingRecord.uid">
+                    {{ trainingRecord?.accredited ? trainingRecord.accredited : '-' }}
+                  </td>
+                  <td class="govuk-table__cell" [attr.data-testid]="'completion-date-' + trainingRecord.uid">
+                    {{ trainingRecord?.completed ? (trainingRecord.completed | date: 'dd MMM y') : '-' }}
+                  </td>
+                  <td class="govuk-table__cell" [attr.data-testid]="'expiry-date-' + trainingRecord.uid">
+                    @let doesNotexpires = trainingRecord.doesNotExpire ? 'Does not expire' : '-';
+                    @let expiryDate =
+                      trainingRecord?.expires ? (trainingRecord.expires | date: 'dd MMM y') : doesNotexpires;
+                    {{ expiryDate }}
+                    @if (trainingRecord?.trainingStatus === trainingStatusService.EXPIRED && trainingRecord.expires) {
+                      <div [attr.data-testid]="'status-expired-' + trainingRecord.uid" class="govuk-!-padding-top-1">
+                        <img
+                          src="/assets/images/flag-red.png"
+                          alt="red expired flag"
+                          class="govuk-util__vertical-align-top"
+                        />
+                        Expired
+                      </div>
+                    }
+                    @if (trainingRecord?.trainingStatus === trainingStatusService.EXPIRING && trainingRecord.expires) {
+                      <div [attr.data-testid]="'status-expiring-' + trainingRecord.uid" class="govuk-!-padding-top-1">
+                        <img
+                          src="/assets/images/flag-orange.png"
+                          alt="yellow expires soon flag"
+                          class="govuk-util__vertical-align-top"
+                        />
+                        Expires soon
+                      </div>
+                    }
+                  </td>
+                  <td class="govuk-table__cell">
+                    @if (canEditWorker) {
+                      @if (trainingRecord.trainingCertificates?.length === 1) {
+                        <span>
+                          <a
+                            href="#"
+                            class="govuk-link govuk-link--no-visited-state"
+                            (click)="handleDownloadCertificate($event, trainingRecord)"
+                          >
+                            <img
+                              alt=""
+                              src="/assets/images/icon-download.svg"
+                              class="govuk-util__vertical-align-bottom"
+                            /><span class="govuk-!-margin-left-1">Download</span>
+                            <span class="govuk-visually-hidden"
+                              >the certificate {{ trainingRecord.trainingCertificates[0].filename }}</span
+                            >
+                          </a>
+                        </span>
+                      }
+                      @if (trainingRecord.trainingCertificates?.length > 1) {
+                        <span>
+                          <a
+                            [routerLink]="['../training', trainingRecord.uid]"
+                            class="govuk-link govuk-link--no-visited-state"
+                          >
+                            Select a download
+                          </a>
+                        </span>
+                      }
+                      @if (trainingRecord.trainingCertificates?.length === 0) {
+                        <span>
+                          <app-select-upload-file
+                            accept=".pdf"
+                            buttonText="Upload file"
+                            buttonClasses="govuk-!-margin-bottom-0 govuk-!-padding-top-1 govuk-!-padding-bottom-1"
+                            (selectFiles)="handleUploadCertificate($event, trainingRecord)"
+                          ></app-select-upload-file>
+                        </span>
+                      }
+                    }
+                    @if (pdfRenderingMode) {
+                      @if (trainingRecord.trainingCertificates?.length > 0) {
+                        Uploaded
+                      } @else {
+                        Not uploaded
+                      }
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    } @else {
+      @if (isMandatoryTraining) {
         <div class="govuk-!-margin-bottom-8">
           <h1 class="govuk-heading-l govuk-!-font-size-27 govuk-!-margin-bottom-3">Mandatory training</h1>
-          <ng-container *ngIf="missingMandatoryTraining; else notMissingTraining">
+          @if (missingMandatoryTraining) {
             <p class="govuk-body">No mandatory training records have been added for this person yet.</p>
-            <a
-              *ngIf="canEditWorker"
-              class="govuk-link--no-visited-state govuk-!-font-size-19"
-              [attr.data-testid]="'mandatory-training-missing-link'"
-              [routerLink]="['../add-a-training-record']"
-              >Add a training record</a
-            >
-          </ng-container>
-          <ng-template #notMissingTraining>
+            @if (canEditWorker) {
+              <a
+                class="govuk-link--no-visited-state govuk-!-font-size-19"
+                [attr.data-testid]="'mandatory-training-missing-link'"
+                [routerLink]="['../add-a-training-record']"
+                >Add a training record</a
+              >
+            }
+          } @else {
             <p class="govuk-body">No mandatory training has been added for this job role yet.</p>
-            <a
-              *ngIf="canEditWorker"
-              class="govuk-link--no-visited-state govuk-!-font-size-19"
-              [attr.data-testid]="'no-mandatory-training-link'"
-              [routerLink]="['/workplace', workplaceUid, 'add-and-manage-mandatory-training']"
-              >Add and manage mandatory training categories</a
-            >
-          </ng-template>
+            @if (canEditWorker) {
+              <a
+                class="govuk-link--no-visited-state govuk-!-font-size-19"
+                [attr.data-testid]="'no-mandatory-training-link'"
+                [routerLink]="['/workplace', workplaceUid, 'add-and-manage-mandatory-training']"
+                >Add and manage mandatory training categories</a
+              >
+            }
+          }
         </div>
-      </ng-container>
-      <ng-template #notMandatoryTraining>
+      } @else {
         <div class="govuk-!-margin-bottom-8">
           <h1 class="govuk-heading-l govuk-!-font-size-27 govuk-!-margin-bottom-3">Non-mandatory training</h1>
           <p class="govuk-body">No non-mandatory training records have been added for this person yet.</p>
-          <a
-            *ngIf="canEditWorker"
-            class="govuk-link--no-visited-state govuk-!-font-size-19"
-            [attr.data-testid]="'no-training-link'"
-            [routerLink]="['../add-a-training-record']"
-            >Add a training record</a
-          >
+          @if (canEditWorker) {
+            <a
+              class="govuk-link--no-visited-state govuk-!-font-size-19"
+              [attr.data-testid]="'no-training-link'"
+              [routerLink]="['../add-a-training-record']"
+              >Add a training record</a
+            >
+          }
         </div>
-      </ng-template>
-    </ng-template>
+      }
+    }
   </div>
 </div>

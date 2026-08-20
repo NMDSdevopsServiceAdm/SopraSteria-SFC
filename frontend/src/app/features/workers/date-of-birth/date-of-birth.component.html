@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+@if (submitted && form.invalid) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
@@ -17,16 +19,17 @@
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
           <label class="govuk-label">Date of birth</label>
           <span id="dob-hint" class="govuk-hint"> For example, 31 3 1980 </span>
-          <span *ngIf="submitted && form.get('dob').errors" id="dob-error" class="govuk-error-message">
-            <ng-container *ngIf="form.get('dob').hasError('dateValid')">
-              <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('dob', 'dateValid') }}
-            </ng-container>
-            <ng-container *ngIf="form.get('dob').hasError('dateBetween')">
-              <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('dob', 'dateBetween') }}
-            </ng-container>
+          @if (submitted && form.get('dob').errors) {
+          <span id="dob-error" class="govuk-error-message">
+            @if (form.get('dob').hasError('dateValid')) {
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage('dob', 'dateValid') }}
+            } @if (form.get('dob').hasError('dateBetween')) {
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage('dob', 'dateBetween') }}
+            }
           </span>
+          }
           <app-date-picker
             [formGroup]="form"
             [formGroupName]="'dob'"
@@ -36,7 +39,8 @@
         </div>
       </fieldset>
     </div>
-    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+    @if (insideFlow) {
+    <div class="govuk-grid-column-one-third">
       <div class="govuk-!-margin-left-8">
         <app-progress-bar
           data-testid="progress-bar"
@@ -45,6 +49,7 @@
         ></app-progress-bar>
       </div>
     </div>
+    }
   </div>
   <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
 </form>

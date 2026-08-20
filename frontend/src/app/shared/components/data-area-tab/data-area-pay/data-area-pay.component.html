@@ -40,7 +40,8 @@
           {{ comparisonGroupSeniorCareWorkerPay }}
         </td>
       </tr>
-      <tr class="govuk-table__row" data-testid="register-nurse-comparison" *ngIf="showRegisteredNurseSalary">
+      @if (showRegisteredNurseSalary) {
+      <tr class="govuk-table__row" data-testid="register-nurse-comparison">
         <th scope="row" class="govuk-table__header comparison-row-header govuk-!-font-weight-regular">
           Registered nurse salary
         </th>
@@ -51,6 +52,7 @@
           {{ comparisonGroupRegisteredNurseSalary }}
         </td>
       </tr>
+      }
       <tr class="govuk-table__row last-row" data-testid="seniorCareworkerRow">
         <th scope="row" class="govuk-table__header comparison-row-header govuk-!-font-weight-regular">
           Registered manager salary
@@ -73,76 +75,77 @@
     >
     </app-benchmarks-select-view-panel>
 
-    <ng-container *ngIf="viewBenchmarksPosition; else showRankings">
-      <div class="govuk-!-margin-top-7" data-testid="barcharts">
-        <app-data-area-barchart
-          [section]="'Care worker pay'"
-          [type]="'careWorkerPay'"
-          [rankingsData]="careWorkerRankings"
-          [altDescription]="'Care worker pay barchart'"
-          [isPay]="true"
-          [noWorkplaceData]="rankings.careWorkerPay.noWorkplaceData"
-        ></app-data-area-barchart>
-        <app-data-area-barchart
-          [section]="'Senior care worker pay'"
-          [type]="'seniorCareWorkerPay'"
-          [rankingsData]="seniorCareWorkerRankings"
-          [altDesrcripton]="'Senior care worker pay barchart'"
-          [isPay]="true"
-          [noWorkplaceData]="rankings.seniorCareWorkerPay.noWorkplaceData"
-        ></app-data-area-barchart>
-        <app-data-area-barchart
-          *ngIf="showRegisteredNurseSalary"
-          [section]="'Registered nurse salary'"
-          [type]="'registeredNursePay'"
-          [rankingsData]="registeredNurseRankings"
-          [altDescription]="'Registered nurse salary barchart'"
-          [isPay]="true"
-          [noWorkplaceData]="rankings.registeredNursePay.noWorkplaceData"
-        ></app-data-area-barchart>
-        <app-data-area-barchart
-          [section]="'Registered manager salary'"
-          [type]="'registeredManagerPay'"
-          [rankingsData]="registeredManagerRankings"
-          [isPay]="true"
-          [noWorkplaceData]="rankings.registeredManagerPay.noWorkplaceData"
-          [altDescription]="'Registered manager salary barchart'"
-        ></app-data-area-barchart>
-      </div>
-    </ng-container>
-    <ng-template #showRankings>
-      <div class="govuk-!-margin-top-7" data-testid="rankings">
-        <app-data-area-ranking
-          [rankingTitle]="rankings?.careWorkerPay.title"
-          [workplaceRankNumber]="rankings?.careWorkerPay.workplacesRankNumber"
-          [workplacesNumber]="rankings?.careWorkerPay.totalWorkplaces"
-          [noWorkplaceData]="rankings?.careWorkerPay.noWorkplaceData"
-          [isPay]="true"
-        ></app-data-area-ranking>
-        <app-data-area-ranking
-          [rankingTitle]="rankings?.seniorCareWorkerPay.title"
-          [workplaceRankNumber]="rankings?.seniorCareWorkerPay.workplacesRankNumber"
-          [workplacesNumber]="rankings?.seniorCareWorkerPay.totalWorkplaces"
-          [noWorkplaceData]="rankings?.seniorCareWorkerPay.noWorkplaceData"
-          [isPay]="true"
-        ></app-data-area-ranking>
-        <app-data-area-ranking
-          *ngIf="showRegisteredNurseSalary"
-          [rankingTitle]="rankings?.registeredNursePay.title"
-          [workplaceRankNumber]="rankings?.registeredNursePay.workplacesRankNumber"
-          [workplacesNumber]="rankings?.registeredNursePay.totalWorkplaces"
-          [noWorkplaceData]="rankings?.registeredNursePay.noWorkplaceData"
-          [isPay]="true"
-        ></app-data-area-ranking>
-        <app-data-area-ranking
-          [rankingTitle]="rankings?.registeredManagerPay.title"
-          [workplaceRankNumber]="rankings?.registeredManagerPay.workplacesRankNumber"
-          [workplacesNumber]="rankings?.registeredManagerPay.totalWorkplaces"
-          [noWorkplaceData]="rankings?.registeredManagerPay.noWorkplaceData"
-          [isPay]="true"
-        ></app-data-area-ranking>
-      </div>
-    </ng-template>
+    @if (viewBenchmarksPosition) {
+    <div class="govuk-!-margin-top-7" data-testid="barcharts">
+      <app-data-area-barchart
+        [section]="'Care worker pay'"
+        [type]="'careWorkerPay'"
+        [rankingsData]="careWorkerRankings"
+        [altDescription]="'Care worker pay barchart'"
+        [isPay]="true"
+        [noWorkplaceData]="rankings.careWorkerPay.noWorkplaceData"
+      ></app-data-area-barchart>
+      <app-data-area-barchart
+        [section]="'Senior care worker pay'"
+        [type]="'seniorCareWorkerPay'"
+        [rankingsData]="seniorCareWorkerRankings"
+        [altDesrcripton]="'Senior care worker pay barchart'"
+        [isPay]="true"
+        [noWorkplaceData]="rankings.seniorCareWorkerPay.noWorkplaceData"
+      ></app-data-area-barchart>
+      @if (showRegisteredNurseSalary) {
+      <app-data-area-barchart
+        [section]="'Registered nurse salary'"
+        [type]="'registeredNursePay'"
+        [rankingsData]="registeredNurseRankings"
+        [altDescription]="'Registered nurse salary barchart'"
+        [isPay]="true"
+        [noWorkplaceData]="rankings.registeredNursePay.noWorkplaceData"
+      ></app-data-area-barchart>
+      }
+      <app-data-area-barchart
+        [section]="'Registered manager salary'"
+        [type]="'registeredManagerPay'"
+        [rankingsData]="registeredManagerRankings"
+        [isPay]="true"
+        [noWorkplaceData]="rankings.registeredManagerPay.noWorkplaceData"
+        [altDescription]="'Registered manager salary barchart'"
+      ></app-data-area-barchart>
+    </div>
+    } @else {
+    <div class="govuk-!-margin-top-7" data-testid="rankings">
+      <app-data-area-ranking
+        [rankingTitle]="rankings?.careWorkerPay.title"
+        [workplaceRankNumber]="rankings?.careWorkerPay.workplacesRankNumber"
+        [workplacesNumber]="rankings?.careWorkerPay.totalWorkplaces"
+        [noWorkplaceData]="rankings?.careWorkerPay.noWorkplaceData"
+        [isPay]="true"
+      ></app-data-area-ranking>
+      <app-data-area-ranking
+        [rankingTitle]="rankings?.seniorCareWorkerPay.title"
+        [workplaceRankNumber]="rankings?.seniorCareWorkerPay.workplacesRankNumber"
+        [workplacesNumber]="rankings?.seniorCareWorkerPay.totalWorkplaces"
+        [noWorkplaceData]="rankings?.seniorCareWorkerPay.noWorkplaceData"
+        [isPay]="true"
+      ></app-data-area-ranking>
+      @if (showRegisteredNurseSalary) {
+      <app-data-area-ranking
+        [rankingTitle]="rankings?.registeredNursePay.title"
+        [workplaceRankNumber]="rankings?.registeredNursePay.workplacesRankNumber"
+        [workplacesNumber]="rankings?.registeredNursePay.totalWorkplaces"
+        [noWorkplaceData]="rankings?.registeredNursePay.noWorkplaceData"
+        [isPay]="true"
+      ></app-data-area-ranking>
+      }
+      <app-data-area-ranking
+        [rankingTitle]="rankings?.registeredManagerPay.title"
+        [workplaceRankNumber]="rankings?.registeredManagerPay.workplacesRankNumber"
+        [workplacesNumber]="rankings?.registeredManagerPay.totalWorkplaces"
+        [noWorkplaceData]="rankings?.registeredManagerPay.noWorkplaceData"
+        [isPay]="true"
+      ></app-data-area-ranking>
+    </div>
+    }
   </div>
 
   <app-data-area-useful-link-pay></app-data-area-useful-link-pay>

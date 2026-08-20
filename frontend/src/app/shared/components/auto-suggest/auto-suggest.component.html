@@ -1,7 +1,11 @@
 <div class="govuk-grid-row govuk-!-margin-0 input--search">
-  <label *ngIf="label" class="govuk-label govuk-!-margin-bottom-2" for="{{ formControlName }}" data-testid="label"
-    >{{ label }} <span *ngIf="accessibleLabel" class="govuk-visually-hidden"> {{ accessibleLabel }}</span></label
+  @if (label) {
+  <label class="govuk-label govuk-!-margin-bottom-2" for="{{ formControlName }}" data-testid="label"
+    >{{ label }} @if (accessibleLabel) {
+    <span class="govuk-visually-hidden"> {{ accessibleLabel }}</span>
+    }</label
   >
+  }
   <div
     data-testid="container"
     [ngClass]="{
@@ -23,15 +27,18 @@
         [attr.id]="formControlName"
         [attr.name]="formControlName"
         type="text"
-        [ngClass]="{'overflow-ellipsis': showEllipsis}"
+        [ngClass]="{ 'overflow-ellipsis': showEllipsis }"
       />
-      <ul *ngIf="dataProvider().length > 0" data-testid="tray-list" [ngClass]="{ 'tray-list': showBackground }">
-        <li [ngClass]="{'tray-list-item': showEllipsis}" *ngFor="let item of dataProvider()" (click)="onClick(item)">
+      @if (dataProvider().length > 0) {
+      <ul data-testid="tray-list" [ngClass]="{ 'tray-list': showBackground }">
+        @for (item of dataProvider(); track item) {
+        <li [ngClass]="{ 'tray-list-item': showEllipsis }" (click)="onClick(item)">
           {{ item }}
         </li>
+        }
       </ul>
-
-      <div *ngIf="showSearchIcon">
+      } @if (showSearchIcon) {
+      <div>
         <button
           class="govuk-button button-override--search govuk-!-margin-bottom-0"
           name="search"
@@ -44,6 +51,7 @@
           <img src="/assets/images/search-icon.svg" alt="" aria-hidden="true" />
         </button>
       </div>
+      }
     </div>
   </div>
 </div>

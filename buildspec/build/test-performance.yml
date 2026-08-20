@@ -17,4 +17,4 @@ phases:
      - npm ci
      - npm install -g @lhci/cli@0.12.x
      - npm run build
-     - lhci autorun
+     - lhci autorun --collect.staticDistDir=dist/browser

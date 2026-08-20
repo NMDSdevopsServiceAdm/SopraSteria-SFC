@@ -10,15 +10,16 @@
         <li class="govuk-!-margin-bottom-2">
           <a [routerLink]="['/bulk-upload', 'get-help', 'step-by-step-guide']">Step by step bulk upload guide</a>
         </li>
-        <li
-          class="govuk-!-margin-bottom-2"
-          *ngFor="let topTipItem of topTipsList"
-          [ngClass]="{ 'govuk-!-font-weight-bold': topTipItem.slug === topTip.slug }"
-        >
-          <a [routerLink]="['/bulk-upload', 'get-help', topTipItem.slug]" (click)="setReturnUrl(topTipItem.slug)">{{
-            topTipItem.link_title
-          }}</a>
-        </li>
+        @for (topTipItem of topTipsList; track topTipItem.slug) {
+          <li
+            class="govuk-!-margin-bottom-2"
+            [ngClass]="{ 'govuk-!-font-weight-bold': topTipItem.slug === topTip.slug }"
+          >
+            <a [routerLink]="['/bulk-upload', 'get-help', topTipItem.slug]" (click)="setReturnUrl(topTipItem.slug)">{{
+              topTipItem.link_title
+            }}</a>
+          </li>
+        }
       </ul>
     </div>
     <app-bulk-upload-related-content

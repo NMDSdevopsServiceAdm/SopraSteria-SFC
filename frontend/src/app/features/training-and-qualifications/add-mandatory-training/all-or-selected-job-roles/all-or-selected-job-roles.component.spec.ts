@@ -13,7 +13,7 @@ import { MockMandatoryTrainingService } from '@core/test-utils/MockTrainingServi
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { Observable, throwError } from 'rxjs';
+import { from, Observable, throwError } from 'rxjs';
 
 import { AddMandatoryTrainingModule } from '../add-mandatory-training.module';
 import { AllOrSelectedJobRolesComponent } from './all-or-selected-job-roles.component';
@@ -43,7 +43,7 @@ describe('AllOrSelectedJobRolesComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            params: Observable.from([{ establishmentuid: establishment.uid }]),
+            params: from([{ establishmentuid: establishment.uid }]),
             snapshot: {
               parent: {
                 data: { establishment },

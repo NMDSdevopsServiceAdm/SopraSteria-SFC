@@ -9,193 +9,176 @@
           [ngClass]="tab === 'home' ? 'govuk-grid-column-one-half' : 'govuk-grid-column-two-thirds'"
           data-testid="column-one"
         >
-          <ng-container *ngIf="tab === 'home'; else otherTab">
-            <ng-container *ngIf="isParent && !isParentSubsidiaryView">
-              <span class="govuk-caption-xl" data-testid="parentLabel">Parent</span>
-            </ng-container>
-
-            <ng-container *ngIf="workplace?.parentName && !isParentSubsidiaryView">
-              <span class="govuk-caption-xl" data-testid="parentNameLabel">
-                <ng-container *ngIf="isAdmin; else parentNameText">
-                  <a
-                    href="#"
-                    class="govuk-link--no-visited-state"
-                    data-testid="name-link"
-                    (click)="navigateToParentWorkplace(workplace?.parentUid, '', '', $event)"
-                  >
-                    {{ workplace.parentName }}
-                  </a>
-                </ng-container>
-
-                <ng-template #parentNameText>
-                  {{ workplace.parentName }}
-                </ng-template>
-              </span>
-            </ng-container>
-
-            <span *ngIf="isParentSubsidiaryView" class="govuk-caption-xl" data-testid="selectedWorkplaceLabel"
-              >Selected workplace</span
+          @if (tab === 'home') { @if (isParent && !isParentSubsidiaryView) {
+          <span class="govuk-caption-xl" data-testid="parentLabel">Parent</span>
+          } @if (workplace?.parentName && !isParentSubsidiaryView) {
+          <span class="govuk-caption-xl" data-testid="parentNameLabel">
+            @if (isAdmin) {
+            <a
+              href="#"
+              class="govuk-link--no-visited-state"
+              data-testid="name-link"
+              (click)="navigateToParentWorkplace(workplace?.parentUid, '', '', $event)"
             >
-
-            <h1
-              data-testid="workplaceName"
-              class="govuk-heading-l govuk-!-margin-bottom-0 asc-util__break-word-on-overflow"
-            >
-              {{ workplace?.name }}
-            </h1>
-          </ng-container>
-          <ng-template #otherTab>
-            <h1 data-testid="workplaceName" class="govuk-heading-l govuk-!-margin-bottom-0">
-              <span class="govuk-caption-xl govuk-!-margin-bottom-0 asc-util__break-word-on-overflow">{{
-                workplace?.name
-              }}</span>
-              {{ header }}
-            </h1>
-          </ng-template>
+              {{ workplace.parentName }}
+            </a>
+            } @else {
+            {{ workplace.parentName }}
+            }
+          </span>
+          } @if (isParentSubsidiaryView) {
+          <span class="govuk-caption-xl" data-testid="selectedWorkplaceLabel">Selected workplace</span>
+          }
+          <h1
+            data-testid="workplaceName"
+            class="govuk-heading-l govuk-!-margin-bottom-0 asc-util__break-word-on-overflow"
+          >
+            {{ workplace?.name }}
+          </h1>
+          } @else {
+          <h1 data-testid="workplaceName" class="govuk-heading-l govuk-!-margin-bottom-0">
+            <span class="govuk-caption-xl govuk-!-margin-bottom-0 asc-util__break-word-on-overflow">{{
+              workplace?.name
+            }}</span>
+            {{ header }}
+          </h1>
+          }
           <p class="govuk-!-font-size-16 govuk-!-margin-top-2 govuk-!-margin-bottom-0">
             <span class="govuk-!-margin-right-2">Workplace ID: {{ workplace?.nmdsId }}</span>
-            <span *ngIf="updatedDate" data-testid="separator">|</span>
-
-            <span *ngIf="updatedDate" class="govuk-!-margin-left-2" data-testid="lastUpdatedDate"
+            @if (updatedDate) {
+            <span data-testid="separator">|</span>
+            } @if (updatedDate) {
+            <span class="govuk-!-margin-left-2" data-testid="lastUpdatedDate"
               >Last update, {{ updatedDate | date: 'd MMMM y' }}
             </span>
-            <ng-container *ngIf="tab === 'home' && !isAdmin && lastLoggedInFromLogin && !isParentSubsidiaryView">
-              <span data-testid="separator">|</span>
-
-              <span class="govuk-!-margin-left-2"> Last sign in, {{ lastLoggedInFromLogin | date: 'd MMMM y' }} </span>
-            </ng-container>
+            } @if (tab === 'home' && !isAdmin && lastLoggedInFromLogin && !isParentSubsidiaryView) {
+            <span data-testid="separator">|</span>
+            <span class="govuk-!-margin-left-2"> Last sign in, {{ lastLoggedInFromLogin | date: 'd MMMM y' }} </span>
+            }
           </p>
         </div>
         <div
           [ngClass]="tab === 'home' ? 'govuk-grid-column-one-half' : 'govuk-grid-column-one-third'"
           data-testid="column-two"
         >
-          <ng-container [ngSwitch]="tab">
-            <ng-container *ngSwitchCase="'home'">
-              <div class="govuk-util__float-right" *ngIf="tab === 'home'" data-testid="contact-info">
-                <div
-                  *ngIf="
-                    (workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus !== 'PENDING') ||
-                    (canDeleteEstablishment && isParentSubsidiaryView)
-                  "
-                >
-                  <a
-                    data-testid="delete-workplace"
-                    href="#"
-                    class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-padding-left-0 govuk-!-margin-bottom-2"
-                    (click)="navigateToDeleteWorkplace($event)"
-                  >
-                    <img src="/assets/images/bin.svg" alt="" />
-                    <span class="govuk-!-margin-left-1">
-                      Delete <span class="govuk-visually-hidden">{{ workplace?.name }}</span> workplace
-                    </span>
-                  </a>
-                </div>
-
-                <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Contact Skills for Care</h2>
-                <p class="govuk-!-font-size-16 govuk-!-margin-top-2 govuk-!-margin-bottom-0">
-                  <span class="govuk-!-margin-right-2">0113 241 0969</span> |
-                  <span class="govuk-!-margin-left-2">
-                    <a href="mailto:ascwds-support@skillsforcare.org.uk">ascwds-support&#64;skillsforcare.org.uk</a>
-                  </span>
-                </p>
-              </div>
-            </ng-container>
-
-            <ng-container *ngSwitchCase="'workplace'">
-              <div class="do-as-parent-link">
-                <span
-                  *ngIf="isParent"
-                  class="govuk-width-container govuk-body govuk-!-font-size-19 govuk-util__align-right"
-                  data-testid="do-as-parent"
-                >
-                  <a [routerLink]="['/workplace/about-parents']">What you can do as a parent</a>
+          @switch (tab) { @case ('home') { @if (tab === 'home') {
+          <div class="govuk-util__float-right" data-testid="contact-info">
+            @if ( (workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus !== 'PENDING') ||
+            (canDeleteEstablishment && isParentSubsidiaryView) ) {
+            <div>
+              <a
+                data-testid="delete-workplace"
+                href="#"
+                class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-padding-left-0 govuk-!-margin-bottom-2"
+                (click)="navigateToDeleteWorkplace($event)"
+              >
+                <img src="/assets/images/bin.svg" alt="" />
+                <span class="govuk-!-margin-left-1">
+                  Delete <span class="govuk-visually-hidden">{{ workplace?.name }}</span> workplace
                 </span>
-              </div>
-            </ng-container>
-
-            <ng-container *ngSwitchCase="'staff-records'">
-              <div *ngIf="canAddWorker" class="govuk-util__align-right">
+              </a>
+            </div>
+            }
+            <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Contact Skills for Care</h2>
+            <p class="govuk-!-font-size-16 govuk-!-margin-top-2 govuk-!-margin-bottom-0">
+              <span class="govuk-!-margin-right-2">0113 241 0969</span> |
+              <span class="govuk-!-margin-left-2">
+                <a href="mailto:ascwds-support@skillsforcare.org.uk">ascwds-support&#64;skillsforcare.org.uk</a>
+              </span>
+            </p>
+          </div>
+          } } @case ('workplace') {
+          <div class="do-as-parent-link">
+            @if (isParent) {
+            <span
+              class="govuk-width-container govuk-body govuk-!-font-size-19 govuk-util__align-right"
+              data-testid="do-as-parent"
+            >
+              <a [routerLink]="['/workplace/about-parents']">What you can do as a parent</a>
+            </span>
+            }
+          </div>
+          } @case ('staff-records') { @if (canAddWorker) {
+          <div class="govuk-util__align-right">
+            <a
+              role="button"
+              draggable="false"
+              class="govuk-button govuk-!-margin-bottom-5"
+              data-cy="add-staff-record-button"
+              [routerLink]="['/workplace', this.workplace.uid, 'staff-record', 'create-staff-record']"
+            >
+              Add a staff record
+            </a>
+          </div>
+          } } @case ('training-and-qualifications') { @if (hasWorkers && canEditWorker) {
+          <div class="govuk-util__align-right">
+            <app-button-menu buttonText="Add and manage training">
+              <li>
                 <a
+                  [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-staff']"
                   role="button"
-                  draggable="false"
-                  class="govuk-button govuk-!-margin-bottom-5"
-                  data-cy="add-staff-record-button"
-                  [routerLink]="['/workplace', this.workplace.uid, 'staff-record', 'create-staff-record']"
+                  class="asc-button-menu__item"
                 >
-                  Add a staff record
+                  Add multiple training records
                 </a>
-              </div>
-            </ng-container>
-            <ng-container *ngSwitchCase="'training-and-qualifications'">
-              <div *ngIf="hasWorkers && canEditWorker" class="govuk-util__align-right">
-                <app-button-menu buttonText="Add and manage training">
-                  <li>
-                    <a
-                      [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-staff']"
-                      role="button"
-                      class="asc-button-menu__item"
-                    >
-                      Add multiple training records
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      [routerLink]="['/workplace', workplace.uid, 'training-course', 'add-and-manage-training-courses']"
-                      href="#"
-                      role="button"
-                      class="asc-button-menu__item"
-                    >
-                      Add training courses
-                    </a>
-                  </li>
-
-                  <li *ngIf="hasTrainingCourse">
-                    <a
-                      [routerLink]="[
-                        '/workplace',
-                        workplace.uid,
-                        'update-records-with-training-course-details',
-                        'select-a-training-course',
-                      ]"
-                      role="button"
-                      class="asc-button-menu__item govuk-!-margin-right-3"
-                    >
-                      Update records with training course details
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      [routerLink]="['/workplace', workplace.uid, 'add-and-manage-mandatory-training']"
-                      role="button"
-                      class="asc-button-menu__item"
-                    >
-                      Manage mandatory training
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      [routerLink]="['/workplace', workplace.uid, 'change-expires-soon-alerts']"
-                      role="button"
-                      class="asc-button-menu__item"
-                    >
-                      Manage expiry alerts
-                    </a>
-                  </li>
-                </app-button-menu>
-              </div>
-            </ng-container>
-          </ng-container>
+              </li>
+              <li>
+                <a
+                  [routerLink]="['/workplace', workplace.uid, 'training-course', 'add-and-manage-training-courses']"
+                  href="#"
+                  role="button"
+                  class="asc-button-menu__item"
+                >
+                  Add training courses
+                </a>
+              </li>
+              @if (hasTrainingCourse) {
+              <li>
+                <a
+                  [routerLink]="[
+                    '/workplace',
+                    workplace.uid,
+                    'update-records-with-training-course-details',
+                    'select-a-training-course'
+                  ]"
+                  role="button"
+                  class="asc-button-menu__item govuk-!-margin-right-3"
+                >
+                  Update records with training course details
+                </a>
+              </li>
+              }
+              <li>
+                <a
+                  [routerLink]="['/workplace', workplace.uid, 'add-and-manage-mandatory-training']"
+                  role="button"
+                  class="asc-button-menu__item"
+                >
+                  Manage mandatory training
+                </a>
+              </li>
+              <li>
+                <a
+                  [routerLink]="['/workplace', workplace.uid, 'change-expires-soon-alerts']"
+                  role="button"
+                  class="asc-button-menu__item"
+                >
+                  Manage expiry alerts
+                </a>
+              </li>
+            </app-button-menu>
+          </div>
+          } } }
         </div>
       </div>
     </div>
   </div>
 </div>
-<ng-container *ngIf="tab === 'workplace'">
-  <app-display-workplace-name-address
-    [workplace]="workplace"
-    [canEditEstablishment]="canEditEstablishment"
-    [return]="return"
-    data-testid="workplace-address"
-  ></app-display-workplace-name-address>
-</ng-container>
+@if (tab === 'workplace') {
+<app-display-workplace-name-address
+  [workplace]="workplace"
+  [canEditEstablishment]="canEditEstablishment"
+  [return]="return"
+  data-testid="workplace-address"
+></app-display-workplace-name-address>
+}

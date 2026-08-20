@@ -1,5 +1,6 @@
 <div class="govuk-radios" [formGroup]="form">
-  <div class="govuk-radios__item" *ngFor="let item of locationAddresses; let i = index">
+  @for (item of locationAddresses; track item; let i = $index) {
+  <div class="govuk-radios__item">
     <input
       class="govuk-radios__input"
       id="workplace-{{ i }}"
@@ -14,4 +15,5 @@
       {{ item.postalCode }}
     </label>
   </div>
+  }
 </div>

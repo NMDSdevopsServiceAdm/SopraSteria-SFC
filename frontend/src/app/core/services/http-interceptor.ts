@@ -1,7 +1,7 @@
 import { HttpEvent, HttpHandler, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { API_PATTERN } from '@core/constants/constants';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { catchError, debounceTime, delay, retryWhen, tap } from 'rxjs/operators';
 
 import { HttpErrorHandler } from './http-error-handler.service';

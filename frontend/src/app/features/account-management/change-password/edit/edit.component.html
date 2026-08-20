@@ -1,10 +1,6 @@
-<app-error-summary
-  *ngIf="submitted && form.invalid"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
-  [serverError]="serverError"
->
-</app-error-summary>
+@if (submitted && form.invalid) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form" [serverError]="serverError"> </app-error-summary>
+}
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
   <div class="govuk-grid-row">
@@ -17,9 +13,11 @@
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getOldPasswordInput.errors">
           <label class="govuk-label" for="oldPasswordInput">Old password</label>
-          <span *ngIf="submitted && getOldPasswordInput.errors" id="oldPasswordInput-error" class="govuk-error-message">
+          @if (submitted && getOldPasswordInput.errors) {
+          <span id="oldPasswordInput-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('oldPasswordInput') }}
           </span>
+          }
           <input
             class="govuk-input govuk-input--width-10"
             [formControlName]="'oldPasswordInput'"
@@ -37,14 +35,12 @@
               Must be at least 8 characters long and have uppercase letters, lowercase letters, numbers and special
               characters like !, £.
             </div>
-            <span
-              *ngIf="submitted && getCreatePasswordInput.errors"
-              id="passwordGroup-createPasswordInput-error"
-              class="govuk-error-message"
-            >
+            @if (submitted && getCreatePasswordInput.errors) {
+            <span id="passwordGroup-createPasswordInput-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span>
               {{ getFirstErrorMessage('passwordGroup.createPasswordInput') }}
             </span>
+            }
             <input
               aria-describedby="createPasswordInput-hint"
               class="govuk-input govuk-input--width-10"
@@ -58,14 +54,12 @@
 
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getConfirmPasswordInput.errors">
             <label class="govuk-label" for="confirmPasswordInput">Confirm new password</label>
-            <span
-              *ngIf="submitted && getConfirmPasswordInput.errors"
-              id="passwordGroup-confirmPasswordInput-error"
-              class="govuk-error-message"
-            >
+            @if (submitted && getConfirmPasswordInput.errors) {
+            <span id="passwordGroup-confirmPasswordInput-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span>
               {{ getFirstErrorMessage('passwordGroup.confirmPasswordInput') }}
             </span>
+            }
             <input
               class="govuk-input govuk-input--width-10"
               [formControlName]="'confirmPasswordInput'"
