@@ -29,7 +29,7 @@ describe('AllNurseFieldsOfPracticeResolver', () => {
     expect(resolver).toBeTruthy();
   });
 
-  it('should call getDelegatedHealthcareActivities', () => {
+  it('should call getAllNurseFieldsOfPracticeSpy', () => {
     const { resolver, getAllNurseFieldsOfPracticeSpy } = setup();
 
     resolver.resolve();

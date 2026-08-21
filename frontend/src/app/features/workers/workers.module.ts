@@ -95,6 +95,7 @@ import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-st
 import { SelectTrainingCategoryComponent } from '@features/training-and-qualifications/add-edit-training/select-training-category/select-training-category.component';
 import { SelectQualificationTypeComponent } from '@features/training-and-qualifications/add-edit-qualification/select-qualification-type/select-qualification-type.component';
 import { AllNurseFieldsOfPracticeResolver } from '@core/resolvers/nurse-field-of-practice.resolver';
+import { RegisteredNursesResolver } from '@core/resolvers/registered-nurses.resolver';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -191,6 +192,7 @@ import { AllNurseFieldsOfPracticeResolver } from '@core/resolvers/nurse-field-of
     DownloadCertificateService,
     WorkersByJobRoleResolver,
     AllNurseFieldsOfPracticeResolver,
+    RegisteredNursesResolver,
   ],
 })
 export class WorkersModule {}

@@ -8,3 +8,13 @@ export interface GetAllNurseFieldsOfPracticeResponse {
 }
 
 export const RegisteredNurseJobRoleId = 23;
+
+export interface RegisteredNurse {
+  nameOrId: string;
+  uid: string;
+  nurseFieldOfPractice: NurseFieldOfPractice[];
+}
+
+export interface GetAllRegisteredNursesResponse {
+  registeredNurses: RegisteredNurse[];
+}
