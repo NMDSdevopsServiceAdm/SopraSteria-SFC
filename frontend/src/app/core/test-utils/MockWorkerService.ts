@@ -48,7 +48,7 @@ export const workerBuilder = build('Worker', {
     qualificationInSocialCare: 'No',
     otherQualification: 'Yes',
     highestQualification: null,
-    registeredNurse: 'Yes',
+    nurseFieldOfPractice: [],
     socialCareQualification: {
       qualificationId: 1,
     },
