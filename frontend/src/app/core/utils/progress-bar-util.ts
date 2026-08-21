@@ -39,3 +39,10 @@ export enum WorkplaceFlowSections {
   STAFF_DEVELOPMNENT = 'Staff development',
   PERMISSIONS = 'Permissions',
 }
+
+export enum WorkerFlowSections {
+  MANDATORY_INFORMATION = 'Mandatory information',
+  PERSONAL_DETAILS = 'Personal details',
+  EMPLOYMENT_DETAILS = 'Employment details',
+  TRAINING_AND_QUALIFICATIONS = 'Training and qualifications',
+}

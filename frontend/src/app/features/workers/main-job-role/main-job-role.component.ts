@@ -10,6 +10,7 @@ import { JobService } from '@core/services/job.service';
 import { NewWorkerMandatoryInfo, WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
+import { RegisteredNurseJobRoleId } from '@core/model/nurse-field-of-practice.model';
 
 @Component({
   selector: 'app-main-job-role.component',
@@ -94,8 +95,8 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
       props = { ...props, ...this.newWorkerMandantoryInfo };
     }
 
-    if (this.worker && mainJob.value !== 23) {
-      this.worker.registeredNurse = null;
+    if (this.worker && mainJob.value !== RegisteredNurseJobRoleId) {
+      this.worker.nurseFieldOfPractice = [];
     }
     return props;
   }

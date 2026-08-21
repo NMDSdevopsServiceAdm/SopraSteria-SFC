@@ -93,6 +93,7 @@ import { WorkersByJobRoleResolver } from '@core/resolvers/workers-by-job-role.re
 import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff/update-pay-for-multiple-staff.component';
 import { WorkersWithPayDataResolver } from '@core/resolvers/workers-with-pay-data.resolver';
 import { WorkersMainJobRolesResolver } from '@core/resolvers/workers-main-job-roles.resolver';
+import { AllNurseFieldsOfPracticeResolver } from '@core/resolvers/nurse-field-of-practice.resolver';
 
 const editTrainingRecordRoute = {
   path: 'training/:trainingRecordId',
@@ -412,6 +413,7 @@ const routes: Routes = [
           {
             path: 'nursing-category',
             component: NursingCategoryComponent,
+            resolve: { allNurseFieldsOfPractice: AllNurseFieldsOfPracticeResolver },
             data: { title: 'Nursing Category' },
           },
           {
@@ -694,6 +696,7 @@ const routes: Routes = [
       {
         path: 'nursing-category',
         component: NursingCategoryComponent,
+        resolve: { allNurseFieldsOfPractice: AllNurseFieldsOfPracticeResolver },
         data: { title: 'Nursing Category' },
       },
       {

@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+@if (submitted && form.invalid) {
+  <app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
@@ -6,38 +8,54 @@
       <div class="govuk-form-group govuk-!-margin-bottom-4">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <span class="govuk-caption-l">Employment details</span>
-            <h1 class="govuk-fieldset__heading">
-              Which category is this nurse registered under with the Nursing and Midwifery Council?
-            </h1>
+            <span data-testid="section-heading" class="govuk-caption-l">{{ sectionHeading }}</span>
+            <h1 class="govuk-fieldset__heading">What is their Nursing and Midwifery Council field of practice?</h1>
           </legend>
-          <div class="govuk-radios">
-            <div class="govuk-radios__item" *ngFor="let category of nursingCategories; let i = index">
-              <input
-                class="govuk-radios__input"
-                id="nursingCategory-{{ i }}"
-                [formControlName]="'nursingCategory'"
-                name="nursingCategory"
-                type="radio"
-                [value]="category"
-              />
-              <label class="govuk-label govuk-radios__label" for="nursingCategory-{{ i }}">
-                {{ category | nursingCategoriesText }}
-              </label>
-            </div>
+
+          <div class="govuk-!-margin-top-2 govuk-!-margin-bottom-7">
+            <strong class="govuk-body govuk-!-font-weight-bold">Not sure?</strong>
+            <p class="govuk-body">
+              <a class="govuk-link" target="_blank" href="https://www.nmc.org.uk/registration/search-the-register/">
+                Search the Nursing and Midwifery Council register
+                <span class="govuk-visually-hidden">, (opens in a new window)</span>
+              </a>
+            </p>
+          </div>
+
+          <div class="govuk-checkboxes" [formArrayName]="'nurseFieldOfPractice'">
+            <p class="govuk-body">Select all that apply.</p>
+            @for (field of allNurseFieldsOfPractice; track field.id; let i = $index) {
+              @let id = `nurseFieldOfPractice-${i}`;
+
+              <div class="govuk-checkboxes__item">
+                <input
+                  class="govuk-checkboxes__input"
+                  [id]="id"
+                  name="nurseFieldOfPractice"
+                  [formControlName]="i"
+                  type="checkbox"
+                  [value]="field.id"
+                />
+                <label class="govuk-label govuk-checkboxes__label" [for]="id">
+                  {{ field.label }}
+                </label>
+              </div>
+            }
           </div>
         </fieldset>
       </div>
     </div>
-    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
-      <div class="govuk-!-margin-left-8">
-        <app-progress-bar
-          data-testid="progress-bar"
-          [sections]="staffRecordSections"
-          [currentSection]="'Employment details'"
-        ></app-progress-bar>
+    @if (insideFlow) {
+      <div class="govuk-grid-column-one-third">
+        <div class="govuk-!-margin-left-8">
+          <app-progress-bar
+            data-testid="progress-bar"
+            [sections]="staffRecordSections"
+            [currentSection]="section"
+          ></app-progress-bar>
+        </div>
       </div>
-    </div>
+    }
   </div>
 
   <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
