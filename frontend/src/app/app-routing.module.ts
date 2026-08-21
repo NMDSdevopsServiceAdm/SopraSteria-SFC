@@ -63,6 +63,11 @@ const routes: Routes = [
     data: { title: 'Logged Out' },
   },
   {
+    path: 'logged-out-by-server',
+    component: LogoutComponent,
+    data: { title: 'Logged Out', got403FromServer: true },
+  },
+  {
     path: 'problem-with-the-service',
     component: ProblemWithTheServiceComponent,
     data: { title: 'Problem with the Service' },
