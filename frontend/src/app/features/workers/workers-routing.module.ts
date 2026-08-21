@@ -83,6 +83,7 @@ import { NursingCategoryComponent } from './nursing-category/nursing-category.co
 import { OtherQualificationsLevelComponent } from './other-qualifications-level/other-qualifications-level.component';
 import { OtherQualificationsComponent } from './other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
+import { ReviewAndConfirmNurseFieldOfPracticeComponent } from './review-and-confirm-nurse-field-of-practice/review-and-confirm-nurse-field-of-practice.component';
 import { SalaryComponent } from './salary/salary.component';
 import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
@@ -385,6 +386,16 @@ const routes: Routes = [
     resolve: { mainJobRoles: WorkersMainJobRolesResolver, workersWithPayData: WorkersWithPayDataResolver },
     data: {
       title: 'Update pay for multiple staff',
+    },
+  },
+  {
+    path: 'review-and-confirm-nurse-field-of-practice',
+    component: ReviewAndConfirmNurseFieldOfPracticeComponent,
+    resolve: {
+      allNurseFieldsOfPractice: AllNurseFieldsOfPracticeResolver,
+    },
+    data: {
+      title: "Review and confirm these nurses' Nursing and Midwifery Council fields of practice",
     },
   },
   {
