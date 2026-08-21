@@ -17,10 +17,10 @@ import { render } from '@testing-library/angular';
 import { ReviewAndConfirmNurseFieldOfPracticeComponent } from './review-and-confirm-nurse-field-of-practice.component';
 
 fdescribe('ReviewAndConfirmNurseFieldOfPracticeComponent', () => {
-  const mockWorkers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
+  const defaultNurses = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
 
   const setup = async (overrides: any = {}) => {
-    const workersToShow = overrides.workersToShow ?? mockWorkers;
+    const mockNurses = overrides.mockNurses ?? defaultNurses;
     const routerSpy = jasmine.createSpy('navigate').and.resolveTo(true);
 
     const setuptools = await render(ReviewAndConfirmNurseFieldOfPracticeComponent, {
@@ -39,7 +39,7 @@ fdescribe('ReviewAndConfirmNurseFieldOfPracticeComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: {},
+              data: { registeredNurses: mockNurses },
             },
           },
         },
@@ -88,8 +88,8 @@ fdescribe('ReviewAndConfirmNurseFieldOfPracticeComponent', () => {
       "Review and confirm these nurses' Nursing and Midwifery Council fields of practice",
     );
 
-    const sectionHeading = getByTestId('section-heading');
-    expect(sectionHeading.textContent).toEqual('Staff records');
+    const caption = getByTestId('caption');
+    expect(caption.textContent).toEqual('Staff records');
   });
 
   it('should show a link to nursing and midwifery council register', async () => {
@@ -98,5 +98,13 @@ fdescribe('ReviewAndConfirmNurseFieldOfPracticeComponent', () => {
     const expectedLinkText = /Search the Nursing and Midwifery Council register/;
 
     expect(getByRole('link', { name: expectedLinkText })).toBeTruthy();
+  });
+
+  it('should show a table which list every registered nurse in the workplace', async () => {
+    const { getByText } = await setup();
+
+    defaultNurses.forEach((nurse) => {
+      expect(getByText(nurse.nameOrId)).toBeTruthy();
+    });
   });
 });

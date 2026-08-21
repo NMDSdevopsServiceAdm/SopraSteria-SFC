@@ -1,7 +1,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-      <span data-testid="section-heading" class="govuk-caption-l">Staff records</span>
+      <span data-testid="caption" class="govuk-caption-l">Staff records</span>
       <h1 class="govuk-fieldset__heading">
         Review and confirm these nurses' Nursing and Midwifery Council fields of practice
       </h1>
@@ -20,5 +20,36 @@
 </div>
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-full"></div>
+  <div class="govuk-grid-column-full">
+    <div id="registered-nurse-table" class="govuk-table govuk-!-margin-bottom-3">
+      <div role="rowheader" class="asc__grid-table-with-form--row asc__grid-table-with-form--header-row">
+        <div data-testid="job-role-header">Name or ID number</div>
+        <div data-testid="pay-header">Details</div>
+        <div data-testid="show-hide-button-header"></div>
+      </div>
+      @for (worker of registeredNurses; track worker.uid; let workerIndex = $index) {
+        <div role="row" class="asc__grid-table-with-form--row" [attr.data-testid]="'worker-row-' + workerIndex">
+          <div [id]="'worker-name-' + workerIndex">
+            {{ worker.nameOrId }}
+          </div>
+          <div [id]="'worker-answer-' + workerIndex">
+            <div class="display-answer">
+              @let data = worker?.nurseFieldOfPractice!;
+              @if (data.length > 0) {
+                <ul class="govuk-list">
+                  @for (field of data; track field.id) {
+                    <li>{{ field.label }}</li>
+                  }
+                </ul>
+              } @else {
+                -
+              }
+            </div>
+            <div class="display-form"></div>
+          </div>
+          <div [id]="'toggle-button-' + workerIndex">toggle button</div>
+        </div>
+      }
+    </div>
+  </div>
 </div>
