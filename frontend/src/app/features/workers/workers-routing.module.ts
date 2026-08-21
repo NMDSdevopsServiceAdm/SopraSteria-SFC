@@ -14,6 +14,7 @@ import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resol
 import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
 import { AllNurseFieldsOfPracticeResolver } from '@core/resolvers/nurse-field-of-practice.resolver';
 import { QualificationResolver } from '@core/resolvers/qualification.resolver';
+import { RegisteredNursesResolver } from '@core/resolvers/registered-nurses.resolver';
 import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/training-and-qualification-records.resolver';
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
@@ -369,6 +370,7 @@ const routes: Routes = [
     component: ReviewAndConfirmNurseFieldOfPracticeComponent,
     resolve: {
       allNurseFieldsOfPractice: AllNurseFieldsOfPracticeResolver,
+      registeredNurses: RegisteredNursesResolver,
     },
     data: {
       title: "Review and confirm these nurses' Nursing and Midwifery Council fields of practice",
