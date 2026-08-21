@@ -142,4 +142,5 @@ module.exports.Establishment = {
   showAddWorkplaceDetailsBanner: false,
   CWPAwarenessQuestionViewed: true,
   staffWhatKindDelegatedHealthcareActivities: null,
+  nursesQuestionsMiniFlowViewed: true,
 };
