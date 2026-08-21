@@ -45,6 +45,17 @@ Cypress.Commands.add('loginAsUserForInterstitialPages', (username, password) => 
   getPassVacanciesAndTurnoverLoginMessage();
 });
 
+Cypress.Commands.add('loginAsUserAndStopAtVacancyAndTurnoverMessage', (username, password) => {
+  cy.intercept('POST', '/api/login').as('login');
+
+  cy.setCookie('cookies_preferences_set', 'true');
+  cy.visit('/');
+  cy.get('[data-cy="username"]').type(username);
+  cy.get('[data-cy="password"]').type(password);
+  cy.get('[data-testid="signinButton"]').click();
+  cy.wait('@login');
+});
+
 Cypress.Commands.add('loginAsUserBeforeApproval', (username, password) => {
   cy.intercept('POST', '/api/login').as('login');
 

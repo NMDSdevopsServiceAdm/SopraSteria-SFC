@@ -98,13 +98,18 @@ describe('page after login', { tags: '@others' }, () => {
     cy.url().should('eq', Cypress.config().baseUrl + '/dashboard');
   });
 
-  it('should go to the update your vacancies and turnover data page', () => {
-    setUpUserAttributes('LastViewedVacanciesAndTurnoverMessage', null);
-    cy.url().should('eq', Cypress.config().baseUrl + '/update-your-vacancies-and-turnover-data');
-    cy.get('h1').should('contain', 'Your Workplace vacancies and turnover information');
+  describe('vacancies and turnover data page', () => {
+    it('should see the update your vacancies and turnover data page', () => {
+      cy.updateUserFieldForLoginTests(fullUserName, 'LastViewedVacanciesAndTurnoverMessage', null);
+      cy.reload();
+      cy.loginAsUserAndStopAtVacancyAndTurnoverMessage(fullUserName, userPassword);
 
-    cy.contains('a', 'Continue').click();
+      cy.url().should('eq', Cypress.config().baseUrl + '/update-your-vacancies-and-turnover-data');
+      cy.get('h1').should('contain', 'Your Workplace vacancies and turnover information');
 
-    cy.url().should('eq', Cypress.config().baseUrl + '/dashboard');
+      cy.contains('a', 'Continue').click();
+
+      cy.url().should('eq', Cypress.config().baseUrl + '/dashboard');
+    });
   });
 });
