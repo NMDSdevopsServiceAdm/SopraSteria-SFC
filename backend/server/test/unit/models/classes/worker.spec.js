@@ -23,7 +23,7 @@ describe('Worker Class', () => {
         },
       };
       const nonRegisteredNurseWorker = await worker.load(notRegisteredNurse);
-      expect(notRegisteredNurse.nurseFieldOfPractice).to.deep.equal(null);
+      expect(notRegisteredNurse.nurseFieldOfPractice).to.deep.equal([]);
       expect(nonRegisteredNurseWorker).to.deep.equal(true);
     });
 
@@ -39,6 +39,7 @@ describe('Worker Class', () => {
       expect(registeredNurse.nurseFieldOfPractice).to.deep.equal([{ id: 1, label: 'Adult nursing' }]);
       expect(registeredNurseWorker).to.deep.equal(true);
     });
+
     it('should remove AMHP when not a social worker', async () => {
       const nonSocialWorker = {
         mainJob: {
