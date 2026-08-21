@@ -35,6 +35,7 @@ const WorkerCertificateService = require('../../routes/establishments/workerCert
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
 const BulkUploadQualificationHelper = require('./helpers/bulkUploadQualificationHelper');
+const { JobRoleId } = require('../../data/constants');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED', 'NOCHANGE'];
 
@@ -402,11 +403,11 @@ class Worker extends EntityValidator {
         const otherJobs = document.otherJobs ? document.otherJobs : this.otherJobs;
         if (otherJobs && otherJobs.jobs) {
           otherJobs.jobs.map((otherJob) => {
-            if (otherJob.jobId === 23) otherRegNurse = true;
+            if (otherJob.jobId === JobRoleId.REGISTERED_NURSE) otherRegNurse = true;
             if (otherJob.jobId === 27) otherSocialWorker = true;
           });
         }
-        if (mainJob && mainJob.jobId !== 23 && !otherRegNurse) {
+        if (mainJob && mainJob.jobId !== JobRoleId.REGISTERED_NURSE && !otherRegNurse) {
           document.nurseFieldOfPractice = [];
         }
         // If their job isn't a social worker - remove the approved mental health worker

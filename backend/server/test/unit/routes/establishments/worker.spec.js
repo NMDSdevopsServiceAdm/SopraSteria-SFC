@@ -621,4 +621,57 @@ describe('worker route', () => {
       });
     });
   });
+
+  describe('getAllNursesWithFieldsOfPractice', () => {
+    const mockEstablishmentId = 123;
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    const request = {
+      method: 'GET',
+      url: '/api/establishment/:uid/worker/registeredNurses',
+      params: {
+        id: 'mock-uid',
+      },
+      establishmentId: mockEstablishmentId,
+    };
+
+    const mockResult = [
+      { uid: 'mock-uid-1', nameOrId: 'Billy Smith', nurseFieldOfPractice: [] },
+      {
+        uid: 'mock-uid2',
+        nameOrId: 'Jane Smith',
+        nurseFieldOfPractice: [
+          { id: 2, label: 'Mental health nursing' },
+          { id: 4, label: "Children's nursing" },
+        ],
+      },
+    ];
+
+    it('should response with 200 with a list of registered nurses in workplace with their fields of practice', async () => {
+      sinon.stub(models.worker, 'fetchAllNursesWithFieldsOfPractice').resolves(mockResult);
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+      await workerRoute.getAllNursesWithFieldsOfPractice(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getJSONData()).to.deep.equal({ registeredNurses: mockResult });
+      expect(models.worker.fetchAllNursesWithFieldsOfPractice).to.have.been.calledWith(mockEstablishmentId);
+    });
+
+    it('should response with 500 if error occur', async () => {
+      sinon.stub(models.worker, 'fetchAllNursesWithFieldsOfPractice').rejects(new Error('database error'));
+      sinon.stub(console, 'error');
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await workerRoute.getAllNursesWithFieldsOfPractice(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
+    });
+  });
 });

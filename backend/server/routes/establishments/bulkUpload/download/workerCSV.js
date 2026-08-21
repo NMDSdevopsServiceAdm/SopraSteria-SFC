@@ -1,6 +1,7 @@
 const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
 const get = require('lodash/get');
 const { csvQuote, dateFormatter } = require('../../../../utils/bulkUploadUtils');
+const { JobRoleId } = require('../../../../data/constants');
 
 const _maptoCSVregisteredNurse = (registeredNurse) => {
   switch (registeredNurse) {
@@ -383,7 +384,7 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   }
   columns.push(avgHours);
 
-  const NURSE_JOB_ID = 23;
+  const NURSE_JOB_ID = JobRoleId.REGISTERED_NURSE;
 
   // "NMCREG"
   columns.push(

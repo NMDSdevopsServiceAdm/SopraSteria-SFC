@@ -1,6 +1,7 @@
 const dayjs = require('dayjs');
 const { Op } = require('sequelize');
 const { unsetDHAAnswerOnJobRoleChange } = require('./hooks/workerHooks');
+const { JobRoleId } = require('../data/constants');
 
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
@@ -1505,7 +1506,6 @@ module.exports = function (sequelize, DataTypes) {
     return { count, workers };
   };
 
-  Worker.addHook('beforeSave', unsetDHAAnswerOnJobRoleChange);
   Worker.checkIfAnyWorkerHasDHAAnswered = async function (establishmentId) {
     const workerWithDHAAnswered = await this.findOne({
       attributes: ['id', 'carryOutDelegatedHealthcareActivities'],
@@ -1563,6 +1563,28 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     await sequelize.models.workerAudit.bulkCreate(auditEvents, { transaction });
+  };
+
+  Worker.fetchAllNursesWithFieldsOfPractice = async function (establishmentId) {
+    const allNurses = await this.findAll({
+      include: [
+        {
+          model: sequelize.models.nurseFieldOfPractice,
+          as: 'nurseFieldOfPractice',
+          attributes: ['id', 'label'],
+          through: { attributes: [] },
+        },
+      ],
+      where: {
+        establishmentFk: establishmentId,
+        MainJobFKValue: JobRoleId.REGISTERED_NURSE,
+        archived: false,
+      },
+      attributes: ['uid', ['NameOrIdValue', 'nameOrId']],
+      nest: true,
+    });
+
+    return allNurses;
   };
 
   Worker.addHook('beforeSave', 'unsetDHAAnswerOnJobRoleChange', unsetDHAAnswerOnJobRoleChange);
