@@ -48,6 +48,7 @@ import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.component';
 import { CarryOutDelegatedHealthcareActivitiesComponent } from '@features/workers/carry-out-delegated-healthcare-activities/carry-out-delegated-healthcare-activities.component';
 import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
+import { AllNurseFieldsOfPracticeResolver } from '@core/resolvers/nurse-field-of-practice.resolver';
 
 const routes: Routes = [
   {
@@ -115,6 +116,7 @@ const routes: Routes = [
               {
                 path: 'nursing-category',
                 component: NursingCategoryComponent,
+                resolve: { allNurseFieldsOfPractice: AllNurseFieldsOfPracticeResolver },
                 data: { title: 'Nursing Category' },
               },
               {
@@ -315,6 +317,7 @@ const routes: Routes = [
       {
         path: 'nursing-category',
         component: NursingCategoryComponent,
+        resolve: { allNurseFieldsOfPractice: AllNurseFieldsOfPracticeResolver },
         data: { title: 'Nursing Category' },
       },
       {

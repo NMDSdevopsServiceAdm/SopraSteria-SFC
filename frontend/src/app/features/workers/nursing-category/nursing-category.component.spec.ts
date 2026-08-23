@@ -4,70 +4,144 @@ import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithOverrides, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { NursingCategoryComponent } from './nursing-category.component';
+import { RegisteredNurseJobRoleId } from '@core/model/nurse-field-of-practice.model';
+import userEvent from '@testing-library/user-event';
+
+const mockFieldsOfPractice = [
+  { id: 1, label: 'Adult nursing' },
+  { id: 2, label: 'Mental health nursing' },
+  { id: 3, label: 'Learning disabilities nursing' },
+  { id: 4, label: "Children's nursing" },
+];
 
 describe('NursingCategoryComponent', () => {
-  async function setup(insideFlow = true) {
-    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
-      NursingCategoryComponent,
-      {
-        imports: [SharedModule, RouterModule, ReactiveFormsModule],
-        providers: [
-          UntypedFormBuilder,
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              parent: {
-                snapshot: {
-                  url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
-                  data: {
-                    establishment: { uid: 'mocked-uid' },
-                    primaryWorkplace: {},
-                  },
+  async function setup(overrides: any = {}) {
+    const insideFlow = overrides?.insideFlow ?? true;
+    const previousAnswer = overrides?.previousAnswer;
+
+    const mockWorker = {
+      uid: 'mock-worker-uid',
+      mainJob: {
+        jobId: RegisteredNurseJobRoleId,
+        title: 'Registered nurse',
+      },
+      nameOrId: 'Nurse',
+      nurseFieldOfPractice: previousAnswer ?? [],
+    };
+
+    const setupTools = await render(NursingCategoryComponent, {
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
+      providers: [
+        UntypedFormBuilder,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            parent: {
+              snapshot: {
+                url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
+                data: {
+                  establishment: { uid: 'mock-establishment-uid' },
+                  primaryWorkplace: {},
                 },
               },
-              snapshot: {
-                params: {},
-              },
+            },
+            snapshot: {
+              data: { allNurseFieldsOfPractice: mockFieldsOfPractice },
+              params: {},
             },
           },
-          {
-            provide: WorkerService,
-            useClass: MockWorkerServiceWithUpdateWorker,
-          },
-          provideHttpClient(),
-          provideHttpClientTesting(),
-        ],
-      },
-    );
+        },
+        {
+          provide: WorkerService,
+          useFactory: MockWorkerServiceWithOverrides.factory({
+            worker: mockWorker,
+          }),
+        },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+    });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const workerService = injector.inject(WorkerService) as WorkerService;
+    const updateWorkerSpy = spyOn(workerService, 'updateWorker').and.callThrough();
 
     return {
+      ...setupTools,
       component,
-      fixture,
       router,
-      getByText,
-      getAllByText,
-      getByLabelText,
       routerSpy,
-      getByTestId,
-      queryByTestId,
+      updateWorkerSpy,
     };
   }
 
   it('should render the NursingCategoryComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should show a heading', async () => {
+    const { getByRole } = await setup();
+
+    expect(getByRole('heading', { level: 1 }).textContent).toContain(
+      'What is their Nursing and Midwifery Council field of practice?',
+    );
+  });
+
+  it('should show a link to nursing and midwifery council register', async () => {
+    const { getByRole } = await setup();
+
+    const expectedLinkText = /Search the Nursing and Midwifery Council register/;
+
+    expect(getByRole('link', { name: expectedLinkText })).toBeTruthy();
+  });
+
+  describe('caption (section heading)', () => {
+    it('should show the section heading as "Employment details" when visited inside flow', async () => {
+      const { getByTestId } = await setup({ insideFlow: true });
+
+      const sectionHeading = getByTestId('section-heading');
+      expect(sectionHeading.textContent).toEqual('Employment details');
+    });
+
+    it('should show the section heading as "Employment details" when visited from worker summary', async () => {
+      const { getByTestId } = await setup({ insideFlow: false });
+
+      const sectionHeading = getByTestId('section-heading');
+      expect(sectionHeading.textContent).toEqual('Employment details');
+    });
+  });
+
+  it('should show a checkbox for each nurse field of practice', async () => {
+    const { getByRole } = await setup();
+
+    mockFieldsOfPractice.forEach(({ label }) => {
+      expect(getByRole('checkbox', { name: label })).toBeTruthy();
+    });
+  });
+
+  it('should prefill the previous answer', async () => {
+    const previousAnswer = [
+      { id: 1, label: 'Adult nursing' },
+      { id: 4, label: "Children's nursing" },
+    ];
+    const { getByRole } = await setup({ previousAnswer });
+
+    mockFieldsOfPractice.forEach(({ label }) => {
+      const shouldBeTicked = ['Adult nursing', "Children's nursing"].includes(label);
+      const checkbox = getByRole('checkbox', { name: label }) as HTMLInputElement;
+      expect(checkbox.checked).toEqual(shouldBeTicked);
+    });
   });
 
   describe('submit buttons', () => {
@@ -80,24 +154,72 @@ describe('NursingCategoryComponent', () => {
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if not in the flow`, async () => {
-      const { getByText } = await setup(false);
+      const { getByText } = await setup({ insideFlow: false });
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
   });
 
+  it('should call updateWorker with expected props on submit', async () => {
+    const answersToChoose = [
+      { id: 1, label: 'Adult nursing' },
+      { id: 4, label: "Children's nursing" },
+    ];
+    const { updateWorkerSpy, getByRole, getByText } = await setup();
+
+    answersToChoose.forEach(({ label }) => {
+      userEvent.click(getByRole('checkbox', { name: label }));
+    });
+    const button = getByText('Save and continue');
+    userEvent.click(button);
+
+    expect(updateWorkerSpy).toHaveBeenCalledWith('mock-establishment-uid', 'mock-worker-uid', {
+      nurseFieldOfPractice: answersToChoose,
+    });
+  });
+
+  it('should not call updateWorker if nothing as been chosen', async () => {
+    const { updateWorkerSpy, getByText } = await setup();
+
+    const button = getByText('Save and continue');
+    userEvent.click(button);
+
+    expect(updateWorkerSpy).not.toHaveBeenCalled();
+  });
+
+  it('should call updateWorker with an empty array [] if user unticked all choices', async () => {
+    const previousAnswer = [
+      { id: 1, label: 'Adult nursing' },
+      { id: 4, label: "Children's nursing" },
+    ];
+    const { getByRole, getByText, updateWorkerSpy } = await setup({ previousAnswer });
+
+    previousAnswer.forEach(({ label }) => {
+      const checkbox = getByRole('checkbox', { name: label }) as HTMLInputElement;
+      userEvent.click(checkbox);
+      expect(checkbox.checked).toBeFalse();
+    });
+
+    const button = getByText('Save and continue');
+    userEvent.click(button);
+
+    expect(updateWorkerSpy).toHaveBeenCalledWith('mock-establishment-uid', 'mock-worker-uid', {
+      nurseFieldOfPractice: [],
+    });
+  });
+
   it(`should call submit data and navigate with the correct url when 'Save and continue' is clicked`, async () => {
-    const { component, getByText, routerSpy } = await setup();
+    const { getByText, routerSpy } = await setup();
 
     const button = getByText('Save and continue');
     fireEvent.click(button);
 
     expect(routerSpy).toHaveBeenCalledWith([
       '/workplace',
-      'mocked-uid',
+      'mock-establishment-uid',
       'staff-record',
-      component.worker.uid,
+      'mock-worker-uid',
       'recruited-from',
     ]);
   });
@@ -133,7 +255,7 @@ describe('NursingCategoryComponent', () => {
   });
 
   it('should navigate to summary page when pressing Save button outside of the flow', async () => {
-    const { component, routerSpy, getByText } = await setup(false);
+    const { component, routerSpy, getByText } = await setup({ insideFlow: false });
 
     const workerId = component.worker.uid;
     const workplaceId = component.workplace.uid;
@@ -151,7 +273,7 @@ describe('NursingCategoryComponent', () => {
   });
 
   it('should navigate to staff-summary-page page when pressing cancel', async () => {
-    const { component, routerSpy, getByText } = await setup(false);
+    const { component, routerSpy, getByText } = await setup({ insideFlow: false });
 
     const workerId = component.worker.uid;
     const workplaceId = component.workplace.uid;
@@ -169,7 +291,7 @@ describe('NursingCategoryComponent', () => {
   });
 
   it('should navigate to funding staff-summary-page page when pressing cancel inside funding version of page', async () => {
-    const { component, router, fixture, routerSpy, getByText } = await setup(false);
+    const { component, router, fixture, routerSpy, getByText } = await setup({ insideFlow: false });
     spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
     component.returnUrl = undefined;
     component.ngOnInit();
@@ -190,7 +312,7 @@ describe('NursingCategoryComponent', () => {
     });
 
     it('should not render the progress bar when outside the flow', async () => {
-      const { queryByTestId } = await setup(false);
+      const { queryByTestId } = await setup({ insideFlow: false });
 
       expect(queryByTestId('progress-bar')).toBeFalsy();
     });

@@ -979,32 +979,24 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CompletedChangedBy"',
       },
-      RegisteredNurseValue: {
-        type: DataTypes.ENUM,
-        allowNull: true,
-        values: ['Adult nurse', 'Mental health nurse', 'Learning disabiliies', "Children's nurse", 'Enrolled nurse'],
-        field: '"RegisteredNurseValue"',
-      },
-      RegisteredNurseSavedAt: {
+
+      NurseFieldOfPracticeSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"RegisteredNurseSavedAt"',
       },
-      RegisteredNurseChangedAt: {
+      NurseFieldOfPracticeChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"RegisteredNurseChangedAt"',
       },
-      RegisteredNurseSavedBy: {
+      NurseFieldOfPracticeSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"RegisteredNurseSavedBy"',
       },
-      RegisteredNurseChangedBy: {
+      NurseFieldOfPracticeChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"RegisteredNurseChangedBy"',
       },
+
       CareWorkforcePathwayRoleCategoryFK: {
         type: DataTypes.INTEGER,
         allowNull: true,
@@ -1195,11 +1187,19 @@ module.exports = function (sequelize, DataTypes) {
       otherKey: 'ID',
       as: 'qualifications',
     });
+
     Worker.hasMany(models.trainingCertificates, {
       foreignKey: 'workerFk',
       sourceKey: 'id',
       as: 'trainingCertificates',
       onDelete: 'CASCADE',
+    });
+
+    Worker.belongsToMany(models.nurseFieldOfPractice, {
+      through: 'workerNurseFieldsOfPractice',
+      foreignKey: 'workerID',
+      sourceKey: 'id',
+      as: 'nurseFieldOfPractice',
     });
   };
   Worker.permAndTempCountForEstablishment = function (establishmentId) {
