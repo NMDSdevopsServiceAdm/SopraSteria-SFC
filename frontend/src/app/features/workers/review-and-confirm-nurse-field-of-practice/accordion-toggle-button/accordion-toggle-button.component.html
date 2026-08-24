@@ -1,0 +1,7 @@
+<button type="button" class="govuk-accordion__show-all" [aria-expanded]="isExpanded()" (click)="handleClick($event)">
+  <span
+    class="govuk-accordion-nav__chevron"
+    [class]="{ 'govuk-accordion-nav__chevron--up': isExpanded(), 'govuk-accordion-nav__chevron--down': !isExpanded() }"
+  ></span>
+  <span class="govuk-accordion__show-all-text">{{ currentButtonText() }}</span>
+</button>
