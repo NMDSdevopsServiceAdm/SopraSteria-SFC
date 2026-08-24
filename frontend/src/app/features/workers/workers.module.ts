@@ -92,6 +92,8 @@ import { FastTrackConfirmationPageComponent } from './fast-track-confirmation-pa
 import { FastTrackPayUpdatesComponent } from '@features/workers/fast-track-pay-updates/fast-track-pay-updates.component';
 import { WorkersByJobRoleResolver } from '@core/resolvers/workers-by-job-role.resolver';
 import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff/update-pay-for-multiple-staff.component';
+import { SelectTrainingCategoryComponent } from '@features/training-and-qualifications/add-edit-training/select-training-category/select-training-category.component';
+import { SelectQualificationTypeComponent } from '@features/training-and-qualifications/add-edit-qualification/select-qualification-type/select-qualification-type.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -159,6 +161,8 @@ import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-st
     IncludeTrainingCourseDetailsComponent,
     FastTrackConfirmationPageComponent,
     FastTrackPayUpdatesComponent,
+    SelectTrainingCategoryComponent,
+    SelectQualificationTypeComponent,
   ],
   providers: [
     DialogService,

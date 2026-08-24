@@ -1,14 +1,13 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-quarter">
     <p>
-      <ng-container *ngIf="canViewEstablishment; else noPermission">
+      @if (canViewEstablishment) {
         <a href="#" class="govuk-link" (click)="visitSubWorkplaceOrsetEmployerType($event)">
           {{ workplace.name }}
         </a>
-      </ng-container>
-      <ng-template #noPermission>
+      } @else {
         {{ workplace.name }}
-      </ng-template>
+      }
     </p>
   </div>
 
@@ -18,7 +17,7 @@
         <p>{{ workplace.mainService }}</p>
       </div>
       <div class="govuk-grid-column-one-third govuk-!-text-align-right">
-        <ng-container *ngIf="workplace.showFlag">
+        @if (workplace.showFlag) {
           <span class="govuk-util__float-right">
             <img
               src="/assets/images/flag-red.svg"
@@ -26,23 +25,20 @@
               class="govuk-!-margin-right-2"
               data-testid="red-flag"
             />
-            <a
-              *ngIf="!(workplace.dataPermissions === 'None' && workplace.dataOwner === 'Workplace'); else linkedOnly"
-              href="#"
-              (click)="visitSubWorkplaceOrsetEmployerType($event)"
-              class="govuk-util__float-right"
-              >Check this workplace</a
-            >
-            <ng-template #linkedOnly>
+            @if (!(workplace.dataPermissions === 'None' && workplace.dataOwner === 'Workplace')) {
+              <a href="#" (click)="visitSubWorkplaceOrsetEmployerType($event)" class="govuk-util__float-right"
+                >Check this workplace</a
+              >
+            } @else {
               <p class="govuk-util__float-right">Check this workplace</p>
-            </ng-template>
+            }
           </span>
-        </ng-container>
-        <ng-container *ngIf="isAdminUser() && isLoggedIn()">
+        }
+        @if (isAdminUser() && isLoggedIn()) {
           <span class="govuk-util__float-right">
             <a (click)="moveWorkplaceAdmin($event)" href="#">Move workplace</a>
           </span>
-        </ng-container>
+        }
       </div>
     </div>
   </div>
@@ -69,13 +65,12 @@
       </div>
 
       <div class="govuk-grid-column-one-quarter govuk-!-text-align-right govuk-!-padding-top-6" style="width: 35%">
-        <ng-container *ngIf="canChangePermissionsForSubsidiary && canEditParentEstablishment">
-          <ng-container *ngIf="workplace.dataOwnershipRequested; else dataPermissions">
+        @if (canChangePermissionsForSubsidiary && canEditParentEstablishment) {
+          @if (workplace.dataOwnershipRequested) {
             <a (click)="cancelChangeDataOwnerRequest($event)" href="#" class="govuk-link">Data request pending</a>
-          </ng-container>
-          <ng-template #dataPermissions>
-            <ng-container *ngIf="workplace.dataOwner === dataOwner.Parent; else workplaceIsDataOwner">
-              <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
+          } @else {
+            @if (workplace.dataOwner === dataOwner.Parent) {
+              @if (primaryWorkplace.isParent) {
                 <a
                   (click)="navigateToChangeDataPermissions($event)"
                   href="#"
@@ -83,21 +78,18 @@
                   [attr.data-cy]="workplace.name + '-change-data-permission'"
                   >Change data permissions</a
                 >
-              </ng-container>
-              <ng-template #notParent>
+              } @else {
                 <a (click)="onChangeDataOwner($event)" href="#" class="govuk-link">Change data owner</a>
-              </ng-template>
-            </ng-container>
-            <ng-template #workplaceIsDataOwner>
-              <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
+              }
+            } @else {
+              @if (primaryWorkplace.isParent) {
                 <a (click)="navigateToChangeDataOwner($event)" href="#" class="govuk-link">Change data owner</a>
-              </ng-container>
-              <ng-template #notParent>
+              } @else {
                 <a href="#" class="govuk-link">Data permissions</a>
-              </ng-template>
-            </ng-template>
-          </ng-template>
-        </ng-container>
+              }
+            }
+          }
+        }
       </div>
     </div>
   </div>

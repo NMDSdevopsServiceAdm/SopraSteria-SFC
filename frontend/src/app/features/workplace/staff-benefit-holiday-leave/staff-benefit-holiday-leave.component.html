@@ -1,9 +1,6 @@
-<app-error-summary
-  *ngIf="(submitted && form.invalid) || serverError"
-  [formErrorsMap]="formErrorsMap"
-  [serverError]="serverError"
-  [form]="form"
-></app-error-summary>
+@if ((submitted && form.invalid) || serverError) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [serverError]="serverError" [form]="form"></app-error-summary>
+}
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
@@ -31,32 +28,26 @@
         </div>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="this.submitted && this.form.invalid">
-          <span
-            *ngIf="submitted && this.form.get('holidayLeave').invalid"
-            id="holidayLeave-error"
-            class="govuk-error-message"
-          >
+          @if (submitted && this.form.get('holidayLeave').invalid) {
+          <span id="holidayLeave-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
-            <span *ngIf="this.form.get('holidayLeave').errors.nonInteger">
+            @if (this.form.get('holidayLeave').errors.nonInteger) {
+            <span>
               {{ getFormErrorMessage('holidayLeave', 'nonInteger') }}
             </span>
-            <span
-              *ngIf="
-                this.form.get('holidayLeave').errors.negativeNumber && !this.form.get('holidayLeave').errors.nonInteger
-              "
-            >
+            } @if ( this.form.get('holidayLeave').errors.negativeNumber &&
+            !this.form.get('holidayLeave').errors.nonInteger ) {
+            <span>
               {{ getFormErrorMessage('holidayLeave', 'negativeNumber') }}
             </span>
-            <span
-              *ngIf="
-                this.form.get('holidayLeave').errors.nonWholeNumber &&
-                !this.form.get('holidayLeave').errors.negativeNumber &&
-                !this.form.get('holidayLeave').errors.nonInteger
-              "
-            >
+            } @if ( this.form.get('holidayLeave').errors.nonWholeNumber &&
+            !this.form.get('holidayLeave').errors.negativeNumber && !this.form.get('holidayLeave').errors.nonInteger ) {
+            <span>
               {{ getFormErrorMessage('holidayLeave', 'nonWholeNumber') }}
             </span>
+            }
           </span>
+          }
           <div class="govuk-input__wrapper">
             <input
               class="govuk-input govuk-input--width-5"
@@ -73,7 +64,8 @@
       </app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
-      <div *ngIf="!return" class="govuk-util__float-right">
+      @if (!return) {
+      <div class="govuk-util__float-right">
         <app-progress-bar
           data-testid="progress-bar"
           [sections]="sections"
@@ -81,6 +73,7 @@
           [currentSection]="section"
         ></app-progress-bar>
       </div>
+      }
     </div>
   </div>
 </form>

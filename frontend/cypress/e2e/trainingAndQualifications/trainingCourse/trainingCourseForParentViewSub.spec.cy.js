@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 import { userPassword } from '../../../support/configData';
 import { ParentEstablishment, SubEstablishmentNotDataOwner } from '../../../support/mockEstablishmentData';
+import { onHomePage } from '../../../support/page_objects/onHomePage';
 import { runTestsForTrainingCourseJourney } from './runTestsForTrainingCourse';
 import { runTestsForUpdateTrainingRecordsWithCourseDetails } from './runTestsForUpdateRecordsWithTrainingCourseDetails';
 
@@ -12,7 +13,8 @@ describe('Training course for parent workplace edit user', { tags: '@trainingCou
 
     cy.get('app-navigate-to-workplace-dropdown select').select(subsidaryToView.name);
 
-    cy.url().should('contain', 'dashboard');
+    cy.url().should('contain', 'subsidiary');
+    onHomePage.clickTab('Home');
     cy.get('h1').should('contain', subsidaryToView.name);
   });
 

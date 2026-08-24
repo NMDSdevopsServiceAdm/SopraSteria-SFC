@@ -2,14 +2,13 @@
   <div class="asc-tile">
     <div class="asc-tile-description">
       <h2 class="govuk-heading-l govuk-!-margin-bottom-2">
-        <a
-          *ngIf="canViewFullContent"
-          class="asc-tile-link"
-          [routerLink]="['/workplace', workplaceID, 'benchmarks', type]"
-        >
+        @if (canViewFullContent) {
+        <a class="asc-tile-link" [routerLink]="['/workplace', workplaceID, 'benchmarks', type]">
           {{ title }}
         </a>
-        <span *ngIf="!canViewFullContent">{{ title }}</span>
+        } @if (!canViewFullContent) {
+        <span>{{ title }}</span>
+        }
       </h2>
       <p class="govuk-body-s govuk-!-margin-bottom-0">{{ tileDescription }}</p>
     </div>
@@ -27,18 +26,15 @@
               'govuk-body-s': !workplaceHasValue
             }"
           >
-            <ng-container *ngIf="workplaceHasValue; else yourEmpty">
-              <ng-container [ngSwitch]="content.type">
-                <ng-container *ngSwitchCase="metrics.pay">
-                  {{ workplaceValue | formatMoney }}
-                </ng-container>
-                <ng-container *ngSwitchCase="metrics.sickness">
-                  {{ workplaceValue }}
-                </ng-container>
-                <ng-container *ngSwitchDefault>{{ workplaceValue | formatPercent }}</ng-container>
-              </ng-container>
-            </ng-container>
-            <ng-template #yourEmpty><span [innerHTML]="noDataMessage"></span></ng-template>
+            @if (workplaceHasValue) { @switch (content.type) { @case (metrics.pay) {
+            {{ workplaceValue | formatMoney }}
+            } @case (metrics.sickness) {
+            {{ workplaceValue }}
+            } @default {
+            {{ workplaceValue | formatPercent }}
+            } } } @else {
+            <span [innerHTML]="noDataMessage"></span>
+            }
           </p>
         </div>
         <div class="govuk-grid-column-full govuk-grid-column-one-half-from-desktop">
@@ -53,18 +49,13 @@
               'govuk-body-s': !comparisonGroupHasValue
             }"
           >
-            <ng-container *ngIf="comparisonGroupHasValue; else compEmpty">
-              <ng-container [ngSwitch]="content.type">
-                <ng-container *ngSwitchCase="metrics.pay">
-                  {{ comparisonGroupValue | formatMoney }}
-                </ng-container>
-                <ng-container *ngSwitchCase="metrics.sickness">
-                  {{ comparisonGroupValue }}
-                </ng-container>
-                <ng-container *ngSwitchDefault>{{ comparisonGroupValue | formatPercent }}</ng-container>
-              </ng-container>
-            </ng-container>
-            <ng-template #compEmpty> We do not have enough data to show this comparison yet. </ng-template>
+            @if (comparisonGroupHasValue) { @switch (content.type) { @case (metrics.pay) {
+            {{ comparisonGroupValue | formatMoney }}
+            } @case (metrics.sickness) {
+            {{ comparisonGroupValue }}
+            } @default {
+            {{ comparisonGroupValue | formatPercent }}
+            } } } @else { We do not have enough data to show this comparison yet. }
           </p>
         </div>
       </div>

@@ -33,6 +33,13 @@ describe('StaffSummaryComponent', () => {
     establishment.uid = workplaceUid;
 
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
+    const allWorkers = [
+      ...workers,
+      ...Array(15)
+        .fill(null)
+        .map((_) => workerBuilder()),
+    ] as Worker[];
+
     const setupTools = await render(StaffSummaryComponent, {
       imports: [SharedModule, RouterModule],
       declarations: [PaginationComponent, TablePaginationWrapperComponent],
@@ -66,7 +73,7 @@ describe('StaffSummaryComponent', () => {
     const workerService = injector.inject(WorkerService) as WorkerService;
 
     const getAllWorkersSpy = spyOn(workerService, 'getAllWorkers').and.returnValue(
-      of({ workers: [...workers, ...workers, ...workers, ...workers, ...workers, ...workers], workerCount: 18 }),
+      of({ workers: allWorkers, workerCount: 18 }),
     );
 
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;

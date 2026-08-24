@@ -1,7 +1,9 @@
 <span class="govuk-!-margin-bottom-0 govuk__nowrap">
-  <ng-container *ngIf="num !== null">
+  @if (num !== null) {
     <strong class="govuk-line-height__normal govuk-!-margin-right-1">{{ num }}</strong>
-  </ng-container>
-  <img *ngIf="icon" src="/assets/images/{{ icon }}.svg" class="asc-icon-align" alt="" />
+  }
+  @if (icon) {
+    <img src="/assets/images/{{ icon }}.svg" class="asc-icon-align" alt="" />
+  }
   <span class="govuk-!-margin-left-1">{{ label }}</span>
 </span>

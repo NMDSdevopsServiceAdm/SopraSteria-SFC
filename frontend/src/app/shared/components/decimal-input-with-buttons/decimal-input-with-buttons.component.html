@@ -12,8 +12,8 @@
     inputmode="decimal"
     type="number"
   />
+  @if (showMinusButton) {
   <button
-    *ngIf="showMinusButton"
     class="asc-number-input--toggle-button asc-number-input--minus-button"
     type="button"
     [attr.data-testid]="'minus-button-' + inputId"
@@ -21,8 +21,8 @@
   >
     <img src="/assets/images/minus-sign.svg" alt="decrease by 1" draggable="false" />
   </button>
+  } @if (showPlusButton) {
   <button
-    *ngIf="showPlusButton"
     class="asc-number-input--toggle-button asc-number-input--plus-button"
     type="button"
     [attr.data-testid]="'plus-button-' + inputId"
@@ -30,5 +30,7 @@
   >
     <img src="/assets/images/plus-sign.svg" alt="increase by 1" draggable="false" />
   </button>
-  <span *ngIf="suffix" class="govuk-body govuk-!-margin-bottom-0 asc-number-input--suffix">{{ suffix }}</span>
+  } @if (suffix) {
+  <span class="govuk-body govuk-!-margin-bottom-0 asc-number-input--suffix">{{ suffix }}</span>
+  }
 </div>

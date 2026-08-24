@@ -499,7 +499,7 @@ describe('ParentRequestIndividualComponent', () => {
       const dialogMessage = `You're about to approve this parent request`;
 
       fireEvent.click(approveButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
 
@@ -514,7 +514,7 @@ describe('ParentRequestIndividualComponent', () => {
       const workplaceName = component.registration.establishment.name;
 
       fireEvent.click(approveButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
 
@@ -529,7 +529,7 @@ describe('ParentRequestIndividualComponent', () => {
       const approveButton = getByText('Approve');
 
       fireEvent.click(approveButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const approvalConfirmButton = within(dialog).getByText('Approve this request');
@@ -547,7 +547,7 @@ describe('ParentRequestIndividualComponent', () => {
       const approveButton = getByText('Approve');
 
       fireEvent.click(approveButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const approvalConfirmButton = within(dialog).getByText('Approve this request');
@@ -572,7 +572,7 @@ describe('ParentRequestIndividualComponent', () => {
 
       const approveButton = getByText('Approve');
       fireEvent.click(approveButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const approvalConfirmButton = within(dialog).getByText('Approve this request');
@@ -592,7 +592,7 @@ describe('ParentRequestIndividualComponent', () => {
       const workplaceName = component.registration.establishment.name;
 
       fireEvent.click(approveButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const approvalConfirmButton = within(dialog).getByText('Approve this request');
@@ -613,13 +613,14 @@ describe('ParentRequestIndividualComponent', () => {
       const dialogMessage = `You're about to reject this parent request`;
 
       fireEvent.click(approveButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
 
       expect(dialog).toBeTruthy();
       expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
     });
+
     it('shows workplace name in rejection dialog', async () => {
       const { component, fixture, getByText } = await setup();
 
@@ -627,7 +628,7 @@ describe('ParentRequestIndividualComponent', () => {
       const workplaceName = component.registration.establishment.name;
 
       fireEvent.click(rejectButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
 
@@ -642,7 +643,7 @@ describe('ParentRequestIndividualComponent', () => {
       const rejectButton = getByText('Reject');
 
       fireEvent.click(rejectButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const rejectionConfirmButton = within(dialog).getByText('Reject this request');
@@ -651,6 +652,7 @@ describe('ParentRequestIndividualComponent', () => {
 
       expect(routerSpy).toHaveBeenCalledWith(['/sfcadmin', 'parent-requests']);
     });
+
     it('should display rejection server error message when server error', async () => {
       const { fixture, getByText } = await setup();
 
@@ -659,7 +661,7 @@ describe('ParentRequestIndividualComponent', () => {
 
       const rejectButton = getByText('Reject');
       fireEvent.click(rejectButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const rejectionConfirmButton = within(dialog).getByText('Reject this request');
@@ -668,6 +670,7 @@ describe('ParentRequestIndividualComponent', () => {
       const rejectionServerErrorMessage = 'There was an error completing the rejection';
       expect(getByText(rejectionServerErrorMessage, { exact: false })).toBeTruthy();
     });
+
     it('should call parentApproval in the parent requests service when rejection is confirmed', async () => {
       const { component, fixture, getByText } = await setup();
 
@@ -676,7 +679,7 @@ describe('ParentRequestIndividualComponent', () => {
       const rejectButton = getByText('Reject');
 
       fireEvent.click(rejectButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const rejectionConfirmButton = within(dialog).getByText('Reject this request');
@@ -692,6 +695,7 @@ describe('ParentRequestIndividualComponent', () => {
         approve: false,
       });
     });
+
     it('should show rejected alert when rejection is confirmed', async () => {
       const { component, fixture, getByText, alertServiceSpy } = await setup();
 
@@ -702,7 +706,7 @@ describe('ParentRequestIndividualComponent', () => {
       const workplaceName = component.registration.establishment.name;
 
       fireEvent.click(rejectButton);
-      fixture.detectChanges();
+      await fixture.whenStable();
 
       const dialog = await within(document.body).findByRole('dialog');
       const rejectionConfirmButton = within(dialog).getByText('Reject this request');

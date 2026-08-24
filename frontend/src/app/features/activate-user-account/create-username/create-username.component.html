@@ -1,10 +1,6 @@
-<app-error-summary
-  *ngIf="submitted && (form.invalid || serverError)"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
-  [serverError]="serverError"
->
-</app-error-summary>
+@if (submitted && (form.invalid || serverError)) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form" [serverError]="serverError"> </app-error-summary>
+}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <form #formEl novalidate (ngSubmit)="checkUsernameDoesntExist()" [formGroup]="form" id="server-error">
@@ -16,13 +12,13 @@
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getUsername.errors">
           <label class="govuk-label" for="username"> Username </label>
-          <div id="username-hint" class="govuk-hint"
-            >You'll use this to sign in, so it needs to be unique to you.</div
-          >
-          <span *ngIf="submitted && getUsername.errors" id="username-error" class="govuk-error-message">
+          <div id="username-hint" class="govuk-hint">You'll use this to sign in, so it needs to be unique to you.</div>
+          @if (submitted && getUsername.errors) {
+          <span id="username-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             {{ getFirstErrorMessage('username') }}
           </span>
+          }
           <input
             class="govuk-input govuk-input--width-10"
             [formControlName]="'username'"
@@ -40,14 +36,12 @@
               Must be at least 8 characters long and have uppercase letters, lowercase letters, numbers and special
               characters like !, £.
             </div>
-            <span
-              *ngIf="submitted && getPassword.errors"
-              id="passwordGroup-createPasswordInput-error"
-              class="govuk-error-message"
-            >
+            @if (submitted && getPassword.errors) {
+            <span id="passwordGroup-createPasswordInput-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span>
               {{ getFirstErrorMessage('passwordGroup.createPasswordInput') }}
             </span>
+            }
             <input
               aria-describedby="createPasswordInput-hint"
               class="govuk-input govuk-input--width-10"
@@ -64,22 +58,19 @@
               role="button"
               href="#"
             >
-              <ng-container *ngIf="showPassword; else showText">Hide</ng-container
-              ><ng-template #showText>Show</ng-template> passwords
+              @if (showPassword) { Hide } @else { Show } passwords
             </a>
           </div>
 
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getConfirmPassword.errors">
             <label class="govuk-label" for="confirmPasswordInput"> Confirm password </label>
 
-            <span
-              *ngIf="submitted && getConfirmPassword.errors"
-              id="passwordGroup-confirmPasswordInput-error"
-              class="govuk-error-message"
-            >
+            @if (submitted && getConfirmPassword.errors) {
+            <span id="passwordGroup-confirmPasswordInput-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span>
               {{ getFirstErrorMessage('passwordGroup.confirmPasswordInput') }}
             </span>
+            }
             <input
               class="govuk-input govuk-input--width-10"
               [formControlName]="'confirmPasswordInput'"

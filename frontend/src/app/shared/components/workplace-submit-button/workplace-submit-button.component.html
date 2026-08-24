@@ -3,44 +3,43 @@
   data-testid="button-container"
   [ngClass]="{ 'govuk-!-margin-top-2': marginTop2, 'govuk-!-margin-top-4': marginTop4 }"
 >
-  <ng-container *ngIf="!return || isInMiniFlow; else summary">
-    <div>
-      <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('continue', true)">
-        {{ callToAction }}
-      </button>
-    </div>
-
-    <div *ngIf="recordSummary" class="govuk-!-margin-left-9 govuk-!-margin-right-9">
-      <span class="govuk-visually-hidden">or</span>
-      <a class="govuk-button govuk-button--link" (click)="onLinkClick($event, 'skip', false)">Skip this question</a>
-    </div>
-
-    <div *ngIf="canExit" class="govuk-!-margin-left-9 govuk-!-margin-right-9">
-      <span class="govuk-visually-hidden">or</span>
-      <a class="govuk-button govuk-button--link" (click)="onLinkClick($event, 'exit', false)">{{ exitText }}</a>
-    </div>
-  </ng-container>
-  <ng-template #summary>
-    <ng-container *ngIf="continue; else saveAndContinue">
-      <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('continue', true)">
-        Continue
-      </button>
-    </ng-container>
-    <ng-template #saveAndContinue>
-      <ng-container *ngIf="hasConditionalRouting; else saveAndReturn">
-        <button type="submit" class="govuk-button govuk-!-margin-right-9" style="width: 124px;" (click)="onButtonClick('return', true)">
-          Save
-        </button>
-      </ng-container>
-      <ng-template #saveAndReturn>
-        <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('return', true)">
-          Save and return
-        </button>
-      </ng-template>
-    </ng-template>
+  @if (!return || isInMiniFlow) {
+  <div>
+    <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('continue', true)">
+      {{ callToAction }}
+    </button>
+  </div>
+  @if (recordSummary) {
+  <div class="govuk-!-margin-left-9 govuk-!-margin-right-9">
     <span class="govuk-visually-hidden">or</span>
-    <a class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onLinkClick($event, 'return', false)">{{
-      exitText
-    }}</a>
-  </ng-template>
+    <a class="govuk-button govuk-button--link" (click)="onLinkClick($event, 'skip', false)">Skip this question</a>
+  </div>
+  } @if (canExit) {
+  <div class="govuk-!-margin-left-9 govuk-!-margin-right-9">
+    <span class="govuk-visually-hidden">or</span>
+    <a class="govuk-button govuk-button--link" (click)="onLinkClick($event, 'exit', false)">{{ exitText }}</a>
+  </div>
+  } } @else { @if (continue) {
+  <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('continue', true)">
+    Continue
+  </button>
+  } @else { @if (hasConditionalRouting) {
+  <button
+    type="submit"
+    class="govuk-button govuk-!-margin-right-9"
+    style="width: 124px"
+    (click)="onButtonClick('return', true)"
+  >
+    Save
+  </button>
+  } @else {
+  <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('return', true)">
+    Save and return
+  </button>
+  } }
+  <span class="govuk-visually-hidden">or</span>
+  <a class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onLinkClick($event, 'return', false)">{{
+    exitText
+  }}</a>
+  }
 </div>

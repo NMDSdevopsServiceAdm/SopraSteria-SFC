@@ -14,9 +14,9 @@
     </div>
   </div>
   <div [class]="{ 'govuk-width-container': !dashboardView }">
-    <ng-container *ngIf="!dashboardView">
-      <app-alert></app-alert>
-    </ng-container>
+    @if (!dashboardView) {
+    <app-alert></app-alert>
+    }
 
     <main
       id="main-content"

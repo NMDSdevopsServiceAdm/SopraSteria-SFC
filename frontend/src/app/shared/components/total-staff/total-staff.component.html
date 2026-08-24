@@ -16,9 +16,11 @@
   >
   <div class="govuk-form-group" [formGroup]="form" [class.govuk-form-group--error]="submitted && form.invalid">
     <label class="govuk-label" for="totalStaff"> Number of staff</label>
-    <span *ngIf="submitted && form.get('totalStaff').invalid" id="totalStaff-error" class="govuk-error-message">
+    @if (submitted && form.get('totalStaff').invalid) {
+    <span id="totalStaff-error" class="govuk-error-message">
       <span class="govuk-visually-hidden">Error:</span> {{ getErrorMessage('totalStaff') }}
     </span>
+    }
 
     <input
       class="govuk-input govuk-input--width-5"

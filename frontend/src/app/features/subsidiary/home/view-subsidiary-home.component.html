@@ -3,8 +3,8 @@
 
 <div class="govuk-width-container govuk-!-margin-top-7">
   <app-alert></app-alert>
+  @if (subsidiaryWorkplace) {
   <app-summary-section
-    *ngIf="subsidiaryWorkplace"
     [canViewListOfWorkers]="canViewListOfWorkers"
     [workplace]="subsidiaryWorkplace"
     [workerCount]="workerCount"
@@ -23,6 +23,7 @@
     [noOfWorkersWithDelegatedHealthcareUnanswered]="noOfWorkersWithDelegatedHealthcareUnanswered"
     [showCheckCqcDetails]="showCheckCqcDetails"
   ></app-summary-section>
+  }
 </div>
 <div class="govuk-width-container govuk-!-margin-top-7">
   <div class="govuk-grid-row">
@@ -35,10 +36,9 @@
               class="govuk-link govuk-link--no-visited-state asc-card-link"
               href="#"
             >
-              <ng-container *ngIf="bigThreeServices && hasBenchmarkComparisonData; else notBigThreeServices">
-                Compare your workplace<span class="asc-card-break"><br /></span>on staff pay and retention</ng-container
-              >
-              <ng-template #notBigThreeServices> See how you compare against other workplaces</ng-template>
+              @if (bigThreeServices && hasBenchmarkComparisonData) { Compare your workplace<span class="asc-card-break"
+                ><br /></span
+              >on staff pay and retention } @else { See how you compare against other workplaces }
             </a>
             <p class="govuk-!-margin-top-0 asc-card-description">
               {{ benchmarksMessage }}

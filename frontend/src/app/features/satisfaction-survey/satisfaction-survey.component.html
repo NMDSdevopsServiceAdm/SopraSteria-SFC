@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+@if (submitted && form.invalid) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
 
 <h1 class="govuk-heading-l">Satisfaction survey</h1>
 
@@ -53,14 +55,12 @@
                     <label class="govuk-label govuk-!-font-weight-bold" for="whatStoppedYouDoingEverything">
                       What stopped you doing everything? (optional)
                     </label>
-                    <span
-                      *ngIf="submitted && form.get('whatStoppedYouDoingEverything').invalid"
-                      id="whatStoppedYouDoingEverything-error"
-                      class="govuk-error-message"
-                    >
+                    @if (submitted && form.get('whatStoppedYouDoingEverything').invalid) {
+                    <span id="whatStoppedYouDoingEverything-error" class="govuk-error-message">
                       <span class="govuk-visually-hidden">Error:</span>
                       {{ getFirstErrorMessage('whatStoppedYouDoingEverything') }}
                     </span>
+                    }
                     <textarea
                       class="govuk-textarea"
                       [class.govuk-textarea--error]="submitted && form.get('whatStoppedYouDoingEverything').invalid"
@@ -108,14 +108,12 @@
                     <label class="govuk-label govuk-!-font-weight-bold" for="whatStoppedYouDoingAnything">
                       What stopped you doing anything? (optional)
                     </label>
-                    <span
-                      *ngIf="submitted && form.get('whatStoppedYouDoingAnything').invalid"
-                      id="whatStoppedYouDoingAnything-error"
-                      class="govuk-error-message"
-                    >
+                    @if (submitted && form.get('whatStoppedYouDoingAnything').invalid) {
+                    <span id="whatStoppedYouDoingAnything-error" class="govuk-error-message">
                       <span class="govuk-visually-hidden">Error:</span>
                       {{ getFirstErrorMessage('whatStoppedYouDoingAnything') }}
                     </span>
+                    }
                     <textarea
                       class="govuk-textarea"
                       [class.govuk-textarea--error]="submitted && form.get('whatStoppedYouDoingAnything').invalid"

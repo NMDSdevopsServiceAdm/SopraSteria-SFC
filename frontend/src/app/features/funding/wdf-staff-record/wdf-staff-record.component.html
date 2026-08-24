@@ -1,46 +1,44 @@
-<ng-container *ngIf="worker">
-  <div class="govuk-grid-row govuk-!-margin-bottom-4">
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l govuk-!-margin-bottom-5">
-        <span class="govuk-caption-xl">Staff record</span>
-        {{ worker.nameOrId }}
-      </h1>
-    </div>
-    <div class="govuk-grid-column-one-third govuk-!-margin-top-8 govuk-util__align-right govuk__nowrap">
-      <p>Last update, {{ workerUpdatedDate }}</p>
-    </div>
+@if (worker) {
+<div class="govuk-grid-row govuk-!-margin-bottom-4">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-5">
+      <span class="govuk-caption-xl">Staff record</span>
+      {{ worker.nameOrId }}
+    </h1>
   </div>
-  <div class="govuk-!-margin-bottom-1">
-    <app-wdf-staff-record-status-message
-      [overallWdfEligibility]="overallWdfEligibility"
-      [worker]="updatedWorker"
-      [wdfStartDate]="wdfStartDate"
-      [wdfEndDate]="wdfEndDate"
-    ></app-wdf-staff-record-status-message>
+  <div class="govuk-grid-column-one-third govuk-!-margin-top-8 govuk-util__align-right govuk__nowrap">
+    <p>Last update, {{ workerUpdatedDate }}</p>
   </div>
-
+</div>
+<div class="govuk-!-margin-bottom-1">
+  <app-wdf-staff-record-status-message
+    [overallWdfEligibility]="overallWdfEligibility"
+    [worker]="updatedWorker"
+    [wdfStartDate]="wdfStartDate"
+    [wdfEndDate]="wdfEndDate"
+  ></app-wdf-staff-record-status-message>
+</div>
+<app-worker-pagination
+  [workplaceUid]="workplaceUid"
+  [workerList]="workerList"
+  [exitUrl]="exitUrl"
+  [staffSummaryBaseUrl]="staffSummaryBaseUrl"
+></app-worker-pagination>
+@if (workplace && worker) {
+<app-staff-record-summary
+  [workplace]="workplace"
+  [worker]="worker"
+  [wdfView]="true"
+  [overallWdfEligibility]="overallWdfEligibility"
+  (allFieldsConfirmed)="refreshUpdatedWorkerAndWdfEligibility()"
+></app-staff-record-summary>
+}
+<div class="govuk-!-margin-top-4">
   <app-worker-pagination
     [workplaceUid]="workplaceUid"
     [workerList]="workerList"
     [exitUrl]="exitUrl"
     [staffSummaryBaseUrl]="staffSummaryBaseUrl"
   ></app-worker-pagination>
-
-  <app-staff-record-summary
-    *ngIf="workplace && worker"
-    [workplace]="workplace"
-    [worker]="worker"
-    [wdfView]="true"
-    [overallWdfEligibility]="overallWdfEligibility"
-    (allFieldsConfirmed)="refreshUpdatedWorkerAndWdfEligibility()"
-  ></app-staff-record-summary>
-
-  <div class="govuk-!-margin-top-4">
-    <app-worker-pagination
-      [workplaceUid]="workplaceUid"
-      [workerList]="workerList"
-      [exitUrl]="exitUrl"
-      [staffSummaryBaseUrl]="staffSummaryBaseUrl"
-    ></app-worker-pagination>
-  </div>
-</ng-container>
+</div>
+}

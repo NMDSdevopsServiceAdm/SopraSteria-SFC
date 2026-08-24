@@ -24,32 +24,36 @@
           <p class="govuk-!-font-weight-bold">Qualification level</p>
 
           <div class="govuk-radios">
-            <div *ngFor="let qualification of qualifications; let idx = index" class="govuk-radios__item">
-              <input
-                class="govuk-radios__input"
-                formControlName="qualification"
-                id="qualification-{{ idx }}"
-                name="qualification"
-                type="radio"
-                [value]="qualification.id"
-              />
-              <label class="govuk-label govuk-radios__label" for="qualification-{{ idx }}">
-                {{ qualification.level | dontKnow }}
-              </label>
-            </div>
+            @for (qualification of qualifications; track qualification.id; let idx = $index) {
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  formControlName="qualification"
+                  id="qualification-{{ idx }}"
+                  name="qualification"
+                  type="radio"
+                  [value]="qualification.id"
+                />
+                <label class="govuk-label govuk-radios__label" for="qualification-{{ idx }}">
+                  {{ qualification.level | dontKnow }}
+                </label>
+              </div>
+            }
           </div>
         </fieldset>
       </div>
     </div>
-    <div class="govuk-grid-column-one-third" *ngIf="insideFlow && !insideSocialCareQualificationLevelSummaryFlow">
-      <div class="govuk-!-margin-left-8">
-        <app-progress-bar
-          data-testid="progress-bar"
-          [sections]="staffRecordSections"
-          [currentSection]="'Training and qualifications'"
-        ></app-progress-bar>
+    @if (insideFlow && !insideSocialCareQualificationLevelSummaryFlow) {
+      <div class="govuk-grid-column-one-third">
+        <div class="govuk-!-margin-left-8">
+          <app-progress-bar
+            data-testid="progress-bar"
+            [sections]="staffRecordSections"
+            [currentSection]="'Training and qualifications'"
+          ></app-progress-bar>
+        </div>
       </div>
-    </div>
+    }
   </div>
 
   <app-submit-button

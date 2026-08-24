@@ -27,7 +27,8 @@
       you which information you'll have access to.
     </p>
   </div>
-  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+  @if (insideFlow) {
+  <div class="govuk-grid-column-one-third">
     <div class="govuk-!-margin-left-8">
       <app-progress-bar
         data-testid="progress-bar-1"
@@ -35,15 +36,17 @@
         [sections]="workplaceSections"
         [currentSection]="'Main service'"
       ></app-progress-bar>
+      @if (this.flow.includes('registration')) {
       <app-progress-bar
-        *ngIf="this.flow.includes('registration')"
         data-testid="progress-bar-2"
         [header]="'User account'"
         [sections]="userAccountSections"
         [currentSection]="'Main service'"
       ></app-progress-bar>
+      }
     </div>
   </div>
+  }
 </div>
 
 <app-registration-submit-buttons

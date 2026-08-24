@@ -9,7 +9,7 @@
   (fetchData)="getPageOfWorkers($event)"
   [label]="searchLabel"
 >
-  <ng-container *ngIf="workers.length > 0; else noRecords">
+  @if (workers.length > 0) {
     <table class="govuk-table">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
@@ -20,29 +20,30 @@
         </tr>
       </thead>
       <tbody class="govuk-table__body">
-        <tr class="govuk-table__row" *ngFor="let worker of paginatedWorkers">
-          <td class="govuk-table__cell govuk-!-font-weight-regular">
-            <a [routerLink]="getWorkerRecordPath(worker)">
-              {{ worker.nameOrId }}
-            </a>
-          </td>
-          <td class="govuk-table__cell">{{ worker.mainJob.jobRoleName }}</td>
-          <td class="govuk-table__cell">
-            <span class="govuk-visually-hidden">last update</span>
-            <span class="govuk__nowrap">{{ lastUpdated(worker.updated) }}</span>
-          </td>
-          <td class="govuk-table__cell">
-            <app-funding-requirements-state
-              [overallWdfEligibility]="overallWdfEligibility"
-              [currentWdfEligibility]="worker.wdfEligible"
-              orangeFlagMessage="Check this staff record"
-            ></app-funding-requirements-state>
-          </td>
-        </tr>
+        @for (worker of paginatedWorkers; track worker.uid) {
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell govuk-!-font-weight-regular">
+              <a [routerLink]="getWorkerRecordPath(worker)">
+                {{ worker.nameOrId }}
+              </a>
+            </td>
+            <td class="govuk-table__cell">{{ worker.mainJob.jobRoleName }}</td>
+            <td class="govuk-table__cell">
+              <span class="govuk-visually-hidden">last update</span>
+              <span class="govuk__nowrap">{{ lastUpdated(worker.updated) }}</span>
+            </td>
+            <td class="govuk-table__cell">
+              <app-funding-requirements-state
+                [overallWdfEligibility]="overallWdfEligibility"
+                [currentWdfEligibility]="worker.wdfEligible"
+                orangeFlagMessage="Check this staff record"
+              ></app-funding-requirements-state>
+            </td>
+          </tr>
+        }
       </tbody>
     </table>
-  </ng-container>
-  <ng-template #noRecords>
+  } @else {
     <div class="govuk-grid-row" data-testid="noRecords">
       <div class="govuk-grid-column-three-quarters">
         <p>
@@ -51,5 +52,5 @@
         </p>
       </div>
     </div>
-  </ng-template>
+  }
 </app-table-pagination-wrapper>

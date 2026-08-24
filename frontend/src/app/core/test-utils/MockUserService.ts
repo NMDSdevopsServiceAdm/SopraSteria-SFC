@@ -99,6 +99,7 @@ const subsid2 = subsid2Builder();
 const subsid3 = Object.assign({}, subsid2);
 subsid3.ustatus = 'IN PROGRESS';
 subsid3.name = 'Third Subsid';
+subsid3.uid = 'mock-uid-subsid3';
 
 export { subsid1, subsid2, subsid3 };
 

@@ -4,8 +4,8 @@
   </div>
   <div class="govuk-grid-column-two-thirds">
     <div class="govuk-button-heading-group">
+      @if (isPending && isAdminManager) {
       <a
-        *ngIf="isPending && isAdminManager"
         class="govuk-list govuk-list--inline"
         draggable="false"
         role="button"
@@ -14,16 +14,17 @@
       >
         Resend the user set-up email</a
       >
+      } @if (isAdminManager) {
       <a
         class="govuk-list govuk-button-link govuk-list--inline govuk__flex govuk__align-items-center govuk-util__float-right govuk-!-margin-left-9"
         draggable="false"
-        *ngIf="isAdminManager"
         role="button"
         href="#"
       >
         <img src="/assets/images/bin.svg" alt="" />
         <span class="govuk-!-margin-left-1" (click)="deleteUserModal($event)">Delete this admin user</span></a
       >
+      }
     </div>
   </div>
 </div>

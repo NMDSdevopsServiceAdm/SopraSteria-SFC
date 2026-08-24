@@ -2,17 +2,17 @@
   <dt class="govuk-summary-list__key"></dt>
   <dd class="govuk-summary-list__value govuk-summary-list__message">
     <span class="govuk-!-margin-bottom-2 govuk-!-margin-top-2 govuk__flex">
-      <img *ngIf="icon" class="govuk-!-margin-right-1" src="/assets/images/{{ icon }}.svg" alt="" />{{
-        staffMismatchMessage
-      }}
+      @if (icon) {
+      <img class="govuk-!-margin-right-1" src="/assets/images/{{ icon }}.svg" alt="" />
+      }{{ staffMismatchMessage }}
     </span>
-    <span *ngIf="workplace.numberOfStaff !== 0" class="govuk__nowrap">
-      Either change the total or
-      <ng-container *ngIf="canEditEstablishment; else viewStaffRecordsPlainText">
-        <a [routerLink]="staffRecordsUrl.url" [fragment]="staffRecordsUrl.fragment">view staff records</a>
-      </ng-container>
-      to {{ addOrDeleteRecordsMessage }}.
+    @if (workplace.numberOfStaff !== 0) {
+    <span class="govuk__nowrap">
+      Either change the total or @if (canEditEstablishment) {
+      <a [routerLink]="staffRecordsUrl.url" [fragment]="staffRecordsUrl.fragment">view staff records</a>
+      } @else { view staff records } to {{ addOrDeleteRecordsMessage }}.
     </span>
+    }
   </dd>
   <dd class="govuk-summary-list__value govuk-summary-list__message"></dd>
 </div>
@@ -21,5 +21,3 @@
   <dd></dd>
   <dd></dd>
 </div>
-
-<ng-template #viewStaffRecordsPlainText>view staff records</ng-template>

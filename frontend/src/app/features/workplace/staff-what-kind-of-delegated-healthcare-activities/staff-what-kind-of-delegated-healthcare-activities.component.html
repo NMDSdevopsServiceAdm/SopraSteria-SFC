@@ -18,7 +18,11 @@
             [formArrayName]="'selectedDelegatedHealthcareActivities'"
             data-module="govuk-checkboxes"
           >
-            <ng-container *ngFor="let delegateHealthcareActivity of delegatedHealthcareActivities; let i = index">
+            @for (
+              delegateHealthcareActivity of delegatedHealthcareActivities;
+              track delegateHealthcareActivity.id;
+              let i = $index
+            ) {
               <div class="govuk-checkboxes__item">
                 <input
                   class="govuk-checkboxes__input"
@@ -39,7 +43,7 @@
                   {{ delegateHealthcareActivity.description }}
                 </div>
               </div>
-            </ng-container>
+            }
             <div class="govuk-checkboxes__divider" style="width: 100%">
               <hr
                 class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-6 govuk-!-margin-bottom-6"
@@ -72,13 +76,15 @@
       ></app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
-      <div *ngIf="!return" class="govuk-util__float-right">
-        <app-progress-bar
-          data-testid="progress-bar"
-          [sections]="workplaceFlowSections"
-          [currentSection]="section"
-        ></app-progress-bar>
-      </div>
+      @if (!return) {
+        <div class="govuk-util__float-right">
+          <app-progress-bar
+            data-testid="progress-bar"
+            [sections]="workplaceFlowSections"
+            [currentSection]="section"
+          ></app-progress-bar>
+        </div>
+      }
     </div>
   </div>
 </form>

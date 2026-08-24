@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+@if (submitted && form.invalid) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
@@ -6,39 +8,52 @@
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <span class="govuk-caption-l">Workplace</span>
-          <h1 *ngIf="isParent" class="govuk-fieldset__heading">
+          @if (isParent) {
+          <h1 class="govuk-fieldset__heading">
             Is this the workplace you want <br />
             to add?
           </h1>
-          <h1 *ngIf="!isParent" class="govuk-fieldset__heading">Is this your workplace?</h1>
+          } @if (!isParent) {
+          <h1 class="govuk-fieldset__heading">Is this your workplace?</h1>
+          }
         </legend>
-        <div *ngIf="locationData">
-          <p *ngIf="searchMethod === 'locationID'">
+        @if (locationData) {
+        <div>
+          @if (searchMethod === 'locationID') {
+          <p>
             CQC location ID entered: <strong>{{ locationData.locationId }}</strong>
           </p>
-          <p *ngIf="searchMethod === 'postcode'">
+          } @if (searchMethod === 'postcode') {
+          <p>
             Postcode entered: <strong>{{ locationData.postalCode }}</strong>
           </p>
+          }
           <address class="govuk-util__font-style-normal">
             <p>
-              <span *ngIf="locationData.locationName">{{ locationData.locationName }}<br /></span>
-              <span *ngIf="locationData.addressLine1">{{ locationData.addressLine1 }}<br /></span>
-              <span *ngIf="locationData.addressLine2">{{ locationData.addressLine2 }}<br /></span>
-              <span *ngIf="locationData.townCity">{{ locationData.townCity }}<br /></span>
-              <span *ngIf="locationData.county">{{ locationData.county }}<br /></span>
-              <span *ngIf="locationData.postalCode">{{ locationData.postalCode }}</span>
+              @if (locationData.locationName) {
+              <span>{{ locationData.locationName }}<br /></span>
+              } @if (locationData.addressLine1) {
+              <span>{{ locationData.addressLine1 }}<br /></span>
+              } @if (locationData.addressLine2) {
+              <span>{{ locationData.addressLine2 }}<br /></span>
+              } @if (locationData.townCity) {
+              <span>{{ locationData.townCity }}<br /></span>
+              } @if (locationData.county) {
+              <span>{{ locationData.county }}<br /></span>
+              } @if (locationData.postalCode) {
+              <span>{{ locationData.postalCode }}</span>
+              }
             </p>
           </address>
         </div>
+        }
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
-          <span
-            *ngIf="submitted && this.form.get('yourWorkplace').errors"
-            id="yourWorkplace-error"
-            class="govuk-error-message"
-          >
+          @if (submitted && this.form.get('yourWorkplace').errors) {
+          <span id="yourWorkplace-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             {{ getErrorMessage('yourWorkplace') }}
           </span>
+          }
           <div class="govuk-radios govuk-radios--conditional">
             <div class="govuk-radios__item">
               <input
@@ -78,7 +93,8 @@
       <button class="govuk-button govuk-!-margin-top-3" type="submit">Continue</button>
     </form>
   </div>
-  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+  @if (insideFlow) {
+  <div class="govuk-grid-column-one-third">
     <div class="govuk-!-margin-left-8">
       <app-progress-bar
         data-testid="progress-bar-1"
@@ -86,13 +102,15 @@
         [sections]="workplaceSections"
         [currentSection]="'Confirm workplace'"
       ></app-progress-bar>
+      @if (this.flow.includes('registration')) {
       <app-progress-bar
-        *ngIf="this.flow.includes('registration')"
         data-testid="progress-bar-2"
         [header]="'User account'"
         [sections]="userAccountSections"
         [currentSection]="'Confirm workplace'"
       ></app-progress-bar>
+      }
     </div>
   </div>
+  }
 </div>

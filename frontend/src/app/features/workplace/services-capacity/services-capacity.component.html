@@ -1,9 +1,10 @@
-<app-error-summary
-  *ngIf="(submitted && form.invalid) || serverError"
-  [form]="form"
-  [formErrorsMap]="errorsSummaryErrorsMap"
-  [serverError]="serverError"
-></app-error-summary>
+@if ((submitted && form.invalid) || serverError) {
+  <app-error-summary
+    [form]="form"
+    [formErrorsMap]="errorsSummaryErrorsMap"
+    [serverError]="serverError"
+  ></app-error-summary>
+}
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
@@ -17,85 +18,83 @@
           You've told us about the services your workplace provides. Now we need to know the capacity of these services.
         </p>
 
-        <ng-container *ngFor="let capacity of capacities; let i = index">
-          <div
-            class="govuk-form-group"
-            *ngIf="generateFormGroupName(capacity.service); let groupName"
-            [class.govuk-form-group--error]="submitted && form.get(groupName).invalid"
-            [formGroupName]="groupName"
-          >
-            <fieldset class="govuk-fieldset">
-              <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-                <h2 class="govuk-fieldset__heading">{{ capacity.service }}</h2>
-              </legend>
-              <ng-container *ngFor="let question of capacity.questions; let idx = index">
-                <div
-                  class="govuk-form-group"
-                  *ngIf="generateFormControlName(question); let controlName"
-                  [class.govuk-form-group--error]="submitted && form.get(groupName).get(controlName).invalid"
-                >
-                  <label class="govuk-label" for="{{ groupName }}-{{ controlName }}">
-                    {{ question.question }}
-                  </label>
-                  <span
-                    *ngIf="submitted && form.get(groupName).get(controlName).invalid"
-                    id="{{ groupName }}-{{ controlName }}-error"
-                    class="govuk-error-message"
-                  >
-                    <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFirstErrorMessage(groupName + '.' + controlName) }}
-                  </span>
-                  <span
-                    *ngIf="
-                      submitted &&
-                      form.get(groupName).invalid &&
-                      this.requiredValidator(form.get(groupName)) &&
-                      idx === 0
-                    "
-                    id="{{ groupName }}-error"
-                    class="govuk-error-message"
-                  >
-                    <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFormErrorMessage(groupName, 'required') }}
-                  </span>
-                  <span
-                    *ngIf="
-                      submitted &&
-                      form.get(groupName).invalid &&
-                      this.capacityUtilisationValidator(form.get(groupName)) &&
-                      form.get(groupName).get(controlName).valid &&
-                      idx === 1
-                    "
-                    id="{{ groupName }}-error"
-                    class="govuk-error-message"
-                  >
-                    <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFormErrorMessage(groupName, 'overcapacity') }}
-                  </span>
-                  <input
-                    class="govuk-input govuk-input--width-4"
-                    [class.govuk-input--error]="submitted && form.get(groupName).get(controlName).invalid"
-                    [formControlName]="controlName"
-                    id="{{ groupName }}-{{ controlName }}"
-                    name="{{ controlName }}"
-                    type="number"
-                    [pattern]="intPattern"
-                  />
-                </div>
-              </ng-container>
-            </fieldset>
-          </div>
-        </ng-container>
+        @for (capacity of capacities; track capacity.service; let i = $index) {
+          @if (generateFormGroupName(capacity.service); as groupName) {
+            <div
+              class="govuk-form-group"
+              [class.govuk-form-group--error]="submitted && form.get(groupName).invalid"
+              [formGroupName]="groupName"
+            >
+              <fieldset class="govuk-fieldset">
+                <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                  <h2 class="govuk-fieldset__heading">{{ capacity.service }}</h2>
+                </legend>
+                @for (question of capacity.questions; track question.question; let idx = $index) {
+                  @if (generateFormControlName(question); as controlName) {
+                    <div
+                      class="govuk-form-group"
+                      [class.govuk-form-group--error]="submitted && form.get(groupName).get(controlName).invalid"
+                    >
+                      <label class="govuk-label" for="{{ groupName }}-{{ controlName }}">
+                        {{ question.question }}
+                      </label>
+                      @if (submitted && form.get(groupName).get(controlName).invalid) {
+                        <span id="{{ groupName }}-{{ controlName }}-error" class="govuk-error-message">
+                          <span class="govuk-visually-hidden">Error:</span>
+                          {{ getFirstErrorMessage(groupName + '.' + controlName) }}
+                        </span>
+                      }
+                      @if (
+                        submitted &&
+                        form.get(groupName).invalid &&
+                        this.requiredValidator(form.get(groupName)) &&
+                        idx === 0
+                      ) {
+                        <span id="{{ groupName }}-error" class="govuk-error-message">
+                          <span class="govuk-visually-hidden">Error:</span>
+                          {{ getFormErrorMessage(groupName, 'required') }}
+                        </span>
+                      }
+                      @if (
+                        submitted &&
+                        form.get(groupName).invalid &&
+                        this.capacityUtilisationValidator(form.get(groupName)) &&
+                        form.get(groupName).get(controlName).valid &&
+                        idx === 1
+                      ) {
+                        <span id="{{ groupName }}-error" class="govuk-error-message">
+                          <span class="govuk-visually-hidden">Error:</span>
+                          {{ getFormErrorMessage(groupName, 'overcapacity') }}
+                        </span>
+                      }
+                      <input
+                        class="govuk-input govuk-input--width-4"
+                        [class.govuk-input--error]="submitted && form.get(groupName).get(controlName).invalid"
+                        [formControlName]="controlName"
+                        id="{{ groupName }}-{{ controlName }}"
+                        name="{{ controlName }}"
+                        type="number"
+                        [pattern]="intPattern"
+                      />
+                    </div>
+                  }
+                }
+              </fieldset>
+            </div>
+          }
+        }
       </fieldset>
     </div>
     <div class="govuk-grid-column-one-third">
-      <div *ngIf="!return" class="govuk-util__float-right">
-        <app-progress-bar
-          data-testid="progress-bar"
-          [sections]="workplaceFlowSections"
-          [currentSection]="section"
-        ></app-progress-bar>
-      </div>
+      @if (!return) {
+        <div class="govuk-util__float-right">
+          <app-progress-bar
+            data-testid="progress-bar"
+            [sections]="workplaceFlowSections"
+            [currentSection]="section"
+          ></app-progress-bar>
+        </div>
+      }
     </div>
   </div>
 

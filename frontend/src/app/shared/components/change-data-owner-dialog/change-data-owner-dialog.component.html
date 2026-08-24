@@ -1,45 +1,39 @@
-<app-error-summary
-  *ngIf="(submitted && form.invalid) || isOwnershipError"
-  [formErrorsMap]="formErrorsMap"
-  [serverError]="serverError"
-  [form]="form"
->
-</app-error-summary>
+@if ((submitted && form.invalid) || isOwnershipError) {
+  <app-error-summary [formErrorsMap]="formErrorsMap" [serverError]="serverError" [form]="form"> </app-error-summary>
+}
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
     <fieldset class="govuk-fieldset">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-        <h1 id="dialogHeading" class="govuk-fieldset__heading">
-          Send a request to change ownership of data
-        </h1>
+        <h1 id="dialogHeading" class="govuk-fieldset__heading">Send a request to change ownership of data</h1>
       </legend>
       <app-summary-list [wrapBorder]="true" [summaryList]="summaryList"></app-summary-list>
 
       <p class="govuk-!-margin-top-5">This will allow {{ ownershipToName }} to edit workplace and staff data.</p>
       <p>Select what data {{ ownershipFromName }} will have view only access to:</p>
 
-      <span
-        *ngIf="submitted && form.get('dataPermission').invalid"
-        id="dataPermission-error"
-        class="govuk-error-message"
-      >
-        <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('dataPermission') }}
-      </span>
+      @if (submitted && form.get('dataPermission').invalid) {
+        <span id="dataPermission-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('dataPermission') }}
+        </span>
+      }
       <div class="govuk-radios">
-        <div class="govuk-radios__item" *ngFor="let dataPermission of dataPermissions; let i = index">
-          <input
-            class="govuk-radios__input"
-            id="dataPermission-{{ i }}"
-            name="dataPermission"
-            [formControlName]="'dataPermission'"
-            type="radio"
-            [value]="dataPermission"
-          />
-          <label class="govuk-label govuk-radios__label" for="dataPermission-{{ i }}">
-            {{ dataPermission | dataViewPermissions }}
-          </label>
-        </div>
+        @for (dataPermission of dataPermissions; track dataPermission; let i = $index) {
+          <div class="govuk-radios__item">
+            <input
+              class="govuk-radios__input"
+              id="dataPermission-{{ i }}"
+              name="dataPermission"
+              [formControlName]="'dataPermission'"
+              type="radio"
+              [value]="dataPermission"
+            />
+            <label class="govuk-label govuk-radios__label" for="dataPermission-{{ i }}">
+              {{ dataPermission | dataViewPermissions }}
+            </label>
+          </div>
+        }
       </div>
     </fieldset>
   </div>

@@ -15,6 +15,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import { of, throwError } from 'rxjs';
+import lodash from 'lodash';
 
 import { SearchForUserComponent } from './search-for-user.component';
 
@@ -236,8 +237,12 @@ describe('SearchForUserComponent', () => {
 
       it('should show number of results message if results returned in plural when more than 1', async () => {
         const { searchUsersSpy, fixture, getByTestId, queryByText, mockSearchResult } = await setup();
+        const mockSearchResult2 = lodash.merge({}, mockSearchResult, {
+          uid: 'mock-uid-2',
+          establishment: { uid: 'mock-uid-2' },
+        });
 
-        searchUsersSpy.and.returnValue(of([mockSearchResult, mockSearchResult]));
+        searchUsersSpy.and.returnValue(of([mockSearchResult, mockSearchResult2]));
 
         const searchButton = getByTestId('searchButton');
         fireEvent.click(searchButton);

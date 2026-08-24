@@ -1,11 +1,10 @@
-<ng-container *ngIf="workersToShow?.length">
+@if (workersToShow?.length) {
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
         <span class="govuk-caption-l" data-testid="section-heading">Training and qualifications</span>
         <h1 class="govuk-fieldset__heading">Where are your staff on the care workforce pathway?</h1>
       </legend>
-
       <app-details [title]="'What\'s the care workforce pathway (CWP)?'" data-testid="reveal-whatsCareWorkforcePathway">
         <p>
           The care workforce pathway outlines the knowledge, skills, values and behaviours needed for a career in adult
@@ -27,7 +26,6 @@
       </app-details>
     </div>
   </div>
-
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <table class="govuk-table govuk-!-margin-bottom-8">
@@ -39,35 +37,33 @@
           </tr>
         </thead>
         <tbody class="govuk-table__body">
-          <tr
-            class="govuk-table__row"
-            *ngFor="let worker of workersToShow; index as index"
-            [attr.data-testid]="'worker-row-' + index"
-          >
-            <td class="govuk-table__cell">
-              <a [routerLink]="['../', worker.uid, 'staff-record-summary']">{{ worker.nameOrId }}</a>
-            </td>
-            <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
-            <td class="govuk-table__cell">
-              <a
-                [routerLink]="['../', worker.uid, 'staff-record-summary', 'care-workforce-pathway']"
-                (click)="setReturnToThisPage()"
-                >Choose a category <span class="govuk-visually-hidden">for {{ worker.nameOrId }}</span></a
-              >
-            </td>
-          </tr>
+          @for (worker of workersToShow; track worker.uid; let index = $index) {
+            <tr class="govuk-table__row" [attr.data-testid]="'worker-row-' + index">
+              <td class="govuk-table__cell">
+                <a [routerLink]="['../', worker.uid, 'staff-record-summary']">{{ worker.nameOrId }}</a>
+              </td>
+              <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
+              <td class="govuk-table__cell">
+                <a
+                  [routerLink]="['../', worker.uid, 'staff-record-summary', 'care-workforce-pathway']"
+                  (click)="setReturnToThisPage()"
+                  >Choose a category <span class="govuk-visually-hidden">for {{ worker.nameOrId }}</span></a
+                >
+              </td>
+            </tr>
+          }
         </tbody>
       </table>
-
-      <app-pagination
-        [attr.data-testid]="'pagination'"
-        *ngIf="workerCount > itemsPerPage"
-        [itemsPerPage]="itemsPerPage"
-        [totalNoOfItems]="workerCount"
-        (currentPageIndexChange)="handlePageUpdate($event)"
-        [currentPageIndex]="pageIndex"/>
-
+      @if (workerCount > itemsPerPage) {
+        <app-pagination
+          [attr.data-testid]="'pagination'"
+          [itemsPerPage]="itemsPerPage"
+          [totalNoOfItems]="workerCount"
+          (currentPageIndexChange)="handlePageUpdate($event)"
+          [currentPageIndex]="pageIndex"
+        />
+      }
       <button class="govuk-button" type="button" (click)="returnToHome()">Return to home</button>
     </div>
   </div>
-</ng-container>
+}

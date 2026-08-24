@@ -7,16 +7,16 @@
       </div>
     </div>
   </div>
-  <ng-container *ngIf="isBecomeParentRequestPending">
-    <app-inset-text color="pending" [removeTopMargin]="true" data-testid="parentPendingRequestBanner"
-      >Your request to become a parent workplace is pending
-      <span>
-        <a href="#" (click)="sendCancelToBecomeAParent($event)" class="govuk-util__float-right"
-          >Cancel parent request</a
-        ></span
-      ></app-inset-text
-    >
-  </ng-container>
+  @if (isBecomeParentRequestPending) {
+  <app-inset-text color="pending" [removeTopMargin]="true" data-testid="parentPendingRequestBanner"
+    >Your request to become a parent workplace is pending
+    <span>
+      <a href="#" (click)="sendCancelToBecomeAParent($event)" class="govuk-util__float-right"
+        >Cancel parent request</a
+      ></span
+    ></app-inset-text
+  >
+  }
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <div class="parentRequestTextContainer">
@@ -51,21 +51,19 @@
   </div>
 
   <div class="govuk-grid-row govuk-!-margin-top-6 parentRequestButtonContainer">
-    <ng-container *ngIf="isBecomeParentRequestPending === false; else returnToHomeButton">
-      <div class="govuk-grid-column-one-half">
-        <button type="button" (click)="sendRequestToBecomeAParent()" class="govuk-button">Send parent request</button>
-
-        <a
-          [routerLink]="['/dashboard']"
-          class="govuk-link govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-1"
-          >Cancel</a
-        >
-      </div>
-    </ng-container>
-    <ng-template #returnToHomeButton>
-      <div class="govuk-grid-column-one-half">
-        <button type="button" class="govuk-button" (click)="returnToHome()">Return to home</button>
-      </div>
-    </ng-template>
+    @if (isBecomeParentRequestPending === false) {
+    <div class="govuk-grid-column-one-half">
+      <button type="button" (click)="sendRequestToBecomeAParent()" class="govuk-button">Send parent request</button>
+      <a
+        [routerLink]="['/dashboard']"
+        class="govuk-link govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-1"
+        >Cancel</a
+      >
+    </div>
+    } @else {
+    <div class="govuk-grid-column-one-half">
+      <button type="button" class="govuk-button" (click)="returnToHome()">Return to home</button>
+    </div>
+    }
   </div>
 </div>

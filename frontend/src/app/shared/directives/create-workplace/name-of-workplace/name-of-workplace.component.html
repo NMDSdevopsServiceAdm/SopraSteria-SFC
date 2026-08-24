@@ -1,10 +1,6 @@
-<app-error-summary
-  *ngIf="submitted && (form.invalid || serverError)"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
-  [serverError]="serverError"
->
-</app-error-summary>
+@if (submitted && (form.invalid || serverError)) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form" [serverError]="serverError"> </app-error-summary>
+}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
@@ -12,20 +8,21 @@
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <span class="govuk-caption-l">Workplace</span>
-          <h1 *ngIf="isParent" class="govuk-fieldset__heading">What's the name of the workplace?</h1>
-          <h1 *ngIf="!isParent" class="govuk-fieldset__heading">What's the name of your workplace?</h1>
+          @if (isParent) {
+          <h1 class="govuk-fieldset__heading">What's the name of the workplace?</h1>
+          } @if (!isParent) {
+          <h1 class="govuk-fieldset__heading">What's the name of your workplace?</h1>
+          }
         </legend>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
           <label for="workplaceName" class="govuk-label">Workplace name</label>
-          <span
-            *ngIf="submitted && form.get('workplaceName').errors"
-            id="workplaceName-error"
-            class="govuk-error-message"
-          >
+          @if (submitted && form.get('workplaceName').errors) {
+          <span id="workplaceName-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             {{ getErrorMessage('workplaceName') }}
           </span>
+          }
           <input
             type="text"
             class="govuk-input govuk-input--width-20"
@@ -39,7 +36,8 @@
       <button class="govuk-button govuk-!-margin-top-3" type="submit">Continue</button>
     </form>
   </div>
-  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+  @if (insideFlow) {
+  <div class="govuk-grid-column-one-third">
     <div class="govuk-!-margin-left-8">
       <app-progress-bar
         data-testid="progress-bar-1"
@@ -47,13 +45,15 @@
         [sections]="workplaceSections"
         [currentSection]="'Confirm workplace'"
       ></app-progress-bar>
+      @if (this.flow.includes('registration')) {
       <app-progress-bar
-        *ngIf="this.flow.includes('registration')"
         data-testid="progress-bar-2"
         [header]="'User account'"
         [sections]="userAccountSections"
         [currentSection]="'Confirm workplace'"
       ></app-progress-bar>
+      }
     </div>
   </div>
+  }
 </div>

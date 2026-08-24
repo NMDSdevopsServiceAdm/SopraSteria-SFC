@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+@if (submitted && form.invalid) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
@@ -14,9 +16,11 @@
           <p class="govuk-!-margin-bottom-4">
             If your service is regulated, Skills for Care will need to check your details match the CQC database.
           </p>
-          <span *ngIf="submitted && form.get('cqc').invalid" id="cqc-error" class="govuk-error-message">
+          @if (submitted && form.get('cqc').invalid) {
+          <span id="cqc-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('cqc') }}
           </span>
+          }
           <div class="govuk-radios govuk-radios--conditional">
             <div class="govuk-radios__item">
               <input

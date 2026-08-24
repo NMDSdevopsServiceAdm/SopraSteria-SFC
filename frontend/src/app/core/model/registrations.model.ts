@@ -9,6 +9,19 @@ export interface Registrations {
   };
 }
 
+export interface WorkplaceRegistration {
+  created: string; // ISO datetime
+  updated: string; // ISO datetime
+  name: string;
+  postcode: string;
+  status: string;
+  workplaceUid: string;
+  parentUid: string;
+  parentId: number;
+  parentEstablishmentId: string;
+  isRegulated: boolean;
+}
+
 export interface Registration {
   name: string;
   username: string;

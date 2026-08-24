@@ -1,9 +1,9 @@
 import { ElementRef, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { parseUrl } from '@core/utils/url-util';
 import filter from 'lodash/filter';
 import { BehaviorSubject } from 'rxjs';
-import * as parse from 'url-parse';
 
 @Injectable({
   providedIn: 'root',
@@ -29,7 +29,7 @@ export class ErrorSummaryService {
    * Without query params and/or fragments
    */
   private getRouteName(): string {
-    return parse(this.router.url).pathname;
+    return parseUrl(this.router.url).pathname;
   }
 
   /**

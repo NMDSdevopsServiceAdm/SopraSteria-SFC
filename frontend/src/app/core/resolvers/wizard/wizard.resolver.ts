@@ -8,14 +8,14 @@ import { Observable, of } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 
 @Injectable()
-export class WizardResolver  {
+export class WizardResolver {
   constructor(
     private wizardService: WizardService,
     private permissionService: PermissionsService,
     private establishmentService: EstablishmentService,
   ) {}
 
-  resolve(): Observable<null | Wizard[]> {
+  resolve(): Observable<null | Wizard> {
     const canViewBenchmarks = this.permissionService.can(
       this.establishmentService.primaryWorkplace.uid,
       'canViewBenchmarks',

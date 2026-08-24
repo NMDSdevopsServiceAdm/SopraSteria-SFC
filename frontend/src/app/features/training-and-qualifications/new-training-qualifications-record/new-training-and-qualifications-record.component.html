@@ -1,20 +1,22 @@
-<div *ngIf="worker.longTermAbsence" class="govuk-grid-row govuk-!-margin-bottom-0">
-  <div class="govuk-grid-column-two-thirds">
-    <div class="govuk-list--inline govuk-list">
-      <p class="govuk-tag govuk-tag--grey asc-tag govuk-!-margin-bottom-0">
-        Long-term absent
-        <a
-          (click)="navigateToLongTermAbsence($event)"
-          href="#"
-          data-testid="longTermAbsence"
-          class="govuk-link govuk-link--no-visited-state govuk-!-padding-left-1"
-        >
-          View
-        </a>
-      </p>
+@if (worker.longTermAbsence) {
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-list--inline govuk-list">
+        <p class="govuk-tag govuk-tag--grey asc-tag govuk-!-margin-bottom-0">
+          Long-term absent
+          <a
+            (click)="navigateToLongTermAbsence($event)"
+            href="#"
+            data-testid="longTermAbsence"
+            class="govuk-link govuk-link--no-visited-state govuk-!-padding-left-1"
+          >
+            View
+          </a>
+        </p>
+      </div>
     </div>
   </div>
-</div>
+}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <span class="govuk-caption-l" data-testid="workerNameAndRole"> {{ worker.nameOrId }} </span>
@@ -23,20 +25,23 @@
 <div class="govuk-grid-row govuk-!-margin-bottom-5">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-3">Training and qualifications</h1>
-    <p *ngIf="lastUpdatedDate">Last update, {{ lastUpdatedDate | date: 'd MMMM yyyy' }}</p>
+    @if (lastUpdatedDate) {
+      <p>Last update, {{ lastUpdatedDate | date: 'd MMMM yyyy' }}</p>
+    }
   </div>
   <div class="govuk-grid-column-one-third">
     <div class="govuk-util__float-right govuk-!-margin-top-3 govuk-!-margin-bottom-0">
-      <a
-        class="govuk-!-margin-bottom-0 govuk-link govuk-body govuk-!-font-size-19"
-        *ngIf="canEditWorker && worker.longTermAbsence === null"
-        draggable="false"
-        role="button"
-        href="#"
-        data-testid="flagLongTermAbsence"
-        (click)="navigateToLongTermAbsence($event)"
-        >Flag long-term absence</a
-      >
+      @if (canEditWorker && worker.longTermAbsence === null) {
+        <a
+          class="govuk-!-margin-bottom-0 govuk-link govuk-body govuk-!-font-size-19"
+          draggable="false"
+          role="button"
+          href="#"
+          data-testid="flagLongTermAbsence"
+          (click)="navigateToLongTermAbsence($event)"
+          >Flag long-term absence</a
+        >
+      }
     </div>
   </div>
 </div>
@@ -50,48 +55,50 @@
 </div>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-third govuk-!-margin-top-2">
-    <a
-      *ngIf="canEditWorker"
-      class="govuk-list govuk-list--inline"
-      role="button"
-      draggable="false"
-      [routerLink]="['/workplace', workplace.uid, 'staff-record', worker.uid, 'staff-record-summary']"
-    >
-      View staff record
-    </a>
+    @if (canEditWorker) {
+      <a
+        class="govuk-list govuk-list--inline"
+        role="button"
+        draggable="false"
+        [routerLink]="['/workplace', workplace.uid, 'staff-record', worker.uid, 'staff-record-summary']"
+      >
+        View staff record
+      </a>
+    }
   </div>
   <div class="govuk-grid-column-two-thirds govuk-!-text-align-right">
-    <a
-      *ngIf="canEditWorker"
-      class="govuk-button govuk-button--primary"
-      role="button"
-      draggable="false"
-      [routerLink]="[
-        '/workplace',
-        workplace.uid,
-        'training-and-qualifications-record',
-        worker.uid,
-        'add-a-training-record',
-      ]"
-    >
-      Add a training record
-    </a>
-
-    <a
-      *ngIf="canEditWorker"
-      class="govuk-button govuk-button--secondary govuk-util__float-right"
-      role="button"
-      draggable="false"
-      [routerLink]="[
-        '/workplace',
-        workplace.uid,
-        'training-and-qualifications-record',
-        worker.uid,
-        'add-qualification',
-      ]"
-    >
-      Add a qualification record
-    </a>
+    @if (canEditWorker) {
+      <a
+        class="govuk-button govuk-button--primary"
+        role="button"
+        draggable="false"
+        [routerLink]="[
+          '/workplace',
+          workplace.uid,
+          'training-and-qualifications-record',
+          worker.uid,
+          'add-a-training-record',
+        ]"
+      >
+        Add a training record
+      </a>
+    }
+    @if (canEditWorker) {
+      <a
+        class="govuk-button govuk-button--secondary govuk-util__float-right"
+        role="button"
+        draggable="false"
+        [routerLink]="[
+          '/workplace',
+          workplace.uid,
+          'training-and-qualifications-record',
+          worker.uid,
+          'add-qualification',
+        ]"
+      >
+        Add a qualification record
+      </a>
+    }
   </div>
 </div>
 
@@ -103,77 +110,95 @@
     ></app-new-training-and-qualifications-record-summary>
   </div>
 </div>
-<div
-  *ngIf="mandatoryTraining.length + nonMandatoryTraining.length + qualificationsByGroup.count"
-  class="govuk-!-margin-bottom-8"
->
-  <app-download-pdf-training-and-qualification
-    [linkUrl]="'/trainingAndQualification.pdf'"
-    (downloadPDF)="downloadAsPDF()"
-  ></app-download-pdf-training-and-qualification>
-
-  <a
-    class="govuk-list govuk-list--inline govuk__flex govuk__width-fit-content govuk__align-items-flex-start govuk-!-margin-bottom-0"
-    role="button"
-    draggable="false"
-    (click)="downloadAllCertificates($event)"
-    href="./all-certificates.zip"
-    *ngIf="workerHasCertificate"
-  >
-    <img alt="" src="/assets/images/icon-download.svg" />
-    <span class="govuk-!-margin-left-1"> Download all their training and qualification certificates </span>
-  </a>
-</div>
-<div data-testid="actions-list-table" *ngIf="actionsListData.length > 0" class="govuk-grid-row govuk-!-margin-top-6">
-  <div class="govuk-grid-column-full">
-    <table class="govuk-table">
-      <caption class="govuk-table__caption govuk-table__caption--m">
-        Actions list
-      </caption>
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header" style="width: 45%">Training category</th>
-          <th scope="col" class="govuk-table__header" style="width: 28%">Training type</th>
-          <th scope="col" class="govuk-table__header" style="width: 17%">Status</th>
-          <th scope="col" class="govuk-table__header" style="width: 10%"></th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        <tr class="govuk-table__row" *ngFor="let actionListItem of actionsListData">
-          <td class="govuk-table__cell">{{ actionListItem.trainingCategory.category }}</td>
-          <td class="govuk-table__cell">{{ actionListItem.typeOfTraining }}</td>
-          <td class="govuk-table__cell" id="svgToPdf">
-            <div *ngIf="actionListItem.trainingStatus === trainingStatusService.MISSING">
-              <img src="/assets/images/flag-red.png" alt="red warning flag" class="govuk-util__vertical-align-top" />
-              Missing
-            </div>
-            <div *ngIf="actionListItem.trainingStatus === trainingStatusService.EXPIRED && actionListItem.expires">
-              <img src="/assets/images/flag-red.png" alt="red expired flag" class="govuk-util__vertical-align-top" />
-              Expired
-            </div>
-            <div *ngIf="actionListItem.trainingStatus === trainingStatusService.EXPIRING && actionListItem.expires">
-              <img
-                src="/assets/images/flag-orange.png"
-                alt="yellow expires soon flag"
-                class="govuk-util__vertical-align-top"
-              />
-              Expires soon
-            </div>
-          </td>
-          <td class="govuk-table__cell">
-            <a
-              *ngIf="canEditWorker"
-              class="govuk-link--no-visited-state govuk-util__float-right"
-              (click)="actionsListNavigate($event, actionListItem)"
-              href="#"
-              >{{ actionListItem.trainingStatus !== trainingStatusService.MISSING ? 'Update' : 'Add' }}</a
-            >
-          </td>
-        </tr>
-      </tbody>
-    </table>
+@if (mandatoryTraining.length + nonMandatoryTraining.length + qualificationsByGroup.count) {
+  <div class="govuk-!-margin-bottom-8">
+    <app-download-pdf-training-and-qualification
+      [linkUrl]="'/trainingAndQualification.pdf'"
+      (downloadPDF)="downloadAsPDF()"
+    ></app-download-pdf-training-and-qualification>
+    @if (workerHasCertificate) {
+      <a
+        class="govuk-list govuk-list--inline govuk__flex govuk__width-fit-content govuk__align-items-flex-start govuk-!-margin-bottom-0"
+        role="button"
+        draggable="false"
+        (click)="downloadAllCertificates($event)"
+        href="./all-certificates.zip"
+      >
+        <img alt="" src="/assets/images/icon-download.svg" />
+        <span class="govuk-!-margin-left-1"> Download all their training and qualification certificates </span>
+      </a>
+    }
   </div>
-</div>
+}
+@if (actionsListData.length > 0) {
+  <div data-testid="actions-list-table" class="govuk-grid-row govuk-!-margin-top-6">
+    <div class="govuk-grid-column-full">
+      <table class="govuk-table">
+        <caption class="govuk-table__caption govuk-table__caption--m">
+          Actions list
+        </caption>
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header" style="width: 45%">Training category</th>
+            <th scope="col" class="govuk-table__header" style="width: 28%">Training type</th>
+            <th scope="col" class="govuk-table__header" style="width: 17%">Status</th>
+            <th scope="col" class="govuk-table__header" style="width: 10%"></th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          @for (actionListItem of actionsListData; track $index) {
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">{{ actionListItem.trainingCategory.category }}</td>
+              <td class="govuk-table__cell">{{ actionListItem.typeOfTraining }}</td>
+              <td class="govuk-table__cell" id="svgToPdf">
+                @if (actionListItem.trainingStatus === trainingStatusService.MISSING) {
+                  <div>
+                    <img
+                      src="/assets/images/flag-red.png"
+                      alt="red warning flag"
+                      class="govuk-util__vertical-align-top"
+                    />
+                    Missing
+                  </div>
+                }
+                @if (actionListItem.trainingStatus === trainingStatusService.EXPIRED && actionListItem.expires) {
+                  <div>
+                    <img
+                      src="/assets/images/flag-red.png"
+                      alt="red expired flag"
+                      class="govuk-util__vertical-align-top"
+                    />
+                    Expired
+                  </div>
+                }
+                @if (actionListItem.trainingStatus === trainingStatusService.EXPIRING && actionListItem.expires) {
+                  <div>
+                    <img
+                      src="/assets/images/flag-orange.png"
+                      alt="yellow expires soon flag"
+                      class="govuk-util__vertical-align-top"
+                    />
+                    Expires soon
+                  </div>
+                }
+              </td>
+              <td class="govuk-table__cell">
+                @if (canEditWorker) {
+                  <a
+                    class="govuk-link--no-visited-state govuk-util__float-right"
+                    (click)="actionsListNavigate($event, actionListItem)"
+                    href="#"
+                    >{{ actionListItem.trainingStatus !== trainingStatusService.MISSING ? 'Update' : 'Add' }}</a
+                  >
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}
 
 <div name="tabEl" #tabEl class="asc-tabs asc-tabs--border-bottom govuk-!-margin-top-5 govuk-!-margin-bottom-7">
   <ul class="govuk-tabs__list asc-tabs__list" role="tablist">
@@ -241,38 +266,41 @@
 </div>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <app-new-training
-      *ngIf="currentFragment === fragmentsObject.allRecords || currentFragment === fragmentsObject.mandatoryTraining"
-      [trainingCategories]="mandatoryTraining"
-      [trainingType]="'Mandatory training'"
-      [isMandatoryTraining]="true"
-      [canEditWorker]="canEditWorker"
-      [setReturnRoute]="setReturnRoute"
-      [missingMandatoryTraining]="missingMandatoryTraining.length > 0"
-      (downloadFile)="downloadCertificate($event)"
-      (uploadFile)="uploadCertificate($event)"
-      [certificateErrors]="certificateErrors"
-    >
-    </app-new-training>
-    <app-new-training
-      *ngIf="currentFragment === fragmentsObject.allRecords || currentFragment === fragmentsObject.nonMandatoryTraining"
-      [trainingCategories]="nonMandatoryTraining"
-      [trainingType]="'Non-mandatory training'"
-      [canEditWorker]="canEditWorker"
-      [setReturnRoute]="setReturnRoute"
-      (downloadFile)="downloadCertificate($event)"
-      (uploadFile)="uploadCertificate($event)"
-      [certificateErrors]="certificateErrors"
-    >
-    </app-new-training>
-    <app-new-qualifications
-      *ngIf="currentFragment === fragmentsObject.allRecords || currentFragment === fragmentsObject.qualifications"
-      [canEditWorker]="canEditWorker"
-      [qualificationsByGroup]="qualificationsByGroup"
-      (downloadFile)="downloadCertificate($event)"
-      (uploadFile)="uploadCertificate($event)"
-      [certificateErrors]="certificateErrors"
-    >
-    </app-new-qualifications>
+    @if (currentFragment === fragmentsObject.allRecords || currentFragment === fragmentsObject.mandatoryTraining) {
+      <app-new-training
+        [trainingCategories]="mandatoryTraining"
+        [trainingType]="'Mandatory training'"
+        [isMandatoryTraining]="true"
+        [canEditWorker]="canEditWorker"
+        [setReturnRoute]="setReturnRoute"
+        [missingMandatoryTraining]="missingMandatoryTraining.length > 0"
+        (downloadFile)="downloadCertificate($event)"
+        (uploadFile)="uploadCertificate($event)"
+        [certificateErrors]="certificateErrors"
+      >
+      </app-new-training>
+    }
+    @if (currentFragment === fragmentsObject.allRecords || currentFragment === fragmentsObject.nonMandatoryTraining) {
+      <app-new-training
+        [trainingCategories]="nonMandatoryTraining"
+        [trainingType]="'Non-mandatory training'"
+        [canEditWorker]="canEditWorker"
+        [setReturnRoute]="setReturnRoute"
+        (downloadFile)="downloadCertificate($event)"
+        (uploadFile)="uploadCertificate($event)"
+        [certificateErrors]="certificateErrors"
+      >
+      </app-new-training>
+    }
+    @if (currentFragment === fragmentsObject.allRecords || currentFragment === fragmentsObject.qualifications) {
+      <app-new-qualifications
+        [canEditWorker]="canEditWorker"
+        [qualificationsByGroup]="qualificationsByGroup"
+        (downloadFile)="downloadCertificate($event)"
+        (uploadFile)="uploadCertificate($event)"
+        [certificateErrors]="certificateErrors"
+      >
+      </app-new-qualifications>
+    }
   </div>
 </div>

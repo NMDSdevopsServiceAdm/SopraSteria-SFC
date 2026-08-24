@@ -8,14 +8,14 @@ import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class TotalStaffRecordsResolver  {
+export class TotalStaffRecordsResolver {
   constructor(
     private workerService: WorkerService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
   ) {}
 
-  resolve(route: ActivatedRouteSnapshot): Observable<Array<UserDetails> | null> {
+  resolve(route: ActivatedRouteSnapshot): Observable<number | null> {
     const workplaceUid = route.paramMap.get('establishmentuid')
       ? route.paramMap.get('establishmentuid')
       : this.establishmentService.establishmentId;

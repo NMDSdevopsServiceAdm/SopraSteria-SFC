@@ -1,10 +1,6 @@
-<app-error-summary
-  *ngIf="submitted && (form.invalid || serverError)"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
-  [serverError]="serverError"
->
-</app-error-summary>
+@if (submitted && (form.invalid || serverError)) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form" [serverError]="serverError"> </app-error-summary>
+}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
@@ -16,25 +12,26 @@
         </legend>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
-          <span *ngIf="submitted" id="regulated-error" class="govuk-error-message">
-            <span *ngIf="regulatedByCQC.errors" id="regulatedByCQC-error">{{
-              getFirstErrorMessage('regulatedByCQC')
-            }}</span>
-            <span *ngIf="group.errors" id="group-error"> {{ getFirstErrorMessage('group') }}</span>
+          @if (submitted) {
+          <span id="regulated-error" class="govuk-error-message">
+            @if (regulatedByCQC.errors) {
+            <span id="regulatedByCQC-error">{{ getFirstErrorMessage('regulatedByCQC') }}</span>
+            } @if (group.errors) {
+            <span id="group-error"> {{ getFirstErrorMessage('group') }}</span>
+            }
           </span>
+          }
 
           <div id="regulatedByCQC-conditional-1" [formGroupName]="'group'">
             <div id="group-error">
               <div class="govuk-form-group govuk-!-margin-bottom-2">
                 <label class="govuk-label" for="regulatedPostcode"> Enter your postcode </label>
-                <span
-                  id="group-regulatedPostcode-error"
-                  class="govuk-error-message"
-                  *ngIf="submitted && regulatedPostcode.errors"
-                >
+                @if (submitted && regulatedPostcode.errors) {
+                <span id="group-regulatedPostcode-error" class="govuk-error-message">
                   <span class="govuk-visually-hidden">Error:</span>
                   {{ getFirstErrorMessage('group.regulatedPostcode') }}
                 </span>
+                }
                 <input
                   class="govuk-input govuk-!-width-one-third"
                   id="regulatedPostcode"
@@ -50,10 +47,12 @@
 
               <div class="govuk-form-group">
                 <label class="govuk-label" for="locationId"> Enter your location ID number </label>
-                <span id="group-locationId-error" class="govuk-error-message" *ngIf="submitted && locationId.errors">
+                @if (submitted && locationId.errors) {
+                <span id="group-locationId-error" class="govuk-error-message">
                   <span class="govuk-visually-hidden">Error:</span>
                   {{ getFirstErrorMessage('group.locationId') }}
                 </span>
+                }
                 <input
                   class="govuk-input govuk-!-width-one-third"
                   id="locationId"

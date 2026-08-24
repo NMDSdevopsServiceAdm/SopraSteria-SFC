@@ -1,21 +1,26 @@
-<app-error-summary *ngIf="serverError" [serverError]="serverError"></app-error-summary>
+@if (serverError) {
+  <app-error-summary [serverError]="serverError"></app-error-summary>
+}
 
 <div class="govuk-grid-row govuk-!-margin-bottom-5">
   <div class="govuk-grid-column-full govuk__flex govuk__justify-content-space-between govuk__align-items-flex-end">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
-      <span *ngIf="primaryWorkplace.name" class="govuk-caption-xl">{{ primaryWorkplace.name }}</span>
+      @if (primaryWorkplace.name) {
+        <span class="govuk-caption-xl">{{ primaryWorkplace.name }}</span>
+      }
       Your other workplaces ({{ activeWorkplaceCount }})
     </h1>
 
-    <a
-      *ngIf="canAddEstablishment"
-      class="govuk-button govuk-!-margin-bottom-0"
-      [routerLink]="['/add-workplace/start']"
-      role="button"
-      draggable="false"
-    >
-      Add a workplace
-    </a>
+    @if (canAddEstablishment) {
+      <a
+        class="govuk-button govuk-!-margin-bottom-0"
+        [routerLink]="['/add-workplace/start']"
+        role="button"
+        draggable="false"
+      >
+        Add a workplace
+      </a>
+    }
   </div>
 </div>
 <div class="govuk-grid-row govuk-!-margin-bottom-2">
@@ -26,105 +31,104 @@
   </div>
 </div>
 
-<div *ngIf="showMissingCqcMessage" data-testid="missingCqcWorkplaces">
-  <app-inset-text [color]="'todo'">
-    <div style="width: 95%">
-      <p class="govuk-body govuk-!-font-weight-bold">Have you added all of your workplaces?</p>
-
-      <p>
-        There are more workplaces linked to {{ primaryWorkplace.name }} in the Care Quality Commission (CQC) database
-        than you've added in the Adult Social Care Workforce Data Set (ASC-WDS).
-      </p>
-
-      <p>
-        <a href="https://www.cqc.org.uk/provider/{{ providerId }}" class="govuk-link--no-visited-state" target="_blank"
-          >Please check your CQC workplaces</a
-        >
-        and then add any you want to include in ASC-WDS.
-      </p>
-      <p>You may be able to claim funding for each workplace that you add into ASC-WDS.</p>
-    </div>
-  </app-inset-text>
-</div>
-
-<div *ngIf="totalWorkplaceCount; else noWorkplaces">
-  <div class="govuk-grid-row govuk-!-margin-bottom-5">
-    <div
-      *ngIf="totalWorkplaceCount > itemsPerPage"
-      class="govuk-grid-column-three-quarters govuk-!-padding-right-0 search-column"
-    >
-      <app-search-input
-        accessibleLabel="child workplace records"
-        [prevSearch]="searchTerm"
-        (emitInput)="handleSearch($event)"
-      ></app-search-input>
-    </div>
-
-    <div
-      class="govuk-grid-column-one-quarter govuk-!-padding-top-2 govuk-!-margin-right-0"
-      data-testid="sortBy"
-      *ngIf="totalWorkplaceCount > 1"
-      style="width: fit-content !important"
-      [ngClass]="{
-        'sort-column': totalWorkplaceCount > itemsPerPage,
-        'govuk-util__float-right': totalWorkplaceCount <= itemsPerPage
-      }"
-    >
-      <div class="govuk-form-group">
-        <label class="govuk-label" for="sortBy"> Sort by </label>
-        <select class="govuk-select" id="sortBy" name="sortBy" (change)="sortBy($event.target.value)">
-          <option
-            *ngFor="let option of sortOptions | keyvalue"
-            value="{{ option.key }}"
-            [selected]="option.key === sortBySelectedKey"
+@if (showMissingCqcMessage) {
+  <div data-testid="missingCqcWorkplaces">
+    <app-inset-text [color]="'todo'">
+      <div style="width: 95%">
+        <p class="govuk-body govuk-!-font-weight-bold">Have you added all of your workplaces?</p>
+        <p>
+          There are more workplaces linked to {{ primaryWorkplace.name }} in the Care Quality Commission (CQC) database
+          than you've added in the Adult Social Care Workforce Data Set (ASC-WDS).
+        </p>
+        <p>
+          <a
+            href="https://www.cqc.org.uk/provider/{{ providerId }}"
+            class="govuk-link--no-visited-state"
+            target="_blank"
+            >Please check your CQC workplaces</a
           >
-            {{ option.value }}
-          </option>
-        </select>
+          and then add any you want to include in ASC-WDS.
+        </p>
+        <p>You may be able to claim funding for each workplace that you add into ASC-WDS.</p>
       </div>
-    </div>
+    </app-inset-text>
   </div>
-
-  <div *ngIf="workplaceCount; else noWorkplacesFoundInSearch">
-    <ul class="govuk-list">
-      <ng-container *ngFor="let workplace of workplaces; let indexOfelement = index">
-        <li
-          class="govuk-util__list-record govuk-!-margin-bottom-0 govuk-panel--light-blue"
-          *ngIf="workplace.ustatus === 'PENDING' || workplace.ustatus === 'IN PROGRESS'"
+}
+@if (totalWorkplaceCount) {
+  <div>
+    <div class="govuk-grid-row govuk-!-margin-bottom-5">
+      @if (totalWorkplaceCount > itemsPerPage) {
+        <div class="govuk-grid-column-three-quarters govuk-!-padding-right-0 search-column">
+          <app-search-input
+            accessibleLabel="child workplace records"
+            [prevSearch]="searchTerm"
+            (emitInput)="handleSearch($event)"
+          ></app-search-input>
+        </div>
+      }
+      @if (totalWorkplaceCount > 1) {
+        <div
+          class="govuk-grid-column-one-quarter govuk-!-padding-top-2 govuk-!-margin-right-0"
+          data-testid="sortBy"
+          style="width: fit-content !important"
+          [ngClass]="{
+            'sort-column': totalWorkplaceCount > itemsPerPage,
+            'govuk-util__float-right': totalWorkplaceCount <= itemsPerPage,
+          }"
         >
-          <div>
-            <span class="govuk-!-padding-left-3"
-              >Your application for {{ workplace.name }} is being reviewed by Skills for Care.</span
-            >
-            <span class="govuk-util__float-right govuk-!-padding-right-3">Pending</span>
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="sortBy"> Sort by </label>
+            <select class="govuk-select" id="sortBy" name="sortBy" (change)="sortBy($event.target.value)">
+              @for (option of sortOptions | keyvalue; track option.key) {
+                <option value="{{ option.key }}" [selected]="option.key === sortBySelectedKey">
+                  {{ option.value }}
+                </option>
+              }
+            </select>
           </div>
-        </li>
-        <li class="govuk-util__list-record govuk-!-margin-bottom-0" *ngIf="workplace.ustatus === null">
-          <app-workplace-info-panel
-            [attr.data-cy]="workplace.name"
-            [workplace]="workplace"
-            [subWorkplaceNumber]="indexOfelement"
-            (changeOwnershipAndPermissionsEvent)="changeOwnershipAndPermissions($event)"
-          >
-          </app-workplace-info-panel>
-        </li>
-      </ng-container>
-    </ul>
+        </div>
+      }
+    </div>
+    @if (workplaceCount) {
+      <div>
+        <ul class="govuk-list">
+          @for (workplace of workplaces; track $index; let indexOfelement = $index) {
+            @if (workplace.ustatus === 'PENDING' || workplace.ustatus === 'IN PROGRESS') {
+              <li class="govuk-util__list-record govuk-!-margin-bottom-0 govuk-panel--light-blue">
+                <div>
+                  <span class="govuk-!-padding-left-3"
+                    >Your application for {{ workplace.name }} is being reviewed by Skills for Care.</span
+                  >
+                  <span class="govuk-util__float-right govuk-!-padding-right-3">Pending</span>
+                </div>
+              </li>
+            }
+            @if (workplace.ustatus === null) {
+              <li class="govuk-util__list-record govuk-!-margin-bottom-0">
+                <app-workplace-info-panel
+                  [attr.data-cy]="workplace.name"
+                  [workplace]="workplace"
+                  [subWorkplaceNumber]="indexOfelement"
+                  (changeOwnershipAndPermissionsEvent)="changeOwnershipAndPermissions($event)"
+                >
+                </app-workplace-info-panel>
+              </li>
+            }
+          }
+        </ul>
+      </div>
+    } @else {
+      <p class="govuk-util__bold">There are no matching results</p>
+      <p>Make sure that your spelling is correct.</p>
+    }
+    <app-pagination
+      [itemsPerPage]="itemsPerPage"
+      [totalNoOfItems]="workplaceCount"
+      (currentPageIndexChange)="handlePageUpdate($event)"
+      [currentPageIndex]="currentPageIndex"
+    ></app-pagination>
   </div>
-  <ng-template #noWorkplacesFoundInSearch>
-    <p class="govuk-util__bold">There are no matching results</p>
-    <p>Make sure that your spelling is correct.</p>
-  </ng-template>
-
-  <app-pagination
-    [itemsPerPage]="itemsPerPage"
-    [totalNoOfItems]="workplaceCount"
-    (currentPageIndexChange)="handlePageUpdate($event)"
-    [currentPageIndex]="currentPageIndex"
-  ></app-pagination>
-</div>
-
-<ng-template #noWorkplaces>
+} @else {
   <div data-testid="noWorkplacesMessage">
     <p>You've not added any workplaces yet.</p>
     <p>To add a workplace, you'll need to know:</p>
@@ -135,4 +139,4 @@
       <li>how many members of staff they have</li>
     </ul>
   </div>
-</ng-template>
+}

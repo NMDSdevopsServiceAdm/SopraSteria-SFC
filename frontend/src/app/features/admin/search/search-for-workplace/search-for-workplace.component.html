@@ -1,89 +1,96 @@
 <div class="govuk-grid-column-full">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-three-quarters" data-testid="initial-text">
-      <ng-container *ngIf="!submitted; else searchResults">
+      @if (!submitted) {
         <p>
           Search by workplace name, postcode, workplace ID, location ID or provider ID.
           <br />
           You can also search with combinations, like workplace name and postcode.
         </p>
-      </ng-container>
-      <ng-template #searchResults>
-        <div *ngIf="!results.length">
-          <div class="govuk-warning-text">
-            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-            <strong class="govuk-warning-text__text">
-              <span class="govuk-warning-text__assistive">Information</span>
-              Your search returned no results. Please refine your search criteria
-            </strong>
+      } @else {
+        @if (!results.length) {
+          <div>
+            <div class="govuk-warning-text">
+              <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+              <strong class="govuk-warning-text__text">
+                <span class="govuk-warning-text__assistive">Information</span>
+                Your search returned no results. Please refine your search criteria
+              </strong>
+            </div>
           </div>
-        </div>
-        <div *ngIf="results.length">
-          <p class="govuk-!-font-weight-bold">
-            Your search returned {{ results.length | number }} {{ results.length > 1 ? 'results' : 'result' }}
-          </p>
-          <table class="govuk-table" data-testid="workplace-search-results">
-            <thead class="govuk-table__head">
-              <tr class="govuk-table__row">
-                <th class="govuk-table__header govuk-!-width-one-third" scope="col">Workplace</th>
-                <th class="govuk-table__header" scope="col">Postcode</th>
-                <th class="govuk-table__header" scope="col">Workplace ID</th>
-                <th class="govuk-table__header" scope="col">Location ID</th>
-                <th class="govuk-table__header" scope="col">Provider ID</th>
-                <th class="govuk-table__header" scope="col">&nbsp;</th>
-              </tr>
-            </thead>
-            <tbody class="govuk-table__body">
-              <ng-container *ngFor="let item of results; index as workplaceIndex">
+        }
+        @if (results.length) {
+          <div>
+            <p class="govuk-!-font-weight-bold">
+              Your search returned {{ results.length | number }} {{ results.length > 1 ? 'results' : 'result' }}
+            </p>
+            <table class="govuk-table" data-testid="workplace-search-results">
+              <thead class="govuk-table__head">
                 <tr class="govuk-table__row">
-                  <td class="govuk-table__cell">
-                    <a
-                      (click)="navigateToWorkplace(item.uid, '', item.nmdsId, $event)"
-                      href="#"
-                      data-testid="name-link"
-                      >{{ item.name }}</a
-                    >
-                  </td>
-                  <td class="govuk-table__cell">{{ item.postcode }}</td>
-                  <td class="govuk-table__cell">
-                    <a
-                      (click)="navigateToWorkplace(item.uid, '', item.nmdsId, $event)"
-                      href="#"
-                      data-testid="workplaceId-link"
-                      >{{ item.nmdsId || '-' }}</a
-                    >
-                  </td>
-                  <td class="govuk-table__cell">
-                    <p *ngIf="!item.locationId">-</p>
-                    <a
-                      href="https://www.cqc.org.uk/location/{{ item.locationId }}"
-                      target="_blank"
-                      data-testid="locationId-link"
-                      >{{ item.locationId }}</a
-                    >
-                  </td>
-                  <td class="govuk-table__cell">{{ item.providerId || '-' }}</td>
-                  <td class="govuk-table__cell">
-                    <a href="#" class="govuk-link--no-visited-state" (click)="toggleDetails(item.uid, $event)">
-                      {{ searchDetails[item.uid] ? searchDetailsLabel[item.uid] : 'Open' }}
-                    </a>
-                  </td>
+                  <th class="govuk-table__header govuk-!-width-one-third" scope="col">Workplace</th>
+                  <th class="govuk-table__header" scope="col">Postcode</th>
+                  <th class="govuk-table__header" scope="col">Workplace ID</th>
+                  <th class="govuk-table__header" scope="col">Location ID</th>
+                  <th class="govuk-table__header" scope="col">Provider ID</th>
+                  <th class="govuk-table__header" scope="col">&nbsp;</th>
                 </tr>
-                <tr *ngIf="searchDetails[item.uid]" class="govuk-panel--gray" data-testid="groups-workplace-details">
-                  <td colspan="6">
-                    <app-workplace-dropdown
-                      [item]="item"
-                      [workplaceIndex]="workplaceIndex"
-                      [(navigateToWorkplace)]="navigateToWorkplace"
-                      [(unlockUser)]="unlockUser"
-                    ></app-workplace-dropdown>
-                  </td>
-                </tr>
-              </ng-container>
-            </tbody>
-          </table>
-        </div>
-      </ng-template>
+              </thead>
+              <tbody class="govuk-table__body">
+                @for (item of results; track item.uid; let workplaceIndex = $index) {
+                  <tr class="govuk-table__row">
+                    <td class="govuk-table__cell">
+                      <a
+                        (click)="navigateToWorkplace(item.uid, '', item.nmdsId, $event)"
+                        href="#"
+                        data-testid="name-link"
+                        >{{ item.name }}</a
+                      >
+                    </td>
+                    <td class="govuk-table__cell">{{ item.postcode }}</td>
+                    <td class="govuk-table__cell">
+                      <a
+                        (click)="navigateToWorkplace(item.uid, '', item.nmdsId, $event)"
+                        href="#"
+                        data-testid="workplaceId-link"
+                        >{{ item.nmdsId || '-' }}</a
+                      >
+                    </td>
+                    <td class="govuk-table__cell">
+                      @if (!item.locationId) {
+                        <p>-</p>
+                      }
+                      <a
+                        href="https://www.cqc.org.uk/location/{{ item.locationId }}"
+                        target="_blank"
+                        data-testid="locationId-link"
+                        >{{ item.locationId }}</a
+                      >
+                    </td>
+                    <td class="govuk-table__cell">{{ item.providerId || '-' }}</td>
+                    <td class="govuk-table__cell">
+                      <a href="#" class="govuk-link--no-visited-state" (click)="toggleDetails(item.uid, $event)">
+                        {{ searchDetails[item.uid] ? searchDetailsLabel[item.uid] : 'Open' }}
+                      </a>
+                    </td>
+                  </tr>
+                  @if (searchDetails[item.uid]) {
+                    <tr class="govuk-panel--gray" data-testid="groups-workplace-details">
+                      <td colspan="6">
+                        <app-workplace-dropdown
+                          [item]="item"
+                          [workplaceIndex]="workplaceIndex"
+                          [(navigateToWorkplace)]="navigateToWorkplace"
+                          [(unlockUser)]="unlockUser"
+                        ></app-workplace-dropdown>
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
     </div>
     <div class="govuk-grid-column-one-quarter govuk-!-padding-right-8">
       <form #formEl (ngSubmit)="onSubmit()" novalidate [formGroup]="form">

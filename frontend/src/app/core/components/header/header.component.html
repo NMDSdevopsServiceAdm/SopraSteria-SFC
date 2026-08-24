@@ -17,70 +17,75 @@
     </div>
     <nav>
       <ul class="govuk-header__navigation" id="navigation" aria-label="Top Level Navigation">
-        <ng-container *ngIf="!isLoggedIn()">
-          <li class="govuk-header__navigation-item">
-            <a [routerLink]="['/registration', 'create-account']" class="govuk-header__link">Create an account</a>
-          </li>
-          <li class="govuk-header__navigation-item">
-            <a [routerLink]="['/login']" class="govuk-header__link">Sign in</a>
-          </li>
-        </ng-container>
-        <ng-container *ngIf="isLoggedIn()">
-          <li class="govuk-header__navigation-item" routerLinkActive="active">
-            <a
-              [routerLink]="['/account-management']"
-              class="govuk-header__link"
-              routerLinkActive="govuk-link--no-underline"
-            >
-              @if (showFlagForUsername()) {
-                {{ fullname
-                }}<img
-                  src="/assets/images/flag-orange.svg"
-                  alt="flag"
-                  class="govuk-!-margin-right-0 govuk-!-margin-bottom-1"
-                  style="height: 16px; width: 16px"
-                />
-              } @else {
-                {{ fullname }}
-              }
-            </a>
-          </li>
-          <li *ngIf="workplaceId && !isOnAdminScreen" class="govuk-header__navigation-item" routerLinkActive="active">
-            <a
-              [routerLink]="['/workplace', workplaceId, 'users']"
-              class="govuk-header__link"
-              routerLinkActive="govuk-link--no-underline"
-              >Users<img
-                src="/assets/images/flag-orange.svg"
-                alt="Add more users"
-                class="govuk-!-margin-right-1 govuk-!-margin-bottom-1"
-                style="height: 16px; width: 16px"
-                *ngIf="users?.length === 1"
-                data-testid="singleUserNotification"
-            /></a>
-          </li>
-          <li *ngIf="!isOnAdminScreen && showNotificationsLink" class="govuk-header__navigation-item">
-            <a class="govuk-header__link" [routerLink]="['/notifications']">Notifications</a>
+        @if (!isLoggedIn()) {
+        <li class="govuk-header__navigation-item">
+          <a [routerLink]="['/registration', 'create-account']" class="govuk-header__link">Create an account</a>
+        </li>
+        <li class="govuk-header__navigation-item">
+          <a [routerLink]="['/login']" class="govuk-header__link">Sign in</a>
+        </li>
+        } @if (isLoggedIn()) {
+        <li class="govuk-header__navigation-item" routerLinkActive="active">
+          <a
+            [routerLink]="['/account-management']"
+            class="govuk-header__link"
+            routerLinkActive="govuk-link--no-underline"
+          >
+            @if (showFlagForUsername()) {
+            {{ fullname
+            }}<img
+              src="/assets/images/flag-orange.svg"
+              alt="flag"
+              class="govuk-!-margin-right-0 govuk-!-margin-bottom-1"
+              style="height: 16px; width: 16px"
+            />
+            } @else {
+            {{ fullname }}
+            }
+          </a>
+        </li>
+        @if (workplaceId && !isOnAdminScreen) {
+        <li class="govuk-header__navigation-item" routerLinkActive="active">
+          <a
+            [routerLink]="['/workplace', workplaceId, 'users']"
+            class="govuk-header__link"
+            routerLinkActive="govuk-link--no-underline"
+            >Users@if (users?.length === 1) {
             <img
               src="/assets/images/flag-orange.svg"
               alt="Add more users"
               class="govuk-!-margin-right-1 govuk-!-margin-bottom-1"
               style="height: 16px; width: 16px"
-              *ngIf="numberOfNewNotifications > 0"
-              data-testid="new-notifications"
+              data-testid="singleUserNotification"
             />
-          </li>
-          <li class="govuk-header__navigation-item">
-            <a href="#" (click)="signOut($event)" class="govuk-header__link">Sign out</a>
-          </li>
-        </ng-container>
+            }</a
+          >
+        </li>
+        } @if (!isOnAdminScreen && showNotificationsLink) {
+        <li class="govuk-header__navigation-item">
+          <a class="govuk-header__link" [routerLink]="['/notifications']">Notifications</a>
+          @if (numberOfNewNotifications > 0) {
+          <img
+            src="/assets/images/flag-orange.svg"
+            alt="Add more users"
+            class="govuk-!-margin-right-1 govuk-!-margin-bottom-1"
+            style="height: 16px; width: 16px"
+            data-testid="new-notifications"
+          />
+          }
+        </li>
+        }
+        <li class="govuk-header__navigation-item">
+          <a href="#" (click)="signOut($event)" class="govuk-header__link">Sign out</a>
+        </li>
+        }
       </ul>
       <ul class="govuk-header__navigation" id="navigation2" aria-label="Top Level Navigation">
-        <ng-container *ngIf="isAdminUser() && isLoggedIn() && !isOnAdminScreen">
-          <li class="govuk-header__navigation-item">
-            <a [routerLink]="['/sfcadmin']" class="govuk-link">Back to admin</a>
-          </li>
-        </ng-container>
+        @if (isAdminUser() && isLoggedIn() && !isOnAdminScreen) {
+        <li class="govuk-header__navigation-item">
+          <a [routerLink]="['/sfcadmin']" class="govuk-link">Back to admin</a>
+        </li>
+        }
       </ul>
     </nav>
   </div>

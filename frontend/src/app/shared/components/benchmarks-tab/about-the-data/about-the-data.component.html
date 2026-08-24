@@ -18,12 +18,14 @@
     <ul class="govuk-list govuk-list--bullet">
       <li><p>is updated every month</p></li>
       <li><p>has passed extensive quality checks that cross-validate and remove outliers</p></li>
-      <li *ngIf="meta?.staff && meta?.workplaces">
+      @if (meta?.staff && meta?.workplaces) {
+      <li>
         <p data-testid="meta-data">
           is {{ meta.staff | number }} staff from {{ meta.workplaces | number }}
           {{ pluralizeWorkplaces(meta.workplaces) }} providing the same main service as you in your local authority
         </p>
       </li>
+      }
     </ul>
 
     <h2 class="govuk-heading-m">Data protection</h2>

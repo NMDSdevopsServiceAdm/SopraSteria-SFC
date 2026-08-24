@@ -1,5 +1,6 @@
-<app-error-summary *ngIf="submitted && form?.invalid" [formErrorsMap]="formErrorsMap" [form]="form">
-</app-error-summary>
+@if (submitted && form?.invalid) {
+  <app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
+}
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
   <div class="govuk-grid-row">
@@ -15,28 +16,32 @@
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend">Select a reason</legend>
-          <span *ngIf="submitted && form?.invalid" id="longTermAbsence-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span>
-            {{ getFirstErrorMessage('longTermAbsence') }}
-          </span>
+          @if (submitted && form?.invalid) {
+            <span id="longTermAbsence-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFirstErrorMessage('longTermAbsence') }}
+            </span>
+          }
           <div class="govuk-radios">
-            <div class="govuk-radios__item" *ngFor="let reason of longTermAbsenceReasons; let i = index">
-              <input
-                [formControlName]="'longTermAbsence'"
-                class="govuk-radios__input"
-                id="longTermAbsence-{{ i }}"
-                name="longTermAbsence"
-                type="radio"
-                value="{{ reason }}"
-                (click)="resetBackAtWork()"
-              />
-              <label for="longTermAbsence-{{ i }}" class="govuk-label govuk-radios__label">
-                {{ reason }}
-              </label>
-            </div>
+            @for (reason of longTermAbsenceReasons; track reason; let i = $index) {
+              <div class="govuk-radios__item">
+                <input
+                  [formControlName]="'longTermAbsence'"
+                  class="govuk-radios__input"
+                  id="longTermAbsence-{{ i }}"
+                  name="longTermAbsence"
+                  type="radio"
+                  value="{{ reason }}"
+                  (click)="resetBackAtWork()"
+                />
+                <label for="longTermAbsence-{{ i }}" class="govuk-label govuk-radios__label">
+                  {{ reason }}
+                </label>
+              </div>
+            }
           </div>
 
-          <ng-container *ngIf="this.worker.longTermAbsence">
+          @if (this.worker.longTermAbsence) {
             <p class="govuk-!-margin-top-6">Or set them as being back at work</p>
             <div class="govuk-checkboxes govuk-!-padding-left-0">
               <div class="govuk-checkboxes__item govuk-!-margin-bottom-2">
@@ -52,7 +57,7 @@
                 <label for="backAtWork" class="govuk-label govuk-checkboxes__label"> Set as back at work </label>
               </div>
             </div>
-          </ng-container>
+          }
         </fieldset>
       </div>
       <div class="govuk-button-group">

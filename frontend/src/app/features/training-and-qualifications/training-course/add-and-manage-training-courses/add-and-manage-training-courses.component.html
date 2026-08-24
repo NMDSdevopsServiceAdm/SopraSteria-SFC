@@ -46,33 +46,30 @@
           </tr>
         </thead>
         <tbody class="govuk-table__body">
-          <tr
-            class="govuk-table__row govuk-util__vertical-align-top"
-            *ngFor="let trainingCourse of trainingCourses; let index = index"
-            [attr.data-testid]="'trainingCourse-' + index"
-          >
-            <td class="govuk-table__cell">
-              <a
-                href="#"
-                class="govuk-link govuk-link--no-visited-state"
-                [routerLink]="['..', trainingCourse.uid, 'details']"
-              >
-                {{ trainingCourse.name?.length > 0 ? trainingCourse.name : 'Missing training course name' }}
-              </a>
-            </td>
-
-            <td class="govuk-table__cell govuk-!-padding-right-0 govuk-util__align-right">
-              <a
-                href="#"
-                class="govuk-link govuk-link--no-visited-state"
-                [attr.data-testid]="'remove-link-' + index"
-                [routerLink]="['..', trainingCourse.uid, 'remove']"
-              >
-                Remove
-                <span class="govuk-visually-hidden">{{ trainingCourse.name }}</span>
-              </a>
-            </td>
-          </tr>
+          @for (trainingCourse of trainingCourses; track trainingCourse.uid; let index = $index) {
+            <tr class="govuk-table__row govuk-util__vertical-align-top" [attr.data-testid]="'trainingCourse-' + index">
+              <td class="govuk-table__cell">
+                <a
+                  href="#"
+                  class="govuk-link govuk-link--no-visited-state"
+                  [routerLink]="['..', trainingCourse.uid, 'details']"
+                >
+                  {{ trainingCourse.name?.length > 0 ? trainingCourse.name : 'Missing training course name' }}
+                </a>
+              </td>
+              <td class="govuk-table__cell govuk-!-padding-right-0 govuk-util__align-right">
+                <a
+                  href="#"
+                  class="govuk-link govuk-link--no-visited-state"
+                  [attr.data-testid]="'remove-link-' + index"
+                  [routerLink]="['..', trainingCourse.uid, 'remove']"
+                >
+                  Remove
+                  <span class="govuk-visually-hidden">{{ trainingCourse.name }}</span>
+                </a>
+              </td>
+            </tr>
+          }
         </tbody>
       </table>
     }

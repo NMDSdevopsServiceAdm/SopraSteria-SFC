@@ -7,8 +7,10 @@
     name="workplace"
   >
     <option [value]="''" selected disabled>{{ locationAddresses.length }} addresses found</option>
-    <option *ngFor="let location of locationAddresses; let i = index" [value]="i">
+    @for (location of locationAddresses; track location; let i = $index) {
+    <option [value]="i">
       {{ getLocationName(location) }}
     </option>
+    }
   </select>
 </div>

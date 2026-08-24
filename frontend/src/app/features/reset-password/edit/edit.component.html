@@ -1,10 +1,6 @@
-<app-error-summary
-  *ngIf="submitted && form.invalid"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
-  [serverError]="serverError"
->
-</app-error-summary>
+@if (submitted && form.invalid) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form" [serverError]="serverError"> </app-error-summary>
+}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
@@ -21,15 +17,20 @@
               Must be at least 8 characters long and have uppercase letters, lowercase letters, numbers and special
               characters like !, £.
             </div>
-            <span *ngIf="submitted" id="createPasswordInput-error" class="govuk-error-message">
+            @if (submitted) {
+            <span id="createPasswordInput-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span>
-              <span *ngIf="getPasswordInput.hasError('required')">
+              @if (getPasswordInput.hasError('required')) {
+              <span>
                 {{ getFormErrorMessage('createPasswordInput', 'required') }}
               </span>
-              <span *ngIf="getPasswordInput.hasError('pattern')">
+              } @if (getPasswordInput.hasError('pattern')) {
+              <span>
                 {{ getFormErrorMessage('createPasswordInput', 'pattern') }}
               </span>
+              }
             </span>
+            }
             <input
               aria-describedby="createPasswordInput-hint"
               class="govuk-input"
@@ -46,15 +47,16 @@
             [class.govuk-form-group--error]="submitted && getConfirmPasswordInput.errors"
           >
             <label class="govuk-label" for="confirmPasswordInput"> Confirm password </label>
-            <span *ngIf="submitted" id="confirmPasswordInput-error" class="govuk-error-message">
+            @if (submitted) {
+            <span id="confirmPasswordInput-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span>
-              <span
-                *ngIf="getConfirmPasswordInput.hasError('required') || getConfirmPasswordInput.hasError('notMatched')"
-                id="passwordGroup-error"
-              >
+              @if (getConfirmPasswordInput.hasError('required') || getConfirmPasswordInput.hasError('notMatched')) {
+              <span id="passwordGroup-error">
                 {{ getFormErrorMessage('confirmPasswordInput', 'required') }}
               </span>
+              }
             </span>
+            }
             <input
               class="govuk-input"
               [class.govuk-input--error]="submitted && getConfirmPasswordInput.errors"

@@ -1,21 +1,11 @@
 <ng-container>
-  <ng-container
-    *ngIf="wdfView && overallWdfEligibility && wdfValue?.isEligible === ELIGIBILITY.NO; then orangeFlags; else redFlags"
-  ></ng-container>
-
-  <ng-template #orangeFlags>
-    <app-eligibility-icon [overallEligibility]="true" [eligible]="false"></app-eligibility-icon>
-  </ng-template>
-
-  <ng-template #redFlags>
-    <ng-container *ngIf="wdfView && !overallWdfEligibility && wdfValue?.isEligible === ELIGIBILITY.NO; else response">
-      <app-eligibility-icon [overallEligibility]="false" [eligible]="false"></app-eligibility-icon>
-    </ng-container>
-  </ng-template>
-
-  <ng-template #response>
-    <ng-container *ngTemplateOutlet="content"></ng-container>
-  </ng-template>
+  @if (wdfView && overallWdfEligibility && wdfValue?.isEligible === ELIGIBILITY.NO) {
+  <app-eligibility-icon [overallEligibility]="true" [eligible]="false"></app-eligibility-icon>
+  } @else { @if (wdfView && !overallWdfEligibility && wdfValue?.isEligible === ELIGIBILITY.NO) {
+  <app-eligibility-icon [overallEligibility]="false" [eligible]="false"></app-eligibility-icon>
+  } @else {
+  <ng-container *ngTemplateOutlet="content"></ng-container>
+  } }
 </ng-container>
 
 <ng-template #content><ng-content></ng-content></ng-template>

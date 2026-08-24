@@ -1,6 +1,7 @@
 import { ParentEstablishment, SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentData';
 import { runTestsForDHAHomeTabFlag } from './runTestsForDHAHomeTabFlag';
 import { userPassword } from '../../support/configData';
+import { onHomePage } from '../../support/page_objects/onHomePage';
 
 describe('Delegated healthcare activities journey from home tab flag', { tags: '@dha' }, () => {
   const subsidaryToView = SubEstablishmentNotDataOwner;
@@ -11,6 +12,7 @@ describe('Delegated healthcare activities journey from home tab flag', { tags: '
     cy.get('app-navigate-to-workplace-dropdown select').select(subsidaryToView.name);
 
     cy.url().should('contain', 'subsidiary');
+    onHomePage.clickTab('Home');
     cy.get('h1').should('contain', subsidaryToView.name);
   });
 

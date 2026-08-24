@@ -1,11 +1,12 @@
+@if ((submitted && form.invalid) || serverError) {
 <app-error-summary
-  *ngIf="(submitted && form.invalid) || serverError"
   [formErrorsMap]="formErrorsMap"
   [serverError]="serverError"
   [form]="form"
   [addIndexKeyToFormArrayErrors]="true"
 >
 </app-error-summary>
+}
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
@@ -45,13 +46,15 @@
       ></app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
-      <div *ngIf="!return" class="govuk-util__float-right">
+      @if (!return) {
+      <div class="govuk-util__float-right">
         <app-progress-bar
           data-testid="progress-bar"
           [sections]="workplaceFlowSections"
           [currentSection]="section"
         ></app-progress-bar>
       </div>
+      }
     </div>
   </div>
 </form>

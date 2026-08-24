@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+@if (submitted && form.invalid) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
 <form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
   <div class="govuk-width-container">
     <div class="govuk-grid-row">
@@ -109,14 +111,15 @@
               </div>
             </legend>
             <div>
+              @if (submitted && form.get('courseCompletionDate').invalid) {
               <span
                 data-testid="completion-date-error"
-                *ngIf="submitted && form.get('courseCompletionDate').invalid"
                 id="courseCompletionDate-error"
                 class="govuk-error-message completion-date-error"
               >
                 <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('courseCompletionDate') }}
               </span>
+              }
               <div class="course-completion-date-input">
                 <app-date-picker
                   [formGroup]="form"

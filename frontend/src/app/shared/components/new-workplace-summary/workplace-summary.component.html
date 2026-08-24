@@ -305,7 +305,7 @@
             @case ('Yes') {
               <div>
                 <ul class="govuk-list govuk-!-margin-bottom-0">
-                  @for (service of filterAndSortOtherServices(workplace.otherServices.services); track service) {
+                  @for (service of filterAndSortOtherServices(workplace.otherServices.services); track service.id) {
                     <li>
                       {{ service.name }}
                       @if (service.other) {
@@ -339,7 +339,7 @@
                 -
               } @else {
                 <ul class="govuk-list govuk-!-margin-bottom-0">
-                  @for (capacity of capacityMessages; track capacity) {
+                  @for (capacity of capacityMessages; track $index) {
                     <li>{{ capacity.message }}</li>
                   }
                 </ul>
@@ -367,7 +367,7 @@
               -
             } @else {
               <ul class="govuk-list govuk-!-margin-bottom-0">
-                @for (users of workplace.serviceUsers; track users) {
+                @for (users of workplace.serviceUsers; track $index) {
                   <li>{{ users.service }} {{ users.other ? '-' + users.other : '' }}</li>
                 }
               </ul>
@@ -415,7 +415,7 @@
           <dd class="govuk-summary-list__value">
             @if (workplace.staffWhatKindDelegatedHealthcareActivities?.knowWhatActivities === 'Yes') {
               <ul class="govuk-list govuk-!-margin-bottom-0">
-                @for (activity of workplace.staffWhatKindDelegatedHealthcareActivities.activities; track activity) {
+                @for (activity of workplace.staffWhatKindDelegatedHealthcareActivities.activities; track activity.id) {
                   <li>
                     {{ activity.title }}
                   </li>

@@ -1,13 +1,15 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <legend *ngIf="isParentUsers" class="fobuk-fieldset__legend govuk-fieldset__legend--l">
+    @if (isParentUsers) {
+    <legend class="fobuk-fieldset__legend govuk-fieldset__legend--l">
       <span class="govuk-caption-l">{{ workplace.name }}</span>
       <span class="govuk-caption-l">(Workplace ID: {{ workplace.nmdsId | removeTrailingWhitespace }})</span>
-
       <h1 class="govuk-fieldset__heading">Users ({{ users.length }})</h1>
     </legend>
-    <h2 *ngIf="!isParentUsers" class="govuk-heading-m">Users ({{ users.length }})</h2>
-    <div *ngIf="showSecondUserBanner" [ngClass]="{ 'govuk-grid-column-full govuk-!-padding-left-0': isParentUsers }">
+    } @if (!isParentUsers) {
+    <h2 class="govuk-heading-m">Users ({{ users.length }})</h2>
+    } @if (showSecondUserBanner) {
+    <div [ngClass]="{ 'govuk-grid-column-full govuk-!-padding-left-0': isParentUsers }">
       <app-inset-text [color]="'todo'">
         <h3 class="govuk-heading-s">You should add a second user</h3>
         <p>
@@ -16,10 +18,11 @@
         </p>
       </app-inset-text>
     </div>
+    }
   </div>
   <div class="govuk-grid-column-one-third govuk-util__align-right">
+    @if (canAddUser) {
     <a
-      *ngIf="canAddUser"
       role="button"
       draggable="false"
       class="govuk-button"
@@ -27,17 +30,16 @@
     >
       Add a user
     </a>
+    }
   </div>
 </div>
-<ng-container *ngIf="users.length > 0; else noUsers">
-  <app-user-table
-    [users]="users"
-    [canViewUser]="canViewUser"
-    [workplace]="workplace"
-    [userPermissionsTypes]="userPermissionsTypes"
-  ></app-user-table>
-</ng-container>
-
-<ng-template #noUsers>
-  <p>There are no user accounts.</p>
-</ng-template>
+@if (users.length > 0) {
+<app-user-table
+  [users]="users"
+  [canViewUser]="canViewUser"
+  [workplace]="workplace"
+  [userPermissionsTypes]="userPermissionsTypes"
+></app-user-table>
+} @else {
+<p>There are no user accounts.</p>
+}

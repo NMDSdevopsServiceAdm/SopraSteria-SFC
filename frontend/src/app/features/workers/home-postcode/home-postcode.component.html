@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+@if (submitted && form.invalid) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
@@ -15,10 +17,12 @@
         </h1>
         <label class="govuk-label govuk-date-input__label" for="postcode"> Postcode </label>
         <span class="govuk-caption-m govuk-!-margin-bottom-4">For example, 'LS1 2RP'</span>
-        <span *ngIf="submitted && form.get('postcode').errors" id="postcode-error" class="govuk-error-message">
+        @if (submitted && form.get('postcode').errors) {
+        <span id="postcode-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
           {{ getFormErrorMessage('postcode', 'validPostcode') }}
         </span>
+        }
         <input
           class="govuk-input govuk-input--width-10"
           [class.govuk-input--error]="submitted && form.get('postcode').invalid"
@@ -29,7 +33,8 @@
         />
       </div>
     </div>
-    <div class="govuk-grid-column-one-third-from-desktop" *ngIf="insideFlow">
+    @if (insideFlow) {
+    <div class="govuk-grid-column-one-third-from-desktop">
       <div class="govuk-!-margin-left-8">
         <app-progress-bar
           data-testid="progress-bar"
@@ -38,6 +43,7 @@
         ></app-progress-bar>
       </div>
     </div>
+    }
   </div>
 
   <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>

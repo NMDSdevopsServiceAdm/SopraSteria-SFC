@@ -1,10 +1,6 @@
-<app-error-summary
-  *ngIf="(form.invalid || serverError) && submitted"
-  [formErrorsMap]="formErrorsMap"
-  [serverError]="serverError"
-  [form]="form"
->
-</app-error-summary>
+@if ((form.invalid || serverError) && submitted) {
+<app-error-summary [formErrorsMap]="formErrorsMap" [serverError]="serverError" [form]="form"> </app-error-summary>
+}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
@@ -22,10 +18,12 @@
 
     <form (ngSubmit)="onSubmit()" [formGroup]="form" id="form" class="govuk-!-margin-top-6">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
-        <span *ngIf="submitted && form.invalid" id="termsAndConditions-error" class="govuk-error-message">
+        @if (submitted && form.invalid) {
+        <span id="termsAndConditions-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
           {{ getFirstErrorMessage('termsAndConditions') }}
         </span>
+        }
         <div class="govuk-checkboxes">
           <div class="govuk-checkboxes__item">
             <input
