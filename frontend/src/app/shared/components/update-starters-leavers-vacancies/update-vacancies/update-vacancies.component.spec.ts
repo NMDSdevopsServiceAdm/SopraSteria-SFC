@@ -164,7 +164,7 @@ describe('UpdateVacanciesComponent', () => {
       expect(tableTitle).toBeTruthy();
     });
 
-    it('should show an "Add more job roles" button', async () => {
+    it('should show an "Select more job roles" button', async () => {
       const { getByRole } = await setup();
       const addButton = getByRole('button', { name: 'Select more job roles' });
 

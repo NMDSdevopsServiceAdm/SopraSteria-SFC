@@ -38,7 +38,7 @@ describe('JobRolesNumberTableComponent', () => {
 
     const setupTools = await render(JobRoleNumbersTableComponent, {
       imports: [SharedModule, ReactiveFormsModule],
-      providers: [provideHttpClient(), provideHttpClientTesting(),],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
       componentProperties: {
         jobRoleNumbers,
         selectedJobRoles,
@@ -67,15 +67,15 @@ describe('JobRolesNumberTableComponent', () => {
 
   describe('add job role', () => {
     it('should show an add job role button with the given text', async () => {
-      const { getByRole } = await setup({ addJobRoleButtonText: 'Add more job roles' });
-      expect(getByRole('button', { name: 'Add more job roles' })).toBeTruthy();
+      const { getByRole } = await setup({ addJobRoleButtonText: 'Select more job roles' });
+      expect(getByRole('button', { name: 'Select more job roles' })).toBeTruthy();
     });
 
     it('should call addJobRole when add job role button is clicked', async () => {
-      const { component, fixture, getByRole } = await setup({ addJobRoleButtonText: 'Add more job roles' });
+      const { component, fixture, getByRole } = await setup({ addJobRoleButtonText: 'Select more job roles' });
       const addJobRoleButton = spyOn(component.addJobRole, 'emit');
 
-      userEvent.click(getByRole('button', { name: 'Add more job roles' }));
+      userEvent.click(getByRole('button', { name: 'Select more job roles' }));
       fixture.detectChanges();
 
       expect(addJobRoleButton).toHaveBeenCalled();
