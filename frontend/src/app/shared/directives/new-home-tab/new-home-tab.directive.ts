@@ -17,15 +17,9 @@ import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { isAdminRole } from '@core/utils/check-role-util';
-import {
-  CancelDataOwnerDialogComponent,
-} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import {
-  ChangeDataOwnerDialogComponent,
-} from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
-import {
-  OwnershipChangeMessageDialogComponent,
-} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import saveAs from 'file-saver';
@@ -44,7 +38,7 @@ window.dataLayer = window.dataLayer || [];
 export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   @Input() workplace: Establishment;
   @Input() meta: Meta;
-
+  public workers: Worker[];
   public subscriptions: Subscription = new Subscription();
   public benchmarksMessage: string;
   public canViewWorkplaces: boolean;
@@ -111,6 +105,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   ngOnInit(): void {
     this.workersCreatedDate = this.route.snapshot.data.workers?.workersCreatedDate;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
+    this.workers = this.route.snapshot.data?.workers?.listOfAllWorkers;
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
     this.workersNotCompleted = this.route.snapshot.data.workers?.workersNotCompleted;
     this.noOfWorkersWhoRequireInternationalRecruitment =

@@ -23,6 +23,7 @@ const NO_STAFF_RECORDS_MESSAGE = 'You’ve not added any staff records in the la
 })
 export class SummarySectionComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
+  @Input() workers?: Worker[];
   @Input() workerCount: number;
   @Input() workersCreatedDate;
   @Input() trainingCounts: TrainingCounts;
@@ -385,6 +386,14 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     this.updateSingleEstablishmentField(payAndPensionData);
   }
 
+  private setNursesQuestionsMiniFlowViewed(): void {
+    const nursesQuestionData = {
+      property: 'nursesQuestionsMiniFlowViewed',
+      value: true,
+    };
+    this.updateSingleEstablishmentField(nursesQuestionData);
+  }
+
   public navigateToYourOtherWorkplaces(event: Event, yourOtherWorkplacesSortValue: string) {
     event.preventDefault();
     localStorage.setItem('yourOtherWorkplacesSortValue', yourOtherWorkplacesSortValue);
@@ -400,6 +409,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
     this.setupUpdateBannerForDHAWorkplaceQuestion();
     this.setupUpdateBannerForDHAWorkerQuestion();
+    this.setupUpdateBannerForNursesQuestions();
   }
 
   private setupUpdateBannerForPayAndPensionWorkplaceQuestions() {
@@ -422,6 +432,38 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
         onLinkClicked: () => {
           this.payAndPensionService.setInPayAndPensionsMiniFlow(true);
           this.setPayAndPensionsMiniFlowViewed();
+          this.setReturnToHomeTab();
+        },
+      });
+    }
+  }
+
+  private setupUpdateBannerForNursesQuestions(): void {
+    if (this.updateBanner()) {
+      return;
+    }
+
+    const nurses = this.workers?.filter((worker) => worker.mainJob?.jobRoleName === 'Registered nurse') ?? [];
+
+    if (nurses.length === 0) {
+      return;
+    }
+
+    const linkTo =
+      nurses.length === 1
+        ? ['/workplace', this.workplace.uid, 'staff-record', nurses[0].uid!, 'staff-record-summary', 'nursing-category']
+        : this.router.createUrlTree(['/dashboard'], {
+            fragment: 'staff-records',
+          });
+
+    if (!this.workplace.nursesQuestionsMiniFlowViewed && this.canEditEstablishment) {
+      this.updateBanner.set({
+        content: "Review and confirm your nurses' NMC fields of practice",
+        linkText: 'Review details',
+        linkAriaDescription: 'about nurses questions',
+        linkTo,
+        onLinkClicked: () => {
+          this.setNursesQuestionsMiniFlowViewed();
           this.setReturnToHomeTab();
         },
       });
