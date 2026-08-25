@@ -6,7 +6,7 @@ import { RegisteredNursesResolver } from './registered-nurses.resolver';
 import { WorkerService } from '@core/services/worker.service';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 
-fdescribe('RegisteredNursesResolver', () => {
+describe('RegisteredNursesResolver', () => {
   function setup() {
     TestBed.configureTestingModule({
       imports: [],
