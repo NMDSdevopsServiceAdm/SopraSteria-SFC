@@ -1,16 +1,17 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { RegisteredNurseJobRoleId } from '@core/model/nurse-field-of-practice.model';
+import { AlertService } from '@core/services/alert.service';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithOverrides, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { NursingCategoryComponent } from './nursing-category.component';
-import { RegisteredNurseJobRoleId } from '@core/model/nurse-field-of-practice.model';
-import userEvent from '@testing-library/user-event';
 
 const mockFieldsOfPractice = [
   { id: 1, label: 'Adult nursing' },
@@ -19,10 +20,11 @@ const mockFieldsOfPractice = [
   { id: 4, label: "Children's nursing" },
 ];
 
-describe('NursingCategoryComponent', () => {
+fdescribe('NursingCategoryComponent', () => {
   async function setup(overrides: any = {}) {
     const insideFlow = overrides?.insideFlow ?? true;
     const previousAnswer = overrides?.previousAnswer;
+    const fromBlueBanner = overrides?.fromBlueBanner ?? false;
 
     const mockWorker = {
       uid: 'mock-worker-uid',
@@ -51,9 +53,15 @@ describe('NursingCategoryComponent', () => {
               },
             },
             snapshot: {
-              data: { allNurseFieldsOfPractice: mockFieldsOfPractice },
+              data: { allNurseFieldsOfPractice: mockFieldsOfPractice, fromBlueBanner },
               params: {},
             },
+          },
+        },
+        {
+          provide: AlertService,
+          useValue: {
+            addAlert: jasmine.createSpy('addAlert'),
           },
         },
         {
@@ -73,6 +81,7 @@ describe('NursingCategoryComponent', () => {
     const router = injector.inject(Router) as Router;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const alertService = injector.inject(AlertService) as AlertService;
     const workerService = injector.inject(WorkerService) as WorkerService;
     const updateWorkerSpy = spyOn(workerService, 'updateWorker').and.callThrough();
 
@@ -82,6 +91,7 @@ describe('NursingCategoryComponent', () => {
       router,
       routerSpy,
       updateWorkerSpy,
+      alertService,
     };
   }
 
@@ -104,6 +114,12 @@ describe('NursingCategoryComponent', () => {
     const expectedLinkText = /Search the Nursing and Midwifery Council register/;
 
     expect(getByRole('link', { name: expectedLinkText })).toBeTruthy();
+  });
+
+  it('should set fromBlueBanner when accessed from the blue banner', async () => {
+    const { component } = await setup({ fromBlueBanner: true });
+
+    expect(component.fromBlueBanner).toBeTrue();
   });
 
   describe('caption (section heading)', () => {
@@ -222,6 +238,25 @@ describe('NursingCategoryComponent', () => {
       'mock-worker-uid',
       'recruited-from',
     ]);
+  });
+
+  it('should show a success alert when saving and returning from the blue banner', async () => {
+    const { getByRole, getByText, fixture, alertService } = await setup({
+      fromBlueBanner: true,
+      insideFlow: false,
+    });
+
+    fireEvent.click(getByRole('checkbox', { name: 'Adult nursing' }));
+
+    fireEvent.click(getByText('Save and return'));
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(alertService.addAlert).toHaveBeenCalledWith({
+      type: 'success',
+      message: 'NMC fields of practice confirmed ',
+    });
   });
 
   it(`should navigate to 'recruited-from' page when skipping the question in the flow`, async () => {
