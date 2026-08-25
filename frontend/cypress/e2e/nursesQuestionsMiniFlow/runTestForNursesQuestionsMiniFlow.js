@@ -1,9 +1,5 @@
 /* eslint-disable no-undef */
 
-import { onHomePage } from '../../support/page_objects/onHomePage';
-import { onStaffRecordsPage } from '../../support/page_objects/onStaffRecordsPage';
-import { onStaffRecordSummaryPage } from '../../support/page_objects/onStaffRecordSummaryPage';
-
 export const runTestsForNursesQuestionsMiniFlow = (mockEstablishmentData) => {
   const { id: establishmentId } = mockEstablishmentData;
 
@@ -44,9 +40,9 @@ export const runTestsForNursesQuestionsMiniFlow = (mockEstablishmentData) => {
 
       cy.get('[data-testid="update-banner-area"]').contains('Review details').click();
 
-      cy.url().should('contain', 'staff-record-summary/nursing-category');
+      cy.url().should('contain', 'staff-record-summary/nursing-category-from-blue-banner');
 
-      cy.get('h1').should('contain', 'Nursing');
+      cy.get('h1').should('contain', 'Nursing and Midwifery Council');
     });
 
     it('should remove the flag after clicking Review details', () => {
