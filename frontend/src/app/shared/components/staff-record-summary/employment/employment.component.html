@@ -83,20 +83,32 @@
     </dd>
   </div>
 
-  <div class="govuk-summary-list__row" *ngIf="displayNursingQuestions">
-    <dt class="govuk-summary-list__key">Nursing and Midwifery Council category</dt>
+  @if (displayNursingQuestions) {
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">Nursing and Midwifery Council fields of practice</dt>
+
     <dd class="govuk-summary-list__value">
-      {{ worker.nurseFieldOfPractice?.[0]?.label || '-' }}
+      @if (worker.nurseFieldOfPractice?.length) {
+      <ul class="govuk-list govuk-!-margin-bottom-0">
+        @for (field of worker.nurseFieldOfPractice; track field.label) {
+        <li>{{ field.label }}</li>
+        }
+      </ul>
+      } @else { - }
     </dd>
-    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
+
+    @if (canEditWorker) {
+    <dd class="govuk-summary-list__actions">
       <app-summary-record-change
-        [explanationText]="' nursing and midwifery council category'"
+        [explanationText]="' nursing and midwifery council fields of practice'"
         [link]="getRoutePath('nursing-category', wdfView)"
-        [hasData]="!!worker.nurseFieldOfPractice"
+        [hasData]="!!worker.nurseFieldOfPractice?.length"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
+    }
   </div>
+  }
 
   <div
     class="govuk-summary-list__row"
