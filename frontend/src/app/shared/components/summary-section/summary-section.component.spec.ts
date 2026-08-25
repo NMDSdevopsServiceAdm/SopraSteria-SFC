@@ -11,6 +11,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
 import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
+import { SubsidiaryRouterService } from '@shared/services/subsidiary-router-service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -19,7 +20,6 @@ import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
-import { SubsidiaryRouterService } from '@shared/services/subsidiary-router-service';
 
 describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
@@ -1557,7 +1557,7 @@ describe('Summary section', () => {
         const link = within(updateBannerArea).getByText('Review details') as HTMLAnchorElement;
 
         expect(link.getAttribute('href')).toEqual(
-          `/workplace/${Establishment.uid}/staff-record/nurse-1/staff-record-summary/nursing-category`,
+          `/workplace/${Establishment.uid}/staff-record/nurse-1/staff-record-summary/nursing-category-from-blue-banner`,
         );
 
         userEvent.click(link);
