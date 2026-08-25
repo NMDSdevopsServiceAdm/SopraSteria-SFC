@@ -262,6 +262,7 @@ fdescribe('ReviewAndConfirmNurseFieldOfPracticeComponent', () => {
       expect(updateWorkersSpy).toHaveBeenCalledWith('mocked-uid', [
         { uid: defaultNurses[0].uid, nurseFieldOfPractice: chosenAnswersA },
         { uid: defaultNurses[1].uid, nurseFieldOfPractice: chosenAnswersB },
+        { uid: defaultNurses[2].uid, nurseFieldOfPractice: [] },
       ]);
     });
 
