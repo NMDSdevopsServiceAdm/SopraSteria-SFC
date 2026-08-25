@@ -12,6 +12,7 @@ import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertD
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
 import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
+import { AllNurseFieldsOfPracticeResolver } from '@core/resolvers/nurse-field-of-practice.resolver';
 import { QualificationResolver } from '@core/resolvers/qualification.resolver';
 import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/training-and-qualification-records.resolver';
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
@@ -94,7 +95,6 @@ import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workp
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WhoCarryOutDelegatedHealthcareActivitiesComponent } from './who-carry-out-delegated-healthcare-activities/who-carry-out-delegated-healthcare-activities.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { AllNurseFieldsOfPracticeResolver } from '@core/resolvers/nurse-field-of-practice.resolver';
 
 const editTrainingRecordRoute = {
   path: 'training/:trainingRecordId',
@@ -440,6 +440,17 @@ const routes: Routes = [
             component: NursingCategoryComponent,
             resolve: { allNurseFieldsOfPractice: AllNurseFieldsOfPracticeResolver },
             data: { title: 'Nursing Category' },
+          },
+          {
+            path: 'nursing-category-from-blue-banner',
+            component: NursingCategoryComponent,
+            resolve: {
+              allNurseFieldsOfPractice: AllNurseFieldsOfPracticeResolver,
+            },
+            data: {
+              title: 'Nursing Category',
+              fromBlueBanner: true,
+            },
           },
           {
             path: 'mental-health-professional',
