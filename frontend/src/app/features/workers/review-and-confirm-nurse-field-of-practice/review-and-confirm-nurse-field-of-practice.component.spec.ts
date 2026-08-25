@@ -63,6 +63,7 @@ fdescribe('ReviewAndConfirmNurseFieldOfPracticeComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService);
+
     const updateWorkersSpy = spyOn(establishmentService, 'updateWorkers').and.returnValue(of({}));
     const workerService = injector.inject(WorkerService);
 
@@ -70,6 +71,7 @@ fdescribe('ReviewAndConfirmNurseFieldOfPracticeComponent', () => {
     const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
     const router = injector.inject(Router) as Router;
+    router.navigate = routerSpy;
 
     return {
       ...setuptools,
@@ -220,6 +222,67 @@ fdescribe('ReviewAndConfirmNurseFieldOfPracticeComponent', () => {
       userEvent.click(checkboxC);
 
       expect(answerCell.textContent.trim()).toEqual(newAnswer.label);
+    });
+  });
+
+  describe('form submit', () => {
+    it('should show a submit button and a cancel link', async () => {
+      const { getByRole, getByText } = await setup();
+
+      const button = getByRole('button', { name: 'Confirm all details' });
+      const cancelLink = getByText('Cancel');
+
+      expect(button).toBeTruthy();
+      expect(cancelLink.getAttribute('href')).toContain('/dashboard#home');
+    });
+
+    it('should call updateWorkers on submit', async () => {
+      const { getByRole, getByTestId, updateWorkersSpy } = await setup();
+
+      const button = getByRole('button', { name: 'Confirm all details' });
+
+      const nurseRowA = getByTestId(`worker-row-0`);
+      const chosenAnswersA = [0, 2, 3].map((index) => mockFieldsOfPractice[index]);
+
+      chosenAnswersA.forEach((field) => {
+        const checkbox = within(nurseRowA).getByRole('checkbox', { name: field.label });
+        userEvent.click(checkbox);
+      });
+
+      const nurseRowB = getByTestId(`worker-row-1`);
+      const chosenAnswersB = [1, 3].map((index) => mockFieldsOfPractice[index]);
+
+      chosenAnswersB.forEach((field) => {
+        const checkbox = within(nurseRowB).getByRole('checkbox', { name: field.label });
+        userEvent.click(checkbox);
+      });
+
+      userEvent.click(button);
+
+      expect(updateWorkersSpy).toHaveBeenCalledWith('mocked-uid', [
+        { uid: defaultNurses[0].uid, nurseFieldOfPractice: chosenAnswersA },
+        { uid: defaultNurses[1].uid, nurseFieldOfPractice: chosenAnswersB },
+      ]);
+    });
+
+    it('should return to home dashboard with an alert message on submit', async () => {
+      const { fixture, getByRole, getByTestId, alertServiceSpy } = await setup();
+
+      const button = getByRole('button', { name: 'Confirm all details' });
+
+      const nurseRowA = getByTestId(`worker-row-0`);
+      const chosenAnswersA = [0, 2, 3].map((index) => mockFieldsOfPractice[index]);
+
+      chosenAnswersA.forEach((field) => {
+        const checkbox = within(nurseRowA).getByRole('checkbox', { name: field.label });
+        userEvent.click(checkbox);
+      });
+
+      userEvent.click(button);
+
+      await fixture.whenStable();
+
+      expect(alertServiceSpy).toHaveBeenCalledWith({ type: 'success', message: 'NMC fields of practice confirmed' });
     });
   });
 });

@@ -1,6 +1,7 @@
 <div
   role="row"
   class="asc__grid-table-with-form--row"
+  [class]="{ 'asc__grid-table-with-form--first-row': workerIndex() === 0 }"
   [attr.data-testid]="'worker-row-' + workerIndex()"
   [formGroup]="form"
 >
