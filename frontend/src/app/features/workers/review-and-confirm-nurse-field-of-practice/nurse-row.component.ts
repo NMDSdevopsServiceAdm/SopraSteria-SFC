@@ -2,7 +2,7 @@ import { Component, computed, input, OnInit, output, signal } from '@angular/cor
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NurseFieldOfPractice, RegisteredNurse } from '@core/model/nurse-field-of-practice.model';
-import { AccordionToggleButtonComponent } from './accordion-toggle-button/accordion-toggle-button.component';
+import { AccordionToggleButtonComponent } from '@shared/components/accordion-toggle-button/accordion-toggle-button.component';
 
 const ButtonTextAdd = {
   whenOpen: 'Hide details',
