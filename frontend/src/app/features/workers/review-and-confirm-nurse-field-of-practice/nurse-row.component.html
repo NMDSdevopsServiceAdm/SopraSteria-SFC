@@ -1,9 +1,8 @@
 <div
   role="row"
   class="asc__grid-table-with-form--row"
-  [class]="{ 'asc__grid-table-with-form--first-row': workerIndex() === 0 }"
   [attr.data-testid]="'worker-row-' + workerIndex()"
-  [formGroup]="form"
+  [formGroup]="workerForm()"
 >
   <div [attr.data-testid]="'worker-name-' + workerIndex()">
     {{ worker().nameOrId }}
@@ -21,10 +20,9 @@
     <div
       class="display-form govuk-form-group govuk-!-margin-top-6"
       [class]="{ 'govuk-visually-hidden': !isExpanded }"
-      [formArrayName]="'nurseFieldOfPractice'"
       [attr.data-testid]="'worker-checkboxes-' + workerIndex()"
     >
-      <div class="govuk-checkboxes">
+      <div class="govuk-checkboxes" [formArrayName]="'nurseFieldOfPractice'">
         <p class="govuk-body">Select all that apply.</p>
         @for (field of allNurseFieldsOfPractice; track field.id; let fieldIndex = $index) {
           @let id = `nurseFieldOfPractice-${workerIndex()}-${fieldIndex}`;

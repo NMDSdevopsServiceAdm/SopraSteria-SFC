@@ -1,9 +1,8 @@
-import { Component, computed, input, OnInit, output, Signal, signal, WritableSignal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { Component, computed, input, OnInit, output, signal } from '@angular/core';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NurseFieldOfPractice, RegisteredNurse } from '@core/model/nurse-field-of-practice.model';
 import { AccordionToggleButtonComponent } from './accordion-toggle-button/accordion-toggle-button.component';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 const ButtonTextAdd = {
   whenOpen: 'Hide details',
@@ -24,50 +23,38 @@ const ButtonTextChange = {
 export class NurseRow implements OnInit {
   public readonly worker = input.required<RegisteredNurse>();
   public readonly workerIndex = input.required<number>();
+  public readonly workerForm = input.required<FormGroup>();
   public outputChoices = output<Record<string, NurseFieldOfPractice[]>>();
 
   public allNurseFieldsOfPractice: NurseFieldOfPractice[] = this.route.snapshot.data.allNurseFieldsOfPractice;
-  public form: FormGroup = this.formBuilder.group({
-    nurseFieldOfPractice: this.formBuilder.array(this.allNurseFieldsOfPractice.map(() => null)),
-  });
 
   public isExpanded = false;
 
-  private formValue = toSignal(this.form.valueChanges);
-  public currentChoices = computed(() => {
-    const checkboxValues = this.formValue()?.nurseFieldOfPractice;
-    return this.formValuesToAnswer(checkboxValues);
-  });
+  public currentChoices = signal<NurseFieldOfPractice[]>([]);
+
   public buttonText = computed(() => {
     const atLeastOneChosen = this.currentChoices()?.length > 0;
     return atLeastOneChosen ? ButtonTextChange : ButtonTextAdd;
   });
 
-  constructor(
-    private route: ActivatedRoute,
-    private formBuilder: FormBuilder,
-  ) {}
+  constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.prefill();
-    this.setupOutput();
+    this.setupTextChanges();
   }
 
-  private prefill() {
-    const previousAnswer = this.worker().nurseFieldOfPractice;
-    this.form.patchValue({ nurseFieldOfPractice: this.answerToFormValues(previousAnswer) });
+  public get formArray(): FormArray<FormControl<boolean>> {
+    const array = this.workerForm().get('nurseFieldOfPractice') as FormArray<FormControl<boolean>>;
+    return array;
   }
 
-  private setupOutput() {
-    const workerUid = this.worker().uid;
-    this.form.valueChanges.subscribe(() => {
-      this.outputChoices.emit({ [workerUid]: this.currentChoices() });
+  private setupTextChanges() {
+    const initialFormValues = this.formArray?.value ?? [];
+    this.currentChoices.set(this.formValuesToAnswer(initialFormValues));
+
+    this.formArray!.valueChanges.subscribe((newFormValues) => {
+      this.currentChoices.set(this.formValuesToAnswer(newFormValues));
     });
-  }
-
-  private answerToFormValues(chosenFields: Array<NurseFieldOfPractice>): Array<boolean> {
-    const chosenFieldIds = new Set(chosenFields.map((field) => field.id));
-    return this.allNurseFieldsOfPractice.map((field) => chosenFieldIds.has(field.id));
   }
 
   private formValuesToAnswer(formValues: Array<boolean>): Array<NurseFieldOfPractice> {
