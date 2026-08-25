@@ -1,9 +1,9 @@
-import { Component, computed, input, OnInit, Signal, signal, WritableSignal } from '@angular/core';
+import { Component, computed, input, OnInit, output, Signal, signal, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NurseFieldOfPractice, RegisteredNurse } from '@core/model/nurse-field-of-practice.model';
 import { AccordionToggleButtonComponent } from './accordion-toggle-button/accordion-toggle-button.component';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 const ButtonTextAdd = {
   whenOpen: 'Hide details',
@@ -24,18 +24,19 @@ const ButtonTextChange = {
 export class NurseRow implements OnInit {
   public readonly worker = input.required<RegisteredNurse>();
   public readonly workerIndex = input.required<number>();
+  public outputChoices = output<Record<string, NurseFieldOfPractice[]>>();
 
-  public readonly allNurseFieldsOfPractice: NurseFieldOfPractice[] = this.route.snapshot.data.allNurseFieldsOfPractice;
+  public allNurseFieldsOfPractice: NurseFieldOfPractice[] = this.route.snapshot.data.allNurseFieldsOfPractice;
   public form: FormGroup = this.formBuilder.group({
     nurseFieldOfPractice: this.formBuilder.array(this.allNurseFieldsOfPractice.map(() => null)),
   });
-  private formValue = toSignal<Array<boolean>>(this.form.get('nurseFieldOfPractice')!.valueChanges);
 
   public isExpanded = false;
 
+  private formValue = toSignal(this.form.valueChanges);
   public currentChoices = computed(() => {
-    const formValue = this.formValue();
-    return this.allNurseFieldsOfPractice.filter((_field, index) => formValue?.[index]);
+    const checkboxValues = this.formValue()?.nurseFieldOfPractice;
+    return this.formValuesToAnswer(checkboxValues);
   });
   public buttonText = computed(() => {
     const atLeastOneChosen = this.currentChoices()?.length > 0;
@@ -43,25 +44,33 @@ export class NurseRow implements OnInit {
   });
 
   constructor(
-    protected route: ActivatedRoute,
-    protected formBuilder: FormBuilder,
+    private route: ActivatedRoute,
+    private formBuilder: FormBuilder,
   ) {}
 
   ngOnInit(): void {
     this.prefill();
+    this.setupOutput();
   }
 
-  public prefill() {
+  private prefill() {
     const previousAnswer = this.worker().nurseFieldOfPractice;
     this.form.patchValue({ nurseFieldOfPractice: this.answerToFormValues(previousAnswer) });
   }
 
-  public answerToFormValues(chosenFields: Array<NurseFieldOfPractice>): Array<boolean> {
+  private setupOutput() {
+    const workerUid = this.worker().uid;
+    this.form.valueChanges.subscribe(() => {
+      this.outputChoices.emit({ [workerUid]: this.currentChoices() });
+    });
+  }
+
+  private answerToFormValues(chosenFields: Array<NurseFieldOfPractice>): Array<boolean> {
     const chosenFieldIds = new Set(chosenFields.map((field) => field.id));
     return this.allNurseFieldsOfPractice.map((field) => chosenFieldIds.has(field.id));
   }
 
-  public formValuesToAnswer(formValues: Array<boolean>): Array<NurseFieldOfPractice> {
+  private formValuesToAnswer(formValues: Array<boolean>): Array<NurseFieldOfPractice> {
     return this.allNurseFieldsOfPractice.filter((_field, index) => formValues[index]);
   }
 

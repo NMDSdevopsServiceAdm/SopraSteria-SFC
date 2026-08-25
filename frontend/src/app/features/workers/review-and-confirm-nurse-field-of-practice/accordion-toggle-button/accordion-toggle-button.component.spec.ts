@@ -34,13 +34,7 @@ fdescribe('AccordionToggleButtonComponent', () => {
     expect(getByText('Add details')).toBeTruthy();
   });
 
-  xit('should show a toggle button with "Change details" if got answer', async () => {
-    const { getByText } = await setup();
-
-    expect(getByText('Change details')).toBeTruthy();
-  });
-
-  xit('should show "Hide details" when expanded', async () => {
+  it('should show "Hide details" when expanded', async () => {
     const { getByText } = await setup({ expandedAtStart: true });
 
     expect(getByText('Hide details')).toBeTruthy();
