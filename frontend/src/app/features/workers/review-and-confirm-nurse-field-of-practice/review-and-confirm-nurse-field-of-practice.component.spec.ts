@@ -15,6 +15,15 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { ReviewAndConfirmNurseFieldOfPracticeComponent } from './review-and-confirm-nurse-field-of-practice.component';
+import { within } from '@testing-library/dom';
+import userEvent from '@testing-library/user-event';
+
+const mockFieldsOfPractice = [
+  { id: 1, label: 'Adult nursing' },
+  { id: 2, label: 'Mental health nursing' },
+  { id: 3, label: 'Learning disabilities nursing' },
+  { id: 4, label: "Children's nursing" },
+];
 
 fdescribe('ReviewAndConfirmNurseFieldOfPracticeComponent', () => {
   const defaultNurses = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
@@ -39,7 +48,7 @@ fdescribe('ReviewAndConfirmNurseFieldOfPracticeComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: { registeredNurses: mockNurses },
+              data: { registeredNurses: mockNurses, allNurseFieldsOfPractice: mockFieldsOfPractice },
             },
           },
         },
@@ -100,11 +109,117 @@ fdescribe('ReviewAndConfirmNurseFieldOfPracticeComponent', () => {
     expect(getByRole('link', { name: expectedLinkText })).toBeTruthy();
   });
 
-  it('should show a table which list every registered nurse in the workplace', async () => {
-    const { getByText } = await setup();
+  describe('table with form', () => {
+    it('should show a table which list every registered nurse in the workplace', async () => {
+      const { getByTestId } = await setup();
 
-    defaultNurses.forEach((nurse) => {
-      expect(getByText(nurse.nameOrId)).toBeTruthy();
+      defaultNurses.forEach((nurse, index) => {
+        const nurseRow = getByTestId(`worker-row-${index}`);
+        expect(within(nurseRow).getByText(nurse.nameOrId)).toBeTruthy();
+      });
+    });
+
+    it('should show in each row a toggle button and checkboxes for every nurse field of practice', async () => {
+      const { getByTestId } = await setup();
+
+      defaultNurses.forEach((_nurse, index) => {
+        const nurseRow = getByTestId(`worker-row-${index}`);
+        expect(within(nurseRow).getByText('Add details')).toBeTruthy();
+
+        const answerCell = within(nurseRow).getByTestId(`worker-answer-${index}`);
+        expect(answerCell.textContent.trim()).toEqual('-');
+
+        mockFieldsOfPractice.forEach((field) => {
+          const checkbox = within(nurseRow).getByRole('checkbox', { name: field.label }) as HTMLInputElement;
+          expect(checkbox).toBeTruthy();
+          expect(checkbox.checked).toBeFalse();
+        });
+      });
+    });
+
+    it('should show / hide the checkboxes when toggle button is clicked', async () => {
+      const { getByTestId } = await setup();
+
+      const nurseRow = getByTestId('worker-row-0');
+
+      const checkboxes = getByTestId('worker-checkboxes-0');
+      expect(checkboxes).toHaveClass('govuk-visually-hidden');
+
+      userEvent.click(within(nurseRow).getByText('Add details'));
+      expect(checkboxes).not.toHaveClass('govuk-visually-hidden');
+
+      userEvent.click(within(nurseRow).getByText('Hide details'));
+      expect(checkboxes).toHaveClass('govuk-visually-hidden');
+    });
+
+    const nurseA = workerBuilder({
+      overrides: { nurseFieldOfPractice: [mockFieldsOfPractice[0], mockFieldsOfPractice[1]] },
+    }) as Worker;
+    const nurseB = workerBuilder({
+      overrides: { nurseFieldOfPractice: [mockFieldsOfPractice[2], mockFieldsOfPractice[1]] },
+    }) as Worker;
+
+    it('should prefill the previous answers for nurse questions', async () => {
+      const mockNurses = [nurseA, nurseB];
+      const { getByTestId } = await setup({ mockNurses });
+
+      mockNurses.forEach((nurse, index) => {
+        const nurseRow = getByTestId(`worker-row-${index}`);
+        expect(within(nurseRow).getByText('Change details')).toBeTruthy();
+
+        const answerCell = within(nurseRow).getByTestId(`worker-answer-${index}`);
+
+        const previousAnswers = nurse.nurseFieldOfPractice!;
+        expect(previousAnswers.length).toBeGreaterThan(0);
+
+        previousAnswers.forEach((field) => {
+          expect(answerCell.textContent.trim()).toContain(field.label);
+        });
+
+        mockFieldsOfPractice.forEach((field) => {
+          const checkbox = within(nurseRow).getByRole('checkbox', { name: field.label }) as HTMLInputElement;
+
+          const shouldBeTicked = previousAnswers.some((answer) => answer.id === field.id);
+
+          expect(checkbox.checked).toEqual(shouldBeTicked);
+        });
+      });
+    });
+
+    it('should update the fields chosen when user tick or untick the checkboxes', async () => {
+      const { getByTestId } = await setup({ mockNurses: [nurseA] });
+
+      const nurseRow = getByTestId(`worker-row-0`);
+      expect(within(nurseRow).getByText('Change details')).toBeTruthy();
+
+      const answerCell = within(nurseRow).getByTestId('worker-answer-0');
+
+      const previousAnswers = nurseA.nurseFieldOfPractice!;
+      expect(previousAnswers.length).toBeGreaterThan(0);
+
+      previousAnswers.forEach((field) => {
+        expect(answerCell.textContent.trim()).toContain(field.label);
+      });
+
+      // untick answer 0
+      const checkboxA = within(nurseRow).getByRole('checkbox', { name: previousAnswers[0].label }) as HTMLInputElement;
+      userEvent.click(checkboxA);
+
+      expect(answerCell.textContent.trim()).not.toContain(previousAnswers[0].label);
+
+      // untick answer 1
+      const checkboxB = within(nurseRow).getByRole('checkbox', { name: previousAnswers[1].label }) as HTMLInputElement;
+      userEvent.click(checkboxB);
+
+      // should show a dash "-" when all checkbox unticked
+      expect(answerCell.textContent.trim()).toEqual('-');
+
+      // tick a new answer
+      const newAnswer = mockFieldsOfPractice[3];
+      const checkboxC = within(nurseRow).getByRole('checkbox', { name: newAnswer.label }) as HTMLInputElement;
+      userEvent.click(checkboxC);
+
+      expect(answerCell.textContent.trim()).toEqual(newAnswer.label);
     });
   });
 });
