@@ -21,35 +21,33 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <div id="registered-nurse-table" class="govuk-table govuk-!-margin-bottom-3">
+    <div id="registered-nurse-table" class="govuk-table govuk-!-margin-bottom-3" [formGroup]="form">
       <div role="rowheader" class="asc__grid-table-with-form--row asc__grid-table-with-form--header-row">
         <div data-testid="job-role-header">Name or ID number</div>
         <div data-testid="pay-header">Details</div>
         <div data-testid="show-hide-button-header"></div>
       </div>
-      @for (worker of registeredNurses; track worker.uid; let workerIndex = $index) {
-        <app-nurse-row
-          [worker]="worker"
-          [workerIndex]="workerIndex"
-          (outputChoices)="handleChange($event)"
-        ></app-nurse-row>
+
+      @for (workerForm of workerForms; track $index) {
+        @let worker = registeredNurses[$index];
+        <app-nurse-row [worker]="worker" [workerIndex]="$index" [workerForm]="workerForm"></app-nurse-row>
       }
-    </div>
 
-    <div class="govuk-button-group govuk-!-margin-top-8">
-      <button (click)="onSubmit($event)" type="button" class="govuk-button govuk-!-margin-right-9">
-        Confirm all details
-      </button>
+      <div class="govuk-button-group govuk-!-margin-top-8">
+        <button (click)="onSubmit()" type="submit" class="govuk-button govuk-!-margin-right-9">
+          Confirm all details
+        </button>
 
-      <a
-        [routerLink]="returnTo"
-        class="govuk-button govuk-button--link govuk-!-margin-left-9"
-        role="button"
-        draggable="false"
-        href="#"
-      >
-        Cancel
-      </a>
+        <a
+          [routerLink]="returnTo"
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          role="button"
+          draggable="false"
+          href="#"
+        >
+          Cancel
+        </a>
+      </div>
     </div>
   </div>
 </div>
