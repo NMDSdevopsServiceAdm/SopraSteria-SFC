@@ -1581,6 +1581,7 @@ module.exports = function (sequelize, DataTypes) {
         archived: false,
       },
       attributes: ['uid', ['NameOrIdValue', 'nameOrId']],
+      order: [['NameOrIdValue', 'ASC']],
       nest: true,
     });
 
