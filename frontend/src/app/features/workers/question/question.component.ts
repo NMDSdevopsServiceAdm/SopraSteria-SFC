@@ -40,6 +40,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   public submitAction: { action: string; save: boolean } = null;
   public returnUrl: string[];
   public submitTitle: string;
+  public fromBlueBanner = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -59,6 +60,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.wdfEditPageFlag = this.router.url.includes('funding');
     this.insideFlow = this.route.parent.snapshot.url[0].path !== 'staff-record-summary' && !this.wdfEditPageFlag;
+    this.fromBlueBanner = this.route.snapshot?.data?.fromBlueBanner;
     this.subscriptions.add(
       this.workerService.worker$.subscribe((worker) => {
         this.worker = worker ? worker : this.route.snapshot.data.worker;
@@ -124,7 +126,6 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!action) {
       return;
     }
-
     switch (action) {
       case 'continue':
         return this.router.navigate(this.next);
@@ -136,6 +137,9 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         return this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
 
       case 'return':
+        if (this.fromBlueBanner) {
+          return this.router.navigate(['/dashboard'], { fragment: 'home' });
+        }
         return this.router.navigate(this.returnUrl);
     }
   }
@@ -210,8 +214,9 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   _onSuccess(data) {
     this.workerService.setState({ ...this.worker, ...data });
     this.onSuccess();
-    this.navigate();
-    this.addAlert();
+    this.navigate().then(() => {
+      this.addAlert();
+    });
   }
 
   onError(error) {

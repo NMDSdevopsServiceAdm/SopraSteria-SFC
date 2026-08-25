@@ -1,5 +1,5 @@
 @if (submitted && form.invalid) {
-  <app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 }
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
@@ -8,53 +8,67 @@
       <div class="govuk-form-group govuk-!-margin-bottom-4">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <span data-testid="section-heading" class="govuk-caption-l">{{ sectionHeading }}</span>
+            <span data-testid="section-heading" class="govuk-caption-l">{{
+              fromBlueBanner ? 'Staff record' : sectionHeading
+            }}</span>
             <h1 class="govuk-fieldset__heading">What is their Nursing and Midwifery Council field of practice?</h1>
           </legend>
 
-          <div class="govuk-!-margin-top-2 govuk-!-margin-bottom-7">
+          @if (fromBlueBanner) {
+          <div class="govuk-form-group govuk-!-margin-bottom-6">
+            <label class="govuk-body govuk-!-font-weight-bold"> Name or ID number </label>
+
+            <p class="govuk-body">
+              {{ worker.nameOrId }}
+            </p>
+          </div>
+          }
+
+          <div class="govuk-!-margin-top-2 govuk-!-margin-bottom-6">
             <strong class="govuk-body govuk-!-font-weight-bold">Not sure?</strong>
+
             <p class="govuk-body">
               <a class="govuk-link" target="_blank" href="https://www.nmc.org.uk/registration/search-the-register/">
                 Search the Nursing and Midwifery Council register
-                <span class="govuk-visually-hidden">, (opens in a new window)</span>
+                <span class="govuk-visually-hidden"> , (opens in a new window) </span>
               </a>
             </p>
           </div>
 
-          <div class="govuk-checkboxes" [formArrayName]="'nurseFieldOfPractice'">
+          <div class="govuk-checkboxes" formArrayName="nurseFieldOfPractice">
             <p class="govuk-body">Select all that apply.</p>
-            @for (field of allNurseFieldsOfPractice; track field.id; let i = $index) {
-              @let id = `nurseFieldOfPractice-${i}`;
 
-              <div class="govuk-checkboxes__item">
-                <input
-                  class="govuk-checkboxes__input"
-                  [id]="id"
-                  name="nurseFieldOfPractice"
-                  [formControlName]="i"
-                  type="checkbox"
-                  [value]="field.id"
-                />
-                <label class="govuk-label govuk-checkboxes__label" [for]="id">
-                  {{ field.label }}
-                </label>
-              </div>
+            @for (field of allNurseFieldsOfPractice; track field.id; let i = $index) { @let id =
+            `nurseFieldOfPractice-${i}`;
+
+            <div class="govuk-checkboxes__item">
+              <input
+                class="govuk-checkboxes__input"
+                [id]="id"
+                name="nurseFieldOfPractice"
+                [formControlName]="i"
+                type="checkbox"
+                [value]="field.id"
+              />
+              <label class="govuk-label govuk-checkboxes__label" [for]="id">
+                {{ field.label }}
+              </label>
+            </div>
             }
           </div>
         </fieldset>
       </div>
     </div>
     @if (insideFlow) {
-      <div class="govuk-grid-column-one-third">
-        <div class="govuk-!-margin-left-8">
-          <app-progress-bar
-            data-testid="progress-bar"
-            [sections]="staffRecordSections"
-            [currentSection]="section"
-          ></app-progress-bar>
-        </div>
+    <div class="govuk-grid-column-one-third">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="staffRecordSections"
+          [currentSection]="section"
+        ></app-progress-bar>
       </div>
+    </div>
     }
   </div>
 
