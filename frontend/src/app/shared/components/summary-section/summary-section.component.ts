@@ -459,9 +459,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
             'staff-record-summary',
             'nursing-category-from-blue-banner',
           ]
-        : this.router.createUrlTree(['/dashboard'], {
-            fragment: 'staff-records',
-          });
+        : ['/workplace', this.workplace.uid, 'staff-record', 'review-and-confirm-nurse-field-of-practice'];
 
     if (!this.workplace.nursesQuestionsMiniFlowViewed && this.canEditEstablishment) {
       this.updateBanner.set({
