@@ -3,7 +3,7 @@ import { render } from '@testing-library/angular';
 import { SharedModule } from '@shared/shared.module';
 import userEvent from '@testing-library/user-event';
 
-fdescribe('AccordionToggleButtonComponent', () => {
+describe('AccordionToggleButtonComponent', () => {
   const setup = async (overrides: any = {}) => {
     const expandedAtStart = overrides?.expandedAtStart ?? false;
 
