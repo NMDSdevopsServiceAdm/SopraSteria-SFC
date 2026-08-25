@@ -126,10 +126,6 @@ $error_row_padding: $govuk-gutter-half;
     font-weight: 700;
   }
 
-  &.asc__grid-table-with-form--first-row {
-    border-top: 1px solid $govuk-border-colour;
-  }
-
   .asc__grid-table-with-form--header-row + div > & {
     // row after header, i.e. first row
     border-top: 1px solid $govuk-border-colour;
