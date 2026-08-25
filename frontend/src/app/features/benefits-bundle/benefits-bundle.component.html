@@ -62,66 +62,7 @@
       </app-benefit-accordion>
 
       <app-benefit-accordion [benefit]="benefits[3]" [index]="3" (toggleEmitter)="toggleAccordion(3)">
-        <p>
-          <a
-            href="https://www.skillsforcare.org.uk/Recruitment-support/Retaining-your-workforce/Top-tips-for-adult-social-care-workforce-retention/Top-tips-for-adult-social-care-workforce-retention.aspx"
-            target="_blank"
-            >Top tips for adult social care workforce retention</a
-          >
-        </p>
-        <p>
-          When you have good people working for your organisation, you want to keep and develop them. Having staff who
-          like their jobs and who do them well will reflect in the quality of care that they provide. This online guide
-          of useful resources and case studies provides lots of suggestions on how to keep your staff.
-        </p>
-
-        <p>
-          <a
-            href="https://www.skillsforcare.org.uk/resources/documents/Support-for-leaders-and-managers/Supporting-a-diverse-workforce/LGBTQ-framework/LGBTQ-learning-framework.pdf"
-            target="_blank"
-            >(LGBTQ+) Care in Later Life</a
-          >
-        </p>
-        <p>
-          This learning framework sets out the knowledge, skills and values needed for working affirmatively with LGBTQ+
-          people in later life.
-        </p>
-
-        <p>
-          <a
-            href="https://www.skillsforcare.org.uk/resources/documents/Support-for-leaders-and-managers/Developing-leaders-and-managers/Supporting-the-development-of-leadership-skills/Supporting-the-development-of-leadership-skills-guide.pdf"
-            target="_blank"
-            >Supporting the development of leadership skills</a
-          >
-        </p>
-        <p>
-          This guide outlines Skills for Care’s leadership offerings. They include learning programmes and
-          qualifications, practical support for making connections through networking and relationship building.
-        </p>
-
-        <p>
-          <a
-            href="https://www.skillsforcare.org.uk/resources/documents/Support-for-leaders-and-managers/good-and-outstanding-care/Recommendations-for-CQC-providers.pdf"
-            target="_blank"
-            >Recommendations for CQC providers</a
-          >
-        </p>
-        <p>
-          Skills for Care's recommendations offer practical support to help you deliver 'good' and 'outstanding' care.
-        </p>
-
-        <p>
-          <a
-            href="https://www.skillsforcare.org.uk/Support-for-leaders-and-managers/Managing-a-service/Positive-workplace-culture/A-positive-culture-toolkit-for-adult-social-care.aspx"
-            target="_blank"
-            >A positive culture toolkit for adult social care</a
-          >
-        </p>
-        <p>
-          Having a positive, inclusive workplace culture enables employers to both attract and keep a diverse workforce
-          of great staff. This toolkit will support you at different stages of your workplace culture journey to make
-          sure your workplace is inclusive, compassionate and collaborative.
-        </p>
+        <div class="asc-cms-content" [innerHTML]="pages?.content"></div>
       </app-benefit-accordion>
     </div>
   </div>
