@@ -477,7 +477,14 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
     const linkTo =
       nurses.length === 1
-        ? ['/workplace', this.workplace.uid, 'staff-record', nurses[0].uid!, 'staff-record-summary', 'nursing-category']
+        ? [
+            '/workplace',
+            this.workplace.uid,
+            'staff-record',
+            nurses[0].uid!,
+            'staff-record-summary',
+            'nursing-category-from-blue-banner',
+          ]
         : this.router.createUrlTree(['/dashboard'], {
             fragment: 'staff-records',
           });
