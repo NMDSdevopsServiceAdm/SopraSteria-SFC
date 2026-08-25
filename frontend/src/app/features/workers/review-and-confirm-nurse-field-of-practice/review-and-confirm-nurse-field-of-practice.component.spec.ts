@@ -25,7 +25,7 @@ const mockFieldsOfPractice = [
   { id: 4, label: "Children's nursing" },
 ];
 
-fdescribe('ReviewAndConfirmNurseFieldOfPracticeComponent', () => {
+describe('ReviewAndConfirmNurseFieldOfPracticeComponent', () => {
   const defaultNurses = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
 
   const setup = async (overrides: any = {}) => {

@@ -1637,7 +1637,7 @@ describe('Summary section', () => {
         expect(queryByTestId('update-banner-area')).toBeFalsy();
         expect(queryByText(nursesBannerText)).toBeFalsy();
       });
-      //  this test needs to be updated after changing the route to the page which isnt finished yet
+
       it('should link to dashboard staff records when there is more than one registered nurse', async () => {
         const { getByTestId } = await setup({
           establishment: {
@@ -1672,7 +1672,9 @@ describe('Summary section', () => {
 
         const link = within(updateBannerArea).getByText('Review details') as HTMLAnchorElement;
 
-        expect(link.getAttribute('href')).toContain('/dashboard#staff-records');
+        expect(link.getAttribute('href')).toContain(
+          `/workplace/${Establishment.uid}/staff-record/review-and-confirm-nurse-field-of-practice`,
+        );
       });
     });
 
