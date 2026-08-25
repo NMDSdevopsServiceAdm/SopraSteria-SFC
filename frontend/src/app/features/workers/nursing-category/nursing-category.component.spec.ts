@@ -20,7 +20,7 @@ const mockFieldsOfPractice = [
   { id: 4, label: "Children's nursing" },
 ];
 
-fdescribe('NursingCategoryComponent', () => {
+describe('NursingCategoryComponent', () => {
   async function setup(overrides: any = {}) {
     const insideFlow = overrides?.insideFlow ?? true;
     const previousAnswer = overrides?.previousAnswer;
