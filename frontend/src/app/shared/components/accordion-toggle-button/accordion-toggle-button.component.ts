@@ -1,6 +1,6 @@
-import { Component, computed, input, OnInit, output, signal } from '@angular/core';
+import { Component, computed, effect, input, OnInit, output, signal } from '@angular/core';
 
-export interface ButtonText {
+export interface ToggleText {
   whenOpen: string;
   whenClose: string;
 }
@@ -16,21 +16,15 @@ const DefaultButtonText = {
 })
 export class AccordionToggleButtonComponent implements OnInit {
   public expandedAtStart = input<boolean>(false);
-  public buttonText = input<ButtonText>(DefaultButtonText);
-  public toggleState = output<boolean>();
+  public buttonText = input<ToggleText>(DefaultButtonText);
+  public clickEmitter = output<isExpanded>();
 
   public isExpanded = signal<boolean>(false);
 
-  constructor() {}
-
-  ngOnInit(): void {
-    this.isExpanded.set(this.expandedAtStart());
-  }
-
   public currentButtonText = computed<string>(() => {
     const isExpanded = this.isExpanded();
-
     const buttonText = this.buttonText();
+
     if (isExpanded) {
       return buttonText.whenOpen;
     } else {
@@ -38,10 +32,24 @@ export class AccordionToggleButtonComponent implements OnInit {
     }
   });
 
-  public handleClick(_event: Event) {
-    this.isExpanded.update((isExpanded) => {
-      this.toggleState.emit(!isExpanded);
-      return !isExpanded;
+  constructor() {
+    effect(() => {
+      const isExpanded = this.isExpanded();
+      this.clickEmitter.emit(isExpanded);
     });
   }
+
+  ngOnInit(): void {
+    this.isExpanded.set(this.expandedAtStart());
+  }
+
+  public handleClick(_event: Event) {
+    this.toggleState();
+  }
+
+  public toggleState() {
+    this.isExpanded.update((isExpanded) => !isExpanded);
+  }
 }
+
+type isExpanded = boolean;
