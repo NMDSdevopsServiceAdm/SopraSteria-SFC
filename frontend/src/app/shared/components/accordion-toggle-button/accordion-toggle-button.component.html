@@ -5,6 +5,7 @@
   (click)="handleClick($event)"
 >
   <span
+    data-testid="chevron"
     class="govuk-accordion-nav__chevron"
     [class]="{ 'govuk-accordion-nav__chevron--up': isExpanded(), 'govuk-accordion-nav__chevron--down': !isExpanded() }"
   ></span>
