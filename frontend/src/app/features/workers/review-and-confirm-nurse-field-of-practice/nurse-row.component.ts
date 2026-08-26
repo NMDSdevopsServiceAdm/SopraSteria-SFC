@@ -1,15 +1,18 @@
-import { Component, computed, input, OnInit, output, signal } from '@angular/core';
-import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, computed, input, OnInit, signal } from '@angular/core';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NurseFieldOfPractice, RegisteredNurse } from '@core/model/nurse-field-of-practice.model';
-import { AccordionToggleButtonComponent } from '@shared/components/accordion-toggle-button/accordion-toggle-button.component';
+import {
+  AccordionToggleButtonComponent,
+  ToggleText,
+} from '@shared/components/accordion-toggle-button/accordion-toggle-button.component';
 
-const ButtonTextAdd = {
+const ButtonTextAdd: ToggleText = {
   whenOpen: 'Hide details',
   whenClose: 'Add details',
 };
 
-const ButtonTextChange = {
+const ButtonTextChange: ToggleText = {
   whenOpen: 'Hide details',
   whenClose: 'Change details',
 };
@@ -24,7 +27,6 @@ export class NurseRow implements OnInit {
   public readonly worker = input.required<RegisteredNurse>();
   public readonly workerIndex = input.required<number>();
   public readonly workerForm = input.required<FormGroup>();
-  public outputChoices = output<Record<string, NurseFieldOfPractice[]>>();
 
   public allNurseFieldsOfPractice: NurseFieldOfPractice[] = this.route.snapshot.data.allNurseFieldsOfPractice;
 
@@ -43,25 +45,21 @@ export class NurseRow implements OnInit {
     this.setupTextChanges();
   }
 
-  public get formArray(): FormArray<FormControl<boolean>> {
-    const array = this.workerForm().get('nurseFieldOfPractice') as FormArray<FormControl<boolean>>;
-    return array;
-  }
-
   private setupTextChanges() {
-    const initialFormValues = this.formArray?.value ?? [];
-    this.currentChoices.set(this.formValuesToAnswer(initialFormValues));
+    const checkboxes = this.workerForm().get('nurseFieldOfPractice');
+    const initialValues = checkboxes?.value ?? [];
+    this.currentChoices.set(this.getNurseFieldsFromCheckboxes(initialValues));
 
-    this.formArray!.valueChanges.subscribe((newFormValues) => {
-      this.currentChoices.set(this.formValuesToAnswer(newFormValues));
+    checkboxes!.valueChanges.subscribe((checkboxValues) => {
+      this.currentChoices.set(this.getNurseFieldsFromCheckboxes(checkboxValues));
     });
   }
 
-  private formValuesToAnswer(formValues: Array<boolean>): Array<NurseFieldOfPractice> {
-    return this.allNurseFieldsOfPractice.filter((_field, index) => formValues[index]);
+  private getNurseFieldsFromCheckboxes(checkboxValues: Array<boolean>): Array<NurseFieldOfPractice> {
+    return this.allNurseFieldsOfPractice.filter((_field, index) => checkboxValues[index]);
   }
 
-  public handleToggle(state: boolean): void {
-    this.isExpanded = state;
+  public handleToggle(isExpanded: boolean): void {
+    this.isExpanded = isExpanded;
   }
 }

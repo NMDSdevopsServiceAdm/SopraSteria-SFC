@@ -48,7 +48,7 @@
   </div>
   <div [attr.data-testid]="'toggle-button-' + workerIndex()">
     <app-accordion-toggle-button
-      (toggleState)="handleToggle($event)"
+      (clickEmitter)="handleToggle($event)"
       [buttonText]="buttonText()"
     ></app-accordion-toggle-button>
   </div>
