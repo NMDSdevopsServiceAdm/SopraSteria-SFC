@@ -4,7 +4,7 @@
   [attr.data-testid]="'worker-row-' + workerIndex()"
   [formGroup]="workerForm()"
 >
-  <div [attr.data-testid]="'worker-name-' + workerIndex()">
+  <div [attr.data-testid]="'worker-name-' + workerIndex()" [id]="'worker-name-' + workerIndex()">
     {{ worker().nameOrId }}
   </div>
   <div>
