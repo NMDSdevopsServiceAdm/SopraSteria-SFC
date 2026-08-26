@@ -76,6 +76,7 @@ export const workerBuilder = build('Worker', {
     updated: '2024-05-01T06:50:45.882Z',
     careWorkforcePathwayRoleCategory: null,
     carryOutDelegatedHealthcareActivities: null,
+    nurseFieldOfPractice: [],
   },
 });
 
