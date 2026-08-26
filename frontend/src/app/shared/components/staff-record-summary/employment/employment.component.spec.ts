@@ -32,7 +32,9 @@ describe('EmploymentComponent', () => {
           deps: [HttpClient],
         },
         provideRouter([]),
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       componentProperties: {
         canEditWorker: true,
         workplace: establishmentBuilder({ overrides: workplaceOverrides }) as Establishment,
@@ -446,6 +448,76 @@ describe('EmploymentComponent', () => {
       const { queryByText } = await setupWithDHA({ worker: { mainJob: mainJobThatCannotDoDHA } });
 
       expect(queryByText('Carries out delegated healthcare activities')).toBeFalsy();
+    });
+  });
+
+  describe('Nursing and Midwifery Council fields of practice', () => {
+    const nurseWorkerOverrides = {
+      mainJob: {
+        jobId: 23,
+        title: 'Registered nurse',
+        jobRoleName: 'Registered nurse',
+      },
+    };
+    it('should display all selected fields of practice', async () => {
+      const { getByTestId } = await setup({
+        worker: {
+          ...nurseWorkerOverrides,
+          nurseFieldOfPractice: [
+            { label: 'Adult nursing' },
+            { label: 'Mental health nursing' },
+            { label: 'Learning disabilities nursing' },
+          ],
+        },
+      });
+
+      const nursingPracticeSection = within(getByTestId('nursing-practice'));
+
+      expect(nursingPracticeSection.getByText('Adult nursing')).toBeTruthy();
+      expect(nursingPracticeSection.getByText('Mental health nursing')).toBeTruthy();
+      expect(nursingPracticeSection.getByText('Learning disabilities nursing')).toBeTruthy();
+    });
+
+    it('should display a dash when no fields of practice are selected', async () => {
+      const { getByTestId } = await setup({
+        worker: {
+          ...nurseWorkerOverrides,
+          nurseFieldOfPractice: null,
+        },
+      });
+
+      const nursingPracticeSection = within(getByTestId('nursing-practice'));
+
+      expect(nursingPracticeSection.getByText('-')).toBeTruthy();
+    });
+
+    it('should display a Change link to the nursing category page', async () => {
+      const { component, getByTestId } = await setup({
+        worker: {
+          ...nurseWorkerOverrides,
+          nurseFieldOfPractice: [{ label: 'Adult nursing' }],
+        },
+      });
+
+      const nursingPracticeSection = within(getByTestId('nursing-practice'));
+      const changeLink = nursingPracticeSection.getByText('Change');
+
+      expect(changeLink.getAttribute('href')).toBe(
+        `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/nursing-category`,
+      );
+    });
+
+    it('should not display the row when the worker is not a nurse', async () => {
+      const { queryByTestId } = await setup({
+        worker: {
+          mainJob: {
+            jobId: 10,
+            title: 'Care worker',
+          },
+        },
+      });
+
+      expect(queryByTestId('nursing-practice')).toBeFalsy();
     });
   });
 });
