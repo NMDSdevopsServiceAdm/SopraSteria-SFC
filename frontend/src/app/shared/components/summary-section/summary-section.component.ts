@@ -449,17 +449,22 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const linkTo =
-      nurses.length === 1
-        ? [
-            '/workplace',
-            this.workplace.uid,
-            'staff-record',
-            nurses[0].uid!,
-            'staff-record-summary',
-            'nursing-category-from-blue-banner',
-          ]
-        : ['/workplace', this.workplace.uid, 'staff-record', 'review-and-confirm-nurse-field-of-practice'];
+    const linkForOneNurse = [
+      '/workplace',
+      this.workplace.uid,
+      'staff-record',
+      nurses[0].uid!,
+      'staff-record-summary',
+      'nursing-category-from-blue-banner',
+    ];
+    const linkForMultipleNurses = [
+      '/workplace',
+      this.workplace.uid,
+      'staff-record',
+      'review-and-confirm-nurse-field-of-practice',
+    ];
+
+    const linkTo = nurses.length === 1 ? linkForOneNurse : linkForMultipleNurses;
 
     if (!this.workplace.nursesQuestionsMiniFlowViewed && this.canEditEstablishment) {
       this.updateBanner.set({
