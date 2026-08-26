@@ -96,6 +96,24 @@ Cypress.Commands.add('resetWorkplaceCWPAnswers', (establishmentID) => {
   cy.task('multipleDbQueries', dbQueries);
 });
 
+Cypress.Commands.add('resetNursesQuestionForWorkplace', (establishmentID) => {
+  const queryStrings = [
+    `UPDATE cqc."Establishment"
+      SET "NursesQuestionsMiniFlowViewed" = null
+      WHERE "EstablishmentID" = $1;`,
+
+    `DELETE FROM cqc."WorkerNurseFieldsOfPractice" nf
+       USING cqc."Worker" w
+       WHERE nf."WorkerID" = w."ID"
+       AND w."EstablishmentFK" = $1;`,
+  ];
+  const parameters = [establishmentID];
+
+  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+
+  cy.task('multipleDbQueries', dbQueries);
+});
+
 Cypress.Commands.add('setWorkplaceCWPAwarenessQuestionViewed', (establishmentID) => {
   const queryString = `UPDATE cqc."Establishment"
       SET "CWPAwarenessQuestionViewed" = true
