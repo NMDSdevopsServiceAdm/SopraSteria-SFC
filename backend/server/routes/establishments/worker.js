@@ -378,8 +378,8 @@ const getAllNursesWithFieldsOfPractice = async (req, res) => {
 
     return res.status(200).json({ registeredNurses });
   } catch (err) {
-    console.error('GET /worker/mainJobRoles: unexpected exception: ', err);
-    return res.status(500).send({ message: 'failed to get workers main job roles' });
+    console.error('GET /worker/registeredNurse: unexpected exception: ', err);
+    return res.status(500).send({ message: 'failed to get list of registered nurses' });
   }
 };
 

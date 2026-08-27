@@ -2,7 +2,7 @@ import { userPassword } from '../../support/configData';
 import { ParentEstablishment, SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentData';
 import { runTestsForNursesQuestionsMiniFlow } from './runTestForNursesQuestionsMiniFlow';
 
-describe('Pay and pensions mini flow from home tab update banner', { tags: '@staffRecords' }, () => {
+describe('Nurse question mini flow from home tab update banner', { tags: '@staffRecords' }, () => {
   const subsidaryToView = SubEstablishmentNotDataOwner;
 
   beforeEach(() => {
