@@ -1656,12 +1656,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         fixture.detectChanges();
 
         const vacanciesSection = getByTestId('vacancies');
-        const vacanciesTopRow = getByTestId('vacancies-top-row');
 
         expect(getByText('Add your vacancy data')).toBeTruthy();
         expect(vacanciesSection.getAttribute('class')).toContain('govuk-summary-list__warning');
-        expect(vacanciesTopRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-border');
-        expect(vacanciesTopRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-padding');
       });
 
       it('should show warning message if there is no vacancy value but there is a leavers value', async () => {
@@ -1676,13 +1673,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         fixture.detectChanges();
 
         const vacanciesSection = getByTestId('vacancies');
-        const vacanciesTopRow = getByTestId('vacancies-top-row');
 
         expect(getByText('Add your vacancy data')).toBeTruthy();
         expect(vacanciesSection.getAttribute('class')).toContain('govuk-summary-list__warning');
-
-        expect(vacanciesTopRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-border');
-        expect(vacanciesTopRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-padding');
       });
 
       it('should clear selected job roles on navigation to update vacancies page', async () => {

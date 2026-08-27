@@ -47,7 +47,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   public leaversDataOutOfDate: boolean;
   public vacancyDataOutOfDate: boolean;
 
-  public noVacancyAndTurnoverData: boolean;
+  public showVacancyAndTurnoverTopLevelWarning: boolean;
   public allVacancyAndTurnoverDataOutOfDate: boolean;
 
   public numberOfStaffError: boolean;
@@ -147,19 +147,19 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
     // Show the top-level warning for either:
     // 1. all three sections have no data, or
     // 2. all three sections have outdated data.
-    this.noVacancyAndTurnoverData = noDataForAll || this.allVacancyAndTurnoverDataOutOfDate;
+    this.showVacancyAndTurnoverTopLevelWarning = noDataForAll || this.allVacancyAndTurnoverDataOutOfDate;
   }
 
   get startersDataWarning(): boolean {
-    return !this.noVacancyAndTurnoverData && (this.noStartersData || this.startersDataOutOfDate);
+    return !this.showVacancyAndTurnoverTopLevelWarning && (this.noStartersData || this.startersDataOutOfDate);
   }
 
   get leaversDataWarning(): boolean {
-    return !this.noVacancyAndTurnoverData && (this.noLeaversData || this.leaversDataOutOfDate);
+    return !this.showVacancyAndTurnoverTopLevelWarning && (this.noLeaversData || this.leaversDataOutOfDate);
   }
 
   get vacancyDataWarning(): boolean {
-    return !this.noVacancyAndTurnoverData && (this.noVacancyData || this.vacancyDataOutOfDate);
+    return !this.showVacancyAndTurnoverTopLevelWarning && (this.noVacancyData || this.vacancyDataOutOfDate);
   }
 
   private checkIfWorkplaceIsAwareOfCareWorkforcePathway(): void {
