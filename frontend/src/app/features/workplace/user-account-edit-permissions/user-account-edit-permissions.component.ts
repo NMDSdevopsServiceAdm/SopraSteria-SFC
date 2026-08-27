@@ -17,9 +17,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/internal/operators/take';
 
 @Component({
-    selector: 'app-user-account-edit-permissions',
-    templateUrl: './user-account-edit-permissions.component.html',
-    standalone: false
+  selector: 'app-user-account-edit-permissions',
+  templateUrl: './user-account-edit-permissions.component.html',
+  standalone: false,
 })
 export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
@@ -69,6 +69,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     this.form = this.formBuilder.group({
       role: [this.user.role, Validators.required],
       primary: this.user.isPrimary,
+      staffRecordsReadOnly: [true], // TODO: Replace with the user's Staff Records read-only permission from the backend
     });
   }
 
@@ -101,8 +102,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     }
 
     this.submitted = true;
-
-    const { role, primary } = this.form.value;
+    const { role, primary, staffRecordsReadOnly } = this.form.value;
     const updatedPrimary = role === Roles.Read ? false : primary;
 
     if (this.user.isPrimary && !updatedPrimary) {
@@ -110,13 +110,14 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.save(role, updatedPrimary);
+    this.save(role, updatedPrimary, staffRecordsReadOnly);
   }
 
-  private save(role: Roles, primary: boolean, name: string = null): void {
+  private save(role: Roles, primary: boolean, staffRecordsReadOnly: boolean, name: string = null): void {
     const props = {
       role,
       isPrimary: primary,
+      isStaffRecordReadOnlyenabled: staffRecordsReadOnly,
     };
 
     this.subscriptions.add(
