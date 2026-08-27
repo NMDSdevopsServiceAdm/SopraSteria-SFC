@@ -1,5 +1,5 @@
 @if (submitted && (form.invalid || serverError)) {
-  <app-error-summary [form]="form" [serverError]="serverError"></app-error-summary>
+<app-error-summary [form]="form" [serverError]="serverError"></app-error-summary>
 }
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
@@ -13,40 +13,60 @@
           </legend>
           <div class="govuk-radios">
             @for (item of roleRadios; track item.label; let i = $index) {
-              <div class="govuk-radios__item">
-                <input
-                  class="govuk-radios__input"
-                  [formControlName]="'role'"
-                  id="role-{{ i }}"
-                  name="role"
-                  value="{{ item.value }}"
-                  type="radio"
-                />
-                <label class="govuk-label govuk-radios__label" for="role-{{ i }}">
-                  {{ item.label }}
-                </label>
-              </div>
-              @if (user?.displayStatus !== 'Pending' && item.value === 'Edit') {
-                <div
-                  class="govuk-radios__conditional"
-                  [class.govuk-radios__conditional--hidden]="form.get('role').value !== 'Edit'"
-                  id="role-conditional-{{ i }}"
-                >
-                  <div class="govuk-checkboxes">
-                    <div class="govuk-checkboxes__item">
-                      <input
-                        class="govuk-checkboxes__input"
-                        id="primary"
-                        name="primary"
-                        type="checkbox"
-                        [formControlName]="'primary'"
-                      />
-                      <label class="govuk-label govuk-checkboxes__label" for="primary">Make primary user</label>
-                    </div>
-                  </div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                [formControlName]="'role'"
+                id="role-{{ i }}"
+                name="role"
+                value="{{ item.value }}"
+                type="radio"
+              />
+              <label class="govuk-label govuk-radios__label" for="role-{{ i }}">
+                {{ item.label }}
+              </label>
+            </div>
+            @if (user?.displayStatus !== 'Pending' && item.value === 'Edit') {
+            <div
+              class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="form.get('role').value !== 'Edit'"
+              id="role-conditional-{{ i }}"
+            >
+              <div class="govuk-checkboxes">
+                <div class="govuk-checkboxes__item">
+                  <input
+                    class="govuk-checkboxes__input"
+                    id="primary"
+                    name="primary"
+                    type="checkbox"
+                    [formControlName]="'primary'"
+                  />
+                  <label class="govuk-label govuk-checkboxes__label" for="primary">Make primary user</label>
                 </div>
-              }
-            }
+              </div>
+            </div>
+            } @if (item.value === 'Read') {
+            <div
+              class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="form.get('role').value !== 'Read'"
+              id="role-conditional-{{ i }}"
+            >
+              <div class="govuk-checkboxes">
+                <div class="govuk-checkboxes__item">
+                  <input
+                    class="govuk-checkboxes__input"
+                    id="staff-records"
+                    name="staffRecordsReadOnly"
+                    type="checkbox"
+                    [formControlName]="'staffRecordsReadOnly'"
+                  />
+                  <label class="govuk-label govuk-checkboxes__label" for="staff-records">
+                    Also allow this user to view staff records (optional)
+                  </label>
+                </div>
+              </div>
+            </div>
+            } }
           </div>
         </fieldset>
       </div>
