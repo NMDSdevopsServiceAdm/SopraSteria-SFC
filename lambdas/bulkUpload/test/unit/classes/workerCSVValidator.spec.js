@@ -2182,8 +2182,8 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           lineNumber: 2,
           name: 'MARMA',
           source: emptyInput,
-          warnCode: WorkerCsvValidator.NMCREG_WARNING,
-          warnType: 'NMCREG_WARNING',
+          warnCode: WorkerCsvValidator.NMCREG_WARNING_NOT_SUPPLIED,
+          warnType: 'NMCREG_WARNING_NOT_SUPPLIED',
           warning: 'NMCREG has not been supplied',
           worker: '3',
         };
@@ -2210,8 +2210,8 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           lineNumber: 2,
           name: 'MARMA',
           source: validInputs[0].input,
-          warnCode: WorkerCsvValidator.NMCREG_WARNING,
-          warnType: 'NMCREG_WARNING',
+          warnCode: WorkerCsvValidator.NMCREG_WARNING_MAIN_JOB_ROLE_NOT_REG_NURSE,
+          warnType: 'NMCREG_WARNING_MAIN_JOB_ROLE_NOT_REG_NURSE',
           warning: 'NMCREG will be ignored as this is not required for the MAINJOBROLE',
           worker: '3',
         };
@@ -2268,8 +2268,8 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           lineNumber: 2,
           name: 'MARMA',
           source: invalidInputs[0],
-          warnCode: WorkerCsvValidator.NMCREG_WARNING,
-          warnType: 'NMCREG_WARNING',
+          warnCode: WorkerCsvValidator.NMCREG_WARNING_MAIN_JOB_ROLE_NOT_REG_NURSE,
+          warnType: 'NMCREG_WARNING_MAIN_JOB_ROLE_NOT_REG_NURSE',
           warning: 'NMCREG will be ignored as this is not required for the MAINJOBROLE',
           worker: '3',
         };
