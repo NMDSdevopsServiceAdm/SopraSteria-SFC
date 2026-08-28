@@ -1,9 +1,11 @@
 'use strict';
 
+const { getMappingsFromDatabase } = require('../../../../../../reference/BUDIMappings');
 const { Training } = require('../../../../../models/classes/training');
 const { validateTrainingLambda } = require('../../lambda');
 
 const validateTrainingCsv = async (training) => {
+  await getMappingsFromDatabase();
   const JSONTraining = [];
   const APITrainingRecords = {};
   const csvTrainingSchemaErrors = [];
