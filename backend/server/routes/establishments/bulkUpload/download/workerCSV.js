@@ -3,23 +3,6 @@ const get = require('lodash/get');
 const { csvQuote, dateFormatter } = require('../../../../utils/bulkUploadUtils');
 const { JobRoleId } = require('../../../../data/constants');
 
-const _maptoCSVregisteredNurse = (registeredNurse) => {
-  switch (registeredNurse) {
-    case 'Adult Nurse':
-      return '01';
-    case 'Mental Health Nurse':
-      return '02';
-    case 'Learning Disabilities Nurse':
-      return '03';
-    case "Children's Nurse":
-      return '04';
-    case 'Enrolled Nurse':
-      return '05';
-  }
-
-  return '';
-};
-
 const _convertYesNoDontKnow = (value) => {
   const mappings = {
     Yes: 1,
@@ -498,5 +481,4 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
 module.exports = {
   toCSV,
   csvQuote,
-  _maptoCSVregisteredNurse,
 };
