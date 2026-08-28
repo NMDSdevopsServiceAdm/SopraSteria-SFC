@@ -387,11 +387,16 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   const NURSE_JOB_ID = JobRoleId.REGISTERED_NURSE;
 
   // "NMCREG"
-  columns.push(
-    get(entity, 'mainJob.id') && entity.mainJob.id === NURSE_JOB_ID
-      ? _maptoCSVregisteredNurse(entity.RegisteredNurseValue)
-      : '',
-  );
+  const nurseFieldOfPractice = entity.nurseFieldOfPractice;
+  const isRegisteredNurse = get(entity, 'mainJob.id') && entity.mainJob.id === NURSE_JOB_ID;
+  const nurseQuestionHasAnswer = nurseFieldOfPractice?.length > 0;
+
+  if (isRegisteredNurse && nurseQuestionHasAnswer) {
+    const buCodes = nurseFieldOfPractice.map((field) => field.bulkUploadCode);
+    columns.push(buCodes.join(';'));
+  } else {
+    columns.push('');
+  }
 
   // "AMHP"
   let amhp = '';
