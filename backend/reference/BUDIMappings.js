@@ -15,7 +15,7 @@ const { build_nurse_field_of_practice_mappings } = require('./nurseFieldOfPracti
 
 let mappingsFromDatabase = {};
 
-const mappingBuilder = async () => {
+const getMappingsFromDatabase = async () => {
   if (isEmpty(mappingsFromDatabase)) {
     mappingsFromDatabase = {
       TRAINING_PROVIDER: await build_training_provider_mappings(),
@@ -39,4 +39,4 @@ exports.mappings = {
   CWP_CATEGORY,
 };
 
-exports.mappingBuilder = mappingBuilder;
+exports.getMappingsFromDatabase = getMappingsFromDatabase;
