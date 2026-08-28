@@ -63,13 +63,7 @@ module.exports.apiWorkerBuilder = build('Worker', {
     WeeklyHoursContractedHours: fake((f) => f.datatype.number({ min: 0, max: 40 })),
     WeeklyHoursAverageValue: oneOf('Yes', 'No'),
     WeeklyHoursAverageHours: fake((f) => f.datatype.number({ min: 0, max: 40 })),
-    RegisteredNurseValue: oneOf(
-      'Adult Nurse',
-      'Mental Health Nurse',
-      'Learning Disabilities Nurse',
-      "Children's Nurse",
-      'Enrolled Nurse',
-    ),
+    nurseFieldOfPractice: oneOf([], [{ id: 1, label: 'Adult nursing' }]),
     ApprovedMentalHealthWorkerValue: oneOf('Yes', 'No', "Don't know"),
     QualificationInSocialCareValue: oneOf('Yes', 'No', "Don't know"),
     socialCareQualification: [
