@@ -304,6 +304,12 @@ class WorkerCsvValidator {
   static get NMCREG_WARNING() {
     return 3340;
   }
+  static get NMCREG_WARNING_MAIN_JOB_ROLE_NOT_REG_NURSE() {
+    return 3341;
+  }
+  static get NMCREG_WARNING_NOT_SUPPLIED() {
+    return 3342;
+  }
   static get NURSE_SPEC_WARNING() {
     return 3350;
   }
@@ -2178,7 +2184,9 @@ class WorkerCsvValidator {
 
     if (!hasValue) {
       if (mainJobRoleIsNurse) {
-        this._validationErrors.push(this._generateWarning('NMCREG has not been supplied', 'NMCREG'));
+        this._validationErrors.push(
+          this._generateWarning('NMCREG has not been supplied', 'NMCREG', 'NMCREG_WARNING_NOT_SUPPLIED'),
+        );
         return false;
       }
       return true;
@@ -2186,7 +2194,11 @@ class WorkerCsvValidator {
 
     if (!mainJobRoleIsNurse) {
       this._validationErrors.push(
-        this._generateWarning('NMCREG will be ignored as this is not required for the MAINJOBROLE', 'NMCREG'),
+        this._generateWarning(
+          'NMCREG will be ignored as this is not required for the MAINJOBROLE',
+          'NMCREG',
+          'NMCREG_WARNING_MAIN_JOB_ROLE_NOT_REG_NURSE',
+        ),
       );
       return false;
     }
