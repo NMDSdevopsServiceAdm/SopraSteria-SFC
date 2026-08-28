@@ -39,11 +39,14 @@ const invokeLambda = async (functionName, payload) => {
 };
 
 const validateWorkerLambda = async (thisLine, currentLineNumber, existingWorker) => {
+  const mappingsFromBuilder = await mappingBuilder();
+  const workerMappings = { ...mappings, ...mappingsFromBuilder };
+
   const payload = {
     thisLine,
     currentLineNumber,
     existingWorker,
-    mappings,
+    mappings: workerMappings,
   };
   return await invokeLambda('validateWorker', payload);
 };
