@@ -2169,98 +2169,45 @@ class WorkerCsvValidator {
   }
 
   _validateNurseFieldOfPractice() {
-    const nmcReg = this._currentLine.NMCREG?.split(';');
+    const nmcReg = this._currentLine.NMCREG?.length > 0 ? this._currentLine.NMCREG?.split(';') : null;
 
-    const hasValue = nmcReg && nmcReg?.length > 0;
+    const hasValue = nmcReg?.length > 0;
 
     const RegisterNurseBuCode = 16;
     const mainJobRoleIsNurse = this._mainJobRole === RegisterNurseBuCode;
 
-    if (mainJobRoleIsNurse && !hasValue) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: WorkerCsvValidator.NMCREG_WARNING,
-        warnType: 'NMCREG_WARNING',
-        warning: 'NMCREG has not been supplied',
-        source: this._currentLine.NMCREG,
-        column: 'NMCREG',
-      });
+    if (!hasValue) {
+      if (mainJobRoleIsNurse) {
+        this._validationErrors.push(this._generateWarning('NMCREG has not been supplied', 'NMCREG'));
+        return false;
+      }
+      return true;
+    }
+
+    if (!mainJobRoleIsNurse) {
+      this._validationErrors.push(
+        this._generateWarning('NMCREG will be ignored as this is not required for the MAINJOBROLE', 'NMCREG'),
+      );
       return false;
     }
 
-    if (hasValue && !mainJobRoleIsNurse) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: WorkerCsvValidator.NMCREG_WARNING,
-        warnType: 'NMCREG_WARNING',
-        warning: 'NMCREG will be ignored as this is not required for the MAINJOBROLE',
-        source: this._currentLine.NMCREG,
-        column: 'NMCREG',
-      });
-      return false;
-    }
-
-    const convertedToDatabaseId = nmcReg.map((buCode) => this.BUDI.nurseFieldOfPractice(this.BUDI.TO_ASC, buCode));
-    console.log(convertedToDatabaseId, '<--- convertedToDatabaseId');
+    const convertedToDatabaseId = nmcReg.map((buCode) => {
+      const buCodeAsNumber = Number(buCode);
+      return this.BUDI.nurseFieldOfPractice(this.BUDI.TO_ASC, buCodeAsNumber);
+    });
     const allValuesAreValid = convertedToDatabaseId.every((x) => x);
 
     if (!allValuesAreValid) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: WorkerCsvValidator.NMCREG_WARNING,
-        warnType: 'NMCREG_WARNING',
-        warning: 'The code you have entered for NMCREG is incorrect and will be ignored',
-        source: this._currentLine.NMCREG,
-        column: 'NMCREG',
-      });
+      this._validationErrors.push(
+        this._generateWarning('The code you have entered for NMCREG is incorrect and will be ignored', 'NMCREG'),
+      );
+      return false;
     }
 
     this._nurseFieldOfPractice = convertedToDatabaseId.map((id) => {
       return { id };
     });
   }
-
-  // _validateRegisteredNurse() {
-  //   const myRegisteredNurse = parseInt(this._currentLine.NMCREG, 10);
-  //   const NURSING_ROLE = 16;
-  //   const mainJobRoleIsNurse = this._mainJobRole === NURSING_ROLE;
-  //   const notNurseRole = !mainJobRoleIsNurse;
-
-  //   if (this._mainJobRole === NURSING_ROLE && myRegisteredNurse !== 0 && isNaN(myRegisteredNurse)) {
-  //     this._validationErrors.push({
-  //       worker: this._currentLine.UNIQUEWORKERID,
-  //       name: this._currentLine.LOCALESTID,
-  //       lineNumber: this._lineNumber,
-  //       warnCode: WorkerCsvValidator.NMCREG_WARNING,
-  //       warnType: 'NMCREG_WARNING',
-  //       warning: 'NMCREG has not been supplied',
-  //       source: this._currentLine.NMCREG,
-  //       column: 'NMCREG',
-  //     });
-  //     return false;
-  //   } else if (this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0 && notNurseRole) {
-  //     this._validationErrors.push({
-  //       worker: this._currentLine.UNIQUEWORKERID,
-  //       name: this._currentLine.LOCALESTID,
-  //       lineNumber: this._lineNumber,
-  //       warnCode: WorkerCsvValidator.NMCREG_WARNING,
-  //       warnType: 'NMCREG_WARNING',
-  //       warning: 'NMCREG will be ignored as this is not required for the MAINJOBROLE',
-  //       source: this._currentLine.NMCREG,
-  //       column: 'NMCREG',
-  //     });
-  //     return false;
-  //   } else {
-  //     this._registeredNurse = myRegisteredNurse;
-  //     return true;
-  //   }
-  // }
 
   _validateAmhp() {
     const SOCIAL_WORKER_ROLE = 6;
