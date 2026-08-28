@@ -8,10 +8,7 @@ const workers = [apiWorkerBuilder(), apiWorkerBuilder(), apiWorkerBuilder()];
 
 const sandbox = require('sinon').createSandbox();
 
-const {
-  toCSV,
-  _maptoCSVregisteredNurse,
-} = require('../../../../../../routes/establishments/bulkUpload/download/workerCSV');
+const { toCSV } = require('../../../../../../routes/establishments/bulkUpload/download/workerCSV');
 const { getWorkerColumnIndex } = require('../../../../../../routes/establishments/bulkUpload/data/workerHeaders');
 
 const establishment = {
@@ -899,41 +896,6 @@ describe('workerCSV', () => {
           expect(csvAsArray[getWorkerColumnIndex('QUALACH01')]).to.equal('');
         });
       });
-    });
-  });
-
-  describe('_maptoCSVregisteredNurse()', () => {
-    const valuesAndMappings = [
-      {
-        value: 'Adult Nurse',
-        mappedValue: '01',
-      },
-      {
-        value: 'Mental Health Nurse',
-        mappedValue: '02',
-      },
-      {
-        value: 'Learning Disabilities Nurse',
-        mappedValue: '03',
-      },
-      {
-        value: "Children's Nurse",
-        mappedValue: '04',
-      },
-      {
-        value: 'Enrolled Nurse',
-        mappedValue: '05',
-      },
-    ];
-
-    valuesAndMappings.forEach((pair) => {
-      it(`should return ${pair.mappedValue} when ${pair.value} passed in`, () => {
-        expect(_maptoCSVregisteredNurse(pair.value)).to.equal(pair.mappedValue);
-      });
-    });
-
-    it('should return empty string when invalid value passed in', () => {
-      expect(_maptoCSVregisteredNurse('Hello')).to.equal('');
     });
   });
 });

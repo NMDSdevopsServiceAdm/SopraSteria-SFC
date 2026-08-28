@@ -336,10 +336,6 @@ class Worker extends EntityValidator {
     return this._properties.get('OtherJobs') ? this._properties.get('OtherJobs').property : null;
   }
 
-  get registeredNurse() {
-    return this._properties.get('RegisteredNurse') ? this._properties.get('RegisteredNurse').property : null;
-  }
-
   get nurseFieldOfPractice() {
     return this._properties.get('NurseFieldOfPractice') ? this._properties.get('NurseFieldOfPractice').property : null;
   }
