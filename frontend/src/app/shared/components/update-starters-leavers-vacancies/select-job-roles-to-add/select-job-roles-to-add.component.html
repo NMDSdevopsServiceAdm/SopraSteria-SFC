@@ -2,6 +2,7 @@
   <div class="govuk-grid-column-two-thirds">
     <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
       <fieldset class="govuk-fieldset">
+        <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
         <h1 class="govuk-heading-l">Select job roles for the {{ jobRoleType }} you want to add</h1>
         <p class="govuk-body-m">
           You can review the number of {{ jobRoleType }} for each role after you click Continue.

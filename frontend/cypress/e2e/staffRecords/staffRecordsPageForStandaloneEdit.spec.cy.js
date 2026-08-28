@@ -353,7 +353,6 @@ describe('Standalone staff records page as edit user', { tags: '@staffRecords' }
 
       // number of staff, starters and vacancies summary page
       cy.contains('h1', 'Check this information and make any changes before you continue').should('be.visible');
-      cy.contains('h2', 'Total number of staff, vacancies and starters').should('be.visible');
 
       // update number of staff page
       cy.get('[data-testid="numberOfStaff"]').contains('Change').click();
@@ -372,7 +371,7 @@ describe('Standalone staff records page as edit user', { tags: '@staffRecords' }
       cy.get('[data-testid="starters"]').contains('Add').click();
 
       // update starters
-      cy.contains('button', 'Add job roles').click();
+      cy.contains('button', 'Select job roles').click();
       cy.addJobRoles(jobRolesToAdd);
       cy.updateJobRoleTotal(jobRolesToAdd, 'type');
       cy.contains('button', 'Save and return').click();
@@ -425,7 +424,7 @@ describe('Standalone staff records page as edit user', { tags: '@staffRecords' }
       cy.get('[data-testid="vacancies"]').contains('Add').click();
 
       // update vacancies page
-      cy.contains('button', 'Add job roles').click();
+      cy.contains('button', 'Select job roles').click();
       cy.addJobRoles(jobRolesToAdd);
       cy.contains('button', 'Save and return').click();
 
@@ -433,7 +432,7 @@ describe('Standalone staff records page as edit user', { tags: '@staffRecords' }
       cy.get('[data-testid="leavers"]').contains('Add').click();
 
       // update leavers page
-      cy.contains('button', 'Add job roles').click();
+      cy.contains('button', 'Select job roles').click();
       cy.addJobRoles(jobRolesToAdd);
       cy.contains('button', 'Save and return').click();
 

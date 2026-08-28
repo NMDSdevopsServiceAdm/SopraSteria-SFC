@@ -1,17 +1,17 @@
 @if (workplace) {
   @if (!workplace?.showAddWorkplaceDetailsBanner) {
     <div
-      [class.govuk-summary-list__warning]="noVacancyAndTurnoverData"
+      [class.govuk-summary-list__warning]="showVacancyAndTurnoverTopLevelWarning"
       data-testid="vacancies-and-turnover-section"
     >
       <h2
         id="vacancies-and-turnover"
         class="govuk-heading-m govuk-!-padding-top-1 govuk-!-margin-top-4"
-        [ngClass]="{ 'govuk-!-margin-bottom-1': noVacancyAndTurnoverData }"
+        [ngClass]="{ 'govuk-!-margin-bottom-1': showVacancyAndTurnoverTopLevelWarning }"
       >
         Vacancies and turnover
       </h2>
-      @if (noVacancyAndTurnoverData) {
+      @if (showVacancyAndTurnoverTopLevelWarning) {
         <span class="govuk-error-message govuk-summary-list__warning-message">
           {{
             allVacancyAndTurnoverDataOutOfDate
@@ -21,29 +21,24 @@
         </span>
       }
       <div
-        [class.govuk-summary-list__warning]="startersDataWarning"
+        [class]="startersDataWarning ? 'govuk-summary-list__warning' : 'govuk-summary-list__no-warning'"
         data-testid="starters"
       >
         <dl
           class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0 govuk-summary-list--top-border"
         >
-          <div
-            class="govuk-summary-list__row"
-            [ngClass]="{
-              'govuk-summary-list__row--no-bottom-border':
-                startersDataWarning || leaversDataWarning,
-              'govuk-summary-list__row--no-bottom-padding': startersDataWarning
-            }"
-          >
+          <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">
               Starters in the last 12 months
+              @if (startersDataWarning) {
+                <div class="govuk-summary-list__warning--inner-message">
+                  {{ noStartersData ? 'Add your starters data' : 'Update your starters data' }}
+                </div>
+              }
             </dt>
 
             <dd class="govuk-summary-list__value">
-              <ng-container
-                [ngTemplateOutlet]="summaryRecordValueForSLV"
-                [ngTemplateOutletContext]="{ slvValue: workplace.starters }"
-              />
+              <app-display-slv-data [slvData]="workplace.starters"></app-display-slv-data>
             </dd>
             @if (canEditEstablishment) {
               <dd class="govuk-summary-list__actions">
@@ -56,46 +51,25 @@
               </dd>
             }
           </div>
-          @if (startersDataWarning) {
-            <div
-              class="govuk-summary-list__row govuk-summary-list__row--error-warning-message"
-            >
-              <dt
-                class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
-              >
-                {{ noStartersData ? 'Add your starters data' : 'Update your starters data' }}
-              </dt>
-              <dd class="govuk-summary-list__value"></dd>
-              <dd class="govuk-summary-list__actions"></dd>
-            </div>
-          }
         </dl>
       </div>
       <div
-        [class.govuk-summary-list__warning]="leaversDataWarning"
+        [class]="leaversDataWarning ? 'govuk-summary-list__warning' : 'govuk-summary-list__no-warning'"
         data-testid="leavers"
       >
-      <dl
-      class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0"
-    >
-      <div
-        class="govuk-summary-list__row"
-        [ngClass]="{
-          'govuk-summary-list__row--no-bottom-border':
-            leaversDataWarning || vacancyDataWarning,
-          'govuk-summary-list__row--no-bottom-padding': leaversDataWarning,
-          'vacancy-turnover-warning-top-border': leaversDataWarning
-        }"
-      >
+        <dl class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0">
+          <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">
               Leavers in the last 12 months
+              @if (leaversDataWarning) {
+                <div class="govuk-summary-list__warning--inner-message">
+                  {{ noLeaversData ? 'Add your leavers data' : 'Update your leavers data' }}
+                </div>
+              }
             </dt>
 
             <dd class="govuk-summary-list__value">
-              <ng-container
-                [ngTemplateOutlet]="summaryRecordValueForSLV"
-                [ngTemplateOutletContext]="{ slvValue: workplace.leavers }"
-              />
+              <app-display-slv-data [slvData]="workplace.leavers"></app-display-slv-data>
             </dd>
             @if (canEditEstablishment) {
               <dd class="govuk-summary-list__actions">
@@ -108,46 +82,26 @@
               </dd>
             }
           </div>
-          @if (leaversDataWarning) {
-            <div
-              class="govuk-summary-list__row govuk-summary-list__row--error-warning-message"
-            >
-              <dt
-                class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
-              >
-                {{ noLeaversData ? 'Add your leavers data' : 'Update your leavers data' }}
-              </dt>
-              <dd class="govuk-summary-list__value"></dd>
-              <dd class="govuk-summary-list__actions"></dd>
-            </div>
-          }
         </dl>
       </div>
       <div
-        [class.govuk-summary-list__warning]="vacancyDataWarning"
+        [class]="vacancyDataWarning ? 'govuk-summary-list__warning' : 'govuk-summary-list__no-warning'"
         data-testid="vacancies"
       >
-        <dl
-          class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0"
-        >
-          <div
-            class="govuk-summary-list__row"
-            [ngClass]="{
-              'govuk-summary-list__row--no-bottom-border': vacancyDataWarning,
-              'govuk-summary-list__row--no-bottom-padding': vacancyDataWarning,
-              'vacancy-turnover-warning-top-border': vacancyDataWarning
-            }"
-            data-testid="vacancies-top-row"
-          >
+        <dl class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0">
+          <div class="govuk-summary-list__row" data-testid="vacancies-top-row">
             <dt class="govuk-summary-list__key">
               Current staff vacancies
+
+              @if (vacancyDataWarning) {
+                <div class="govuk-summary-list__warning--inner-message">
+                  {{ noVacancyData ? 'Add your vacancy data' : 'Update your vacancy data' }}
+                </div>
+              }
             </dt>
 
             <dd class="govuk-summary-list__value">
-              <ng-container
-                [ngTemplateOutlet]="summaryRecordValueForSLV"
-                [ngTemplateOutletContext]="{ slvValue: workplace.vacancies }"
-              />
+              <app-display-slv-data [slvData]="workplace.vacancies"></app-display-slv-data>
             </dd>
             @if (canEditEstablishment) {
               <dd class="govuk-summary-list__actions">
@@ -160,19 +114,6 @@
               </dd>
             }
           </div>
-          @if (vacancyDataWarning) {
-            <div
-              class="govuk-summary-list__row govuk-summary-list__row--error-warning-message"
-            >
-              <dt
-                class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
-              >
-                {{ noVacancyData ? 'Add your vacancy data' : 'Update your vacancy data' }}
-              </dt>
-              <dd class="govuk-summary-list__value"></dd>
-              <dd class="govuk-summary-list__actions"></dd>
-            </div>
-          }
         </dl>
       </div>
     </div>
@@ -181,8 +122,8 @@
     <h2 id="workplace-details" class="govuk-heading-m govuk-!-margin-bottom-5">Workplace details</h2>
   </div>
   <div data-testid="workplace-section">
-    <dl class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0 govuk-summary-list--top-border">
-      @if (workplace?.isRegulated) {
+    @if (workplace?.isRegulated) {
+      <dl class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0 govuk-summary-list--top-border">
         <div
           class="govuk-summary-list__row"
           [class.govuk-summary-list__row--no-bottom-border]="numberOfStaffError || numberOfStaffWarning"
@@ -200,8 +141,8 @@
             </dd>
           }
         </div>
-      }
-    </dl>
+      </dl>
+    }
     <div
       [class.govuk-summary-list__error]="numberOfStaffError"
       [class.govuk-summary-list__warning]="!numberOfStaffError && numberOfStaffWarning"
@@ -209,7 +150,7 @@
     >
       <dl
         class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-bottom-0"
-        [class.govuk-summary-list--top-border]="numberOfStaffError || numberOfStaffWarning"
+        [class.govuk-summary-list--top-border]="numberOfStaffError || numberOfStaffWarning || !workplace?.isRegulated"
       >
         <div
           class="govuk-summary-list__row"
@@ -753,18 +694,3 @@
     </dl>
   }
 }
-
-<!-- reuse for vacancy / leaver / starter  -->
-<ng-template #summaryRecordValueForSLV let-slvValue="slvValue">
-  <app-summary-record-value>
-    @if (isArray(slvValue) && slvValue?.length) {
-      <ul class="govuk-list govuk-!-margin-bottom-0">
-        @for (job of slvValue; track $index) {
-          <li>{{ job | formatSLV }}</li>
-        }
-      </ul>
-    } @else {
-      {{ slvValue | closedEndedAnswer }}
-    }
-  </app-summary-record-value>
-</ng-template>

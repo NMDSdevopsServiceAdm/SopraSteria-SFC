@@ -1,0 +1,9 @@
+@if (isArray(slvData) && slvData?.length) {
+  <ul class="govuk-list govuk-!-margin-bottom-0">
+    @for (job of slvData; track job) {
+      <li>{{ job | formatSLV }}</li>
+    }
+  </ul>
+} @else {
+  {{ slvData | closedEndedAnswer }}
+}

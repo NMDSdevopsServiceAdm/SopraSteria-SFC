@@ -1,5 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
@@ -154,7 +153,7 @@ describe('UpdateLeaversComponent', () => {
 
       const heading = getByRole('heading', { level: 1 });
 
-      expect(heading.textContent).toEqual(`Update the number of staff who've left SINCE ${todayOneYearAgo}`);
+      expect(heading.textContent).toEqual(`Update the number of staff who've left in the last 12 months`);
     });
   });
 
@@ -174,18 +173,18 @@ describe('UpdateLeaversComponent', () => {
     it('should show when it has been previously answered', async () => {
       const { getByTestId } = await setup({ workplace: mockWorkplaceWithLeavers });
 
-      const warningTextId = getByTestId('warning-text');
-      const warningTextContent = `Remember to SUBTRACT or REMOVE any staff who left before ${todayOneYearAgo}`;
+      const warningText = getByTestId('warning-text');
 
-      expect(warningTextId.textContent).toContain(warningTextContent);
+      expect(warningText.textContent).toContain('ONLY');
+      expect(warningText.textContent).toContain(`include leavers from ${todayOneYearAgo} to today.`);
     });
 
     it('should not show when it has not been previously answered', async () => {
       const { queryByTestId } = await setup({ workplace: mockWorkplace });
 
-      const warningTextId = queryByTestId('warning-text');
+      const warningText = queryByTestId('warning-text');
 
-      expect(warningTextId).toBeFalsy();
+      expect(warningText).toBeFalsy();
     });
   });
 
@@ -223,26 +222,26 @@ describe('UpdateLeaversComponent', () => {
   });
 
   describe('job roles cta button', () => {
-    it('should show the "Add more job roles" if there are already jobs selected', async () => {
+    it('should show the "Select more job roles" if there are already jobs selected', async () => {
       const { getByRole } = await setup({ workplace: mockWorkplaceWithLeavers });
-      const addButton = getByRole('button', { name: 'Add more job roles' });
+      const addButton = getByRole('button', { name: 'Select more job roles' });
 
       expect(addButton).toBeTruthy();
     });
 
-    it('should show the "Add job roles" if there are no jobs selected', async () => {
+    it('should show the "Select job roles" if there are no jobs selected', async () => {
       const { getByRole } = await setup({ leaversFromSelectJobRolePages: null, workplace: mockWorkplace });
-      const addButton = getByRole('button', { name: 'Add job roles' });
+      const addButton = getByRole('button', { name: 'Select job roles' });
 
       expect(addButton).toBeTruthy();
     });
 
-    it('should navigate to update-leaver-job-roles when "Add job roles" is clicked', async () => {
+    it('should navigate to update-leaver-job-roles when "Select job roles" is clicked', async () => {
       const { getByRole, routerSpy, component } = await setup({
         leaversFromSelectJobRolePages: null,
         workplace: mockWorkplace,
       });
-      const addButton = getByRole('button', { name: 'Add job roles' });
+      const addButton = getByRole('button', { name: 'Select job roles' });
 
       fireEvent.click(addButton);
 

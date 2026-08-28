@@ -8,15 +8,14 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <div [class.govuk-summary-list__warning]="!allPagesVisited">
-        <h2 class="govuk-heading-m">
-          Total number of staff, vacancies and {{ flowType === WorkplaceUpdateFlowType.ADD ? 'starters' : 'leavers' }}
-        </h2>
         @if (!allPagesVisited) {
           <span class="govuk-error-message govuk-summary-list__warning-message">
             This data does not update automatically when you
-            {{ flowType === WorkplaceUpdateFlowType.ADD ? 'add' : 'delete' }} staff records.
+            {{ flowType === WorkplaceUpdateFlowType.AFTER_ADD_STAFF ? 'add' : 'delete' }} staff records.
             <br />
-            You need to check and change these yourself.
+            <span class="govuk-!-display-block govuk-!-margin-top-1">
+              You need to check and change these yourself.
+            </span>
           </span>
         }
         <span class="govuk-error-message govuk-summary-list__warning-message"> </span>
@@ -66,9 +65,9 @@
             </dd>
           </div>
 
-          @if (flowType === WorkplaceUpdateFlowType.ADD) {
+          @if (flowType === WorkplaceUpdateFlowType.AFTER_ADD_STAFF) {
             <div class="govuk-summary-list__row" data-testid="starters">
-              <dt class="govuk-summary-list__key">Starters in the last 12 months</dt>
+              <dt class="govuk-summary-list__key">Starters since {{ oneYearAgo }}</dt>
               <dd class="govuk-summary-list__value">
                 <app-summary-record-value>
                   @if (!workplace.starters?.length) {
@@ -96,9 +95,9 @@
               </dd>
             </div>
           }
-          @if (flowType === WorkplaceUpdateFlowType.DELETE) {
+          @if (flowType === WorkplaceUpdateFlowType.AFTER_DELETE_STAFF) {
             <div class="govuk-summary-list__row" data-testid="leavers">
-              <dt class="govuk-summary-list__key">Leavers in the last 12 months</dt>
+              <dt class="govuk-summary-list__key">Leavers since {{ oneYearAgo }}</dt>
               <dd class="govuk-summary-list__value">
                 <app-summary-record-value>
                   @if (!workplace.leavers?.length) {

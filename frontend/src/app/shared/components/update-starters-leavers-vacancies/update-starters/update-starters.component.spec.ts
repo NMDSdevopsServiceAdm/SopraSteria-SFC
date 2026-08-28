@@ -1,5 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
@@ -24,8 +23,14 @@ describe('UpdateStartersComponent', () => {
   const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(today);
 
   const radioButtonLabels = {
-    No: `No staff started on or after ${todayOneYearAgo}`,
-    DoNotKnow: `I do not know if any staff started on or after ${todayOneYearAgo}`,
+    Existing: {
+      No: 'No staff started in the last 12 months',
+      DoNotKnow: 'I do not know if any staff started in the last 12 months',
+    },
+    New: {
+      No: `No staff started on or after ${todayOneYearAgo}`,
+      DoNotKnow: `I do not know if any staff started on or after ${todayOneYearAgo}`,
+    },
   };
   const messageWhenNoJobRoleSelected = {
     None: `No staff started on or after ${todayOneYearAgo}.`,
@@ -134,7 +139,7 @@ describe('UpdateStartersComponent', () => {
       const { getByRole } = await setup();
       const heading = getByRole('heading', { level: 1 });
 
-      expect(heading.textContent).toEqual(`Update the number of staff who've started SINCE ${todayOneYearAgo}`);
+      expect(heading.textContent).toEqual(`Update the number of staff who've started in the last 12 months`);
     });
 
     it('should show a reveal text for "Why we ask for this information"', async () => {
@@ -149,12 +154,11 @@ describe('UpdateStartersComponent', () => {
       expect(revealText).toBeTruthy();
     });
 
-    it('should show a warning text to remind user to subtract or remove starters', async () => {
+    it('should show a warning text to remind user to only include starters from the last 12 months', async () => {
       const { getByTestId } = await setup();
       const warningText = getByTestId('warning-text');
-      const expectedTextContent = `Remember to SUBTRACT or REMOVE any staff who started before ${todayOneYearAgo}.`;
 
-      expect(warningText.textContent).toContain(expectedTextContent);
+      expect(warningText.textContent).toContain(`ONLY include starters from ${todayOneYearAgo} to today.`);
     });
 
     it('should not show explanation message for adding when question answered', async () => {
@@ -172,9 +176,12 @@ describe('UpdateStartersComponent', () => {
       expect(tableTitle).toBeTruthy();
     });
 
-    it('should show an "Add more job roles" button', async () => {
+    it('should show a "Select more job roles" button', async () => {
       const { getByRole } = await setup();
-      const addButton = getByRole('button', { name: 'Add more job roles' });
+
+      const addButton = getByRole('button', {
+        name: 'Select more job roles',
+      });
 
       expect(addButton).toBeTruthy();
     });
@@ -187,11 +194,22 @@ describe('UpdateStartersComponent', () => {
       expect(getByText('Total number of starters'));
     });
 
-    it('should show a radio button for "No", and another for "I do not know"', async () => {
+    it('should show the correct radio buttons for an existing workplace', async () => {
       const { getByLabelText } = await setup();
 
-      expect(getByLabelText(radioButtonLabels.No)).toBeTruthy();
-      expect(getByLabelText(radioButtonLabels.DoNotKnow)).toBeTruthy();
+      expect(getByLabelText(radioButtonLabels.Existing.No)).toBeTruthy();
+
+      expect(getByLabelText(radioButtonLabels.Existing.DoNotKnow)).toBeTruthy();
+    });
+
+    it('should show a radio button for "No", and another for "I do not know"', async () => {
+      const { getByLabelText } = await setup({
+        workplace: mockFreshWorkplace,
+      });
+
+      expect(getByLabelText(radioButtonLabels.New.No)).toBeTruthy();
+
+      expect(getByLabelText(radioButtonLabels.New.DoNotKnow)).toBeTruthy();
     });
 
     it('should show a "Save and return" CTA button and a Cancel link', async () => {
@@ -219,10 +237,10 @@ describe('UpdateStartersComponent', () => {
         ).toBeFalsy();
       });
 
-      it('should show "Add job roles" as the text of add job role button', async () => {
+      it('should show "Select job roles" as the text of add job role button', async () => {
         const { getByRole } = await setup({ workplace: mockFreshWorkplace });
 
-        const addButton = getByRole('button', { name: 'Add job roles' });
+        const addButton = getByRole('button', { name: 'Select job roles' });
 
         expect(addButton).toBeTruthy();
       });
@@ -260,7 +278,7 @@ describe('UpdateStartersComponent', () => {
         it('should select the "No" radio button and display a message if user previously selected "No"', async () => {
           const { getByLabelText, getByTestId, getByText } = await setup({ workplace: mockWorkplaceWithNoStarters });
 
-          const radioButton = getByLabelText(radioButtonLabels.No) as HTMLInputElement;
+          const radioButton = getByLabelText(radioButtonLabels.Existing.No) as HTMLInputElement;
           expect(radioButton.checked).toBe(true);
           expect(getByTestId('total-number').textContent).toEqual('0');
 
@@ -272,7 +290,7 @@ describe('UpdateStartersComponent', () => {
             workplace: mockWorkplaceWithStartersNotKnown,
           });
 
-          const radioButton = getByLabelText(radioButtonLabels.DoNotKnow) as HTMLInputElement;
+          const radioButton = getByLabelText(radioButtonLabels.Existing.DoNotKnow) as HTMLInputElement;
           expect(radioButton.checked).toBe(true);
           expect(getByTestId('total-number').textContent).toEqual('0');
 
@@ -329,7 +347,7 @@ describe('UpdateStartersComponent', () => {
       it('should navigate to select-job-role page', async () => {
         const { component, fixture, routerSpy, getByRole } = await setup();
 
-        const addButton = getByRole('button', { name: 'Add more job roles' });
+        const addButton = getByRole('button', { name: 'Select more job roles' });
         userEvent.click(addButton);
 
         fixture.detectChanges();
@@ -346,7 +364,7 @@ describe('UpdateStartersComponent', () => {
           workplace: mockWorkplace,
         });
 
-        const addButton = getByRole('button', { name: 'Add more job roles' });
+        const addButton = getByRole('button', { name: 'Select more job roles' });
         userEvent.click(addButton);
 
         fixture.detectChanges();
@@ -365,7 +383,7 @@ describe('UpdateStartersComponent', () => {
         await clickRemoveButtonForJobRole('Registered nurse');
         await fillInValueForJobRole('Social worker', '5');
 
-        const addButton = getByRole('button', { name: 'Add more job roles' });
+        const addButton = getByRole('button', { name: 'Select more job roles' });
         userEvent.click(addButton);
 
         fixture.detectChanges();
@@ -423,7 +441,7 @@ describe('UpdateStartersComponent', () => {
           workplace: mockWorkplace,
         });
 
-        userEvent.click(getByLabelText(radioButtonLabels.No));
+        await userEvent.click(getByLabelText(radioButtonLabels.Existing.No));
 
         fixture.detectChanges();
 
@@ -446,7 +464,7 @@ describe('UpdateStartersComponent', () => {
           workplace: mockWorkplace,
         });
 
-        userEvent.click(getByLabelText(radioButtonLabels.DoNotKnow));
+        await userEvent.click(getByLabelText(radioButtonLabels.Existing.DoNotKnow));
 
         fixture.detectChanges();
 
@@ -492,7 +510,7 @@ describe('UpdateStartersComponent', () => {
         workplace: mockWorkplace,
       });
 
-      userEvent.click(getByLabelText(radioButtonLabels.No));
+      await userEvent.click(getByLabelText(radioButtonLabels.Existing.No));
 
       userEvent.click(getByRole('button', { name: 'Save and return' }));
 
@@ -704,7 +722,7 @@ describe('UpdateStartersComponent', () => {
         expectErrorMessageAppears(expectedErrorMessage2);
         expect(updateJobsSpy).not.toHaveBeenCalled();
 
-        const addJobRoleButton = getByRole('button', { name: 'Add job roles' });
+        const addJobRoleButton = getByRole('button', { name: 'Select job roles' });
         const buttonFocusSpy = spyOn(addJobRoleButton, 'focus');
 
         userEvent.click(getAllByText('Add a job role')[0]);

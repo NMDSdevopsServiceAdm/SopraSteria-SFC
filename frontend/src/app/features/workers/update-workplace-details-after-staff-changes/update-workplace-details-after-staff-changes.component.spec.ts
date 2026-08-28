@@ -7,20 +7,21 @@ import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { VacanciesAndTurnoverService, WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
+import { provideActivatedRouteWithRouterLink } from '@core/test-utils/MockActivatedRoute';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
+import { DateUtil } from '@core/utils/date-util';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes.component';
-import { provideActivatedRouteWithRouterLink } from '@core/test-utils/MockActivatedRoute';
 
 describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   async function setup(overrides: any = {}) {
     const workplace = { ...establishmentBuilder(), ...overrides.workplace };
-    const flowType = overrides?.flowType || WorkplaceUpdateFlowType.ADD;
+    const flowType = overrides?.flowType || WorkplaceUpdateFlowType.AFTER_ADD_STAFF;
     const totalNumberOfStaff = overrides?.totalNumberOfStaff ?? 10;
     const alertSpy = jasmine.createSpy('addAlert').and.returnValue(Promise.resolve(true));
     const showBackLinkSpy = jasmine.createSpy('setBacklink').and.returnValue(Promise.resolve(true));
@@ -103,7 +104,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
 
       it('should display when user has not visited all of the update question pages in delete view', async () => {
         const { getByText } = await setup({
-          flowType: WorkplaceUpdateFlowType.DELETE,
+          flowType: WorkplaceUpdateFlowType.AFTER_DELETE_STAFF,
           vacanciesAndTurnoverService: {
             allUpdatePagesVisited: () => false,
             allUpdatePagesSubmitted: () => false,
@@ -148,7 +149,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
 
       it('should add alert with leavers in message when user has submitted on all update question pages from delete version', async () => {
         const { alertSpy } = await setup({
-          flowType: WorkplaceUpdateFlowType.DELETE,
+          flowType: WorkplaceUpdateFlowType.AFTER_DELETE_STAFF,
           vacanciesAndTurnoverService: {
             allUpdatePagesVisited: () => true,
             allUpdatePagesSubmitted: () => true,
@@ -183,20 +184,6 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
 
         expect(alertSpy).not.toHaveBeenCalled();
       });
-    });
-  });
-
-  describe('Sub heading', () => {
-    it('should include starters in sub heading when on added staff version of page', async () => {
-      const { getByText } = await setup();
-
-      expect(getByText('Total number of staff, vacancies and starters')).toBeTruthy();
-    });
-
-    it('should include leavers in sub heading when on deleted staff version of page', async () => {
-      const { getByText } = await setup({ flowType: WorkplaceUpdateFlowType.DELETE });
-
-      expect(getByText('Total number of staff, vacancies and leavers')).toBeTruthy();
     });
   });
 
@@ -308,13 +295,13 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     });
   });
 
-  describe('Starters in the last 12 months', () => {
+  describe('Starters since one year ago', () => {
     it('should show the correct wording', async () => {
       const { getByTestId } = await setup();
 
       const startersRow = getByTestId('starters');
 
-      expect(within(startersRow).getByText('Starters in the last 12 months')).toBeTruthy();
+      expect(within(startersRow).getByText(`Starters since ${DateUtil.getDateForOneYearAgo()}`)).toBeTruthy();
     });
 
     it('should show dash and have Add link when starters is null', async () => {
@@ -376,25 +363,27 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     });
 
     it('should not display starters section if on the staff deleted version of page', async () => {
-      const { queryByTestId } = await setup({ flowType: WorkplaceUpdateFlowType.DELETE });
+      const { queryByTestId } = await setup({ flowType: WorkplaceUpdateFlowType.AFTER_DELETE_STAFF });
 
       const startersRow = queryByTestId('starters');
       expect(startersRow).toBeFalsy();
     });
   });
 
-  describe('Leavers in the last 12 months', () => {
+  describe('Leavers since one year ago', () => {
     it('should show the correct wording', async () => {
-      const { getByTestId } = await setup({ flowType: WorkplaceUpdateFlowType.DELETE });
+      const { getByTestId } = await setup({
+        flowType: WorkplaceUpdateFlowType.AFTER_DELETE_STAFF,
+      });
 
-      const startersRow = getByTestId('leavers');
+      const leaversRow = getByTestId('leavers');
 
-      expect(within(startersRow).getByText('Leavers in the last 12 months')).toBeTruthy();
+      expect(within(leaversRow).getByText(`Leavers since ${DateUtil.getDateForOneYearAgo()}`)).toBeTruthy();
     });
 
     it('should show dash and have Add link when leavers is null', async () => {
       const { getByTestId } = await setup({
-        flowType: WorkplaceUpdateFlowType.DELETE,
+        flowType: WorkplaceUpdateFlowType.AFTER_DELETE_STAFF,
         workplace: { leavers: null },
       });
 
@@ -407,7 +396,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
 
     it("should show Don't know and a Change link when leavers is set to Don't know", async () => {
       const { getByTestId } = await setup({
-        flowType: WorkplaceUpdateFlowType.DELETE,
+        flowType: WorkplaceUpdateFlowType.AFTER_DELETE_STAFF,
         workplace: { leavers: "Don't know" },
       });
 
@@ -420,7 +409,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
 
     it('should show None and a Change link when leavers is set to None', async () => {
       const { getByTestId } = await setup({
-        flowType: WorkplaceUpdateFlowType.DELETE,
+        flowType: WorkplaceUpdateFlowType.AFTER_DELETE_STAFF,
         workplace: { leavers: 'None' },
       });
 
@@ -434,7 +423,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     it('should show one job with number of leavers and a Change link when there is one job with leavers', async () => {
       const leavers = [{ jobId: 1, title: 'Administrative', total: 3 }];
       const { getByTestId } = await setup({
-        flowType: WorkplaceUpdateFlowType.DELETE,
+        flowType: WorkplaceUpdateFlowType.AFTER_DELETE_STAFF,
         workplace: { leavers },
       });
 
@@ -452,7 +441,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
         { jobId: 3, title: 'Other care providing role', total: 4, other: 'Special care worker' },
       ];
       const { getByTestId } = await setup({
-        flowType: WorkplaceUpdateFlowType.DELETE,
+        flowType: WorkplaceUpdateFlowType.AFTER_DELETE_STAFF,
         workplace: { leavers },
       });
 
@@ -466,7 +455,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     });
 
     it('should not display leavers section if on the staff deleted version of page', async () => {
-      const { queryByTestId } = await setup({ flowType: WorkplaceUpdateFlowType.ADD });
+      const { queryByTestId } = await setup({ flowType: WorkplaceUpdateFlowType.AFTER_ADD_STAFF });
 
       const leaversRow = queryByTestId('leavers');
       expect(leaversRow).toBeFalsy();

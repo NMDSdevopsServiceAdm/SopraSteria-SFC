@@ -5,11 +5,12 @@ import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { VacanciesAndTurnoverService, WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
+import { DateUtil } from '@core/utils/date-util';
 
 @Component({
-    selector: 'app-update-workplace-details-after-staff-changes',
-    templateUrl: './update-workplace-details-after-staff-changes.component.html',
-    standalone: false
+  selector: 'app-update-workplace-details-after-staff-changes',
+  templateUrl: './update-workplace-details-after-staff-changes.component.html',
+  standalone: false,
 })
 export class UpdateWorkplaceDetailsAfterStaffChangesComponent implements OnInit {
   constructor(
@@ -27,6 +28,7 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent implements OnInit 
   public WorkplaceUpdateFlowType = WorkplaceUpdateFlowType;
   public flowType: WorkplaceUpdateFlowType;
   private totalNumberOfStaff: number;
+  public oneYearAgo = DateUtil.getDateForOneYearAgo();
 
   ngOnInit(): void {
     this.flowType = this.route.snapshot?.data?.flowType;
@@ -42,7 +44,7 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent implements OnInit 
       this.alertService.addAlert({
         type: 'success',
         message: `Total number of staff, vacancies and ${
-          this.flowType === WorkplaceUpdateFlowType.ADD ? 'starters' : 'leavers'
+          this.flowType === WorkplaceUpdateFlowType.AFTER_ADD_STAFF ? 'starters' : 'leavers'
         } information saved`,
       });
 

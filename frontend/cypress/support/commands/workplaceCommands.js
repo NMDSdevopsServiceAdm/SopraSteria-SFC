@@ -106,6 +106,17 @@ Cypress.Commands.add('setWorkplaceCWPAwarenessQuestionViewed', (establishmentID)
   cy.task('dbQuery', { queryString, parameters });
 });
 
+Cypress.Commands.add('fillWorkplaceCWPAnswers', (establishmentID) => {
+  const queryString = `UPDATE cqc."Establishment"
+      SET "CareWorkforcePathwayWorkplaceAwarenessFK" = 1,
+          "CareWorkforcePathwayUseValue" = 'Yes',
+          "CWPAwarenessQuestionViewed" = true
+      WHERE "EstablishmentID" = $1;`;
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
 Cypress.Commands.add('resetWorkplaceDHAAnswers', (establishmentID) => {
   const queryStrings = [
     `UPDATE cqc."Establishment"
@@ -149,6 +160,28 @@ Cypress.Commands.add('setWorkplaceDHAAnswers', (establishmentID, answers = {}) =
   const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
 
   cy.task('multipleDbQueries', dbQueries);
+});
+
+Cypress.Commands.add('fillWorkplaceDHAAnswers', (establishmentID) => {
+  const queryString = `UPDATE cqc."Establishment"
+      SET "StaffDoDelegatedHealthcareActivitiesValue" = 'Yes',
+          "StaffWhatKindDelegatedHealthcareActivitiesValue" = 'Yes'
+      WHERE "EstablishmentID" = $1;`;
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
+Cypress.Commands.add('updateStaffTotalNumberToMatchActualWorkers', (establishmentID) => {
+  const queryString = `UPDATE cqc."Establishment" e
+      SET "NumberOfStaffValue" =
+        (SELECT COUNT(*) FROM cqc."Worker" w
+         WHERE "EstablishmentFK" = $1 AND "Archived" <> true)
+      WHERE "EstablishmentID" = $1
+      RETURNING *;`;
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
 });
 
 Cypress.Commands.add('setWorkplaceMainService', (establishmentID, mainServiceId) => {
@@ -214,6 +247,32 @@ Cypress.Commands.add('changeWorkplaceWDFAnswersTimestamp', (establishmentID, new
   const parameters = [establishmentID, newDate];
   cy.task('dbQuery', { queryString: queryString, parameters: parameters });
 });
+
+Cypress.Commands.add(
+  'insertDummyAnswerForStartersLeaversVacancies',
+  (establishmentID, newDate = '2019-01-01 00:00:00') => {
+    const allDateFields = ['Vacancies', 'Starters', 'Leavers'].flatMap((field) => [
+      field + 'SavedAt',
+      field + 'ChangedAt',
+    ]);
+    const fieldUpdates = allDateFields.map((field) => `"${field}" = $2`).join(', ');
+
+    const queryStrings = [
+      `UPDATE cqc."Establishment"
+        SET
+          "VacanciesValue" = 'None',
+          "StartersValue" = 'None',
+          "LeaversValue" = 'None',
+          ${fieldUpdates}
+      WHERE "EstablishmentID" = $1;`,
+    ];
+
+    const parameters = [establishmentID, newDate];
+    const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+
+    cy.task('multipleDbQueries', dbQueries);
+  },
+);
 
 Cypress.Commands.add('insertDummyAnswerForWorkplaceWDFAnswers', (establishmentID) => {
   const queryStrings = [

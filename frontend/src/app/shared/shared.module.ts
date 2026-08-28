@@ -152,6 +152,7 @@ import { NewPillWithLinkComponent } from './components/new-pill-with-link/new-pi
 import { NewAutoSuggestComponent } from './components/auto-suggest-new/new-auto-suggest.component';
 import { SearchInputAutoSuggestComponent } from './components/search-input-auto-suggest/search-input-auto-suggest.component';
 import { UpdateBannerComponent } from './components/update-banner/update-banner.component';
+import { DisplaySlvDataComponent } from './components/display-slv-data/display-slv-data.component';
 
 @NgModule({
   imports: [
@@ -310,6 +311,7 @@ import { UpdateBannerComponent } from './components/update-banner/update-banner.
     FormatMoneyWithDecimalsPipe,
     NewPillWithLinkComponent,
     UpdateBannerComponent,
+    DisplaySlvDataComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -450,6 +452,7 @@ import { UpdateBannerComponent } from './components/update-banner/update-banner.
     FormatMoneyWithDecimalsPipe,
     NewPillWithLinkComponent,
     UpdateBannerComponent,
+    DisplaySlvDataComponent,
   ],
   providers: [
     DialogService,

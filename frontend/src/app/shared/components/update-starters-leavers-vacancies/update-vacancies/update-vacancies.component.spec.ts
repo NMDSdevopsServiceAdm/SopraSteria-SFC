@@ -1,5 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
@@ -140,12 +139,14 @@ describe('UpdateVacanciesComponent', () => {
       expect(revealText).toBeTruthy();
     });
 
-    it('should show a warning text to remind about subtract or remove vacancies', async () => {
+    it('should show a warning text about including only current vacancies', async () => {
       const { getByTestId } = await setup();
-      const warningText = getByTestId('warning-text');
-      const expectedTextContent = 'Remember to SUBTRACT or REMOVE any that are no longer vacancies.';
 
-      expect(warningText.textContent).toContain(expectedTextContent);
+      const warningText = getByTestId('warning-text');
+
+      expect(warningText.textContent).toContain(
+        'ONLY include current vacancies for permanent and temporary job roles.',
+      );
     });
 
     it('should not show explanation message for adding when question answered previously', async () => {
@@ -163,9 +164,9 @@ describe('UpdateVacanciesComponent', () => {
       expect(tableTitle).toBeTruthy();
     });
 
-    it('should show an "Add more job roles" button', async () => {
+    it('should show an "Select more job roles" button', async () => {
       const { getByRole } = await setup();
-      const addButton = getByRole('button', { name: 'Add more job roles' });
+      const addButton = getByRole('button', { name: 'Select more job roles' });
 
       expect(addButton).toBeTruthy();
     });
@@ -192,6 +193,22 @@ describe('UpdateVacanciesComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
+    it('should show the correct vacancies reminder text', async () => {
+      const { getByTestId } = await setup();
+
+      const warningText = getByTestId('warning-text');
+
+      expect(warningText.textContent).toContain(
+        'ONLY include current vacancies for permanent and temporary job roles.',
+      );
+    });
+
+    it('should show the correct explanation message for adding vacancies', async () => {
+      const { getByText } = await setup({ workplace: mockFreshWorkplace });
+
+      expect(getByText('Only add the number of vacancies for permanent and temporary job roles.')).toBeTruthy();
+    });
+
     describe('in case of a fresh workplace', () => {
       it('should show a different page heading', async () => {
         const { getByRole } = await setup({ workplace: mockFreshWorkplace });
@@ -200,18 +217,28 @@ describe('UpdateVacanciesComponent', () => {
         expect(heading.textContent).toEqual('Add your current staff vacancies');
       });
 
-      it('should not show the reminder text for subtract or remove vacancies', async () => {
-        const { queryByTestId, queryByText } = await setup({ workplace: mockFreshWorkplace });
+      it('should not show the reminder text for a fresh workplace', async () => {
+        const { queryByTestId, queryByText } = await setup({
+          workplace: mockFreshWorkplace,
+        });
 
-        const warningText = queryByTestId('warning-text');
-        expect(warningText).toBeFalsy();
-        expect(queryByText('Remember to SUBTRACT or REMOVE any that are no longer vacancies.')).toBeFalsy();
+        expect(queryByTestId('warning-text')).toBeFalsy();
+
+        expect(queryByText('ONLY include current vacancies for permanent and temporary job roles.')).toBeFalsy();
       });
 
-      it('should show "Add job roles" as the text of add job role button', async () => {
+      it('should show "Select job roles" as the text of add job role button', async () => {
         const { getByRole } = await setup({ workplace: mockFreshWorkplace });
 
-        const addButton = getByRole('button', { name: 'Add job roles' });
+        const addButton = getByRole('button', { name: 'Select job roles' });
+
+        expect(addButton).toBeTruthy();
+      });
+
+      it('should show "Select more job roles" when the workplace has previously answered the question', async () => {
+        const { getByRole } = await setup({ workplace: mockWorkplace });
+
+        const addButton = getByRole('button', { name: 'Select more job roles' });
 
         expect(addButton).toBeTruthy();
       });
@@ -318,7 +345,7 @@ describe('UpdateVacanciesComponent', () => {
       it('should navigate to select-job-role page', async () => {
         const { component, fixture, routerSpy, getByRole } = await setup();
 
-        const addButton = getByRole('button', { name: 'Add more job roles' });
+        const addButton = getByRole('button', { name: 'Select more job roles' });
         userEvent.click(addButton);
 
         fixture.detectChanges();
@@ -335,7 +362,7 @@ describe('UpdateVacanciesComponent', () => {
           workplace: mockWorkplace,
         });
 
-        const addButton = getByRole('button', { name: 'Add more job roles' });
+        const addButton = getByRole('button', { name: 'Select more job roles' });
         userEvent.click(addButton);
 
         fixture.detectChanges();
@@ -354,7 +381,7 @@ describe('UpdateVacanciesComponent', () => {
         await clickRemoveButtonForJobRole('Registered nurse');
         await fillInValueForJobRole('Social worker', '5');
 
-        const addButton = getByRole('button', { name: 'Add more job roles' });
+        const addButton = getByRole('button', { name: 'Select more job roles' });
         userEvent.click(addButton);
 
         fixture.detectChanges();
@@ -718,7 +745,7 @@ describe('UpdateVacanciesComponent', () => {
         expectErrorMessageAppears(expectedErrorMessage2);
         expect(updateJobsSpy).not.toHaveBeenCalled();
 
-        const addJobRoleButton = getByRole('button', { name: 'Add job roles' });
+        const addJobRoleButton = getByRole('button', { name: 'Select job roles' });
         const buttonFocusSpy = spyOn(addJobRoleButton, 'focus');
 
         userEvent.click(getAllByText('Add a job role')[0]);

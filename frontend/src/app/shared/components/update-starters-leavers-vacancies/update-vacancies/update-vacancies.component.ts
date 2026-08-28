@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { jobOptionsEnum } from '@core/model/establishment.model';
 import { WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
-import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
+import {
+  UpdateStartersLeaversVacanciesDirective,
+} from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
 
 @Component({
   selector: 'app-update-vacancies',
@@ -11,7 +13,7 @@ import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/upda
 export class UpdateVacanciesComponent extends UpdateStartersLeaversVacanciesDirective {
   public revealText =
     'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.';
-  public reminderText = `Remember to <strong>SUBTRACT</strong> or <strong>REMOVE</strong> any that are <br><strong>no longer vacancies</strong>.`;
+  public reminderText = `<strong>ONLY</strong> include current vacancies for permanent and temporary job roles.`;
   public tableTitle = 'Current staff vacancies';
   public totalNumberDescription = 'Total number of vacancies';
 
@@ -45,10 +47,10 @@ export class UpdateVacanciesComponent extends UpdateStartersLeaversVacanciesDire
   protected setupTexts(): void {
     if (!this.questionPreviouslyAnswered) {
       this.heading = 'Add your current staff vacancies';
-      this.addJobRoleButtonText = 'Add job roles';
+      this.addJobRoleButtonText = 'Select job roles';
     } else {
       this.heading = 'Update your current staff vacancies';
-      this.addJobRoleButtonText = 'Add more job roles';
+      this.addJobRoleButtonText = 'Select more job roles';
     }
   }
 }

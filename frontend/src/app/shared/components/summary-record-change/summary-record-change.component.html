@@ -1,6 +1,11 @@
 <a [routerLink]="link" (click)="setReturn()">
-  @if (!hasData) { Add
-  <span class="govuk-visually-hidden"> for</span>
-  } @if (hasData) { Change }
+  @if (overrideLabelText) {
+    {{ overrideLabelText }}
+  } @else if (!hasData) {
+    Add
+    <span class="govuk-visually-hidden"> for</span>
+  } @else {
+    Change
+  }
   <span class="govuk-visually-hidden">{{ explanationText }}</span>
 </a>

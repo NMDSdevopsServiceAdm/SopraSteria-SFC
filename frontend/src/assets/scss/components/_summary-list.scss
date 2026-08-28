@@ -119,6 +119,27 @@
   &-message {
     color: #f47738;
   }
+
+  // negate the effect of padding-left: 15px, so that middle column aligns
+  .govuk-summary-list__value {
+    transform: translate(-13px);
+  }
+}
+
+.govuk-summary-list__warning--inner-message {
+  padding-top: 5px;
+  color: #f47738;
+}
+
+// manage borders when a row is pushed to right by .govuk-summary-list__warning
+// when a row has no warning but next row has, delegate the responsibility of bottom border to next row, so that border is pushed to right
+.govuk-summary-list__row {
+  .govuk-summary-list__no-warning:has(+ .govuk-summary-list__warning) & {
+    border-bottom: 0;
+  }
+  .govuk-summary-list__no-warning + .govuk-summary-list__warning & {
+    border-top: 1px solid $govuk-border-colour;
+  }
 }
 
 .vacancy-turnover-warning-top-border {

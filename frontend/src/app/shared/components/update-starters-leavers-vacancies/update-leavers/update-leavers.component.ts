@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { jobOptionsEnum } from '@core/model/establishment.model';
 import { WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
-import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
+import {
+  UpdateStartersLeaversVacanciesDirective,
+} from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
 
 @Component({
   selector: 'app-update-leavers',
@@ -28,28 +30,39 @@ export class UpdateLeaversComponent extends UpdateStartersLeaversVacanciesDirect
   protected setupTexts(): void {
     const todayOneYearAgo = this.getDateForOneYearAgo();
 
-    this.reminderText = `Remember to <strong>SUBTRACT</strong> or <strong>REMOVE</strong> any staff who left <br><strong>before ${todayOneYearAgo}</strong>.`;
+    this.reminderText = `<strong>ONLY</strong> include leavers from ${todayOneYearAgo} to today.`;
 
     const headingBaseText = `the number of staff who've left SINCE ${todayOneYearAgo}`;
 
     if (this.questionPreviouslyAnswered) {
-      this.addJobRoleButtonText = 'Add more job roles';
-      this.heading = `Update ${headingBaseText}`;
+      this.addJobRoleButtonText = 'Select more job roles';
+      this.heading = `Update the number of staff who've left in the last 12 months`;
     } else {
-      this.addJobRoleButtonText = 'Add job roles';
+      this.addJobRoleButtonText = 'Select job roles';
       this.heading = `Add ${headingBaseText}`;
     }
 
-    this.radioButtonOptions = [
-      {
-        label: `No staff left on or after ${todayOneYearAgo}`,
-        value: jobOptionsEnum.NONE,
-      },
-      {
-        label: `I do not know if any staff left on or after ${todayOneYearAgo}`,
-        value: jobOptionsEnum.DONT_KNOW,
-      },
-    ];
+    this.radioButtonOptions = !this.questionPreviouslyAnswered
+      ? [
+          {
+            label: `No staff left on or after ${todayOneYearAgo}`,
+            value: jobOptionsEnum.NONE,
+          },
+          {
+            label: `I do not know if any staff left on or after ${todayOneYearAgo}`,
+            value: jobOptionsEnum.DONT_KNOW,
+          },
+        ]
+      : [
+          {
+            label: `No staff left in the last 12 months`,
+            value: jobOptionsEnum.NONE,
+          },
+          {
+            label: `I do not know if any staff left in the last 12 months`,
+            value: jobOptionsEnum.DONT_KNOW,
+          },
+        ];
 
     this.messageWhenNoJobRoleSelected = {
       None: `No staff left on or after ${todayOneYearAgo}.`,

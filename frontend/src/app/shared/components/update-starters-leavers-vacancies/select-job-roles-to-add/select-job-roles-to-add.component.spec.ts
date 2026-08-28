@@ -10,6 +10,7 @@ import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { JobRoleType, SelectJobRolesToAddComponent } from './select-job-roles-to-add.component';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 describe('SelectJobRolesToAddComponent', () => {
   const mockAvailableJobs = MockJobRoles;
@@ -31,6 +32,7 @@ describe('SelectJobRolesToAddComponent', () => {
               data: {
                 jobs: mockAvailableJobs,
                 jobRoleType: override.jobRoleType,
+                flowType: override.flowType,
               },
             },
           },
@@ -60,6 +62,24 @@ describe('SelectJobRolesToAddComponent', () => {
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  describe('section heading', () => {
+    it('should set section to Workplace when flowType is provided', async () => {
+      const { component } = await setup({
+        flowType: 'ADD_STARTERS_LEAVERS_VACANCIES',
+      });
+
+      expect(component.flowType).toBe('ADD_STARTERS_LEAVERS_VACANCIES');
+      expect(component.section).toBe('Workplace');
+    });
+
+    it('should set section to Vacancies and turnover when flowType is not provided', async () => {
+      const { component } = await setup();
+
+      expect(component.flowType).toBeUndefined();
+      expect(component.section).toBe(WorkplaceFlowSections.VACANCIES_AND_TURNOVER);
+    });
   });
 
   const pageStates = [

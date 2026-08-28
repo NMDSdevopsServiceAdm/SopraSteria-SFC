@@ -69,7 +69,7 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
         const testId = slvType;
         cy.get(`[data-testid="${testId}"]`).contains('Add').click();
 
-        cy.contains('button', 'Add job roles').click();
+        cy.contains('button', 'Select job roles').click();
         cy.addJobRoles(jobRoles);
         cy.updateJobRoleTotal(jobRoles, 'type');
 
@@ -83,7 +83,7 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
 
         cy.get('[data-testid="plus-button-job-0"]').click();
         cy.get('[data-testid="remove-button-Senior care worker"]').contains('Remove').click();
-        cy.contains('button', 'Add more job roles').click();
+        cy.contains('button', 'Select more job roles').click();
 
         cy.addJobRoles(additionalJobRolesToAdd);
 

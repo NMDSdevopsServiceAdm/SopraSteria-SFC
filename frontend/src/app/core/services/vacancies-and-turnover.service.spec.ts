@@ -34,7 +34,7 @@ describe('VacanciesAndTurnoverService', () => {
           service.addToVisitedPages(page);
         });
 
-        expect(service.allUpdatePagesVisited(WorkplaceUpdateFlowType.ADD)).toBeFalse();
+        expect(service.allUpdatePagesVisited(WorkplaceUpdateFlowType.AFTER_ADD_STAFF)).toBeFalse();
       });
 
       it(`should return false when not all delete pages in visitedPage when DELETE passed in (${visitedPages})`, async () => {
@@ -42,7 +42,7 @@ describe('VacanciesAndTurnoverService', () => {
           service.addToVisitedPages(page);
         });
 
-        expect(service.allUpdatePagesVisited(WorkplaceUpdateFlowType.DELETE)).toBeFalse();
+        expect(service.allUpdatePagesVisited(WorkplaceUpdateFlowType.AFTER_DELETE_STAFF)).toBeFalse();
       });
     });
 
@@ -55,7 +55,7 @@ describe('VacanciesAndTurnoverService', () => {
         service.addToVisitedPages(page);
       });
 
-      expect(service.allUpdatePagesVisited(WorkplaceUpdateFlowType.ADD)).toBeTrue();
+      expect(service.allUpdatePagesVisited(WorkplaceUpdateFlowType.AFTER_ADD_STAFF)).toBeTrue();
     });
 
     it('should return true when all pages in visitedPages for delete flow', async () => {
@@ -67,7 +67,7 @@ describe('VacanciesAndTurnoverService', () => {
         service.addToVisitedPages(page);
       });
 
-      expect(service.allUpdatePagesVisited(WorkplaceUpdateFlowType.DELETE)).toBeTrue();
+      expect(service.allUpdatePagesVisited(WorkplaceUpdateFlowType.AFTER_DELETE_STAFF)).toBeTrue();
     });
   });
 
@@ -82,7 +82,7 @@ describe('VacanciesAndTurnoverService', () => {
           service.addToSubmittedPages(page);
         });
 
-        expect(service.allUpdatePagesSubmitted(WorkplaceUpdateFlowType.ADD)).toBeFalse();
+        expect(service.allUpdatePagesSubmitted(WorkplaceUpdateFlowType.AFTER_ADD_STAFF)).toBeFalse();
       });
 
       it(`should return false when not all delete pages in submittedPages when DELETE passed in (${submittedPages})`, async () => {
@@ -90,7 +90,7 @@ describe('VacanciesAndTurnoverService', () => {
           service.addToSubmittedPages(page);
         });
 
-        expect(service.allUpdatePagesSubmitted(WorkplaceUpdateFlowType.DELETE)).toBeFalse();
+        expect(service.allUpdatePagesSubmitted(WorkplaceUpdateFlowType.AFTER_DELETE_STAFF)).toBeFalse();
       });
     });
 
@@ -103,7 +103,7 @@ describe('VacanciesAndTurnoverService', () => {
         service.addToSubmittedPages(page);
       });
 
-      expect(service.allUpdatePagesSubmitted(WorkplaceUpdateFlowType.ADD)).toBeTrue();
+      expect(service.allUpdatePagesSubmitted(WorkplaceUpdateFlowType.AFTER_ADD_STAFF)).toBeTrue();
     });
 
     it('should return true when all pages in submittedPages for delete flow', async () => {
@@ -115,7 +115,7 @@ describe('VacanciesAndTurnoverService', () => {
         service.addToSubmittedPages(page);
       });
 
-      expect(service.allUpdatePagesSubmitted(WorkplaceUpdateFlowType.DELETE)).toBeTrue();
+      expect(service.allUpdatePagesSubmitted(WorkplaceUpdateFlowType.AFTER_DELETE_STAFF)).toBeTrue();
     });
   });
 });
