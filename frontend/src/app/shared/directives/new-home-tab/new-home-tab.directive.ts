@@ -337,10 +337,11 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     dialog.afterClosed.subscribe((changeDataOwnerConfirmed) => {
       if (changeDataOwnerConfirmed) {
         this.changeDataOwnerLink();
-        this.router.navigate(['/dashboard']);
-        this.alertService.addAlert({
-          type: 'success',
-          message: `Request to change data owner has been sent to ${this.workplace.parentName} `,
+        this.router.navigate(['/dashboard']).then(() => {
+          this.alertService.addAlert({
+            type: 'success',
+            message: `Request to change data owner has been sent to ${this.workplace.parentName} `,
+          });
         });
       }
     });
@@ -361,10 +362,11 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
             dialog.afterClosed.subscribe((cancelDataOwnerConfirmed) => {
               if (cancelDataOwnerConfirmed) {
                 this.changeDataOwnerLink();
-                this.router.navigate(['/dashboard']);
-                this.alertService.addAlert({
-                  type: 'success',
-                  message: 'Request to change data owner has been cancelled ',
+                this.router.navigate(['/dashboard']).then(() => {
+                  this.alertService.addAlert({
+                    type: 'success',
+                    message: 'Request to change data owner has been cancelled ',
+                  });
                 });
               }
             });

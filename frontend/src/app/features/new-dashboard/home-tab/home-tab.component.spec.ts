@@ -448,7 +448,7 @@ describe('NewHomeTabComponent', () => {
 
         fireEvent.click(cancelDataOwnerRequestButton);
         fixture.detectChanges();
-
+        await fixture.whenStable();
         expect(cancelOwnershipSpy).toHaveBeenCalledWith(workplace.id, workplace.ownershipChangeRequestId[0], {
           approvalStatus: 'CANCELLED',
           notificationRecipientUid: workplace.uid,

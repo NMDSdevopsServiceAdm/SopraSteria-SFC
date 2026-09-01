@@ -211,7 +211,9 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.workerService.setState({ ...this.worker, ...data });
     this.onSuccess();
     this.navigate();
-    this.addAlert();
+    this.navigate().then(() => {
+      this.addAlert();
+    });
   }
 
   onError(error) {

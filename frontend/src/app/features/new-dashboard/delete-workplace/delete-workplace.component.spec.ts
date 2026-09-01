@@ -1,5 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
@@ -194,6 +193,8 @@ describe('DeleteWorkplaceComponent', async () => {
     fireEvent.click(yesRadioButton);
     fireEvent.click(continueButton);
     fixture.detectChanges();
+
+    await fixture.whenStable();
 
     expect(alertSpy).toHaveBeenCalledWith({
       type: 'success',

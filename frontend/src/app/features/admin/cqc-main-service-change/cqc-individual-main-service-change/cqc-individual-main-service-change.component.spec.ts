@@ -1,5 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -583,6 +582,10 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
 
       fireEvent.click(approvalConfirmButton);
 
+      fixture.detectChanges();
+
+      await fixture.whenStable();
+
       expect(alertServiceSpy).toHaveBeenCalledWith({
         type: 'success',
         message: `The main service change of workplace ${workplaceName} has been approved`,
@@ -680,6 +683,10 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
       const rejectionConfirmButton = within(dialog).getByText('Reject this change');
 
       fireEvent.click(rejectionConfirmButton);
+
+      fixture.detectChanges();
+
+      await fixture.whenStable();
 
       expect(alertServiceSpy).toHaveBeenCalledWith({
         type: 'success',

@@ -14,10 +14,10 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-view-my-workplaces',
-    templateUrl: './view-my-workplaces.component.html',
-    styleUrls: ['view-my-workplaces.component.scss'],
-    standalone: false
+  selector: 'app-view-my-workplaces',
+  templateUrl: './view-my-workplaces.component.html',
+  styleUrls: ['view-my-workplaces.component.scss'],
+  standalone: false,
 })
 export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
@@ -146,6 +146,5 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-    this.alertService.removeAlert();
   }
 }

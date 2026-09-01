@@ -16,9 +16,9 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-delete-workplace',
-    templateUrl: './delete-workplace.component.html',
-    standalone: false
+  selector: 'app-delete-workplace',
+  templateUrl: './delete-workplace.component.html',
+  standalone: false,
 })
 export class DeleteWorkplaceComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
@@ -124,11 +124,13 @@ export class DeleteWorkplaceComponent implements OnInit, AfterViewInit, OnDestro
             this.parentSubsidiaryViewService.clearViewingSubAsParent();
             this.establishmentService.setCheckForChildWorkplaceChanges(true);
 
-            this.router.navigate(['/workplace', 'view-all-workplaces']);
-            this.displaySuccessfullyDeletedAlert();
+            this.router.navigate(['/workplace', 'view-all-workplaces']).then(() => {
+              this.displaySuccessfullyDeletedAlert();
+            });
           } else {
-            this.router.navigate(['sfcadmin', 'search', 'workplace']);
-            this.displaySuccessfullyDeletedAlert();
+            this.router.navigate(['sfcadmin', 'search', 'workplace']).then(() => {
+              this.displaySuccessfullyDeletedAlert();
+            });
           }
         },
         () => {

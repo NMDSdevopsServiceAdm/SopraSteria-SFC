@@ -23,11 +23,11 @@ import { combineLatest, Subscription } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-drag-and-drop-files-list',
-    templateUrl: './drag-and-drop-files-list.component.html',
-    styleUrls: ['./drag-and-drop-files-list.component.scss'],
-    providers: [I18nPluralPipe],
-    standalone: false
+  selector: 'app-drag-and-drop-files-list',
+  templateUrl: './drag-and-drop-files-list.component.html',
+  styleUrls: ['./drag-and-drop-files-list.component.scss'],
+  providers: [I18nPluralPipe],
+  standalone: false,
 })
 export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   @Input() public sanitise: boolean;
@@ -187,8 +187,9 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
         }),
       )
       .subscribe(() => {
-        this.router.navigate(['/dashboard']);
-        this.alertService.addAlert({ type: 'success', message: 'The bulk upload is complete.' });
+        this.router.navigate(['/dashboard']).then(() => {
+          this.alertService.addAlert({ type: 'success', message: 'The bulk upload is complete.' });
+        });
       });
   }
 
