@@ -2175,20 +2175,21 @@ class WorkerCsvValidator {
   }
 
   _validateNurseFieldOfPractice() {
-    const nmcReg = this._currentLine.NMCREG?.length > 0 ? this._currentLine.NMCREG?.split(';') : null;
+    const buCodesFromInput = this._currentLine.NMCREG?.length > 0 ? this._currentLine.NMCREG?.split(';') : null;
 
-    const hasValue = nmcReg?.length > 0;
+    const hasData = buCodesFromInput?.length > 0;
 
     const RegisterNurseBuCode = 16;
     const mainJobRoleIsNurse = this._mainJobRole === RegisterNurseBuCode;
 
-    if (!hasValue) {
+    if (!hasData) {
       if (mainJobRoleIsNurse) {
         this._validationErrors.push(
           this._generateWarning('NMCREG has not been supplied', 'NMCREG', 'NMCREG_WARNING_NOT_SUPPLIED'),
         );
         return false;
       }
+
       return true;
     }
 
@@ -2203,20 +2204,26 @@ class WorkerCsvValidator {
       return false;
     }
 
-    const convertedToDatabaseId = nmcReg.map((buCode) => {
+    const convertedToDatabaseId = buCodesFromInput.map((buCode) => {
       const buCodeAsNumber = Number(buCode);
       return this.BUDI.nurseFieldOfPractice(this.BUDI.TO_ASC, buCodeAsNumber);
     });
-    const allValuesAreValid = convertedToDatabaseId.every((x) => x);
 
-    if (!allValuesAreValid) {
+    const validValues = convertedToDatabaseId.filter((x) => Boolean(x));
+    const someValuesAreInvalid = validValues.length !== buCodesFromInput.length;
+    const allValuesAreInvalid = validValues.length === 0;
+
+    if (someValuesAreInvalid) {
       this._validationErrors.push(
         this._generateWarning('The code you have entered for NMCREG is incorrect and will be ignored', 'NMCREG'),
       );
+    }
+
+    if (allValuesAreInvalid) {
       return false;
     }
 
-    this._nurseFieldOfPractice = convertedToDatabaseId.map((id) => {
+    this._nurseFieldOfPractice = validValues.map((id) => {
       return { id };
     });
   }

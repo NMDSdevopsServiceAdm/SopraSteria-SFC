@@ -2131,7 +2131,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         { input: '1;2;4', expectedValue: [{ id: 1 }, { id: 2 }, { id: 4 }] },
       ];
 
-      const invalidInputs = ['0', 'abc', '1;5', '1;abc', '1,2,3', ';', ';;', 'undefined', 'null'];
+      const invalidInputs = ['0', 'abc', '5', '1,2,3', ';', ';;', 'undefined', 'null'];
 
       it('should pass if NMCREG is empty and worker is not registered nurse', () => {
         const worker = buildWorkerCsv({
@@ -2253,6 +2253,37 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           expect(validator._validationErrors).to.deep.equal([expectedWarning]);
           expect(validator._nurseFieldOfPractice).deep.equal(null);
         });
+      });
+
+      it('should give a warning and keep the valid values, if input is a mix of valid and invalid values', () => {
+        const input = '1;5;3';
+        const expectedValue = [{ id: 1 }, { id: 3 }];
+
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            NMCREG: input,
+            MAINJOBROLE: RegisterNurseBuCode,
+          },
+        });
+        const expectedWarning = {
+          column: 'NMCREG',
+          lineNumber: 2,
+          name: 'MARMA',
+          source: input,
+          warnCode: WorkerCsvValidator.NMCREG_WARNING,
+          warnType: 'NMCREG_WARNING',
+          warning: 'The code you have entered for NMCREG is incorrect and will be ignored',
+          worker: '3',
+        };
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([expectedWarning]);
+        expect(validator._nurseFieldOfPractice).deep.equal(expectedValue);
       });
 
       it('should give a warning if NMCREG is invalid and worker is not a registered nurse', () => {
