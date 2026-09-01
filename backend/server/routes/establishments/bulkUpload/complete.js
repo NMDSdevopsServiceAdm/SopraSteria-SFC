@@ -117,9 +117,15 @@ const completeDeleteEstablishment = async (
       );
 
       if (onloadWorker?.transferStaffRecord) {
-        const targetEstablishment = onloadEstablishments.find(
+        let targetEstablishment = onloadEstablishments.find(
           (e) => e.localIdentifier === onloadWorker.transferStaffRecord,
         );
+
+        if (!targetEstablishment?._id) {
+          targetEstablishment = myCurrentEstablishments.find(
+            (e) => e.localIdentifier === onloadWorker.transferStaffRecord,
+          );
+        }
 
         if (targetEstablishment?._id) {
           currentWorker._transferStaffRecord = onloadWorker.transferStaffRecord;
