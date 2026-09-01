@@ -6,6 +6,7 @@ const pCodeCheck = require('../../utils/postcodeSanitizer');
 
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
+const cqcLocationUtils = require('../../utils/cqcLocationUtils');
 const filteredProperties = ['LocationId', 'Address1', 'Address2', 'Address3', 'Town', 'County', 'Postcode', 'Name'];
 
 // gets current employer type for the known establishment
@@ -70,10 +71,15 @@ const updateLocationDetails = async (req, res) => {
 
       const newPostcode = pCodeCheck.sanitisePostcode(req.body.postalCode);
 
+      let newProviderId = null;
+      if (req.body.locationId) {
+        newProviderId = await cqcLocationUtils.getProviderId(req.body.locationId);
+      }
+
       // by loading after the restore, only those properties defined in the
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in locationId and address
-      const isValidEstablishment = await thisEstablishment.load({
+      const updates = {
         locationId: req.body.locationId ? req.body.locationId : null,
         address1: req.body.addressLine1,
         address2: req.body.addressLine2 ? req.body.addressLine2 : null,
@@ -82,7 +88,10 @@ const updateLocationDetails = async (req, res) => {
         county: req.body.county,
         postcode: newPostcode,
         name: req.body.locationName,
-      });
+        ...(newProviderId ? { provId: newProviderId } : {}),
+      };
+
+      const isValidEstablishment = await thisEstablishment.load(updates);
 
       // this is an update to an existing Establishment, so no mandatory properties!
       if (isValidEstablishment) {
@@ -113,3 +122,4 @@ router.route('/').get(hasPermission('canViewEstablishment'), getLocationDetails)
 router.route('/').post(hasPermission('canEditEstablishment'), updateLocationDetails);
 
 module.exports = router;
+router.updateLocationDetails = updateLocationDetails;
