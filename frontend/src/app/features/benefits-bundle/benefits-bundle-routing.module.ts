@@ -11,7 +11,10 @@ const routes: Routes = [
   {
     path: '',
     component: BenefitsBundleComponent,
-    data: { title: 'Benefits Bundle' },
+    data: { title: 'Benefits Bundle', cmsSlug: 'benefits-bundle-5-free-resources' },
+    resolve: {
+      pages: PageResolver,
+    },
   },
   {
     path: 'training-discounts',

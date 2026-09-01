@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { Page } from '@core/model/page.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
@@ -9,6 +11,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
   standalone: false,
 })
 export class BenefitsBundleComponent implements OnInit {
+  public pages: Page;
   public workplaceName: string;
   public revealTitle = `What's the ASC-WDS Benefits Bundle?`;
   public allOpen = false;
@@ -32,11 +35,16 @@ export class BenefitsBundleComponent implements OnInit {
     },
   ];
 
-  constructor(private establishmentService: EstablishmentService, private breadcrumbService: BreadcrumbService) {}
+  constructor(
+    private establishmentService: EstablishmentService,
+    private breadcrumbService: BreadcrumbService,
+    private route: ActivatedRoute,
+  ) {}
 
   public async ngOnInit(): Promise<void> {
     this.workplaceName = this.establishmentService.establishment.name;
     this.breadcrumbService.show(JourneyType.BENEFITS_BUNDLE);
+    this.pages = this.route.snapshot.data.pages?.data[0];
   }
 
   public toggleAll(event: Event): void {
