@@ -68,13 +68,17 @@ const completeUpdateEstablishment = async (
       delete thisEstablishmentJSON.localIdentifier;
 
       await foundCurrentEstablishment.load(thisEstablishmentJSON, true, true);
-      Object.values(foundCurrentEstablishment._workerEntities || {}).forEach((worker) => {
+
+      for (const worker of Object.values(foundCurrentEstablishment._workerEntities || {})) {
         const targetEstablishment = onloadEstablishments.find((e) => e.localIdentifier === worker.transferStaffRecord);
 
-        if (targetEstablishment) {
+        if (targetEstablishment?._id) {
+          worker._transferStaffRecord = worker.transferStaffRecord;
           worker._newWorkplaceId = targetEstablishment._id;
+
+          await worker.save(theLoggedInUser, true, 0, transaction);
         }
-      });
+      }
       await foundCurrentEstablishment.save(theLoggedInUser, true, transaction, true);
       await foundCurrentEstablishment.bulkUploadWdf(theLoggedInUser, transaction);
 
@@ -112,13 +116,25 @@ const completeDeleteEstablishment = async (
         (w) => w.key === currentWorker.key,
       );
 
-      if (onloadWorker?.newWorkplaceId) {
-        currentWorker._transferStaffRecord = onloadWorker.transferStaffRecord;
-        currentWorker._newWorkplaceId = onloadWorker.newWorkplaceId;
+      if (onloadWorker?.transferStaffRecord) {
+        let targetEstablishment = onloadEstablishments.find(
+          (e) => e.localIdentifier === onloadWorker.transferStaffRecord,
+        );
 
-        await currentWorker.save(theLoggedInUser, true, transaction);
+        if (!targetEstablishment?._id) {
+          targetEstablishment = myCurrentEstablishments.find(
+            (e) => e.localIdentifier === onloadWorker.transferStaffRecord,
+          );
+        }
 
-        delete foundCurrentEstablishment._workerEntities[currentWorker.key];
+        if (targetEstablishment?._id) {
+          currentWorker._transferStaffRecord = onloadWorker.transferStaffRecord;
+          currentWorker._newWorkplaceId = targetEstablishment._id;
+
+          await currentWorker.save(theLoggedInUser, true, 0, transaction);
+
+          delete foundCurrentEstablishment._workerEntities[currentWorker.key];
+        }
       }
     }
 
