@@ -43,6 +43,9 @@
         <dt class="govuk-summary-list__key">Permissions</dt>
         <dd class="govuk-summary-list__value">
           {{ user.isPrimary ? 'Primary edit' : user.role === 'Read' ? 'Read only' : user.role }}
+          @if (user.role === 'Read' && isStaffRecordReadOnlyEnabled) {
+          <div>View staff records</div>
+          }
         </dd>
         @if (canEditUser) {
         <dd class="govuk-summary-list__actions">
