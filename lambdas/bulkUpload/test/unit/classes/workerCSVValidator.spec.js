@@ -70,6 +70,17 @@ const buildWorkerRecord = build('WorkerRecord', {
 });
 
 describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
+  before(() => {
+    // patch the imported mapping object, as NURSE_FIELD_OF_PRACTICE mapping is fetched from database data, not hard-coded
+    const mockNurseFieldOfPracticeMappings = [
+      { ASC: 1, BUDI: 1 },
+      { ASC: 2, BUDI: 2 },
+      { ASC: 3, BUDI: 3 },
+      { ASC: 4, BUDI: 4 },
+    ];
+    Object.assign(mappings, { NURSE_FIELD_OF_PRACTICE: mockNurseFieldOfPracticeMappings });
+  });
+
   describe('validations', () => {
     describe('days sick', () => {
       it('should emit a warning when days sick not already changed today', async () => {
@@ -2106,6 +2117,201 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
         expect(validator._validationErrors).to.deep.equal([expectedWarning]);
         expect(validator._validationErrors.length).to.equal(1);
+      });
+    });
+
+    describe('_validateNurseFieldOfPractice', () => {
+      const RegisterNurseBuCode = 16;
+      const CareWorkerBuCode = 8;
+      const emptyInput = '';
+      const validInputs = [
+        { input: '1', expectedValue: [{ id: 1 }] },
+        { input: '2', expectedValue: [{ id: 2 }] },
+        { input: '1;2', expectedValue: [{ id: 1 }, { id: 2 }] },
+        { input: '1;2;4', expectedValue: [{ id: 1 }, { id: 2 }, { id: 4 }] },
+      ];
+
+      const invalidInputs = ['0', 'abc', '5', '1,2,3', ';', ';;', 'undefined', 'null'];
+
+      it('should pass if NMCREG is empty and worker is not registered nurse', () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            NMCREG: emptyInput,
+            MAINJOBROLE: CareWorkerBuCode,
+          },
+        });
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._nurseFieldOfPractice).to.equal(null);
+      });
+
+      validInputs.forEach(({ input, expectedValue }) => {
+        it(`should pass and set the _nurseFieldOfPractice if NMCREG is valid (${input}) and worker is a registered nurse`, () => {
+          const worker = buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              NMCREG: input,
+              MAINJOBROLE: RegisterNurseBuCode,
+            },
+          });
+          const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+          validator.validate();
+          validator.transform();
+
+          expect(validator._validationErrors).to.deep.equal([]);
+          expect(validator._nurseFieldOfPractice).deep.equal(expectedValue);
+        });
+      });
+
+      it('should give a warning if NMCREG is empty and worker is a registered nurse', () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            NMCREG: emptyInput,
+            MAINJOBROLE: RegisterNurseBuCode,
+          },
+        });
+        const expectedWarning = {
+          column: 'NMCREG',
+          lineNumber: 2,
+          name: 'MARMA',
+          source: emptyInput,
+          warnCode: WorkerCsvValidator.NMCREG_WARNING_NOT_SUPPLIED,
+          warnType: 'NMCREG_WARNING_NOT_SUPPLIED',
+          warning: 'NMCREG has not been supplied',
+          worker: '3',
+        };
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([expectedWarning]);
+        expect(validator._nurseFieldOfPractice).deep.equal(null);
+      });
+
+      it('should give a warning if NMCREG is valid but worker is not a registered nurse', () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            NMCREG: validInputs[0].input,
+            MAINJOBROLE: CareWorkerBuCode,
+          },
+        });
+        const expectedWarning = {
+          column: 'NMCREG',
+          lineNumber: 2,
+          name: 'MARMA',
+          source: validInputs[0].input,
+          warnCode: WorkerCsvValidator.NMCREG_WARNING_MAIN_JOB_ROLE_NOT_REG_NURSE,
+          warnType: 'NMCREG_WARNING_MAIN_JOB_ROLE_NOT_REG_NURSE',
+          warning: 'NMCREG will be ignored as this is not required for the MAINJOBROLE',
+          worker: '3',
+        };
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([expectedWarning]);
+        expect(validator._nurseFieldOfPractice).deep.equal(null);
+      });
+
+      invalidInputs.forEach((input) => {
+        it(`should give a warning if worker is a registered nurse but NMCREG is invalid: "${input}"`, () => {
+          const worker = buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              NMCREG: input,
+              MAINJOBROLE: RegisterNurseBuCode,
+            },
+          });
+          const expectedWarning = {
+            column: 'NMCREG',
+            lineNumber: 2,
+            name: 'MARMA',
+            source: input,
+            warnCode: WorkerCsvValidator.NMCREG_WARNING,
+            warnType: 'NMCREG_WARNING',
+            warning: 'The code you have entered for NMCREG is incorrect and will be ignored',
+            worker: '3',
+          };
+
+          const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+          validator.validate();
+          validator.transform();
+
+          expect(validator._validationErrors).to.deep.equal([expectedWarning]);
+          expect(validator._nurseFieldOfPractice).deep.equal(null);
+        });
+      });
+
+      it('should give a warning and keep the valid values, if input is a mix of valid and invalid values', () => {
+        const input = '1;5;3';
+        const expectedValue = [{ id: 1 }, { id: 3 }];
+
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            NMCREG: input,
+            MAINJOBROLE: RegisterNurseBuCode,
+          },
+        });
+        const expectedWarning = {
+          column: 'NMCREG',
+          lineNumber: 2,
+          name: 'MARMA',
+          source: input,
+          warnCode: WorkerCsvValidator.NMCREG_WARNING,
+          warnType: 'NMCREG_WARNING',
+          warning: 'The code you have entered for NMCREG is incorrect and will be ignored',
+          worker: '3',
+        };
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([expectedWarning]);
+        expect(validator._nurseFieldOfPractice).deep.equal(expectedValue);
+      });
+
+      it('should give a warning if NMCREG is invalid and worker is not a registered nurse', () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            NMCREG: invalidInputs[0],
+            MAINJOBROLE: CareWorkerBuCode,
+          },
+        });
+        const expectedWarning = {
+          column: 'NMCREG',
+          lineNumber: 2,
+          name: 'MARMA',
+          source: invalidInputs[0],
+          warnCode: WorkerCsvValidator.NMCREG_WARNING_MAIN_JOB_ROLE_NOT_REG_NURSE,
+          warnType: 'NMCREG_WARNING_MAIN_JOB_ROLE_NOT_REG_NURSE',
+          warning: 'NMCREG will be ignored as this is not required for the MAINJOBROLE',
+          worker: '3',
+        };
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([expectedWarning]);
+        expect(validator._nurseFieldOfPractice).deep.equal(null);
       });
     });
   });

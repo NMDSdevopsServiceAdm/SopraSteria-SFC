@@ -12,7 +12,7 @@ module.exports.apiTrainingBuilder = build('Training', {
       id: fake((f) => f.datatype.number({ min: 1, max: 40 })),
     },
     deliveredBy: TrainingCourseDeliveredBy.ExternalProvider,
-    trainingProvider: oneOf(null, { id: 1, bulkdUploadCode: 1 }, { id: 63, bulkdUploadCode: 999 }),
+    trainingProvider: oneOf(null, { id: 1, bulkUploadCode: 1 }, { id: 63, bulkUploadCode: 999 }),
     howWasItDelivered: oneOf(...Enum.TrainingCourseDeliveryMode),
     doesNotExpire: false,
     validityPeriodInMonth: fake((f) => f.datatype.number({ min: 1, max: 24 })),

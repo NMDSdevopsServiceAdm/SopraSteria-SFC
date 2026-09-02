@@ -3,8 +3,10 @@ const { Worker } = require('../../../../../models/classes/worker');
 const { Qualification } = require('../../../../../models/classes/qualification');
 const { validateWorkerLambda } = require('../../lambda');
 const { dateFormatter } = require('../../../../../utils/bulkUploadUtils');
+const { getMappingsFromDatabase } = require('../../../../../../reference/BUDIMappings');
 
 const validateWorkerCsv = async (workers, myCurrentEstablishments) => {
+  await getMappingsFromDatabase();
   const csvWorkerSchemaErrors = [];
   const myAPIWorkers = {};
   const myJSONWorkers = [];

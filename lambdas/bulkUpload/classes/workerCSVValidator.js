@@ -59,7 +59,7 @@ class WorkerCsvValidator {
     this._contHours = null;
     this._avgHours = null;
 
-    this._registeredNurse = null;
+    this._nurseFieldOfPractice = null;
 
     this._nationality = null;
     this._countryOfBirth = null;
@@ -303,6 +303,12 @@ class WorkerCsvValidator {
   }
   static get NMCREG_WARNING() {
     return 3340;
+  }
+  static get NMCREG_WARNING_MAIN_JOB_ROLE_NOT_REG_NURSE() {
+    return 3341;
+  }
+  static get NMCREG_WARNING_NOT_SUPPLIED() {
+    return 3342;
   }
   static get NURSE_SPEC_WARNING() {
     return 3350;
@@ -2168,40 +2174,58 @@ class WorkerCsvValidator {
     return true;
   }
 
-  _validateRegisteredNurse() {
-    const myRegisteredNurse = parseInt(this._currentLine.NMCREG, 10);
-    const NURSING_ROLE = 16;
-    const mainJobRoleIsNurse = this._mainJobRole === NURSING_ROLE;
-    const notNurseRole = !mainJobRoleIsNurse;
+  _validateNurseFieldOfPractice() {
+    const buCodesFromInput = this._currentLine.NMCREG?.length > 0 ? this._currentLine.NMCREG?.split(';') : null;
 
-    if (this._mainJobRole === NURSING_ROLE && myRegisteredNurse !== 0 && isNaN(myRegisteredNurse)) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: WorkerCsvValidator.NMCREG_WARNING,
-        warnType: 'NMCREG_WARNING',
-        warning: 'NMCREG has not been supplied',
-        source: this._currentLine.NMCREG,
-        column: 'NMCREG',
-      });
-      return false;
-    } else if (this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0 && notNurseRole) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: WorkerCsvValidator.NMCREG_WARNING,
-        warnType: 'NMCREG_WARNING',
-        warning: 'NMCREG will be ignored as this is not required for the MAINJOBROLE',
-        source: this._currentLine.NMCREG,
-        column: 'NMCREG',
-      });
-      return false;
-    } else {
-      this._registeredNurse = myRegisteredNurse;
+    const hasData = buCodesFromInput?.length > 0;
+
+    const RegisterNurseBuCode = 16;
+    const mainJobRoleIsNurse = this._mainJobRole === RegisterNurseBuCode;
+
+    if (!hasData) {
+      if (mainJobRoleIsNurse) {
+        this._validationErrors.push(
+          this._generateWarning('NMCREG has not been supplied', 'NMCREG', 'NMCREG_WARNING_NOT_SUPPLIED'),
+        );
+        return false;
+      }
+
       return true;
     }
+
+    if (!mainJobRoleIsNurse) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'NMCREG will be ignored as this is not required for the MAINJOBROLE',
+          'NMCREG',
+          'NMCREG_WARNING_MAIN_JOB_ROLE_NOT_REG_NURSE',
+        ),
+      );
+      return false;
+    }
+
+    const convertedToDatabaseId = buCodesFromInput.map((buCode) => {
+      const buCodeAsNumber = Number(buCode);
+      return this.BUDI.nurseFieldOfPractice(this.BUDI.TO_ASC, buCodeAsNumber);
+    });
+
+    const validValues = convertedToDatabaseId.filter((x) => Boolean(x));
+    const someValuesAreInvalid = validValues.length !== buCodesFromInput.length;
+    const allValuesAreInvalid = validValues.length === 0;
+
+    if (someValuesAreInvalid) {
+      this._validationErrors.push(
+        this._generateWarning('The code you have entered for NMCREG is incorrect and will be ignored', 'NMCREG'),
+      );
+    }
+
+    if (allValuesAreInvalid) {
+      return false;
+    }
+
+    this._nurseFieldOfPractice = validValues.map((id) => {
+      return { id };
+    });
   }
 
   _validateAmhp() {
@@ -2698,40 +2722,6 @@ class WorkerCsvValidator {
     }
   }
 
-  // ['Adult Nurse', 'Mental Health Nurse', 'Learning Disabilities Nurse', `Children's Nurse`, 'Enrolled Nurse'
-  _transformRegisteredNurse() {
-    if (this._registeredNurse || this._registeredNurse === 0) {
-      switch (this._registeredNurse) {
-        case 1:
-          this._registeredNurse = 'Adult Nurse';
-          break;
-        case 2:
-          this._registeredNurse = 'Mental Health Nurse';
-          break;
-        case 3:
-          this._registeredNurse = 'Learning Disabilities Nurse';
-          break;
-        case 4:
-          this._registeredNurse = "Children's Nurse";
-          break;
-        case 5:
-          this._registeredNurse = 'Enrolled Nurse';
-          break;
-        default:
-          this._validationErrors.push({
-            worker: this._currentLine.UNIQUEWORKERID,
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            warnCode: WorkerCsvValidator.NMCREG_WARNING,
-            warnType: 'NMCREG_WARNING',
-            warning: 'The code you have entered for NMCREG is incorrect and will be ignored',
-            source: this._currentLine.NMCREG,
-            column: 'NMCREG',
-          });
-      }
-    }
-  }
-
   _transformNationality() {
     if (this._nationality) {
       // ASC WDS nationality is a split enum/index
@@ -2930,7 +2920,7 @@ class WorkerCsvValidator {
       status = !this._validateMainJobDesc() ? false : status;
       status = !this._validateContHours() ? false : status;
       status = !this._validateAvgHours() ? false : status;
-      status = !this._validateRegisteredNurse() ? false : status;
+      status = !this._validateNurseFieldOfPractice() ? false : status;
       status = !this._validationQualificationRecords() ? false : status;
       status = !this._validateSocialCareQualification() ? false : status;
       status = !this._validateNonSocialCareQualification() ? false : status;
@@ -2952,7 +2942,6 @@ class WorkerCsvValidator {
       status = !this._transformEthnicity() ? false : status;
       status = !this._transformRecruitment() ? false : status;
       status = !this._transformMainJobRole() ? false : status;
-      status = !this._transformRegisteredNurse() ? false : status;
       status = !this._transformNationality() ? false : status;
       status = !this._transformCountryOfBirth() ? false : status;
       status = !this._transformSocialCareQualificationLevel() ? false : status;
@@ -3028,9 +3017,7 @@ class WorkerCsvValidator {
         contractedHours: this._contHours !== null ? this._contHours : undefined,
         additionalHours: this._avgHours !== null ? this._avgHours : undefined,
       },
-      nursing: {
-        registered: this._registeredNurse ? this._registeredNurse : undefined,
-      },
+      nurseFieldOfPractice: this._nurseFieldOfPractice ?? null,
       highestQualifications: {
         social: this._socialCareQualification
           ? {
@@ -3102,7 +3089,7 @@ class WorkerCsvValidator {
       level2CareCertificate: this._level2CareCert?.value ? this._level2CareCert : undefined,
       apprenticeshipTraining: this._apprentice ? this._apprentice : undefined,
       zeroHoursContract: this._zeroHourContract ? this._zeroHourContract : undefined,
-      registeredNurse: this._registeredNurse ? this._registeredNurse : undefined,
+      nurseFieldOfPractice: this._nurseFieldOfPractice ?? undefined,
       approvedMentalHealthWorker: this._amhp ? this._amhp : undefined,
       completed: true, // on bulk upload, every Worker record is naturally completed!
     };

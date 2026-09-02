@@ -11,13 +11,15 @@ const { QUALIFICATION_LEVELS } = require('./qualificationLevels');
 const { QUALIFICATIONS } = require('./qualifications');
 const { RECRUITMENT } = require('./recruitment');
 const { TRAINING_CATEGORY } = require('./trainingCategory');
+const { build_nurse_field_of_practice_mappings } = require('./nurseFieldOfPractice');
 
 let mappingsFromDatabase = {};
 
-const mappingBuilder = async () => {
+const getMappingsFromDatabase = async () => {
   if (isEmpty(mappingsFromDatabase)) {
     mappingsFromDatabase = {
       TRAINING_PROVIDER: await build_training_provider_mappings(),
+      NURSE_FIELD_OF_PRACTICE: await build_nurse_field_of_practice_mappings(),
     };
   }
 
@@ -37,4 +39,4 @@ exports.mappings = {
   CWP_CATEGORY,
 };
 
-exports.mappingBuilder = mappingBuilder;
+exports.getMappingsFromDatabase = getMappingsFromDatabase;

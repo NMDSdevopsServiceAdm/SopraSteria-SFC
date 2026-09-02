@@ -8,10 +8,7 @@ const workers = [apiWorkerBuilder(), apiWorkerBuilder(), apiWorkerBuilder()];
 
 const sandbox = require('sinon').createSandbox();
 
-const {
-  toCSV,
-  _maptoCSVregisteredNurse,
-} = require('../../../../../../routes/establishments/bulkUpload/download/workerCSV');
+const { toCSV } = require('../../../../../../routes/establishments/bulkUpload/download/workerCSV');
 const { getWorkerColumnIndex } = require('../../../../../../routes/establishments/bulkUpload/data/workerHeaders');
 
 const establishment = {
@@ -656,65 +653,58 @@ describe('workerCSV', () => {
           expect(csvAsArray[getWorkerColumnIndex('AVGHOURS')]).to.equal('');
         });
 
-        [
-          {
-            name: 'Adult Nurse',
-            code: '01',
-          },
-          {
-            name: 'Mental Health Nurse',
-            code: '02',
-          },
-          {
-            name: 'Learning Disabilities Nurse',
-            code: '03',
-          },
-          {
-            name: "Children's Nurse",
-            code: '04',
-          },
-          {
-            name: 'Enrolled Nurse',
-            code: '05',
-          },
-        ].forEach((regNurse) => {
-          it(
-            'should return registered nurse value if main job is nurse and they have registered value of ' +
-              regNurse.name,
-            async () => {
-              worker.RegisteredNurseValue = regNurse.name;
-              worker.mainJob = {
-                id: 23,
-              };
+        describe('NMCREG / nurse field of practice', () => {
+          it('should convert a single nurse field of practice to BU code', async () => {
+            worker.nurseFieldOfPractice = [{ id: 1, bulkUploadCode: 1, label: 'Adult nursing' }];
+            worker.mainJob = {
+              id: 23,
+            };
 
-              const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-              const csvAsArray = csv.split(',');
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
 
-              expect(csvAsArray[getWorkerColumnIndex('NMCREG')]).to.equal(regNurse.code);
-            },
-          );
-        });
-        it("should not return registered nurse value if main job is nurse and they don't have reg value", async () => {
-          worker.RegisteredNurseValue = null;
-          worker.mainJob = {
-            id: 23,
-          };
+            expect(csvAsArray[getWorkerColumnIndex('NMCREG')]).to.equal('1');
+          });
 
-          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-          const csvAsArray = csv.split(',');
+          it('should convert multiple nurse field of practice to BU code with semicolon', async () => {
+            worker.nurseFieldOfPractice = [
+              { id: 1, bulkUploadCode: 1, label: 'Adult nursing' },
+              { id: 3, bulkUploadCode: 3, label: 'Learning disabilities nursing' },
+              { id: 100, bulkUploadCode: 5, label: 'Some mock field of practice' },
+            ];
+            worker.mainJob = {
+              id: 23,
+            };
 
-          expect(csvAsArray[getWorkerColumnIndex('NMCREG')]).to.equal('');
-        });
-        it("should return registered nurse value if main job is nurse and they don't have reg value", async () => {
-          worker.RegisteredNurseValue = 'Adult Nurse';
-          worker.mainJob = {
-            id: 24,
-          };
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
 
-          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-          const csvAsArray = csv.split(',');
+            expect(csvAsArray[getWorkerColumnIndex('NMCREG')]).to.equal('1;3;5');
+          });
 
-          expect(csvAsArray[getWorkerColumnIndex('NMCREG')]).to.equal('');
+          it('should fill in empty string "" if main job is nurse and they don\'t have nurse field of practice', async () => {
+            worker.nurseFieldOfPractice = null;
+            worker.mainJob = {
+              id: 23,
+            };
+
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[getWorkerColumnIndex('NMCREG')]).to.equal('');
+          });
+
+          it('should fill in empty string "" if main job is not registered nurse', async () => {
+            worker.nurseFieldOfPractice = [{ id: 1, bulkUploadCode: 1, label: 'Adult nursing' }];
+            worker.mainJob = {
+              id: 24,
+            };
+
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[getWorkerColumnIndex('NMCREG')]).to.equal('');
+          });
         });
 
         yesNoDontKnow.forEach((value) => {
@@ -906,41 +896,6 @@ describe('workerCSV', () => {
           expect(csvAsArray[getWorkerColumnIndex('QUALACH01')]).to.equal('');
         });
       });
-    });
-  });
-
-  describe('_maptoCSVregisteredNurse()', () => {
-    const valuesAndMappings = [
-      {
-        value: 'Adult Nurse',
-        mappedValue: '01',
-      },
-      {
-        value: 'Mental Health Nurse',
-        mappedValue: '02',
-      },
-      {
-        value: 'Learning Disabilities Nurse',
-        mappedValue: '03',
-      },
-      {
-        value: "Children's Nurse",
-        mappedValue: '04',
-      },
-      {
-        value: 'Enrolled Nurse',
-        mappedValue: '05',
-      },
-    ];
-
-    valuesAndMappings.forEach((pair) => {
-      it(`should return ${pair.mappedValue} when ${pair.value} passed in`, () => {
-        expect(_maptoCSVregisteredNurse(pair.value)).to.equal(pair.mappedValue);
-      });
-    });
-
-    it('should return empty string when invalid value passed in', () => {
-      expect(_maptoCSVregisteredNurse('Hello')).to.equal('');
     });
   });
 });
