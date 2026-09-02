@@ -16,9 +16,9 @@ import { Subscription } from 'rxjs';
 import { take, withLatestFrom } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-user-account-view',
-    templateUrl: './user-account-view.component.html',
-    standalone: false
+  selector: 'app-user-account-view',
+  templateUrl: './user-account-view.component.html',
+  standalone: false,
 })
 export class UserAccountViewComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
@@ -33,6 +33,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   public user: UserDetails;
   public userInfo: SummaryList[];
   public allUsers: UserDetails[];
+  public isStaffRecordReadOnlyEnabled = true; // TODO: Replace with the value from the backend
 
   constructor(
     private alertService: AlertService,
