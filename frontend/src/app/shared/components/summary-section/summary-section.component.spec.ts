@@ -11,6 +11,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
 import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
+import { SubsidiaryRouterService } from '@shared/services/subsidiary-router-service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -19,7 +20,6 @@ import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
-import { SubsidiaryRouterService } from '@shared/services/subsidiary-router-service';
 
 describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
@@ -44,6 +44,7 @@ describe('Summary section', () => {
       ],
       componentProperties: {
         workplace: overrides.establishment ?? Establishment,
+        workers: overrides?.workers ?? ([workerBuilder()] as Worker[]),
         trainingCounts: (overrides.trainingCounts as TrainingCounts) ?? ({} as TrainingCounts),
         navigateToTab: (event) => {
           event.preventDefault();
@@ -1524,6 +1525,156 @@ describe('Summary section', () => {
 
         expect(queryByTestId('update-banner-area')).toBeFalsy();
         expect(queryByText(cwpAwarenessBannerText)).toBeFalsy();
+      });
+    });
+
+    describe("Nurses' NMC fields of practice", () => {
+      const nursesBannerText = "Review and confirm your nurses' NMC fields of practice";
+
+      it('should show the update banner when there is one registered nurse and nursesQuestionsMiniFlowViewed is null', async () => {
+        const nurse = {
+          ...workerBuilder(),
+          uid: 'nurse-1',
+          mainJob: {
+            jobId: 23,
+            jobRoleName: 'Registered nurse',
+            title: 'Registered nurse',
+          },
+        } as Worker;
+
+        const { fixture, getByTestId, setReturnToSpy, updateSingleFieldSpy } = await setup({
+          establishment: {
+            ...Establishment,
+            nursesQuestionsMiniFlowViewed: null,
+          },
+          workers: [nurse],
+        });
+
+        const updateBannerArea = getByTestId('update-banner-area');
+
+        expect(within(updateBannerArea).queryByText(nursesBannerText)).toBeTruthy();
+
+        const link = within(updateBannerArea).getByText('Review details') as HTMLAnchorElement;
+
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${Establishment.uid}/staff-record/nurse-1/staff-record-summary/nursing-category-from-blue-banner`,
+        );
+
+        userEvent.click(link);
+        await fixture.whenStable();
+
+        expect(setReturnToSpy).toHaveBeenCalled();
+
+        expect(updateSingleFieldSpy).toHaveBeenCalledWith(Establishment.uid, {
+          property: 'nursesQuestionsMiniFlowViewed',
+          value: true,
+        });
+      });
+
+      it('should not show the banner when there are no registered nurses', async () => {
+        const { queryByTestId, queryByText } = await setup({
+          establishment: {
+            ...Establishment,
+            nursesQuestionsMiniFlowViewed: false,
+          },
+          workers: [
+            {
+              ...workerBuilder(),
+              mainJob: {
+                jobId: 10,
+                jobRoleName: 'Care worker',
+                title: 'Care worker',
+              },
+            } as Worker,
+          ],
+        });
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(nursesBannerText)).toBeFalsy();
+      });
+
+      it('should not show the banner when nursesQuestionsMiniFlowViewed is true', async () => {
+        const { queryByTestId, queryByText } = await setup({
+          establishment: {
+            ...Establishment,
+            nursesQuestionsMiniFlowViewed: true,
+          },
+          workers: [
+            {
+              ...workerBuilder(),
+              mainJob: {
+                jobId: 23,
+                jobRoleName: 'Registered nurse',
+                title: 'Registered nurse',
+              },
+            } as Worker,
+          ],
+        });
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(nursesBannerText)).toBeFalsy();
+      });
+
+      it('should not show the banner when user does not have permission to edit establishment', async () => {
+        const { queryByTestId, queryByText } = await setup({
+          canEditEstablishment: false,
+          establishment: {
+            ...Establishment,
+            nursesQuestionsMiniFlowViewed: false,
+          },
+          workers: [
+            {
+              ...workerBuilder(),
+              mainJob: {
+                jobId: 23,
+                jobRoleName: 'Registered nurse',
+                title: 'Registered nurse',
+              },
+            } as Worker,
+          ],
+        });
+
+        expect(queryByTestId('update-banner-area')).toBeFalsy();
+        expect(queryByText(nursesBannerText)).toBeFalsy();
+      });
+
+      it('should link to dashboard staff records when there is more than one registered nurse', async () => {
+        const { getByTestId } = await setup({
+          establishment: {
+            ...Establishment,
+            nursesQuestionsMiniFlowViewed: false,
+          },
+          workers: [
+            {
+              ...workerBuilder(),
+              uid: 'nurse-1',
+              mainJob: {
+                jobId: 23,
+                jobRoleName: 'Registered nurse',
+                title: 'Registered nurse',
+              },
+            } as Worker,
+            {
+              ...workerBuilder(),
+              uid: 'nurse-2',
+              mainJob: {
+                jobId: 23,
+                jobRoleName: 'Registered nurse',
+                title: 'Registered nurse',
+              },
+            } as Worker,
+          ],
+        });
+
+        const updateBannerArea = getByTestId('update-banner-area');
+
+        expect(within(updateBannerArea).queryByText(nursesBannerText)).toBeTruthy();
+
+        const link = within(updateBannerArea).getByText('Review details') as HTMLAnchorElement;
+
+        expect(link.getAttribute('href')).toContain(
+          `/workplace/${Establishment.uid}/staff-record/review-and-confirm-nurse-field-of-practice`,
+        );
       });
     });
 

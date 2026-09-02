@@ -1,23 +1,7 @@
 const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
 const get = require('lodash/get');
 const { csvQuote, dateFormatter } = require('../../../../utils/bulkUploadUtils');
-
-const _maptoCSVregisteredNurse = (registeredNurse) => {
-  switch (registeredNurse) {
-    case 'Adult Nurse':
-      return '01';
-    case 'Mental Health Nurse':
-      return '02';
-    case 'Learning Disabilities Nurse':
-      return '03';
-    case "Children's Nurse":
-      return '04';
-    case 'Enrolled Nurse':
-      return '05';
-  }
-
-  return '';
-};
+const { JobRoleId } = require('../../../../data/constants');
 
 const _convertYesNoDontKnow = (value) => {
   const mappings = {
@@ -383,14 +367,19 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   }
   columns.push(avgHours);
 
-  const NURSE_JOB_ID = 23;
+  const NURSE_JOB_ID = JobRoleId.REGISTERED_NURSE;
 
   // "NMCREG"
-  columns.push(
-    get(entity, 'mainJob.id') && entity.mainJob.id === NURSE_JOB_ID
-      ? _maptoCSVregisteredNurse(entity.RegisteredNurseValue)
-      : '',
-  );
+  const nurseFieldOfPractice = entity.nurseFieldOfPractice;
+  const isRegisteredNurse = get(entity, 'mainJob.id') && entity.mainJob.id === NURSE_JOB_ID;
+  const nurseQuestionHasAnswer = nurseFieldOfPractice?.length > 0;
+
+  if (isRegisteredNurse && nurseQuestionHasAnswer) {
+    const buCodes = nurseFieldOfPractice.map((field) => field.bulkUploadCode);
+    columns.push(buCodes.join(';'));
+  } else {
+    columns.push('');
+  }
 
   // "AMHP"
   let amhp = '';
@@ -492,5 +481,4 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
 module.exports = {
   toCSV,
   csvQuote,
-  _maptoCSVregisteredNurse,
 };

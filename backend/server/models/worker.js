@@ -1,6 +1,7 @@
 const dayjs = require('dayjs');
 const { Op } = require('sequelize');
 const { unsetDHAAnswerOnJobRoleChange } = require('./hooks/workerHooks');
+const { JobRoleId } = require('../data/constants');
 
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
@@ -979,32 +980,24 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CompletedChangedBy"',
       },
-      RegisteredNurseValue: {
-        type: DataTypes.ENUM,
-        allowNull: true,
-        values: ['Adult nurse', 'Mental health nurse', 'Learning disabiliies', "Children's nurse", 'Enrolled nurse'],
-        field: '"RegisteredNurseValue"',
-      },
-      RegisteredNurseSavedAt: {
+
+      NurseFieldOfPracticeSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"RegisteredNurseSavedAt"',
       },
-      RegisteredNurseChangedAt: {
+      NurseFieldOfPracticeChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"RegisteredNurseChangedAt"',
       },
-      RegisteredNurseSavedBy: {
+      NurseFieldOfPracticeSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"RegisteredNurseSavedBy"',
       },
-      RegisteredNurseChangedBy: {
+      NurseFieldOfPracticeChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"RegisteredNurseChangedBy"',
       },
+
       CareWorkforcePathwayRoleCategoryFK: {
         type: DataTypes.INTEGER,
         allowNull: true,
@@ -1195,11 +1188,19 @@ module.exports = function (sequelize, DataTypes) {
       otherKey: 'ID',
       as: 'qualifications',
     });
+
     Worker.hasMany(models.trainingCertificates, {
       foreignKey: 'workerFk',
       sourceKey: 'id',
       as: 'trainingCertificates',
       onDelete: 'CASCADE',
+    });
+
+    Worker.belongsToMany(models.nurseFieldOfPractice, {
+      through: 'workerNurseFieldsOfPractice',
+      foreignKey: 'workerID',
+      sourceKey: 'id',
+      as: 'nurseFieldOfPractice',
     });
   };
   Worker.permAndTempCountForEstablishment = function (establishmentId) {
@@ -1505,7 +1506,6 @@ module.exports = function (sequelize, DataTypes) {
     return { count, workers };
   };
 
-  Worker.addHook('beforeSave', unsetDHAAnswerOnJobRoleChange);
   Worker.checkIfAnyWorkerHasDHAAnswered = async function (establishmentId) {
     const workerWithDHAAnswered = await this.findOne({
       attributes: ['id', 'carryOutDelegatedHealthcareActivities'],
@@ -1563,6 +1563,29 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     await sequelize.models.workerAudit.bulkCreate(auditEvents, { transaction });
+  };
+
+  Worker.fetchAllNursesWithFieldsOfPractice = async function (establishmentId) {
+    const allNurses = await this.findAll({
+      include: [
+        {
+          model: sequelize.models.nurseFieldOfPractice,
+          as: 'nurseFieldOfPractice',
+          attributes: ['id', 'label'],
+          through: { attributes: [] },
+        },
+      ],
+      where: {
+        establishmentFk: establishmentId,
+        MainJobFKValue: JobRoleId.REGISTERED_NURSE,
+        archived: false,
+      },
+      attributes: ['uid', ['NameOrIdValue', 'nameOrId']],
+      order: [['NameOrIdValue', 'ASC']],
+      nest: true,
+    });
+
+    return allNurses;
   };
 
   Worker.addHook('beforeSave', 'unsetDHAAnswerOnJobRoleChange', unsetDHAAnswerOnJobRoleChange);

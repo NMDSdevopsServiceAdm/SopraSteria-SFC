@@ -62,6 +62,10 @@ class BUDI {
   trainingProvider(direction, originalCode) {
     return this.convertValue(direction, originalCode, this.mappings.TRAINING_PROVIDER);
   }
+
+  nurseFieldOfPractice(direction, originalCode) {
+    return this.convertValue(direction, originalCode, this.mappings.NURSE_FIELD_OF_PRACTICE);
+  }
 }
 
 exports.BUDI = BUDI;

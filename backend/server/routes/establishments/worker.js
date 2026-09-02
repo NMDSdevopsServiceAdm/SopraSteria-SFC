@@ -314,7 +314,7 @@ const getAllWorkersGroupedByJobRole = async (req, res) => {
           attributes: ['id', 'title'],
         },
       ],
-      attributes: ['uid'],
+      attributes: ['uid', ['NameOrIdValue', 'nameOrId']],
       orderBy: ['mainJob.title'],
       raw: true,
       nest: true,
@@ -368,6 +368,18 @@ const getWorkersWithPayData = async (req, res) => {
   } catch (err) {
     console.error('GET /worker/withPayData: unexpected exception: ', err);
     return res.status(500).send({ message: 'failed to get workers with pay data' });
+  }
+};
+
+const getAllNursesWithFieldsOfPractice = async (req, res) => {
+  const establishmentId = req.establishmentId;
+  try {
+    const registeredNurses = await models.worker.fetchAllNursesWithFieldsOfPractice(establishmentId);
+
+    return res.status(200).json({ registeredNurses });
+  } catch (err) {
+    console.error('GET /worker/registeredNurse: unexpected exception: ', err);
+    return res.status(500).send({ message: 'failed to get list of registered nurses' });
   }
 };
 
@@ -437,6 +449,7 @@ router.route('/total').get(hasPermission('canViewEstablishment'), getTotalWorker
 router.get('/groupedByJobRole', hasPermission('canViewWorker'), getAllWorkersGroupedByJobRole);
 router.get('/withPayData', hasPermission('canViewWorker'), getWorkersWithPayData);
 router.get('/mainJobRoles', hasPermission('canViewWorker'), getMainJobRoleForAllWorkers);
+router.get('/registeredNurses', hasPermission('canViewWorker'), getAllNursesWithFieldsOfPractice);
 
 router.use('/multiple-training', MutipleTrainingRecordsRoute);
 
@@ -456,3 +469,4 @@ module.exports.getTotalWorkers = getTotalWorkers;
 module.exports.getAllWorkersGroupedByJobRole = getAllWorkersGroupedByJobRole;
 module.exports.getWorkersWithPayData = getWorkersWithPayData;
 module.exports.getMainJobRoleForAllWorkers = getMainJobRoleForAllWorkers;
+module.exports.getAllNursesWithFieldsOfPractice = getAllNursesWithFieldsOfPractice;

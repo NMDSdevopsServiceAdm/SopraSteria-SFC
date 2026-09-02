@@ -16,29 +16,30 @@ describe('Worker Class', () => {
   });
 
   describe('load()', () => {
-    it('should remove "registered nurse" ( = nursing category) when not a registered nurse', async () => {
+    it('should remove "nurse field of practice" ( = nursing category) when not a registered nurse', async () => {
       const notRegisteredNurse = {
         mainJob: {
           jobId: 27,
         },
       };
       const nonRegisteredNurseWorker = await worker.load(notRegisteredNurse);
-      expect(notRegisteredNurse.registeredNurse).to.deep.equal(null);
+      expect(notRegisteredNurse.nurseFieldOfPractice).to.deep.equal([]);
       expect(nonRegisteredNurseWorker).to.deep.equal(true);
     });
 
-    it('should not remove "registered nurse" when a registered nurse', async () => {
+    it('should not remove "nurseFieldOfPractice" when worker is a registered nurse', async () => {
       const registeredNurse = {
         mainJob: {
           jobId: 23,
         },
 
-        registeredNurse: 'Adult Nurse',
+        nurseFieldOfPractice: [{ id: 1, label: 'Adult nursing' }],
       };
       const registeredNurseWorker = await worker.load(registeredNurse);
-      expect(registeredNurse.registeredNurse).to.deep.equal('Adult Nurse');
+      expect(registeredNurse.nurseFieldOfPractice).to.deep.equal([{ id: 1, label: 'Adult nursing' }]);
       expect(registeredNurseWorker).to.deep.equal(true);
     });
+
     it('should remove AMHP when not a social worker', async () => {
       const nonSocialWorker = {
         mainJob: {

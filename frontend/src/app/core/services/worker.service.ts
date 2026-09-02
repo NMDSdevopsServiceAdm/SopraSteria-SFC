@@ -5,6 +5,12 @@ import { Alert } from '@core/model/alert.model';
 import { Contracts } from '@core/model/contracts.enum';
 import { LocalIdentifiersRequest, LocalIdentifiersResponse } from '@core/model/establishment.model';
 import {
+  GetAllNurseFieldsOfPracticeResponse,
+  GetAllRegisteredNursesResponse,
+  NurseFieldOfPractice,
+  RegisteredNurse,
+} from '@core/model/nurse-field-of-practice.model';
+import {
   AvailableQualificationsResponse,
   QualificationRequest,
   QualificationResponse,
@@ -398,5 +404,19 @@ export class WorkerService {
 
   public clearWorkersGroupedByJobRole(): void {
     this._workersGroupedByJobRole = null;
+  }
+
+  public getAllNurseFieldsOfPractice(): Observable<NurseFieldOfPractice[]> {
+    return this.http
+      .get<GetAllNurseFieldsOfPracticeResponse>(`${environment.appRunnerEndpoint}/api/nurseFieldOfPractice`)
+      .pipe(map((res) => res.allNurseFieldsOfPractice));
+  }
+
+  public getAllRegisteredNurses(establishmentUid: string): Observable<RegisteredNurse[]> {
+    return this.http
+      .get<GetAllRegisteredNursesResponse>(
+        `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/worker/registeredNurses`,
+      )
+      .pipe(map((res) => res.registeredNurses));
   }
 }

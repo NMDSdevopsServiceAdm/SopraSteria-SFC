@@ -1028,6 +1028,11 @@ module.exports = function (sequelize, DataTypes) {
         field: '"LastStaffRecordMessageDismissedAt"',
         allowNull: true,
       },
+      nursesQuestionsMiniFlowViewed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'NursesQuestionsMiniFlowViewed',
+      },
     },
     {
       defaultScope: {
@@ -1817,7 +1822,6 @@ module.exports = function (sequelize, DataTypes) {
             'WeeklyHoursContractedHours',
             'WeeklyHoursAverageValue',
             'WeeklyHoursAverageHours',
-            'RegisteredNurseValue',
             'ApprovedMentalHealthWorkerValue',
             'QualificationInSocialCareValue',
             'OtherQualificationsValue',
@@ -1870,6 +1874,10 @@ module.exports = function (sequelize, DataTypes) {
             {
               model: sequelize.models.careWorkforcePathwayRoleCategory,
               as: 'careWorkforcePathwayRoleCategory',
+            },
+            {
+              model: sequelize.models.nurseFieldOfPractice.scope('bulkUpload'),
+              as: 'nurseFieldOfPractice',
             },
           ],
         },

@@ -1,0 +1,53 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+      <span data-testid="caption" class="govuk-caption-l">Staff records</span>
+      <h1 class="govuk-fieldset__heading">
+        Review and confirm these nurses' Nursing and Midwifery Council fields of practice
+      </h1>
+    </legend>
+
+    <div class="govuk-!-margin-top-2 govuk-!-margin-bottom-7">
+      <strong class="govuk-body govuk-!-font-weight-bold">Not sure?</strong>
+      <p class="govuk-body">
+        <a class="govuk-link" target="_blank" href="https://www.nmc.org.uk/registration/search-the-register/">
+          Search the Nursing and Midwifery Council register
+          <span class="govuk-visually-hidden">, (opens in a new window)</span>
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div id="registered-nurse-table" class="govuk-table govuk-!-margin-bottom-3" [formGroup]="form">
+      <div role="rowheader" class="asc__grid-table-with-form--row asc__grid-table-with-form--header-row">
+        <div data-testid="job-role-header">Name or ID number</div>
+        <div data-testid="pay-header">Details</div>
+        <div data-testid="show-hide-button-header"></div>
+      </div>
+
+      @for (workerForm of workerForms; track $index) {
+        @let worker = registeredNurses[$index];
+        <app-nurse-row [worker]="worker" [workerIndex]="$index" [workerForm]="workerForm"></app-nurse-row>
+      }
+
+      <div class="govuk-button-group govuk-!-margin-top-8">
+        <button (click)="onSubmit()" type="submit" class="govuk-button govuk-!-margin-right-9">
+          Confirm all details
+        </button>
+
+        <a
+          [routerLink]="returnTo"
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          role="button"
+          draggable="false"
+          href="#"
+        >
+          Cancel
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

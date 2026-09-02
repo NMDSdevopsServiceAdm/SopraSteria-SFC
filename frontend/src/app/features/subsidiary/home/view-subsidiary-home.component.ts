@@ -26,6 +26,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public subsidiaryWorkplace: Establishment;
   public primaryEstablishment: Establishment;
   public workplace: Establishment;
+  public workers?: Worker[];
   public summaryReturnUrl: URLStructure;
   public subscriptions: Subscription = new Subscription();
   public benchmarksMessage: string;
@@ -83,6 +84,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.subsidiaryWorkplace = this.route.snapshot.data.establishment;
+    this.workers = this.route.snapshot.data.workers.listOfAllWorkers;
     this.workersCreatedDate = this.route.snapshot.data.workers?.workersCreatedDate;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;

@@ -35,6 +35,7 @@ const WorkerCertificateService = require('../../routes/establishments/workerCert
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
 const BulkUploadQualificationHelper = require('./helpers/bulkUploadQualificationHelper');
+const { JobRoleId } = require('../../data/constants');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED', 'NOCHANGE'];
 
@@ -335,8 +336,8 @@ class Worker extends EntityValidator {
     return this._properties.get('OtherJobs') ? this._properties.get('OtherJobs').property : null;
   }
 
-  get registeredNurse() {
-    return this._properties.get('RegisteredNurse') ? this._properties.get('RegisteredNurse').property : null;
+  get nurseFieldOfPractice() {
+    return this._properties.get('NurseFieldOfPractice') ? this._properties.get('NurseFieldOfPractice').property : null;
   }
 
   get healthAndCareVisa() {
@@ -398,12 +399,12 @@ class Worker extends EntityValidator {
         const otherJobs = document.otherJobs ? document.otherJobs : this.otherJobs;
         if (otherJobs && otherJobs.jobs) {
           otherJobs.jobs.map((otherJob) => {
-            if (otherJob.jobId === 23) otherRegNurse = true;
+            if (otherJob.jobId === JobRoleId.REGISTERED_NURSE) otherRegNurse = true;
             if (otherJob.jobId === 27) otherSocialWorker = true;
           });
         }
-        if (mainJob && mainJob.jobId !== 23 && !otherRegNurse) {
-          document.registeredNurse = null;
+        if (mainJob && mainJob.jobId !== JobRoleId.REGISTERED_NURSE && !otherRegNurse) {
+          document.nurseFieldOfPractice = [];
         }
         // If their job isn't a social worker - remove the approved mental health worker
         if (mainJob && mainJob.jobId !== 27 && !otherSocialWorker) {
@@ -832,6 +833,7 @@ class Worker extends EntityValidator {
             // now - work through any additional models having processed all properties (first delete and then re-create)
             const additionalModels = this._properties.additionalModels;
             const additionalModelsByname = Object.keys(additionalModels);
+
             const deleteMmodelPromises = [];
             additionalModelsByname.forEach(async (thisModelByName) => {
               deleteMmodelPromises.push(
@@ -1035,6 +1037,14 @@ class Worker extends EntityValidator {
         this._updatedBy = fetchResults.updatedBy;
         this._lastWdfEligibility = fetchResults.lastWdfEligibility;
         this._wdfEligible = fetchResults.wdfEligible;
+
+        const nurseFieldOfPractice = await fetchResults.getNurseFieldOfPractice({
+          attributes: ['id', 'label'],
+          raw: true,
+        });
+        if (nurseFieldOfPractice && nurseFieldOfPractice?.length > 0) {
+          fetchResults.nurseFieldOfPractice = nurseFieldOfPractice;
+        }
 
         // if history of the Worker is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)

@@ -1,40 +1,43 @@
 <h2 class="govuk-heading-m">Employment details</h2>
 <dl class="govuk-summary-list asc-summarylist-border-top govuk-summary-list--wide-key">
   @if (displayHealthAndCareVisa) {
-  <div class="govuk-summary-list__row" data-testid="health-and-care-visa-section">
-    <dt class="govuk-summary-list__key">On a Health and Care Worker visa</dt>
-    <dd class="govuk-summary-list__value">
-      {{ worker.healthAndCareVisa | closedEndedAnswer }}
-    </dd>
-    @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="' Health and Care Worker visa'"
-        [link]="getRoutePath('health-and-care-visa', wdfView)"
-        [hasData]="!!worker.healthAndCareVisa"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
-    }
-  </div>
-  } @if (displayEmployedFromOutsideOrInsideUk) {
-  <div class="govuk-summary-list__row" data-testid="employed-inside-or-outside-section">
-    <dt class="govuk-summary-list__key">Employed from outside or inside the UK</dt>
-    <dd class="govuk-summary-list__value">
-      {{ displayEmployedFromOutsideOrInsideUkValue | closedEndedAnswer }}
-    </dd>
-    @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="'Employed from outside or inside UK'"
-        [link]="getRoutePath('inside-or-outside-of-uk', wdfView)"
-        [hasData]="!!worker.employedFromOutsideUk"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
-    }
-  </div>
+    <div class="govuk-summary-list__row" data-testid="health-and-care-visa-section">
+      <dt class="govuk-summary-list__key">On a Health and Care Worker visa</dt>
+      <dd class="govuk-summary-list__value">
+        {{ worker.healthAndCareVisa | closedEndedAnswer }}
+      </dd>
+      @if (canEditWorker) {
+        <dd class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="' Health and Care Worker visa'"
+            [link]="getRoutePath('health-and-care-visa', wdfView)"
+            [hasData]="!!worker.healthAndCareVisa"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      }
+    </div>
   }
+
+  @if (displayEmployedFromOutsideOrInsideUk) {
+    <div class="govuk-summary-list__row" data-testid="employed-inside-or-outside-section">
+      <dt class="govuk-summary-list__key">Employed from outside or inside the UK</dt>
+      <dd class="govuk-summary-list__value">
+        {{ displayEmployedFromOutsideOrInsideUkValue | closedEndedAnswer }}
+      </dd>
+      @if (canEditWorker) {
+        <dd class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="'Employed from outside or inside UK'"
+            [link]="getRoutePath('inside-or-outside-of-uk', wdfView)"
+            [hasData]="!!worker.employedFromOutsideUk"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      }
+    </div>
+  }
+
   <div
     class="govuk-summary-list__row"
     [ngClass]="{
@@ -48,65 +51,81 @@
       {{ worker.mainJobStartDate ? mainStartDate : '-' }}
     </dd>
     @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      @if (!showWdfConfirmations.mainJobStartDate) {
-      <app-summary-record-change
-        [explanationText]="' job start date'"
-        [link]="getRoutePath('main-job-start-date', wdfView)"
-        [hasData]="!!worker.mainJobStartDate"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-      }
-    </dd>
+      <dd class="govuk-summary-list__actions">
+        @if (!showWdfConfirmations.mainJobStartDate) {
+          <app-summary-record-change
+            [explanationText]="' job start date'"
+            [link]="getRoutePath('main-job-start-date', wdfView)"
+            [hasData]="!!worker.mainJobStartDate"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        }
+      </dd>
     }
   </div>
+
   @if (wdfView && worker.wdf?.mainJobStartDate?.isEligible === Eligibility.NO) {
-  <app-wdf-warning-message
-    [overallWdfEligibility]="overallWdfEligibility"
-    data-testid="mainJobStartDateWdfWarning"
-  ></app-wdf-warning-message>
-  } @if (showWdfConfirmations.mainJobStartDate) {
-  <app-wdf-field-confirmation
-    [changeLink]="getRoutePath('main-job-start-date', wdfView)"
-    (fieldConfirmation)="this.confirmField('mainJobStartDate')"
-    (setReturnClicked)="this.setReturn()"
-    [workerUid]="worker.uid"
-    [staffRecordView]="true"
-  ></app-wdf-field-confirmation>
-  } @if (displayMentalHealthProfessional) {
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Approved Mental Health Professional</dt>
-    <dd class="govuk-summary-list__value">
-      {{ worker.approvedMentalHealthWorker | closedEndedAnswer }}
-    </dd>
-    @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="' approved mental health professional'"
-        [link]="getRoutePath('mental-health-professional', wdfView)"
-        [hasData]="!!worker.approvedMentalHealthWorker"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
-    }
-  </div>
-  } @if (displayNursingQuestions) {
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Nursing and Midwifery Council category</dt>
-    <dd class="govuk-summary-list__value">
-      {{ (worker.registeredNurse | nursingCategoriesText) || '-' }}
-    </dd>
-    @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="' nursing and midwifery council category'"
-        [link]="getRoutePath('nursing-category', wdfView)"
-        [hasData]="!!worker.registeredNurse"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
-    }
-  </div>
+    <app-wdf-warning-message
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="mainJobStartDateWdfWarning"
+    ></app-wdf-warning-message>
+  }
+  @if (showWdfConfirmations.mainJobStartDate) {
+    <app-wdf-field-confirmation
+      [changeLink]="getRoutePath('main-job-start-date', wdfView)"
+      (fieldConfirmation)="this.confirmField('mainJobStartDate')"
+      (setReturnClicked)="this.setReturn()"
+      [workerUid]="worker.uid"
+      [staffRecordView]="true"
+    ></app-wdf-field-confirmation>
+  }
+
+  @if (displayMentalHealthProfessional) {
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Approved Mental Health Professional</dt>
+      <dd class="govuk-summary-list__value">
+        {{ worker.approvedMentalHealthWorker | closedEndedAnswer }}
+      </dd>
+      @if (canEditWorker) {
+        <dd class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="' approved mental health professional'"
+            [link]="getRoutePath('mental-health-professional', wdfView)"
+            [hasData]="!!worker.approvedMentalHealthWorker"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      }
+    </div>
+  }
+
+  @if (displayNursingQuestions) {
+    <div class="govuk-summary-list__row" data-testid="nursing-practice">
+      <dt class="govuk-summary-list__key">Nursing and Midwifery Council fields of practice</dt>
+
+      <dd class="govuk-summary-list__value">
+        @if (worker.nurseFieldOfPractice?.length) {
+          <ul class="govuk-list govuk-!-margin-bottom-0">
+            @for (field of worker.nurseFieldOfPractice; track field.label) {
+              <li>{{ field.label }}</li>
+            }
+          </ul>
+        } @else {
+          -
+        }
+      </dd>
+
+      @if (canEditWorker) {
+        <dd class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="' nursing and midwifery council fields of practice'"
+            [link]="getRoutePath('nursing-category', wdfView)"
+            [hasData]="!!worker.nurseFieldOfPractice?.length"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      }
+    </div>
   }
 
   <div
@@ -124,21 +143,21 @@
       }}
     </dd>
     @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="' recruited from'"
-        [link]="getRoutePath('recruited-from', wdfView)"
-        [hasData]="!!worker.recruitedFrom"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
+      <dd class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' recruited from'"
+          [link]="getRoutePath('recruited-from', wdfView)"
+          [hasData]="!!worker.recruitedFrom"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
     }
   </div>
   @if (wdfView && worker.wdf?.recruitedFrom?.isEligible === Eligibility.NO) {
-  <app-wdf-warning-message
-    [overallWdfEligibility]="overallWdfEligibility"
-    data-testid="recruitedFromWdfWarning"
-  ></app-wdf-warning-message>
+    <app-wdf-warning-message
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="recruitedFromWdfWarning"
+    ></app-wdf-warning-message>
   }
 
   <div class="govuk-summary-list__row">
@@ -151,73 +170,76 @@
       }}
     </dd>
     @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="' adult social care date'"
-        [link]="getRoutePath('adult-social-care-started', wdfView)"
-        [hasData]="!!worker.socialCareStartDate"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
+      <dd class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' adult social care date'"
+          [link]="getRoutePath('adult-social-care-started', wdfView)"
+          [hasData]="!!worker.socialCareStartDate"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
     }
   </div>
 
   @if (displayCarryOutDelegatedHealthcareActivities) {
-  <div class="govuk-summary-list__row" data-testid="carry-out-delegated-healthcare-activities-section">
-    <dt class="govuk-summary-list__key">Carries out delegated healthcare activities</dt>
-    <dd class="govuk-summary-list__value">
-      {{ worker.carryOutDelegatedHealthcareActivities | closedEndedAnswer }}
-    </dd>
-    @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="' carries out delegated healthcare activities'"
-        [link]="getRoutePath('carry-out-delegated-healthcare-activities', wdfView)"
-        [hasData]="!!worker.carryOutDelegatedHealthcareActivities"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
-    }
-  </div>
-  } @if (displayDaysSickness) {
-  <div
-    class="govuk-summary-list__row"
-    [ngClass]="{
+    <div class="govuk-summary-list__row" data-testid="carry-out-delegated-healthcare-activities-section">
+      <dt class="govuk-summary-list__key">Carries out delegated healthcare activities</dt>
+      <dd class="govuk-summary-list__value">
+        {{ worker.carryOutDelegatedHealthcareActivities | closedEndedAnswer }}
+      </dd>
+      @if (canEditWorker) {
+        <dd class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="' carries out delegated healthcare activities'"
+            [link]="getRoutePath('carry-out-delegated-healthcare-activities', wdfView)"
+            [hasData]="!!worker.carryOutDelegatedHealthcareActivities"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      }
+    </div>
+  }
+  @if (displayDaysSickness) {
+    <div
+      class="govuk-summary-list__row"
+      [ngClass]="{
         'govuk-summary-list__row--no-bottom-border':
           (wdfView && worker.wdf?.daysSick?.isEligible === Eligibility.NO) || showWdfConfirmations.daysSick,
       }"
-  >
-    <dt class="govuk-summary-list__key">Days sickness in last 12 months</dt>
-    <dd class="govuk-summary-list__value">
-      {{ worker.daysSick | workerDays | openEndedAnswer }}
-    </dd>
-    @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      @if (!showWdfConfirmations.daysSick) {
-      <app-summary-record-change
-        [explanationText]="' days of sickness'"
-        [link]="getRoutePath('days-of-sickness', wdfView)"
-        [hasData]="!!worker.daysSick"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
+    >
+      <dt class="govuk-summary-list__key">Days sickness in last 12 months</dt>
+      <dd class="govuk-summary-list__value">
+        {{ worker.daysSick | workerDays | openEndedAnswer }}
+      </dd>
+      @if (canEditWorker) {
+        <dd class="govuk-summary-list__actions">
+          @if (!showWdfConfirmations.daysSick) {
+            <app-summary-record-change
+              [explanationText]="' days of sickness'"
+              [link]="getRoutePath('days-of-sickness', wdfView)"
+              [hasData]="!!worker.daysSick"
+              (setReturnClicked)="this.setReturn()"
+            ></app-summary-record-change>
+          }
+        </dd>
       }
-    </dd>
+    </div>
+    @if (wdfView && worker.wdf?.daysSick?.isEligible === Eligibility.NO) {
+      <app-wdf-warning-message
+        [overallWdfEligibility]="overallWdfEligibility"
+        data-testid="daysSickWdfWarning"
+      ></app-wdf-warning-message>
     }
-  </div>
-  @if (wdfView && worker.wdf?.daysSick?.isEligible === Eligibility.NO) {
-  <app-wdf-warning-message
-    [overallWdfEligibility]="overallWdfEligibility"
-    data-testid="daysSickWdfWarning"
-  ></app-wdf-warning-message>
-  } @if (showWdfConfirmations.daysSick) {
-  <app-wdf-field-confirmation
-    [changeLink]="getRoutePath('days-of-sickness', wdfView)"
-    (fieldConfirmation)="this.confirmField('daysSick')"
-    (setReturnClicked)="this.setReturn()"
-    [workerUid]="worker.uid"
-    [staffRecordView]="true"
-  ></app-wdf-field-confirmation>
-  } }
+    @if (showWdfConfirmations.daysSick) {
+      <app-wdf-field-confirmation
+        [changeLink]="getRoutePath('days-of-sickness', wdfView)"
+        (fieldConfirmation)="this.confirmField('daysSick')"
+        (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
+        [staffRecordView]="true"
+      ></app-wdf-field-confirmation>
+    }
+  }
 
   <div
     class="govuk-summary-list__row"
@@ -232,128 +254,136 @@
       {{ worker.zeroHoursContract || '-' | closedEndedAnswer }}
     </dd>
     @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      @if (!showWdfConfirmations.zeroHoursContract) {
-      <app-summary-record-change
-        [explanationText]="' contract with zero hours'"
-        [link]="getRoutePath('contract-with-zero-hours', wdfView)"
-        [hasData]="!!worker.zeroHoursContract"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-      }
-    </dd>
+      <dd class="govuk-summary-list__actions">
+        @if (!showWdfConfirmations.zeroHoursContract) {
+          <app-summary-record-change
+            [explanationText]="' contract with zero hours'"
+            [link]="getRoutePath('contract-with-zero-hours', wdfView)"
+            [hasData]="!!worker.zeroHoursContract"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        }
+      </dd>
     }
   </div>
   @if (wdfView && worker.wdf?.zeroHoursContract?.isEligible === Eligibility.NO) {
-  <app-wdf-warning-message
-    [overallWdfEligibility]="overallWdfEligibility"
-    data-testid="zeroHoursContractWdfWarning"
-  ></app-wdf-warning-message>
-  } @if (showWdfConfirmations.zeroHoursContract) {
-  <app-wdf-field-confirmation
-    [changeLink]="getRoutePath('contract-with-zero-hours', wdfView)"
-    (fieldConfirmation)="this.confirmField('zeroHoursContract')"
-    (setReturnClicked)="this.setReturn()"
-    [workerUid]="worker.uid"
-    [staffRecordView]="true"
-  ></app-wdf-field-confirmation>
-  } @if (displayAverageWeeklyHours) {
-  <div
-    class="govuk-summary-list__row"
-    [ngClass]="{
+    <app-wdf-warning-message
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="zeroHoursContractWdfWarning"
+    ></app-wdf-warning-message>
+  }
+  @if (showWdfConfirmations.zeroHoursContract) {
+    <app-wdf-field-confirmation
+      [changeLink]="getRoutePath('contract-with-zero-hours', wdfView)"
+      (fieldConfirmation)="this.confirmField('zeroHoursContract')"
+      (setReturnClicked)="this.setReturn()"
+      [workerUid]="worker.uid"
+      [staffRecordView]="true"
+    ></app-wdf-field-confirmation>
+  }
+  @if (displayAverageWeeklyHours) {
+    <div
+      class="govuk-summary-list__row"
+      [ngClass]="{
         'govuk-summary-list__row--no-bottom-border':
           (wdfView && worker.wdf?.weeklyHoursAverage?.isEligible === Eligibility.NO) ||
           showWdfConfirmations.weeklyHoursAverage,
       }"
-  >
-    <dt class="govuk-summary-list__key">Average weekly working hours</dt>
-    <dd class="govuk-summary-list__value">
-      {{
-        isNumber(worker.weeklyHoursAverage?.hours)
-          ? worker.weeklyHoursAverage?.hours
-          : (worker.weeklyHoursAverage?.value | openEndedAnswer)
-      }}
-    </dd>
-    @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      @if (!showWdfConfirmations.weeklyHoursAverage) {
-      <app-summary-record-change
-        [explanationText]="' average weekly working hours'"
-        [link]="getRoutePath('average-weekly-hours', wdfView)"
-        [hasData]="
-          !(
-            worker.weeklyHoursAverage === null ||
-            (worker.weeklyHoursAverage?.value === null && worker.weeklyHoursAverage?.hours === null)
-          )
-        "
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
+    >
+      <dt class="govuk-summary-list__key">Average weekly working hours</dt>
+      <dd class="govuk-summary-list__value">
+        {{
+          isNumber(worker.weeklyHoursAverage?.hours)
+            ? worker.weeklyHoursAverage?.hours
+            : (worker.weeklyHoursAverage?.value | openEndedAnswer)
+        }}
+      </dd>
+      @if (canEditWorker) {
+        <dd class="govuk-summary-list__actions">
+          @if (!showWdfConfirmations.weeklyHoursAverage) {
+            <app-summary-record-change
+              [explanationText]="' average weekly working hours'"
+              [link]="getRoutePath('average-weekly-hours', wdfView)"
+              [hasData]="
+                !(
+                  worker.weeklyHoursAverage === null ||
+                  (worker.weeklyHoursAverage?.value === null && worker.weeklyHoursAverage?.hours === null)
+                )
+              "
+              (setReturnClicked)="this.setReturn()"
+            ></app-summary-record-change>
+          }
+        </dd>
       }
-    </dd>
+    </div>
+    @if (wdfView && worker.wdf?.weeklyHoursAverage?.isEligible === Eligibility.NO) {
+      <app-wdf-warning-message
+        [overallWdfEligibility]="overallWdfEligibility"
+        data-testid="weeklyHoursAverageWdfWarning"
+      ></app-wdf-warning-message>
     }
-  </div>
-  @if (wdfView && worker.wdf?.weeklyHoursAverage?.isEligible === Eligibility.NO) {
-  <app-wdf-warning-message
-    [overallWdfEligibility]="overallWdfEligibility"
-    data-testid="weeklyHoursAverageWdfWarning"
-  ></app-wdf-warning-message>
-  } @if (showWdfConfirmations.weeklyHoursAverage) {
-  <app-wdf-field-confirmation
-    [changeLink]="getRoutePath('average-weekly-hours', wdfView)"
-    (fieldConfirmation)="this.confirmField('weeklyHoursAverage')"
-    (setReturnClicked)="this.setReturn()"
-    [workerUid]="worker.uid"
-    [staffRecordView]="true"
-  ></app-wdf-field-confirmation>
-  } } @if (displayWeeklyContractedHours) {
-  <div
-    class="govuk-summary-list__row"
-    [ngClass]="{
+    @if (showWdfConfirmations.weeklyHoursAverage) {
+      <app-wdf-field-confirmation
+        [changeLink]="getRoutePath('average-weekly-hours', wdfView)"
+        (fieldConfirmation)="this.confirmField('weeklyHoursAverage')"
+        (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
+        [staffRecordView]="true"
+      ></app-wdf-field-confirmation>
+    }
+  }
+
+  @if (displayWeeklyContractedHours) {
+    <div
+      class="govuk-summary-list__row"
+      [ngClass]="{
         'govuk-summary-list__row--no-bottom-border':
           (wdfView && worker.wdf?.weeklyHoursContracted?.isEligible === Eligibility.NO) ||
           showWdfConfirmations.weeklyHoursContracted,
       }"
-  >
-    <dt class="govuk-summary-list__key">Contracted weekly hours</dt>
-    <dd class="govuk-summary-list__value">
-      {{
-        isNumber(worker.weeklyHoursContracted?.hours)
-          ? worker.weeklyHoursContracted?.hours
-          : (worker.weeklyHoursContracted?.value | openEndedAnswer)
-      }}
-    </dd>
-    @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      @if (!showWdfConfirmations.weeklyHoursContracted) {
-      <app-summary-record-change
-        [explanationText]="' contracted weekly hours'"
-        [link]="getRoutePath('weekly-contracted-hours', wdfView)"
-        [hasData]="
-          !(
-            worker.weeklyHoursContracted === null ||
-            (worker.weeklyHoursContracted?.value === null && worker.weeklyHoursContracted?.hours === null)
-          )
-        "
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
+    >
+      <dt class="govuk-summary-list__key">Contracted weekly hours</dt>
+      <dd class="govuk-summary-list__value">
+        {{
+          isNumber(worker.weeklyHoursContracted?.hours)
+            ? worker.weeklyHoursContracted?.hours
+            : (worker.weeklyHoursContracted?.value | openEndedAnswer)
+        }}
+      </dd>
+      @if (canEditWorker) {
+        <dd class="govuk-summary-list__actions">
+          @if (!showWdfConfirmations.weeklyHoursContracted) {
+            <app-summary-record-change
+              [explanationText]="' contracted weekly hours'"
+              [link]="getRoutePath('weekly-contracted-hours', wdfView)"
+              [hasData]="
+                !(
+                  worker.weeklyHoursContracted === null ||
+                  (worker.weeklyHoursContracted?.value === null && worker.weeklyHoursContracted?.hours === null)
+                )
+              "
+              (setReturnClicked)="this.setReturn()"
+            ></app-summary-record-change>
+          }
+        </dd>
       }
-    </dd>
+    </div>
+    @if (wdfView && worker.wdf?.weeklyHoursContracted?.isEligible === Eligibility.NO) {
+      <app-wdf-warning-message
+        [overallWdfEligibility]="overallWdfEligibility"
+        data-testid="weeklyHoursAverageWdfWarning"
+      ></app-wdf-warning-message>
     }
-  </div>
-  @if (wdfView && worker.wdf?.weeklyHoursContracted?.isEligible === Eligibility.NO) {
-  <app-wdf-warning-message
-    [overallWdfEligibility]="overallWdfEligibility"
-    data-testid="weeklyHoursAverageWdfWarning"
-  ></app-wdf-warning-message>
-  } @if (showWdfConfirmations.weeklyHoursContracted) {
-  <app-wdf-field-confirmation
-    [changeLink]="getRoutePath('weekly-contracted-hours', wdfView)"
-    (fieldConfirmation)="this.confirmField('weeklyHoursContracted')"
-    (setReturnClicked)="this.setReturn()"
-    [workerUid]="worker.uid"
-    [staffRecordView]="true"
-  ></app-wdf-field-confirmation>
-  } }
+    @if (showWdfConfirmations.weeklyHoursContracted) {
+      <app-wdf-field-confirmation
+        [changeLink]="getRoutePath('weekly-contracted-hours', wdfView)"
+        (fieldConfirmation)="this.confirmField('weeklyHoursContracted')"
+        (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
+        [staffRecordView]="true"
+      ></app-wdf-field-confirmation>
+    }
+  }
 
   <div
     class="govuk-summary-list__row"
@@ -368,30 +398,31 @@
       {{ worker.annualHourlyPay | workerPay | closedEndedAnswer }}
     </dd>
     @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      @if (!showWdfConfirmations.annualHourlyPay) {
-      <app-summary-record-change
-        [explanationText]="' salary'"
-        [link]="getRoutePath('salary', wdfView)"
-        [hasData]="!!worker.annualHourlyPay"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-      }
-    </dd>
+      <dd class="govuk-summary-list__actions">
+        @if (!showWdfConfirmations.annualHourlyPay) {
+          <app-summary-record-change
+            [explanationText]="' salary'"
+            [link]="getRoutePath('salary', wdfView)"
+            [hasData]="!!worker.annualHourlyPay"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        }
+      </dd>
     }
   </div>
   @if (wdfView && worker.wdf?.annualHourlyPay?.isEligible === Eligibility.NO) {
-  <app-wdf-warning-message
-    [overallWdfEligibility]="overallWdfEligibility"
-    data-testid="annualHourlyPayWdfWarning"
-  ></app-wdf-warning-message>
-  } @if (showWdfConfirmations.annualHourlyPay) {
-  <app-wdf-field-confirmation
-    [changeLink]="getRoutePath('salary', wdfView)"
-    (fieldConfirmation)="this.confirmField('annualHourlyPay')"
-    (setReturnClicked)="this.setReturn()"
-    [workerUid]="worker.uid"
-    [staffRecordView]="true"
-  ></app-wdf-field-confirmation>
+    <app-wdf-warning-message
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="annualHourlyPayWdfWarning"
+    ></app-wdf-warning-message>
+  }
+  @if (showWdfConfirmations.annualHourlyPay) {
+    <app-wdf-field-confirmation
+      [changeLink]="getRoutePath('salary', wdfView)"
+      (fieldConfirmation)="this.confirmField('annualHourlyPay')"
+      (setReturnClicked)="this.setReturn()"
+      [workerUid]="worker.uid"
+      [staffRecordView]="true"
+    ></app-wdf-field-confirmation>
   }
 </dl>

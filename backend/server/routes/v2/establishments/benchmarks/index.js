@@ -5,10 +5,11 @@ const clonedeep = require('lodash.clonedeep');
 const rankings = require('./rankings');
 const usage = require('./usage');
 const benchmarksService = require('./benchmarksService');
+const { JobRoleId } = require('../../../../data/constants');
 
 const CARE_WORKER_ID = 10;
 const SENIOR_CARE_WORKER_ID = 25;
-const REGISTERED_NURSE_ID = 23;
+const REGISTERED_NURSE_ID = JobRoleId.REGISTERED_NURSE;
 const REGISTERED_MANAGER_ID = 22;
 
 const workerMap = new Map([
@@ -212,17 +213,17 @@ const getBenchmarksData = async (establishmentId, mainService) => {
 
   const cssr = await models.cssr.getCSSRFromEstablishmentId(establishmentId);
 
-    data.careWorkerPay = await payBenchmarks(establishmentId, mainService, CARE_WORKER_ID, cssr);
-    data.seniorCareWorkerPay = await payBenchmarks(establishmentId, mainService, SENIOR_CARE_WORKER_ID, cssr);
-    data.registeredNursePay = await payBenchmarks(establishmentId, mainService, REGISTERED_NURSE_ID, cssr);
-    data.registeredManagerPay = await payBenchmarks(establishmentId, mainService, REGISTERED_MANAGER_ID, cssr);
-    data.vacancyRate = await vacanciesBenchmarks(establishmentId, mainService, cssr);
-    data.turnoverRate = await turnoverBenchmarks(establishmentId, mainService, cssr);
-    data.qualifications = await qualificationsBenchmarks(establishmentId, mainService, cssr);
-    data.sickness = await sicknessBenchmarks(establishmentId, mainService, cssr);
-    data.timeInRole = await timeInRoleBenchmarks(establishmentId, mainService, cssr);
+  data.careWorkerPay = await payBenchmarks(establishmentId, mainService, CARE_WORKER_ID, cssr);
+  data.seniorCareWorkerPay = await payBenchmarks(establishmentId, mainService, SENIOR_CARE_WORKER_ID, cssr);
+  data.registeredNursePay = await payBenchmarks(establishmentId, mainService, REGISTERED_NURSE_ID, cssr);
+  data.registeredManagerPay = await payBenchmarks(establishmentId, mainService, REGISTERED_MANAGER_ID, cssr);
+  data.vacancyRate = await vacanciesBenchmarks(establishmentId, mainService, cssr);
+  data.turnoverRate = await turnoverBenchmarks(establishmentId, mainService, cssr);
+  data.qualifications = await qualificationsBenchmarks(establishmentId, mainService, cssr);
+  data.sickness = await sicknessBenchmarks(establishmentId, mainService, cssr);
+  data.timeInRole = await timeInRoleBenchmarks(establishmentId, mainService, cssr);
 
-    data.meta = await getMetaData(mainService, cssr);
+  data.meta = await getMetaData(mainService, cssr);
   return data;
 };
 

@@ -1,0 +1,55 @@
+<div
+  role="row"
+  class="asc__grid-table-with-form--row"
+  [class]="{ 'asc__grid-table-with-form--header-row__first-row': workerIndex() === 0 }"
+  [attr.data-testid]="'worker-row-' + workerIndex()"
+  [formGroup]="workerForm()"
+>
+  <div [attr.data-testid]="'worker-name-' + workerIndex()" [id]="'worker-name-' + workerIndex()">
+    {{ worker().nameOrId }}
+  </div>
+  <div>
+    <div [attr.data-testid]="'worker-answer-' + workerIndex()">
+      <ul class="govuk-list govuk-!-margin-bottom-0">
+        @for (field of currentChoices(); track field.id) {
+          <li>{{ field.label }}</li>
+        } @empty {
+          <li>-</li>
+        }
+      </ul>
+    </div>
+    <div
+      class="govuk-form-group govuk-!-margin-top-6"
+      [class]="{ 'govuk-visually-hidden': !isExpanded }"
+      [attr.data-testid]="'worker-checkboxes-' + workerIndex()"
+    >
+      <div class="govuk-checkboxes" [formArrayName]="'nurseFieldOfPractice'">
+        <p class="govuk-body">Select all that apply.</p>
+        @for (field of allNurseFieldsOfPractice; track field.id; let fieldIndex = $index) {
+          @let id = `nurseFieldOfPractice-${workerIndex()}-${fieldIndex}`;
+
+          <div class="govuk-checkboxes__item">
+            <input
+              class="govuk-checkboxes__input"
+              [id]="id"
+              name="nurseFieldOfPractice"
+              [formControlName]="fieldIndex"
+              type="checkbox"
+              [value]="field.id"
+              [attr.aria-describedby]="'worker-name-' + workerIndex()"
+            />
+            <label class="govuk-label govuk-checkboxes__label" [for]="id">
+              {{ field.label }}
+            </label>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+  <div [attr.data-testid]="'toggle-button-' + workerIndex()">
+    <app-accordion-toggle-button
+      (clickEmitter)="handleToggle($event)"
+      [buttonText]="buttonText()"
+    ></app-accordion-toggle-button>
+  </div>
+</div>
