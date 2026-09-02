@@ -22,14 +22,9 @@ export const runTestsForNursesQuestionsMiniFlow = (mockEstablishmentData) => {
     cy.get('a').contains(workerName).click();
     cy.get('h1').should('contain', 'Staff record');
 
-    cy.get('div').contains('Nursing and Midwifery Council category').parent().as('nurseQuestionRow');
+    cy.get('div').contains('Nursing and Midwifery Council fields of practice').parent().as('nurseQuestionRow');
 
-    nurseAnswers.forEach((answer, index) => {
-      if (index > 0) {
-        // to delete this early return when worker summary can show multiple answers
-        return;
-      }
-
+    nurseAnswers.forEach((answer) => {
       cy.get('@nurseQuestionRow').should('contain', answer);
     });
   };
