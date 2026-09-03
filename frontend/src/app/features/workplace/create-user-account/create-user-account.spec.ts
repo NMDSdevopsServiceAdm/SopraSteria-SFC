@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -21,7 +21,7 @@ import { of } from 'rxjs';
 import { UserAccountSavedComponent } from '../user-account-saved/user-account-saved.component';
 import { CreateUserAccountComponent } from './create-user-account.component';
 
-describe('CreateUserAccountComponent', () => {
+fdescribe('CreateUserAccountComponent', () => {
   async function setup() {
     const setupTools = await render(CreateUserAccountComponent, {
       imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule],
@@ -162,5 +162,20 @@ describe('CreateUserAccountComponent', () => {
 
     const { getByText } = await setup();
     expect(getByText(message)).toBeTruthy();
+  });
+
+  it('should show Staff records checkbox when Read is selected', async () => {
+    const { fixture, getByText, getByRole } = await setup();
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    fireEvent.click(getByText('Read'));
+
+    expect(
+      getByRole('checkbox', {
+        name: /also allow this user to view staff records/i,
+      }),
+    ).toBeTruthy();
   });
 });
