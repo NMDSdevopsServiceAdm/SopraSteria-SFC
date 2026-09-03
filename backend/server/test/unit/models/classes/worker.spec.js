@@ -517,8 +517,13 @@ describe('Worker Class', () => {
       const bulkUploaded = false;
       const transaction = {};
 
+      mockWorker._status = 'UPDATE';
+      mockWorker._trainingProvided = true;
+
       const deleteCertificatesSpy = sinon.stub(mockWorker, 'deleteAllTrainingCertificatesAssociatedWithWorker');
+
       const trainingDestroySpy = sinon.stub(models.workerTraining, 'destroy').resolves(true);
+
       const training = new Training(123, mockWorker._uid);
 
       const trainingSaveSpy = sinon.stub(training, 'save').resolves(true);
