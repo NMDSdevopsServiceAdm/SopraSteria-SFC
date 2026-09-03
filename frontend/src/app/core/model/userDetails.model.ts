@@ -29,6 +29,7 @@ export interface UserDetails {
   lastViewedVacanciesAndTurnoverMessage?: string;
   trainingCoursesMessageViewedQuantity?: number;
   viewedUserResearchQuestion?: boolean;
+  canViewStaffRecords?: boolean;
 }
 
 export enum UserStatus {
