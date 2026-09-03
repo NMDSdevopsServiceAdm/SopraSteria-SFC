@@ -3,6 +3,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { Roles } from '@core/model/roles.enum';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
@@ -20,8 +21,8 @@ import { WorkplaceModule } from '../workplace.module';
 import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions.component';
 
 describe('UserAccountEditPermissionsComponent', () => {
-  async function setup() {
-    const { fixture, getByText } = await render(UserAccountEditPermissionsComponent, {
+  async function setup(user = nonPrimaryEditUser) {
+    const { fixture, getByText, getByRole, queryByRole } = await render(UserAccountEditPermissionsComponent, {
       imports: [RouterModule, WorkplaceModule],
       providers: [
         BackService,
@@ -44,7 +45,7 @@ describe('UserAccountEditPermissionsComponent', () => {
           useValue: {
             snapshot: {
               data: {
-                user: nonPrimaryEditUser,
+                user,
               },
             },
             parent: {
@@ -71,11 +72,18 @@ describe('UserAccountEditPermissionsComponent', () => {
 
     const component = fixture.componentInstance;
 
-    return { component, fixture, getByText, parentSubsidiaryViewService };
+    return {
+      component,
+      fixture,
+      getByText,
+      getByRole,
+      queryByRole,
+      parentSubsidiaryViewService,
+    };
   }
 
   it('should render a UserAccountEditPermissionsComponent', async () => {
-    const component = await setup();
+    const { component } = await setup();
 
     expect(component).toBeTruthy();
   });
@@ -99,6 +107,26 @@ describe('UserAccountEditPermissionsComponent', () => {
       const { component } = await setup();
 
       expect(component.getBreadcrumbsJourney()).toBe(JourneyType.ALL_WORKPLACES);
+    });
+  });
+
+  describe('Staff records read only permission', () => {
+    it('should display the Staff records checkbox when Read only is selected', async () => {
+      const { getByRole } = await setup({
+        ...nonPrimaryEditUser,
+        role: Roles.Read,
+      });
+
+      expect(getByRole('checkbox', { name: /staff records/i })).toBeTruthy();
+    });
+
+    it('should not display the Staff records checkbox when Edit is selected', async () => {
+      const { queryByRole } = await setup({
+        ...nonPrimaryEditUser,
+        role: Roles.Edit,
+      });
+
+      expect(queryByRole('checkbox', { name: /staff records/i })).toBeTruthy();
     });
   });
 });
