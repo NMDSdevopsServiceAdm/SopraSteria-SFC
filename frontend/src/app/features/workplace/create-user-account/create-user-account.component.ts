@@ -13,21 +13,21 @@ import { CreateAccountService } from '@core/services/create-account/create-accou
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
-import { getUserPermissionsTypes } from '@core/utils/users-util';
 import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { take } from 'rxjs/internal/operators/take';
 
 @Component({
-    selector: 'app-create-account',
-    templateUrl: './create-user-account.component.html',
-    standalone: false
+  selector: 'app-create-account',
+  templateUrl: './create-user-account.component.html',
+  standalone: false,
 })
 export class CreateUserAccountComponent extends AccountDetailsDirective {
   public callToActionLabel = 'Save user';
   public establishmentUid: string;
   public workplace: Establishment;
   public permissionsTypeRadios: UserPermissionsType[];
+  public readonly Roles = Roles;
 
   constructor(
     private createAccountService: CreateAccountService,
@@ -74,10 +74,10 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
       'permissionsType',
       new UntypedFormControl(null, {
         validators: [Validators.required],
-        updateOn: 'submit',
       }),
     );
 
+    this.form.addControl('staffRecordsReadOnly', new UntypedFormControl(false));
     this.formErrorsMap.push({
       item: 'permissionsType',
       type: [
