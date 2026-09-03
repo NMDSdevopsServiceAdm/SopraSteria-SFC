@@ -77,6 +77,7 @@ class Worker extends EntityValidator {
 
     // bulk upload status - this is never stored in database
     this._status = bulkUploadStatus;
+    this._trainingProvided = false;
 
     this._transferStaffRecord = null;
   }
@@ -381,6 +382,10 @@ class Worker extends EntityValidator {
         this._status = document.status;
       }
 
+      if (document.trainingProvided !== undefined) {
+        this._trainingProvided = document.trainingProvided;
+      }
+
       if (document.transferStaffRecord) {
         this._transferStaffRecord = document.transferStaffRecord;
       }
@@ -563,12 +568,12 @@ class Worker extends EntityValidator {
   async saveAssociatedEntities(savedBy, bulkUploaded = false, externalTransaction) {
     const qualificationChangePromises = [];
     const newTrainingPromises = [];
-
     try {
-      if (this._trainingEntities && this._trainingEntities.length > 0) {
-        // delete all existing training records for this worker and create new records
-
+      if (this.status === 'UPDATE' && this._trainingProvided) {
+        // Training file was provided.
+        // remove existing training and replace it with uploaded training.
         await this.deleteAllTrainingCertificatesAssociatedWithWorker(externalTransaction);
+
         await models.workerTraining.destroy({
           where: {
             workerFk: this._id,
@@ -580,6 +585,16 @@ class Worker extends EntityValidator {
           currentTrainingRecord.workerId = this._id;
           currentTrainingRecord.workerUid = this._uid;
           currentTrainingRecord.establishmentId = this._establishmentId;
+
+          newTrainingPromises.push(currentTrainingRecord.save(savedBy, bulkUploaded, externalTransaction));
+        });
+      } else if (this.status === 'NEW' && this._trainingEntities.length > 0) {
+        // New worker: only save training if records were uploaded.
+        this._trainingEntities.forEach((currentTrainingRecord) => {
+          currentTrainingRecord.workerId = this._id;
+          currentTrainingRecord.workerUid = this._uid;
+          currentTrainingRecord.establishmentId = this._establishmentId;
+
           newTrainingPromises.push(currentTrainingRecord.save(savedBy, bulkUploaded, externalTransaction));
         });
       }
@@ -697,7 +712,6 @@ class Worker extends EntityValidator {
           this._updated = sanitisedResults.updated;
           this._updatedBy = savedBy.toLowerCase();
           this._isNew = false;
-
           if (associatedEntities) {
             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
           }
@@ -1388,6 +1402,11 @@ class Worker extends EntityValidator {
       // bulk upload status
       if (this._status !== null) {
         myDefaultJSON.status = this._status;
+      }
+
+      // training file provided during bulk upload
+      if (this._trainingProvided !== undefined) {
+        myDefaultJSON.trainingProvided = this._trainingProvided;
       }
 
       if (this._transferStaffRecord !== null) {
