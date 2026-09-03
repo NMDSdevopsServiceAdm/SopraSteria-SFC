@@ -8,8 +8,19 @@ const {
 const { createWorkerKey, createEstablishmentKey, deleteRecord } = require('../../../../../utils/bulkUploadUtils.js');
 const { addNoAssociatedWorkerError, workerNotFoundInFile } = require('./noAssociatedWorker');
 
-const validateTraining = async (training, myAPIWorkers, workersKeyed, allWorkersByKey, allEstablishmentsByKey) => {
+const validateTraining = async (
+  training,
+  myAPIWorkers,
+  workersKeyed,
+  allWorkersByKey,
+  allEstablishmentsByKey,
+  trainingProvided,
+) => {
   const { csvTrainingSchemaErrors, JSONTraining, APITrainingRecords } = await validateTrainingCsv(training);
+
+  Object.values(myAPIWorkers).forEach((worker) => {
+    worker._trainingProvided = trainingProvided;
+  });
 
   JSONTraining.forEach((trainingRecord) => {
     const establishmentKey = createEstablishmentKey(trainingRecord.localId);
