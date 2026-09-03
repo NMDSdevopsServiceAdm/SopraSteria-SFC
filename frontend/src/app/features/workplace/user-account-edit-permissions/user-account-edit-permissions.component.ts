@@ -69,7 +69,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     this.form = this.formBuilder.group({
       role: [this.user.role, Validators.required],
       primary: this.user.isPrimary,
-      staffRecordsReadOnly: [true], // TODO: Replace with the user's Staff Records read-only permission from the backend
+      staffRecordsReadOnly: this.user.canViewStaffRecords,
     });
   }
 
@@ -117,7 +117,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     const props = {
       role,
       isPrimary: primary,
-      isStaffRecordReadOnlyenabled: staffRecordsReadOnly,
+      canViewStaffRecords: staffRecordsReadOnly,
     };
 
     this.subscriptions.add(
