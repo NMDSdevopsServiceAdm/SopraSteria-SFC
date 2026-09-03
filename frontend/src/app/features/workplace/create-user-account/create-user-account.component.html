@@ -1,5 +1,5 @@
 @if ((submitted && form.invalid) || serverError) {
-  <app-error-summary [formErrorsMap]="formErrorsMap" [form]="form" [serverError]="serverError"> </app-error-summary>
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form" [serverError]="serverError"> </app-error-summary>
 }
 
 <div class="govuk-grid-row">
@@ -12,39 +12,37 @@
         </legend>
 
         @for (item of formControlsMap; track item.name) {
-          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get(item.name).errors">
-            @if (item.name === 'email') {
-              <div class="asc-email-input--wrapper asc-util__width-85-percent">
-                <ng-container *ngTemplateOutlet="formGroupContents"></ng-container>
-              </div>
-            } @else {
-              <ng-container *ngTemplateOutlet="formGroupContents"></ng-container>
-            }
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get(item.name).errors">
+          @if (item.name === 'email') {
+          <div class="asc-email-input--wrapper asc-util__width-85-percent">
+            <ng-container *ngTemplateOutlet="formGroupContents"></ng-container>
           </div>
-          <ng-template #formGroupContents>
-            <label class="govuk-label" for="{{ item.name }}">
-              {{ item.label }}
-            </label>
-            @if (submitted && form.get(item.name).errors) {
-              <span id="{{ item.name }}-error" class="govuk-error-message">
-                <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(item.name) }}
-              </span>
-            }
-            @if (item.name === 'email') {
-              <strong class="govuk-body asc-email-input--hint">
-                Use your own work email address. If possible, avoid&nbsp;shared&nbsp;inboxes like
-                admin&#64;workplace.com
-              </strong>
-            }
-            <input
-              class="govuk-input govuk-input--width-20"
-              [formControlName]="item.name"
-              id="{{ item.name }}"
-              name="{{ item.name }}"
-              [class.govuk-input--error]="submitted && form.get(item.name).errors"
-              type="text"
-            />
-          </ng-template>
+          } @else {
+          <ng-container *ngTemplateOutlet="formGroupContents"></ng-container>
+          }
+        </div>
+        <ng-template #formGroupContents>
+          <label class="govuk-label" for="{{ item.name }}">
+            {{ item.label }}
+          </label>
+          @if (submitted && form.get(item.name).errors) {
+          <span id="{{ item.name }}-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(item.name) }}
+          </span>
+          } @if (item.name === 'email') {
+          <strong class="govuk-body asc-email-input--hint">
+            Use your own work email address. If possible, avoid&nbsp;shared&nbsp;inboxes like admin&#64;workplace.com
+          </strong>
+          }
+          <input
+            class="govuk-input govuk-input--width-20"
+            [formControlName]="item.name"
+            id="{{ item.name }}"
+            name="{{ item.name }}"
+            [class.govuk-input--error]="submitted && form.get(item.name).errors"
+            type="text"
+          />
+        </ng-template>
         }
       </fieldset>
 
@@ -54,26 +52,49 @@
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('permissionsType').errors">
         <fieldset class="govuk-fieldset">
           @if (submitted && form.get('permissionsType').errors) {
-            <span id="permissionsType-error" class="govuk-error-message">
-              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('permissionsType') }}
-            </span>
+          <span id="permissionsType-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('permissionsType') }}
+          </span>
           }
           <div class="govuk-radios govuk-!-margin-bottom-2">
             @for (item of permissionsTypeRadios; track $index; let i = $index) {
-              <div class="govuk-radios__item">
-                <input
-                  class="govuk-radios__input"
-                  [formControlName]="'permissionsType'"
-                  id="permissionsType-{{ i }}"
-                  name="permissionsType"
-                  value="{{ item.permissionsQuestionValue }}"
-                  type="radio"
-                />
-                <label class="govuk-label govuk-radios__label" for="permissionsType-{{ i }}">
-                  {{ item.permissionsQuestionValue }}
-                </label>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                [formControlName]="'permissionsType'"
+                id="permissionsType-{{ i }}"
+                name="permissionsType"
+                value="{{ item.permissionsQuestionValue }}"
+                type="radio"
+              />
+
+              <label class="govuk-label govuk-radios__label" for="permissionsType-{{ i }}">
+                {{ item.permissionsQuestionValue }}
+              </label>
+            </div>
+            @if (item.permissionsQuestionValue === Roles.Read) {
+            <div
+              class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="form.get('permissionsType').value !== Roles.Read"
+              id="permissionsType-conditional-{{ i }}"
+            >
+              <div class="govuk-checkboxes">
+                <div class="govuk-checkboxes__item">
+                  <input
+                    class="govuk-checkboxes__input"
+                    id="staff-records"
+                    name="staffRecordsReadOnly"
+                    type="checkbox"
+                    formControlName="staffRecordsReadOnly"
+                  />
+
+                  <label class="govuk-label govuk-checkboxes__label" for="staff-records">
+                    Also allow this user to view staff records (optional)
+                  </label>
+                </div>
               </div>
-            }
+            </div>
+            } }
           </div>
         </fieldset>
       </div>
