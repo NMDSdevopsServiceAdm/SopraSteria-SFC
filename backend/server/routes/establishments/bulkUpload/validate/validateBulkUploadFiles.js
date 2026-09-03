@@ -28,6 +28,7 @@ const validateBulkUploadFiles = async (req, files) => {
   const establishments = files.Establishment;
   const workers = files.Worker;
   const training = files.Training;
+  const trainingProvided = training?.imported != null;
 
   // restore the current known state this primary establishment (including all subs)
   const RESTORE_ASSOCIATION_LEVEL = 1;
@@ -59,6 +60,7 @@ const validateBulkUploadFiles = async (req, files) => {
     workersKeyed,
     allWorkersByKey,
     allEstablishmentsByKey,
+    trainingProvided,
   );
 
   // Cross Entity Validations
