@@ -292,6 +292,12 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: false,
         field: 'ViewedUserResearchQuestion',
       },
+      canViewStaffRecords: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+        field: 'CanViewStaffRecords',
+      },
     },
     {
       tableName: '"User"',
