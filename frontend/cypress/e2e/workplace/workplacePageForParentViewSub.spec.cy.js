@@ -20,12 +20,12 @@ describe('Workplace page for Parent viewing subsidiary', { tags: '@workplace' },
   });
 
   beforeEach(() => {
-    cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
+    cy.loginAsUserUsingCySession(ParentEstablishment.editUserLoginName, userPassword, 'home');
 
-    cy.get('app-navigate-to-workplace-dropdown select').select(subsidaryToView.name);
+    cy.log(subsidaryToView.uid, '<--- subsidaryToView.uid');
+    cy.visitDashboardTab('home', subsidaryToView.uid);
+
     cy.url().should('contain', 'subsidiary');
-    onHomePage.clickTab('Home');
-
     cy.get('h1').should('contain', subsidaryToView.name);
 
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();

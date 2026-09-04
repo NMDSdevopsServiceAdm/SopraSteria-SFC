@@ -31,6 +31,7 @@ export const SubEstablishmentNotDataOwner = {
   parentName: ParentEstablishment.name,
   editUserLoginName: Cypress.expose('editSubUserNonDataOwner'),
   readOnlyUserLoginName: Cypress.expose('readOnlySubUserNonDataOwner'),
+  uid: 'a11a3552-bef8-4dfc-9d6d-33d10e231dfc',
 };
 
 export const MockNewEstablishment = {

@@ -26,8 +26,8 @@ describe('Standalone staff records page as edit user', { tags: '@staffRecords' }
   beforeEach(() => {
     cy.insertTestWorker({ establishmentID: establishmentId, workerName: 'Cypress test worker' });
 
-    cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
-    onHomePage.clickTab('Staff records');
+    cy.loginAsUserUsingCySession(StandAloneEstablishment.editUserLoginName, userPassword);
+    cy.visitDashboardTab('staff-records');
   });
 
   afterEach(() => {
