@@ -7,6 +7,7 @@ export interface CreateAccountRequest {
   jobTitle: string;
   phone: string;
   role: Roles;
+  canViewStaffRecords: boolean;
 }
 
 export interface CreateAccountResponse {
