@@ -77,7 +77,7 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
       }),
     );
 
-    this.form.addControl('staffRecordsReadOnly', new UntypedFormControl(false));
+    this.form.addControl('canViewStaffRecords', new UntypedFormControl(false));
     this.formErrorsMap.push({
       item: 'permissionsType',
       type: [
