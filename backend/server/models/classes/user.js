@@ -48,6 +48,7 @@ class User {
     this._username = null;
     this._password = null;
     this._isPrimary = null;
+    this._canViewStaffRecords = false;
     this._tribalId = null;
     this._lastLogin = null;
     this._establishmentUid = null;
@@ -173,6 +174,9 @@ class User {
   get isPrimary() {
     return this._auditEvents._isPrimary;
   }
+  get canViewStaffRecords() {
+    return this._canViewStaffRecords;
+  }
 
   get trackingId() {
     return this._trackingUUID;
@@ -248,6 +252,10 @@ class User {
 
       if (this._isBool(document.isPrimary)) {
         this._isPrimary = document.isPrimary;
+      }
+
+      if (this._isBool(document.canViewStaffRecords)) {
+        this._canViewStaffRecords = document.canViewStaffRecords;
       }
       if (document.isActive) {
         this._active = document.isActive;
@@ -383,6 +391,7 @@ class User {
           uid: this.uid,
           updatedBy: savedBy.toLowerCase(),
           isPrimary: this._isPrimary,
+          canViewStaffRecords: this._canViewStaffRecords,
           archived: false,
           attributes: ['id', 'created', 'updated'],
           agreedUpdatedTerms: true,
@@ -604,6 +613,7 @@ class User {
           const updateDocument = {
             ...modifedUpdateDocument,
             isPrimary: this._isPrimary,
+            canViewStaffRecords: this._canViewStaffRecords,
             updated: updatedTimestamp,
             updatedBy: savedBy.toLowerCase(),
             registrationSurveyCompleted: this._registrationSurveyCompleted,
@@ -782,6 +792,7 @@ class User {
 
         // TODO: change to amanaged property
         this._isPrimary = fetchResults.isPrimary;
+        this._canViewStaffRecords = fetchResults.canViewStaffRecords;
         this._registrationSurveyCompleted = fetchResults.registrationSurveyCompleted;
         this._viewedUserResearchQuestion = fetchResults.viewedUserResearchQuestion;
         this._displayStatus = User.statusTranslator(fetchResults.login);
@@ -1088,6 +1099,7 @@ class User {
       myDefaultJSON.updated = this.updated.toJSON();
       myDefaultJSON.updatedBy = this.updatedBy;
       myDefaultJSON.isPrimary = this._isPrimary ? true : false;
+      myDefaultJSON.canViewStaffRecords = this._canViewStaffRecords;
       myDefaultJSON.lastLoggedIn = this._lastLogin;
       myDefaultJSON.establishmentId = this._establishmentId;
       myDefaultJSON.establishmentUid = this._establishmentUid ? this._establishmentUid : undefined;

@@ -33,7 +33,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   public user: UserDetails;
   public userInfo: SummaryList[];
   public allUsers: UserDetails[];
-  public isStaffRecordReadOnlyEnabled = true; // TODO: Replace with the value from the backend
+  public isStaffRecordReadOnlyEnabled = false;
 
   constructor(
     private alertService: AlertService,
@@ -68,6 +68,8 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
           this.setPermissions();
         }),
     );
+
+    this.isStaffRecordReadOnlyEnabled = this.user.canViewStaffRecords ?? false;
   }
 
   ngOnDestroy(): void {

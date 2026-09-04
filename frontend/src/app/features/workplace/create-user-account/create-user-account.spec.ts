@@ -21,7 +21,7 @@ import { of } from 'rxjs';
 import { UserAccountSavedComponent } from '../user-account-saved/user-account-saved.component';
 import { CreateUserAccountComponent } from './create-user-account.component';
 
-fdescribe('CreateUserAccountComponent', () => {
+describe('CreateUserAccountComponent', () => {
   async function setup() {
     const setupTools = await render(CreateUserAccountComponent, {
       imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule],
@@ -177,5 +177,36 @@ fdescribe('CreateUserAccountComponent', () => {
         name: /also allow this user to view staff records/i,
       }),
     ).toBeTruthy();
+  });
+
+  it('should call createAccount with canViewStaffRecords true when checkbox is selected', async () => {
+    const { fixture, getByText, getByRole, createAccountSpy } = await setup();
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    fireEvent.click(getByText('Read'));
+
+    const checkbox = getByRole('checkbox', {
+      name: /also allow this user to view staff records/i,
+    });
+
+    fireEvent.click(checkbox);
+
+    fireEvent.click(getByText('Save user'));
+
+    expect(createAccountSpy.calls.mostRecent().args[1].canViewStaffRecords).toBe(true);
+  });
+
+  it('should call createAccount with canViewStaffRecords false when checkbox is not selected', async () => {
+    const { fixture, getByText, createAccountSpy } = await setup();
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    fireEvent.click(getByText('Read'));
+    fireEvent.click(getByText('Save user'));
+
+    expect(createAccountSpy.calls.mostRecent().args[1].canViewStaffRecords).toBe(false);
   });
 });
