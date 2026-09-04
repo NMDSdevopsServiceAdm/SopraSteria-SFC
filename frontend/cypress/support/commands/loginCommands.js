@@ -59,6 +59,11 @@ Cypress.Commands.add('loginAndVisitTab', (username, password, tab = 'home') => {
 });
 
 Cypress.Commands.add('loginAsUser', (username, password) => {
+  cy.loginAsUserUsingCySession(username, password);
+  cy.visit('/');
+});
+
+Cypress.Commands.add('loginAsUserFromFrontpage', (username, password, skipVacancyAndTurnoverLoginPage = true) => {
   cy.intercept('POST', '/api/login').as('login');
 
   cy.updateUserFieldForLoginTests(username, 'TrainingCoursesMessageViewedQuantity', 3);
@@ -69,7 +74,9 @@ Cypress.Commands.add('loginAsUser', (username, password) => {
   cy.get('[data-testid="signinButton"]').click();
   cy.wait('@login');
 
-  getPassVacanciesAndTurnoverLoginMessage();
+  if (skipVacancyAndTurnoverLoginPage) {
+    getPassVacanciesAndTurnoverLoginMessage();
+  }
 });
 
 Cypress.Commands.add('loginAsUserForInterstitialPages', (username, password) => {

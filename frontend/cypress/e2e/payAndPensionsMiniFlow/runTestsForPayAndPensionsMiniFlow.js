@@ -6,6 +6,14 @@ export const runTestsForPayAndPensionsMiniFlow = (mockEstablishmentData) => {
   const mainServiceWithPayAndPensionsGroup2 = { id: 7, name: 'Short breaks, respite care' };
   const mainServiceWithPayAndPensionsGroup3 = { id: 9, name: 'Day care and day services' };
 
+  const assertPayAndPensionUpdateBannerNotShowing = () => {
+    cy.get('app-summary-section').then((summaryPanel) => {
+      if (summaryPanel.find('[data-testid="update-banner-area"]').length > 0) {
+        cy.get('[data-testid="update-banner-area"]').should('not.contain', payAndPensionFlagMessage);
+      }
+    });
+  };
+
   describe('pay and pensions', () => {
     describe('main service with payAndPensionsGroup as 1', () => {
       before(() => {
@@ -60,7 +68,7 @@ export const runTestsForPayAndPensionsMiniFlow = (mockEstablishmentData) => {
 
         //home
         cy.get(`[data-testid="generic_alert"]`).contains('Workplace details added');
-        cy.get('[data-testid="update-banner-area"]').should('not.contain', payAndPensionFlagMessage);
+        assertPayAndPensionUpdateBannerNotShowing();
       });
     });
 
@@ -112,7 +120,7 @@ export const runTestsForPayAndPensionsMiniFlow = (mockEstablishmentData) => {
 
         //home
         cy.get(`[data-testid="generic_alert"]`).contains('Workplace details added');
-        cy.get('[data-testid="update-banner-area"]').should('not.contain', payAndPensionFlagMessage);
+        assertPayAndPensionUpdateBannerNotShowing();
       });
     });
 
@@ -128,7 +136,7 @@ export const runTestsForPayAndPensionsMiniFlow = (mockEstablishmentData) => {
       });
 
       it('should not show a flag for the new workplace questions in the home page summary panel', () => {
-        cy.get('[data-testid="update-banner-area"]').should('not.contain', payAndPensionFlagMessage);
+        assertPayAndPensionUpdateBannerNotShowing();
       });
     });
   });
