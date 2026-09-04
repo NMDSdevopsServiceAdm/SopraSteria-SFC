@@ -21,7 +21,6 @@ services:
 
   frontend-backend:
     image: public.ecr.aws/docker/library/node:22-alpine
-    attach: false
     container_name: frontend-backend
     working_dir: /app
     depends_on:
