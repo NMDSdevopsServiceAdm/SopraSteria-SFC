@@ -48,7 +48,7 @@ class User {
     this._username = null;
     this._password = null;
     this._isPrimary = null;
-    this._canViewStaffRecords = null;
+    this._canViewStaffRecords = false;
     this._tribalId = null;
     this._lastLogin = null;
     this._establishmentUid = null;
