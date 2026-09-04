@@ -122,6 +122,23 @@
                   "maximumWarning": "6kb"
                 }
               ]
+            },
+            "e2e-test-on-pipeline": {
+              "optimization": true,
+              "outputHashing": "all",
+              "namedChunks": false,
+              "extractLicenses": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ]
             }
           },
           "defaultConfiguration": ""

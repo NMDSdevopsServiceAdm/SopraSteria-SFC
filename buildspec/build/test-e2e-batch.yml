@@ -37,6 +37,7 @@ phases:
       - npm install --prefix backend &
       - wait
       - npm install -g sequelize-cli
+      - npm run build:e2e --prefix frontend
   build:
     commands:
       - TAGS=${CY_GROUP_TAGS} docker-compose -f docker-compose-e2e.yml up --build --abort-on-container-exit --exit-code-from cypress

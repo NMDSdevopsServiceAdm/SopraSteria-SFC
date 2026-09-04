@@ -19,6 +19,7 @@ phases:
       - npm install --prefix backend &
       - wait
       - npm install -g sequelize-cli
+      - npm run build:e2e --prefix frontend
 
   build:
     commands:
