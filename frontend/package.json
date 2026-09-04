@@ -7,7 +7,7 @@
     "build:clean": "rimraf dist",
     "build:watch": "ng serve --proxy-config proxy.conf.json",
     "serve:e2e": "ng serve --proxy-config proxy.conf.json --allowed-hosts=true",
-    "build:e2e": "npm run build:clean && npm run build -- --configuration=e2e-test-on-pipeline",
+    "build:e2e": "npm run build -- --configuration=e2e-test-on-pipeline",
     "build:prod": "npm run build:clean && npm run build -- --configuration=production",
     "build:preprod": "npm run build:clean && npm run build -- --configuration=preproduction",
     "build:test": "npm run build:clean && npm run build -- --configuration=test",
