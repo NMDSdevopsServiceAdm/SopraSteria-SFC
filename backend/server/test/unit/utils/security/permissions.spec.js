@@ -33,6 +33,8 @@ describe('permissions', () => {
         isParent: false,
       },
     };
+
+    sinon.stub(models.user, 'findByUUID').returns({});
   });
 
   afterEach(() => {
@@ -515,7 +517,6 @@ describe('permissions', () => {
         beforeEach(() => {
           models.establishment.getInfoForPermissions.restore();
         });
-
         it('should return canViewBenchmarks permission when isRegulated and main service id is in [24, 25, 20]', async () => {
           sinon.stub(models.establishment, 'getInfoForPermissions').callsFake(() => {
             return {
@@ -567,6 +568,30 @@ describe('permissions', () => {
           const returnedPermissions = await getPermissions(req);
 
           expect(returnedPermissions).not.to.include('canViewBenchmarks');
+        });
+      });
+
+      describe('CanViewStaffRecords flag', () => {
+        it('should include "canViewWorker" "canViewListOfWorkers" when the Read user has CanViewStaffRecords flag = true', async () => {
+          models.user.findByUUID.returns({
+            canViewStaffRecords: true,
+          });
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).to.include('canViewWorker');
+          expect(returnedPermissions).to.include('canViewListOfWorkers');
+        });
+
+        it('should not include "canViewWorker" "canViewListOfWorkers" when the Read user has CanViewStaffRecords flag = false', async () => {
+          models.user.findByUUID.returns({
+            canViewStaffRecords: false,
+          });
+
+          const returnedPermissions = await getPermissions(req);
+
+          expect(returnedPermissions).not.to.include('canViewWorker');
+          expect(returnedPermissions).not.to.include('canViewListOfWorkers');
         });
       });
     });
