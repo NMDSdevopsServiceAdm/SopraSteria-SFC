@@ -7,15 +7,12 @@ import { catchError, take } from 'rxjs/operators';
 
 @Injectable()
 export class PageResolver {
-  constructor(
-    private router: Router,
-    private pagesService: PagesService,
-  ) {}
+  constructor(private router: Router, private pagesService: PagesService) {}
 
   resolve(route: ActivatedRouteSnapshot): Observable<null | Pages> | undefined {
     const lastUrlSegmentIndex = route.url.length - 1;
-    const slug = route.url[lastUrlSegmentIndex].path;
-
+    // Use the CMS slug if one is provided, otherwise use the URL
+    const slug = route.data.cmsSlug || route.url[lastUrlSegmentIndex]?.path;
     if (slug) {
       return this.pagesService.getPage(slug).pipe(
         take(1),
@@ -24,5 +21,7 @@ export class PageResolver {
         }),
       );
     }
+
+    return of(null);
   }
 }
