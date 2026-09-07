@@ -255,7 +255,7 @@ class User {
       }
 
       if (this._isBool(document.canViewStaffRecords)) {
-        this._canViewStaffRecords = document.canViewStaffRecords;
+        this._canViewStaffRecords = this.userRole === 'Read' ? document.canViewStaffRecords : false;
       }
       if (document.isActive) {
         this._active = document.isActive;
