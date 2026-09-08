@@ -7,9 +7,9 @@ import { LocalAuthoritiesReturnService } from '@core/services/admin/local-author
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
-    selector: 'app-local-authority',
-    templateUrl: './local-authority.component.html',
-    standalone: false
+  selector: 'app-local-authority',
+  templateUrl: './local-authority.component.html',
+  standalone: false,
 })
 export class LocalAuthorityComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
@@ -31,15 +31,23 @@ export class LocalAuthorityComponent implements OnInit {
   }
 
   private setupForm(): void {
+    const numberOfWorkers = this.route.snapshot.data.localAuthority?.workers;
+    const numberOfWorkersFormValue = numberOfWorkers > 0 ? numberOfWorkers : '';
+
     this.form = this.formBuilder.group({
-      workers: [this.route.snapshot.data.localAuthority.workers, ''],
-      status: [this.route.snapshot.data.localAuthority.status, ''],
-      notes: [this.route.snapshot.data.localAuthority.notes, ''],
+      workers: numberOfWorkersFormValue,
+      status: [this.route.snapshot.data.localAuthority?.status, ''],
+      notes: [this.route.snapshot.data.localAuthority?.notes, ''],
     });
   }
 
   public onSubmit(): void {
-    this.localAuthoritiesService.updateLA(this.route.snapshot.paramMap.get('uid'), this.form.value).subscribe(
+    const fillInZeroIfEmpty = (value: number | string) => (Number(value) ? value : 0);
+
+    const { workers } = this.form.value;
+    const props = { ...this.form.value, workers: fillInZeroIfEmpty(workers) };
+
+    this.localAuthoritiesService.updateLA(this.route.snapshot.paramMap.get('uid'), props).subscribe(
       () => {
         this.router.navigate(['/sfcadmin', 'local-authorities-return', 'monitor']);
       },

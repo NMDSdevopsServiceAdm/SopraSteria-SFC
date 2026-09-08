@@ -21,11 +21,13 @@ export class LocalAuthoritiesReturnService {
   }
 
   public getLA(localAuthorityId: string): Observable<IndividualLA> {
-    return this.http.get<IndividualLA>(`${environment.appRunnerEndpoint}/api/admin/local-authority-return/monitor/${localAuthorityId}`);
+    return this.http.get<IndividualLA>(
+      `${environment.appRunnerEndpoint}/api/admin/local-authority-return/monitor/${localAuthorityId}`,
+    );
   }
 
-  public updateLA(localAuthorityId: string, localAuthority: IndividualLA): Observable<IndividualLA> {
-    return this.http.post<IndividualLA>(
+  public updateLA(localAuthorityId: string, localAuthority: Omit<IndividualLA, 'name'>): Observable<null> {
+    return this.http.post<null>(
       `${environment.appRunnerEndpoint}/api/admin/local-authority-return/monitor/${localAuthorityId}`,
       localAuthority,
     );
