@@ -106,6 +106,7 @@ export interface Worker {
     title: string;
     description: string;
   };
+  trainingProvided?: boolean;
 }
 
 const MandatoryInfoFields = ['nameOrId', 'mainJob', 'contract'];
@@ -125,6 +126,7 @@ const MetadataFields = [
   'qualificationsLastUpdated',
   'missingMandatoryTrainingCount',
   'qualificationCount',
+  'trainingProvided',
 ];
 
 export const MandatoryInfoAndMetadataFields = MandatoryInfoFields.concat(MetadataFields);
