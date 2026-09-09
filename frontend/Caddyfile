@@ -1,0 +1,13 @@
+:8080 {
+    # Caddy server config for serving pre-compiled frontend for e2e test
+    root * ./dist/browser
+
+    handle /api/* {
+        reverse_proxy localhost:3000
+    }
+
+    handle {
+        try_files {path} {path}/ /index.html
+        file_server
+    }
+}

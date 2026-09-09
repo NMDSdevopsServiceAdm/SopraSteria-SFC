@@ -1,6 +1,5 @@
 services:
   sfc-e2e-db:
-    image: public.ecr.aws/docker/library/postgres:13
     attach: false
     container_name: sfc-e2e-db
     build:
@@ -39,7 +38,7 @@ services:
       - NODE_OPTIONS="--max-old-space-size=8192"
     volumes:
       - ./:/app
-    command: sh -c "apk add --no-cache make curl; make run-e2e-server"
+    command: sh -c "apk add --no-cache make curl caddy; make run-e2e-server-for-pipeline"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080"]
       interval: 30s

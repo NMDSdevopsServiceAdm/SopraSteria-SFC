@@ -4,7 +4,7 @@ env:
   variables:
     NODE_ENV: e2etest
   parameter-store:
-    DB_FILE_URL: /bnd/e2e-test-db-file-url
+    DB_FILE_URL: /temp-test/bnd/e2e-test-db-file-url
     POSTGRES_USER: /bnd/e2e-test-db-user
     POSTGRES_PASSWORD: /bnd/e2e-test-db-password
     POSTGRES_DB: /bnd/e2e-test-db-name
@@ -18,25 +18,27 @@ batch:
       env:
         variables:
           CY_GROUP_TAGS:
-            - '@funding @changeDataPermissions'
-            - '@trainingAndQualifications @home'
-            - '@workplace @payAndPensions'
+            - '@payAndPensions @funding @changeDataPermissions'
+            - '@dha @trainingAndQualifications @home'
+            - '@workplace'
             - '@admin @benchmarks @others @registration'
             - '@staffRecords'
-            - '@dha @trainingCourses'
+            - '@trainingCourses'
           WORKERS:
             - 1
 
 phases:
+  install:
+    runtime-versions:
+      nodejs: 22
   pre_build:
     commands:
       - aws s3 cp ${DB_FILE_URL} docker/sfc-e2e-test-db.sql
       - echo POSTGRES_USER=${POSTGRES_USER}\\nPOSTGRES_PASSWORD=${POSTGRES_PASSWORD}\\nPOSTGRES_DB=${POSTGRES_DB} > .env
       - export NODE_ENV=e2etest
-      - npm install --prefix frontend &
-      - npm install --prefix backend &
-      - wait
+      - npm install --prefix frontend & npm install --prefix backend & wait
       - npm install -g sequelize-cli
+      - npm run build:e2e --prefix frontend
   build:
     commands:
       - TAGS=${CY_GROUP_TAGS} docker-compose -f docker-compose-e2e.yml up --build --abort-on-container-exit --exit-code-from cypress
