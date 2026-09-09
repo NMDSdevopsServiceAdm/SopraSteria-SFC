@@ -67,7 +67,7 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     ['vacancies', 'starters', 'leavers'].forEach((slvType) => {
       it(`can add and change staff ${slvType}`, () => {
         const testId = slvType;
-        cy.get(`[data-testid="${testId}"]`).contains('Add').click();
+        cy.get(`[data-testid="${testId}"]`).contains('a', 'Add').click();
 
         cy.contains('button', 'Select job roles').click();
         cy.addJobRoles(jobRoles);
@@ -124,51 +124,31 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     cy.get('@testId').contains('Domestic services and home help');
   });
 
-  describe('other services', () => {
-    // for some unknown reason, the radio buttons in this page sometimes need more than one click to trigger
+  it('updates other services', () => {
+    cy.resetNonMandatoryWorkplaceQuestions(establishmentId);
+    cy.reload();
+
+    cy.intercept('GET', '/api/establishment/*/services*').as('services');
+
+    cy.get('[data-testid="otherServices"]').as('testId');
+
+    cy.get('@testId').contains('Add').click();
+
+    cy.wait('@services');
 
     const heading = 'Do you provide any other services?';
-    it('updates when there are no other services', () => {
-      cy.intercept('GET', '/api/establishment/*/services*').as('services');
-      cy.get('[data-testid="otherServices"]').as('testId');
+    cy.get('h1').should('contain.text', heading);
 
-      cy.get('@testId').contains('Add').click();
+    cy.getByLabel('Yes, we provide other services').as('YesButton');
+    cy.get('@YesButton').click();
+    cy.get('@YesButton').click();
+    cy.getByLabel('Other adult community care service').click();
+    cy.contains('button', 'Save and return').click();
 
-      cy.wait('@services');
-      cy.get('h1').should('contain.text', heading);
-      cy.getByLabel('No').as('NoButton');
-      cy.get('@NoButton').click();
-      cy.get('@NoButton').click();
-      cy.get('@NoButton').should('be.checked');
-      cy.contains('button', 'Save and return').click();
+    cy.get('@testId').contains('Other adult community care service');
+    cy.get('@testId').contains('Change').click();
 
-      cy.get('@testId').contains('None');
-      cy.get('@testId').contains('Change').click();
-
-      cy.get('h1').should('contain.text', heading);
-    });
-
-    it('updates when there are other services', () => {
-      cy.intercept('GET', '/api/establishment/*/services*').as('services');
-
-      cy.get('[data-testid="otherServices"]').as('testId');
-
-      cy.get('@testId').contains('Add').click();
-
-      cy.wait('@services');
-      cy.get('h1').should('contain.text', heading);
-
-      cy.getByLabel('Yes, we provide other services').as('YesButton');
-      cy.get('@YesButton').click();
-      cy.get('@YesButton').click();
-      cy.getByLabel('Other adult community care service').click();
-      cy.contains('button', 'Save and return').click();
-
-      cy.get('@testId').contains('Other adult community care service');
-      cy.get('@testId').contains('Change').click();
-
-      cy.get('h1').should('contain.text', heading);
-    });
+    cy.get('h1').should('contain.text', heading);
   });
 
   describe('service capacity', () => {
@@ -186,6 +166,7 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     const heading = "What's the capacity of your services?";
 
     it(`can add service capacity when main service is ${mainServices[0].text}`, () => {
+      cy.resetEstablishmentCapacity(establishmentId);
       cy.setWorkplaceMainService(establishmentId, mainServices[0].id);
       cy.reload();
 
@@ -209,7 +190,9 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     });
 
     it(`can add service capacity when main service is ${mainServices[1].text}`, () => {
+      cy.resetEstablishmentCapacity(establishmentId);
       cy.setWorkplaceMainService(establishmentId, mainServices[1].id);
+      cy.reload();
 
       cy.get('[data-testid="serviceCapacity"]').as('testId');
 
@@ -287,19 +270,15 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     const mockDHAs = ['Vital signs monitoring', 'Complex posture and mobility care', 'Airways and breathing care'];
 
     describe('when main service is compatible with DHA', () => {
-      beforeEach(() => {
+      before(() => {
         cy.setWorkplaceMainService(establishmentId, mainServiceThatCanDoDHA.id);
-        cy.get('[data-cy="tab-list"]').contains('Workplace').click();
-        cy.reload();
-      });
-
-      it('should see the "Carry out delegated healthcare activities" row', () => {
-        cy.url().should('match', workplaceSummaryPathRegex);
-        cy.get('div').contains('Carry out delegated healthcare activities').should('be.visible');
-        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('-');
       });
 
       it('should be able to add / update the answer to delegated healthcare activities questions', () => {
+        cy.url().should('match', workplaceSummaryPathRegex);
+        cy.get('div').contains('Carry out delegated healthcare activities').should('be.visible');
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('-');
+
         // answer DHA question 1
         onWorkplacePage.clickIntoQuestion(WorkplacePage.DHAQuestion1TestId);
         cy.get('h1').should('contain', 'Do your non-nursing staff carry out delegated healthcare activities?');
@@ -339,10 +318,12 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     });
 
     describe('when main service is NOT compatible with DHA', () => {
-      beforeEach(() => {
+      before(() => {
         cy.setWorkplaceMainService(establishmentId, mainServiceThatCannotDoDHA.id);
+      });
+
+      beforeEach(() => {
         cy.get('[data-cy="tab-list"]').contains('Workplace').click();
-        cy.reload();
       });
 
       it('should not see the rows for either DHA questions', () => {
@@ -357,10 +338,12 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     });
 
     describe('on main service change', () => {
-      beforeEach(() => {
+      before(() => {
         cy.setWorkplaceMainService(establishmentId, mainServiceThatCanDoDHA.id);
+      });
+
+      beforeEach(() => {
         cy.get('[data-cy="tab-list"]').contains('Workplace').click();
-        cy.reload();
       });
 
       it('should clear the answers for DHA questions when main service change to one that cannot do DHA', () => {
@@ -407,9 +390,11 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     const heading = 'Does your workplace offer sleep-ins?';
     const mainServiceThatCanOfferSleepIns = { id: 20, name: 'Domiciliary care services' };
 
-    beforeEach(() => {
+    before(() => {
       cy.setWorkplaceMainService(establishmentId, mainServiceThatCanOfferSleepIns.id);
-      cy.reload();
+    });
+
+    beforeEach(() => {
       cy.get('[data-cy="tab-list"]').contains('Workplace').click();
     });
 
@@ -435,7 +420,9 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     it('adds and updates if the answer is not "Yes"', () => {
       cy.get('[data-testid="offer-sleep-ins"]').as('testId');
 
-      cy.get('@testId').contains('Add').click();
+      cy.get('@testId')
+        .contains('a', /Add|Change/)
+        .click();
 
       cy.get('h1').should('contain.text', heading);
       cy.getByLabel('No').click();
@@ -457,9 +444,11 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     const heading = 'What do you pay care and support workers for travel time between visits?';
     const mainService = { id: 20, name: 'Domiciliary care services' };
 
-    beforeEach(() => {
+    before(() => {
       cy.setWorkplaceMainService(establishmentId, mainService.id);
-      cy.reload();
+    });
+
+    beforeEach(() => {
       cy.get('[data-cy="tab-list"]').contains('Workplace').click();
     });
 

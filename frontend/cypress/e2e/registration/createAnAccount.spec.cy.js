@@ -107,7 +107,7 @@ describe('Create account', { tags: '@registration' }, () => {
     approveRegistrationRequestAsAdmin(workplaceName);
 
     // try login again as the new user
-    cy.loginAsUser(loginId, mockPassword);
+    cy.loginAsUserFromFrontpage(loginId, mockPassword);
     cy.get('h1').contains('Welcome to your new account').should('be.visible');
     cy.getByLabel('No, I want to start adding data').check();
     cy.get('button').contains('Continue').click();

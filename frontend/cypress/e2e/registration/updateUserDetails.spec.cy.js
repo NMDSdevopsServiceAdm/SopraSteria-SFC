@@ -27,7 +27,7 @@ describe('change password for a user', { tags: '@registration' }, () => {
     const { fullname, username, role } = mockUser;
     describe(`for user role type: ${role}`, () => {
       beforeEach(() => {
-        cy.loginAsUser(username, userPassword);
+        cy.loginAsUserFromFrontpage(username, userPassword);
       });
 
       it('should allow user to change their user details', () => {

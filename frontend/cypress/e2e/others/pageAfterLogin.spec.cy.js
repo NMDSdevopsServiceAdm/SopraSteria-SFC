@@ -27,7 +27,7 @@ describe('page after login', { tags: '@others' }, () => {
   });
 
   it('should go straight to the dashboard', () => {
-    cy.loginAsUser(fullUserName, userPassword);
+    cy.loginAsUserFromFrontpage(fullUserName, userPassword);
 
     cy.url().should('eq', Cypress.config().baseUrl + '/dashboard#home');
     cy.contains(StandAloneEstablishment.name);
@@ -87,7 +87,7 @@ describe('page after login', { tags: '@others' }, () => {
   it('should go to the type-of-employer page', () => {
     cy.updateEmployerTypeValue(establishmentID, null);
     cy.reload();
-    cy.loginAsUser(fullUserName, userPassword);
+    cy.loginAsUserFromFrontpage(fullUserName, userPassword);
 
     cy.url().should('include', '/type-of-employer');
     cy.get('h1').should('contain', 'What type of employer are you?');
@@ -98,8 +98,10 @@ describe('page after login', { tags: '@others' }, () => {
     cy.url().should('eq', Cypress.config().baseUrl + '/dashboard');
   });
 
-  it.skip('should go to the update your vacancies and turnover data page', () => {
-    setUpUserAttributes('LastViewedVacanciesAndTurnoverMessage', null);
+  it('should go to the update your vacancies and turnover data page', () => {
+    cy.updateUserFieldForLoginTests(fullUserName, 'LastViewedVacanciesAndTurnoverMessage', null);
+    cy.loginAsUserFromFrontpage(fullUserName, userPassword, false);
+
     cy.url().should('eq', Cypress.config().baseUrl + '/update-your-vacancies-and-turnover-data');
     cy.get('h1').should('contain', 'Your Workplace vacancies and turnover information');
 

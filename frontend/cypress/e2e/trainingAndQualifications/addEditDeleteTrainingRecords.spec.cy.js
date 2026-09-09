@@ -31,15 +31,12 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
   });
 
   beforeEach(() => {
-    cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
-    cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
-
     cy.addWorkerTraining({
       establishmentID,
       workerName: workerName1,
       categoryId: 1,
     });
-    cy.reload();
+    cy.loginAndVisitTab(StandAloneEstablishment.editUserLoginName, userPassword, 'training-and-qualifications');
   });
 
   after(() => {
@@ -134,7 +131,6 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
     before(() => {
       cy.deleteAllTrainingCourses(establishmentID);
       cy.insertTrainingCourse({ establishmentID, categoryId: 1, ...trainingCourseDetails });
-      cy.reload();
     });
 
     after(() => {
@@ -510,7 +506,6 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
           name: trainingCourseName,
           validityPeriodInMonth: 12,
         });
-        cy.reload();
       });
 
       after(() => {

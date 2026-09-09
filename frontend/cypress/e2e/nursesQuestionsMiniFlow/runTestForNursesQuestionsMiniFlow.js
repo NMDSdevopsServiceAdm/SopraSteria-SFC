@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 
 import { SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentData';
+import { onHomePage } from '../../support/page_objects/onHomePage';
 
 export const runTestsForNursesQuestionsMiniFlow = (mockEstablishmentData) => {
   const establishmentId = mockEstablishmentData.id;
@@ -10,11 +11,7 @@ export const runTestsForNursesQuestionsMiniFlow = (mockEstablishmentData) => {
   const testNurseNames = ['Test Registered Nurse 1', 'Test Registered Nurse 2'];
 
   const assertNurseQuestionUpdateBannerNotShowing = () => {
-    cy.get('app-summary-section').then((summaryPanel) => {
-      if (summaryPanel.find('[data-testid="update-banner-area"]').length > 0) {
-        cy.get('[data-testid="update-banner-area"]').should('not.contain', nursesQuestionsFlagMessage);
-      }
-    });
+    onHomePage.assertUpdateBannerNotShowing(nursesQuestionsFlagMessage);
   };
 
   const expectWorkerToHaveNurseAnswers = (workerName, nurseAnswers) => {
