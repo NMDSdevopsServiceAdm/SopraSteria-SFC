@@ -26,6 +26,7 @@ Cypress.Commands.add('loginAsUserUsingCySession', (username, password) => {
         method: 'POST',
         url: '/api/login/',
         body: { username, password },
+        retryOnStatusCodeFailure: true,
       }).then(({ headers, body }) => {
         window.localStorage.setItem('auth-token', headers.authorization);
         window.localStorage.setItem('agreedUpdatedTermsStatus', 'true');
@@ -36,7 +37,12 @@ Cypress.Commands.add('loginAsUserUsingCySession', (username, password) => {
     {
       validate: () => {
         const authToken = window.localStorage.getItem('auth-token');
-        cy.request({ method: 'GET', url: '/api/user/me', headers: { Authorization: authToken } })
+        cy.request({
+          method: 'GET',
+          url: '/api/user/me',
+          headers: { Authorization: authToken },
+          failOnStatusCode: false,
+        })
           .its('status')
           .should('equal', 200);
       },
