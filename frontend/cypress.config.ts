@@ -37,11 +37,12 @@ export default defineConfig({
     editParentMainServiceEight: 'editparent',
     apiUrl: 'http://localhost:8080/',
   },
-  screenshotOnRunFailure: false,
+  screenshotOnRunFailure: true,
   video: false,
   viewportWidth: 1000,
   viewportHeight: 1000,
   allowCypressEnv: false,
+  retries: 2,
 
   e2e: {
     baseUrl: 'http://localhost:8080',
