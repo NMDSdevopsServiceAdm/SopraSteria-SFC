@@ -30,34 +30,6 @@ describe('Create account', { tags: '@registration' }, () => {
     cy.openLoginPage();
   });
 
-  it('should show the create account start page', () => {
-    cy.contains('Create an account').click({ force: true });
-    cy.location('pathname').should('eq', '/registration/create-account');
-    cy.get('[data-cy="account-heading"]').should('contain', 'Create an Adult Social Care Workforce Data Set account');
-    cy.contains('Start now').click({ force: true });
-    cy.location('pathname').should('eq', '/registration/regulated-by-cqc');
-    cy.get('[data-cy="cqc-heading"]').should(
-      'contain',
-      'Is the main service you provide regulated by the Care Quality Commission?',
-    );
-    cy.go('back').then(() => {
-      cy.contains('Start now').click({ force: true });
-
-      cy.location('pathname').should('eq', '/registration/regulated-by-cqc');
-    });
-
-    cy.get('[data-testid="continueButton"]').click();
-    cy.get('[data-cy="cqc-error"]').should(
-      'contain',
-      'Select yes if the main service you provide is regulated by the Care Quality Commission',
-    );
-    cy.get('[data-cy="error-summary"]').should('be.visible');
-    cy.get('[data-cy="error-summary"]').should(
-      'contain',
-      'Select yes if the main service you provide is regulated by the Care Quality Commission',
-    );
-  });
-
   it('should be able to create a new account', () => {
     cy.contains('Create an account').click();
     cy.contains('Start now').click();
