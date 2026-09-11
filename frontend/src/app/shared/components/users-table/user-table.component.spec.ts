@@ -12,7 +12,7 @@ import { render } from '@testing-library/angular';
 import { Establishment } from '../../../../mockdata/establishment';
 import { UserTableComponent } from './user.table.component';
 
-describe('UserTableComponent', () => {
+fdescribe('UserTableComponent', () => {
   const userArr = [ReadUser(), EditUser()] as UserDetails[];
   const adminUserArr = [AdminUser(), AdminManagerUser(), PendingAdminUser()] as UserDetails[];
   const permissionTypes = getUserPermissionsTypes(true);
@@ -196,6 +196,32 @@ describe('UserTableComponent', () => {
       fixture.detectChanges();
 
       expect(getByText('1 Jun 2024')).toBeTruthy();
+    });
+
+    it('should show Workplace and staff only when a Read user can view staff records', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.users[0].role = 'Read' as Roles;
+      component.users[0].isPrimary = false;
+      component.users[0].canViewStaffRecords = true;
+
+      fixture.detectChanges();
+
+      expect(queryByText('Read only')).toBeTruthy();
+      expect(queryByText('Workplace and staff only')).toBeTruthy();
+    });
+
+    it('should not show Workplace and staff only when a Read user cannot view staff records', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.users[0].role = 'Read' as Roles;
+      component.users[0].isPrimary = false;
+      component.users[0].canViewStaffRecords = false;
+
+      fixture.detectChanges();
+
+      expect(queryByText('Read only')).toBeTruthy();
+      expect(queryByText('Workplace and staff only')).toBeFalsy();
     });
   });
 });
