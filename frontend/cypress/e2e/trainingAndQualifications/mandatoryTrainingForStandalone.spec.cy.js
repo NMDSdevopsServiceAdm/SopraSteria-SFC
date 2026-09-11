@@ -15,8 +15,6 @@ describe('mandatory training', { tags: '@mandatoryTraining' }, () => {
     cy.insertTestWorker({ establishmentID, workerName, mainJobFKValue: jobID });
   });
 
-  beforeEach(() => {});
-
   const workerName = 'worker to test mandatory training';
   const jobID = 11;
   const workerMainJobRole = 'Community support and outreach work';
@@ -26,11 +24,7 @@ describe('mandatory training', { tags: '@mandatoryTraining' }, () => {
 
   it('can add mandatory training category to workplace', () => {
     cy.loginAndVisitTab(StandAloneEstablishment.editUserLoginName, userPassword, 'training-and-qualifications');
-
-    cy.contains('button', 'Add and manage training').click();
-    cy.contains('a', 'Manage mandatory training').click();
-
-    cy.get('h1').should('contain', 'Add and manage mandatory training categories');
+    clickIntoMandatoryTrainingPage();
 
     // mandatory training for all job roles
     addMandatoryTraining('Autism', null);
@@ -58,10 +52,7 @@ describe('mandatory training', { tags: '@mandatoryTraining' }, () => {
 
     cy.loginAndVisitTab(StandAloneEstablishment.editUserLoginName, userPassword, 'training-and-qualifications');
 
-    cy.contains('button', 'Add and manage training').click();
-    cy.contains('a', 'Manage mandatory training').click();
-
-    cy.get('h1').should('contain', 'Add and manage mandatory training categories');
+    clickIntoMandatoryTrainingPage();
 
     cy.get('[data-testid="training-table"]').as('mandatoryTrainingTable').should('be.visible');
 
@@ -92,10 +83,7 @@ describe('mandatory training', { tags: '@mandatoryTraining' }, () => {
 
     cy.loginAndVisitTab(StandAloneEstablishment.editUserLoginName, userPassword, 'training-and-qualifications');
 
-    cy.contains('button', 'Add and manage training').click();
-    cy.contains('a', 'Manage mandatory training').click();
-
-    cy.get('h1').should('contain', 'Add and manage mandatory training categories');
+    clickIntoMandatoryTrainingPage();
 
     cy.get('[data-testid="training-table"]').as('mandatoryTrainingTable').should('be.visible');
     cy.get('@mandatoryTrainingTable').within(() => {
@@ -189,6 +177,13 @@ describe('mandatory training', { tags: '@mandatoryTraining' }, () => {
     });
   });
 });
+
+function clickIntoMandatoryTrainingPage() {
+  cy.contains('button', 'Add and manage training').click();
+  cy.contains('a', 'Manage mandatory training').click();
+
+  cy.get('h1').should('contain', 'Add and manage mandatory training categories');
+}
 
 function addMandatoryTraining(category, selectedJobRole = null) {
   cy.contains('button', 'Add a mandatory training category').click();
