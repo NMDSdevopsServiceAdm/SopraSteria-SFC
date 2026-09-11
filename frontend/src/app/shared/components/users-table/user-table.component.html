@@ -42,9 +42,11 @@
           </td>
           <td class="govuk-table__cell">
             {{ getUserType(user) }}
-            @if (canViewStaffRecords(user)) {
-            <div>Workplace and staff only</div>
-            }
+            @if (user.role === 'Read') { @if (canViewStaffRecords(user)) {
+            <div>Workplace and staff</div>
+            } @else {
+            <div>Workplace only</div>
+            } }
           </td>
           <td class="govuk-table__cell">
             {{ user.status }}

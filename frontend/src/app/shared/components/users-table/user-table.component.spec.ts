@@ -198,7 +198,7 @@ describe('UserTableComponent', () => {
       expect(getByText('1 Jun 2024')).toBeTruthy();
     });
 
-    it('should show Workplace and staff only when a Read user can view staff records', async () => {
+    it('should show Workplace and staff when a Read user can view staff records', async () => {
       const { component, fixture, queryByText } = await setup();
 
       component.users[0].role = 'Read' as Roles;
@@ -208,10 +208,11 @@ describe('UserTableComponent', () => {
       fixture.detectChanges();
 
       expect(queryByText('Read only')).toBeTruthy();
-      expect(queryByText('Workplace and staff only')).toBeTruthy();
+      expect(queryByText('Workplace only')).toBeFalsy();
+      expect(queryByText('Workplace and staff')).toBeTruthy();
     });
 
-    it('should not show Workplace and staff only when a Read user cannot view staff records', async () => {
+    it('should show Workplace only when a Read user cannot view staff records', async () => {
       const { component, fixture, queryByText } = await setup();
 
       component.users[0].role = 'Read' as Roles;
@@ -221,7 +222,8 @@ describe('UserTableComponent', () => {
       fixture.detectChanges();
 
       expect(queryByText('Read only')).toBeTruthy();
-      expect(queryByText('Workplace and staff only')).toBeFalsy();
+      expect(queryByText('Workplace only')).toBeTruthy();
+      expect(queryByText('Workplace and staff')).toBeFalsy();
     });
   });
 });
