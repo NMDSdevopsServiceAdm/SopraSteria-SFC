@@ -3,7 +3,8 @@ const models = require('../../models');
 
 const getPermissions = async (req) => {
   const rawEstablishmentInfo = await models.establishment.getInfoForPermissions(req.establishmentId);
-  const establishmentAndUserInfo = convertEstablishmentAndUserInfo(rawEstablishmentInfo);
+  const userInfo = await models.user.findByUUID(req.userUid);
+  const establishmentAndUserInfo = convertEstablishmentAndUserInfo(rawEstablishmentInfo, userInfo);
 
   const estabType = getEstablishmentType(req.establishment);
 
@@ -133,7 +134,10 @@ const getAdditionalEditPermissions = (estabType, establishmentAndUserInfo, isLog
 };
 
 const getAdditionalReadPermissions = (establishmentAndUserInfo) => {
-  const additionalPermissions = [_canViewBenchmarks(establishmentAndUserInfo)];
+  const additionalPermissions = [
+    _canViewBenchmarks(establishmentAndUserInfo),
+    ..._canViewStaffRecordsAsReadOnlyUser(establishmentAndUserInfo),
+  ];
 
   return additionalPermissions.filter((item) => item !== undefined);
 };
@@ -181,16 +185,22 @@ const _canBecomeAParent = (isLoggedInAsParent, establishmentAndUserInfo) =>
 const _canViewBenchmarks = (establishmentAndUserInfo) =>
   _isRegulatedAndHasServiceWithBenchmarksData(establishmentAndUserInfo) ? 'canViewBenchmarks' : undefined;
 
+const _canViewStaffRecordsAsReadOnlyUser = (establishmentAndUserInfo) => {
+  const userCanViewStaffRecords = establishmentAndUserInfo?.userCanViewStaffRecords;
+  return userCanViewStaffRecords ? ['canViewWorker', 'canViewListOfWorkers'] : [];
+};
+
 const _canChangeDataOwner = (establishmentAndUserInfo) =>
   !establishmentAndUserInfo.dataOwnershipRequested ? 'canChangeDataOwner' : undefined;
 
-const convertEstablishmentAndUserInfo = (rawEstablishmentInfo) => {
+const convertEstablishmentAndUserInfo = (rawEstablishmentInfo, userInfo) => {
   return {
     hasParent: rawEstablishmentInfo.get('hasParent'),
     mainServiceId: rawEstablishmentInfo.mainService.id,
     hasRequestedToBecomeAParent: rawEstablishmentInfo.get('hasRequestedToBecomeAParent'),
     isRegulated: rawEstablishmentInfo.get('IsRegulated'),
     dataOwnershipRequested: rawEstablishmentInfo.dataOwnershipRequested,
+    userCanViewStaffRecords: userInfo.canViewStaffRecords,
   };
 };
 
