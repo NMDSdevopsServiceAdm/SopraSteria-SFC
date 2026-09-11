@@ -12,7 +12,7 @@ import { render } from '@testing-library/angular';
 import { Establishment } from '../../../../mockdata/establishment';
 import { UserTableComponent } from './user.table.component';
 
-fdescribe('UserTableComponent', () => {
+describe('UserTableComponent', () => {
   const userArr = [ReadUser(), EditUser()] as UserDetails[];
   const adminUserArr = [AdminUser(), AdminManagerUser(), PendingAdminUser()] as UserDetails[];
   const permissionTypes = getUserPermissionsTypes(true);
