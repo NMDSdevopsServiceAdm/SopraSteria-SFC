@@ -1004,6 +1004,7 @@ class User {
         'updated',
         'updatedBy',
         'isPrimary',
+        'canViewStaffRecords',
       ],
       order: [['updated', 'DESC']],
     });
@@ -1021,6 +1022,7 @@ class User {
           updated: thisUser.updated.toJSON(),
           updatedBy: thisUser.updatedBy,
           isPrimary: thisUser.isPrimary ? true : false,
+          canViewStaffRecords: thisUser.canViewStaffRecords ?? false,
           status: User.statusTranslator(thisUser.login),
         });
       });
