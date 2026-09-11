@@ -1,6 +1,5 @@
 services:
   sfc-test:
-    image: postgres:13
     container_name: sfc-test
     build:
       context: ./docker
@@ -34,7 +33,7 @@ services:
       - REDIS_ENDPOINT=sfc-redis
     volumes:
       - ./:/app
-    command: sh -c "apk add --no-cache make; make run-e2e-server"
+    command: sh -c "apk add --no-cache make; make install; make run-e2e-server"
 
   sfc-redis:
     image: redis

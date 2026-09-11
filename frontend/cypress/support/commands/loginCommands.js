@@ -18,7 +18,58 @@ Cypress.Commands.add('loginAsAdmin', () => {
   cy.wait('@login');
 });
 
+Cypress.Commands.add('loginAsUserUsingCySession', (username, password) => {
+  cy.session(
+    username,
+    () => {
+      cy.request({
+        method: 'POST',
+        url: '/api/login/',
+        body: { username, password },
+        retryOnStatusCodeFailure: true,
+      }).then(({ headers, body }) => {
+        window.localStorage.setItem('auth-token', headers.authorization);
+        window.localStorage.setItem('agreedUpdatedTermsStatus', 'true');
+        window.localStorage.setItem('establishmentId', body.establishment.uid);
+        cy.setCookie('cookies_preferences_set', 'true');
+      });
+    },
+    {
+      validate: () => {
+        const authToken = window.localStorage.getItem('auth-token');
+        cy.request({
+          method: 'GET',
+          url: '/api/user/me',
+          headers: { Authorization: authToken },
+          failOnStatusCode: false,
+        })
+          .its('status')
+          .should('equal', 200);
+      },
+      cacheAcrossSpecs: true,
+    },
+  );
+});
+
+Cypress.Commands.add('visitDashboardTab', (tab = 'home', subsidiaryUid = null) => {
+  if (subsidiaryUid) {
+    cy.visit(`/subsidiary/${subsidiaryUid}/${tab}`);
+  } else {
+    cy.visit(`/dashboard#${tab}`);
+  }
+});
+
+Cypress.Commands.add('loginAndVisitTab', (username, password, tab = 'home') => {
+  cy.loginAsUserUsingCySession(username, password);
+  cy.visitDashboardTab(tab);
+});
+
 Cypress.Commands.add('loginAsUser', (username, password) => {
+  cy.loginAsUserUsingCySession(username, password);
+  cy.visit('/');
+});
+
+Cypress.Commands.add('loginAsUserFromFrontpage', (username, password, skipVacancyAndTurnoverLoginPage = true) => {
   cy.intercept('POST', '/api/login').as('login');
 
   cy.updateUserFieldForLoginTests(username, 'TrainingCoursesMessageViewedQuantity', 3);
@@ -29,7 +80,9 @@ Cypress.Commands.add('loginAsUser', (username, password) => {
   cy.get('[data-testid="signinButton"]').click();
   cy.wait('@login');
 
-  getPassVacanciesAndTurnoverLoginMessage();
+  if (skipVacancyAndTurnoverLoginPage) {
+    getPassVacanciesAndTurnoverLoginMessage();
+  }
 });
 
 Cypress.Commands.add('loginAsUserForInterstitialPages', (username, password) => {

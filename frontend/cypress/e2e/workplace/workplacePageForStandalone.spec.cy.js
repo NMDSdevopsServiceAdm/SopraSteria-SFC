@@ -19,16 +19,8 @@ describe('Standalone workplace page as edit user', { tags: '@workplace' }, () =>
   });
 
   beforeEach(() => {
-    cy.reload();
-    cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
-    cy.get('[data-cy="tab-list"]').contains('Workplace').click();
-  });
-
-  afterEach(() => {
-    cy.resetStartersLeaversVacancies(establishmentId);
-    cy.resetWorkplaceCWPAnswers(establishmentId);
-    cy.resetWorkplaceDHAAnswers(establishmentId);
-    cy.resetNonMandatoryWorkplaceQuestions(establishmentId);
+    cy.loginAsUserUsingCySession(StandAloneEstablishment.editUserLoginName, userPassword);
+    cy.visitDashboardTab('workplace');
   });
 
   after(() => {
@@ -38,13 +30,9 @@ describe('Standalone workplace page as edit user', { tags: '@workplace' }, () =>
   it('should see the standalone establishment workplace page', () => {
     cy.url().should('include', '#workplace');
     cy.contains('Workplace');
-  });
 
-  it('should show all sections', () => {
     onWorkplacePage.allSectionsAreVisible();
-  });
 
-  it('All sections have a change link', () => {
     onWorkplacePage.allSectionsAreChangeable();
   });
 

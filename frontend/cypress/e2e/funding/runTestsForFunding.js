@@ -74,17 +74,12 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
     });
 
     describe('answer for workplace', () => {
-      beforeEach(() => {
-        cy.reload();
-        clickIntoFundingSection();
-      });
-
       describe('when answers are all filled in and updated', () => {
         beforeEach(() => {
           cy.clearWorkplaceWDFAnswers(testWorkplace.id);
           cy.insertDummyAnswerForWorkplaceWDFAnswers(testWorkplace.id);
           cy.changeWorkplaceWDFAnswersTimestamp(testWorkplace.id, new Date());
-          cy.reload();
+          clickIntoFundingSection();
         });
 
         it('should show an eligible message for workplace', () => {
@@ -106,7 +101,6 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
           cy.clearWorkplaceWDFAnswers(testWorkplace.id);
           cy.insertDummyAnswerForWorkplaceWDFAnswers(testWorkplace.id);
           cy.changeWorkplaceWDFAnswersTimestamp(testWorkplace.id, new Date());
-          cy.reload();
         });
 
         const anotherTestWorker = '2nd Test worker for funding page';
@@ -116,6 +110,7 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
         });
 
         it('should show the workplace as non eligible', () => {
+          clickIntoFundingSection();
           cy.get('div[data-testid="workplace-row"]').as('workplaceRow').should('contain.text', eligibleMessage);
 
           cy.insertTestWorker({
@@ -133,7 +128,7 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
             establishmentID: testWorkplace.id,
             workerName: anotherTestWorker,
           });
-          cy.reload();
+          clickIntoFundingSection();
 
           clickIntoFundingWorkplaceTab();
 
@@ -147,7 +142,10 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
         before(() => {
           cy.clearWorkplaceWDFAnswers(testWorkplace.id);
           cy.setWorkplaceMainService(testWorkplace.id, 9);
-          cy.reload();
+        });
+
+        beforeEach(() => {
+          clickIntoFundingSection();
         });
 
         it('should show non-eligible message for workplace and warnings for the missing answers', () => {
@@ -206,8 +204,8 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
           cy.clearWorkplaceWDFAnswers(testWorkplace.id);
           cy.insertDummyAnswerForWorkplaceWDFAnswers(testWorkplace.id);
           cy.changeWorkplaceWDFAnswersTimestamp(testWorkplace.id, '2017-01-01 00:00:00');
-          cy.reload();
 
+          clickIntoFundingSection();
           cy.url().should('contain', 'funding');
           clickIntoFundingWorkplaceTab();
         });

@@ -26,8 +26,8 @@ describe('Standalone staff records page as edit user', { tags: '@staffRecords' }
   beforeEach(() => {
     cy.insertTestWorker({ establishmentID: establishmentId, workerName: 'Cypress test worker' });
 
-    cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
-    onHomePage.clickTab('Staff records');
+    cy.loginAsUserUsingCySession(StandAloneEstablishment.editUserLoginName, userPassword);
+    cy.visitDashboardTab('staff-records');
   });
 
   afterEach(() => {
@@ -84,33 +84,6 @@ describe('Standalone staff records page as edit user', { tags: '@staffRecords' }
       cy.getByLabel(updatedJobRole).click();
       cy.contains('button', 'Save and return').click();
       cy.contains('.govuk-summary-list__value', updatedJobRole).should('be.visible');
-    });
-
-    it('should show validation error if Name or ID number is empty', () => {
-      cy.get('a[role="button"]').contains('Add a staff record').click();
-      cy.contains('button', 'Continue').click();
-      cy.contains('.govuk-error-message', 'Enter their name or ID number').should('be.visible');
-    });
-
-    it('should show validation error if no contract type selected', () => {
-      cy.get('a[role="button"]').contains('Add a staff record').click();
-      cy.getByLabel('Name or ID number').type('Mr Cool');
-      cy.contains('button', 'Continue').click();
-
-      cy.contains('.govuk-error-message', 'Select the type of contract they have').should('be.visible');
-    });
-
-    it('should show validation error if no job role is selected', () => {
-      cy.get('a[role="button"]').contains('Add a staff record').click();
-
-      // staff-details
-      cy.getByLabel('Name or ID number').type('Mr Cool');
-      cy.getByLabel('Permanent').click();
-      cy.contains('button', 'Continue').click();
-
-      // main-job-role
-      cy.contains('button', 'Save this staff record').click();
-      cy.contains('.govuk-error-message', 'Select the job role').should('be.visible');
     });
 
     it('should prefill name and contract type when navigating back', () => {

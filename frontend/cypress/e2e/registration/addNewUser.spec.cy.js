@@ -25,7 +25,7 @@ describe('As a workplace primary user I want to register a new user', { tags: '@
   };
 
   beforeEach(() => {
-    cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
+    cy.loginAsUserFromFrontpage(StandAloneEstablishment.editUserLoginName, userPassword);
     getPassInterstitialLoginMessage();
   });
 
@@ -70,7 +70,7 @@ describe('As a workplace primary user I want to register a new user', { tags: '@
       cy.get('span').contains('Your account is now active').should('be.visible');
 
       // try login as the new user
-      cy.loginAsUser(loginId, mockPassword);
+      cy.loginAsUserFromFrontpage(loginId, mockPassword);
 
       getPassInterstitialLoginMessage();
 

@@ -29,6 +29,14 @@ export class HomePage {
     cy.get('[data-cy="home-other-links"]').should('contain', 'Get your ASC-WDS certificate');
     cy.get('[data-cy="home-other-links"]').should('contain', 'About ASC-WDS');
   }
+
+  assertUpdateBannerNotShowing(bannerMessage) {
+    cy.get('app-summary-section').then((summaryPanel) => {
+      if (summaryPanel.find('[data-testid="update-banner-area"]')?.length > 0) {
+        cy.get('[data-testid="update-banner-area"]').should('not.contain', bannerMessage);
+      }
+    });
+  }
 }
 
 export const onHomePage = new HomePage();

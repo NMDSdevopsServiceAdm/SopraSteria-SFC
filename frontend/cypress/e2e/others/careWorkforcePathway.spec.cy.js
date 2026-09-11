@@ -1,6 +1,7 @@
 import { CWPAwarenessAnswers, CWPUseReasons } from '../../support/careWorkforcePathwayData';
 import { userPassword } from '../../support/configData';
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
+import { onHomePage } from '../../support/page_objects/onHomePage';
 import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
 import { answerCWPAwarenessQuestion, answerCWPUseQuestion } from '../../support/page_objects/workplaceQuestionPages';
 
@@ -50,7 +51,7 @@ describe('Care workforce pathway journey', { tags: '@others' }, () => {
 
       cy.url().should('contain', homePagePath);
       cy.get('app-alert span').should('contain', "Care workforce pathway information saved in 'Workplace'");
-      cy.get('[data-testid="update-banner-area"]').should('not.contain', cwpAwarenessFlagMessage);
+      onHomePage.assertUpdateBannerNotShowing(cwpAwarenessFlagMessage);
 
       // verify that workplace summary got the answers
       cy.get('a').contains('Workplace').click();
@@ -68,7 +69,7 @@ describe('Care workforce pathway journey', { tags: '@others' }, () => {
 
       cy.url().should('contain', homePagePath);
       cy.get('app-alert span').should('contain', "Care workforce pathway information saved in 'Workplace'");
-      cy.get('[data-testid="update-banner-area"]').should('not.contain', cwpAwarenessFlagMessage);
+      onHomePage.assertUpdateBannerNotShowing(cwpAwarenessFlagMessage);
 
       // verify that workplace summary got the answers
       cy.get('a').contains('Workplace').click();
@@ -98,7 +99,7 @@ describe('Care workforce pathway journey', { tags: '@others' }, () => {
       cy.get('a').contains('Back').click();
 
       cy.url().should('contain', homePagePath);
-      cy.get('[data-testid="update-banner-area"]').should('not.contain', cwpAwarenessFlagMessage);
+      onHomePage.assertUpdateBannerNotShowing(cwpAwarenessFlagMessage);
     });
   });
 
