@@ -10,6 +10,7 @@ const {
 } = require('../../../../routes/registration/createEstablishment');
 const models = require('../../../../models');
 const { Establishment } = require('../../../../models/classes/establishment');
+const cqcLocationUtils = require('../../../../utils/cqcLocationUtils');
 
 describe('createEstablishment', () => {
   let newEstablishment;
@@ -30,6 +31,10 @@ describe('createEstablishment', () => {
     sinon.stub(models.services, 'findAll').callsFake(() => {
       return [{ id: 1, other: true }];
     });
+
+    sinon.stub(cqcLocationUtils, 'getProviderId').callsFake((locationId) => {
+      return locationId ? 'mockProviderId' : null;
+    });
   });
 
   afterEach(() => {
@@ -37,58 +42,73 @@ describe('createEstablishment', () => {
   });
 
   describe('initialiseEstablishment', () => {
-    it('should set address1 in newEstablishment as addressLine1 passed in', () => {
-      initialiseEstablishment(newEstablishment, establishmentData);
+    it('should set address1 in newEstablishment as addressLine1 passed in', async () => {
+      await initialiseEstablishment(newEstablishment, establishmentData);
 
       expect(newEstablishment.address1).to.equal(establishmentData.addressLine1);
     });
 
-    it('should set address2 in newEstablishment as addressLine2 passed in', () => {
-      initialiseEstablishment(newEstablishment, establishmentData);
+    it('should set address2 in newEstablishment as addressLine2 passed in', async () => {
+      await initialiseEstablishment(newEstablishment, establishmentData);
 
       expect(newEstablishment.address2).to.equal(establishmentData.addressLine2);
     });
 
-    it('should set address3 in newEstablishment as addressLine3 passed in', () => {
-      initialiseEstablishment(newEstablishment, establishmentData);
+    it('should set address3 in newEstablishment as addressLine3 passed in', async () => {
+      await initialiseEstablishment(newEstablishment, establishmentData);
 
       expect(newEstablishment.address3).to.equal(establishmentData.addressLine3);
     });
 
-    it('should set town in newEstablishment as townCity passed in', () => {
-      initialiseEstablishment(newEstablishment, establishmentData);
+    it('should set town in newEstablishment as townCity passed in', async () => {
+      await initialiseEstablishment(newEstablishment, establishmentData);
 
       expect(newEstablishment.town).to.equal(establishmentData.townCity);
     });
 
-    it('should set county in newEstablishment as county passed in', () => {
-      initialiseEstablishment(newEstablishment, establishmentData);
+    it('should set county in newEstablishment as county passed in', async () => {
+      await initialiseEstablishment(newEstablishment, establishmentData);
 
       expect(newEstablishment.county).to.equal(establishmentData.county);
     });
 
-    it('should set locationId in newEstablishment as townCity passed in', () => {
-      initialiseEstablishment(newEstablishment, establishmentData);
+    it('should set locationId in newEstablishment as townCity passed in', async () => {
+      await initialiseEstablishment(newEstablishment, establishmentData);
 
       expect(newEstablishment.locationId).to.equal(establishmentData.locationId);
     });
 
-    it('should set postcode in newEstablishment as postalCode passed in', () => {
-      initialiseEstablishment(newEstablishment, establishmentData);
+    it('should get the providerId and set it in newEstablishment if establishmentData contains locationId', async () => {
+      await initialiseEstablishment(newEstablishment, establishmentData);
+
+      expect(newEstablishment.provId).to.equal('mockProviderId');
+    });
+
+    it('should set providerId to null if establishmentData does not have a locationId', async () => {
+      const establishmentDataWithoutLocationId = { ...establishmentData };
+      delete establishmentDataWithoutLocationId.locationId;
+
+      await initialiseEstablishment(newEstablishment, establishmentDataWithoutLocationId);
+
+      expect(newEstablishment.provId).to.equal(null);
+    });
+
+    it('should set postcode in newEstablishment as postalCode passed in', async () => {
+      await initialiseEstablishment(newEstablishment, establishmentData);
 
       expect(newEstablishment.postcode).to.equal(establishmentData.postalCode);
     });
 
-    it('should set isRegulated in newEstablishment as isRegulated passed in', () => {
-      initialiseEstablishment(newEstablishment, establishmentData);
+    it('should set isRegulated in newEstablishment as isRegulated passed in', async () => {
+      await initialiseEstablishment(newEstablishment, establishmentData);
 
       expect(newEstablishment.isRegulated).to.equal(establishmentData.isRegulated);
     });
   });
 
   describe('loadEstablishmentData', async () => {
-    beforeEach(() => {
-      initialiseEstablishment(newEstablishment, establishmentData);
+    beforeEach(async () => {
+      await initialiseEstablishment(newEstablishment, establishmentData);
 
       establishmentData = {
         ...establishmentData,
