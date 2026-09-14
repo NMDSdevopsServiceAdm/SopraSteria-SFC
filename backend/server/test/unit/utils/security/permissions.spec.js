@@ -679,7 +679,7 @@ describe('permissions', () => {
     });
   });
 
-  describe('getViewingPermissions() (= when not data owner)', () => {
+  describe('getViewingPermissions() (= when workplace is not data owner)', () => {
     let establishmentInfo;
     let role;
 
@@ -711,7 +711,7 @@ describe('permissions', () => {
       },
     };
 
-    describe('when non data owner workplace has dataPermissions = "Workplace" (= can view Workplace data)', () => {
+    describe('when workplace has dataPermissions = "Workplace" (= can view Workplace data)', () => {
       Object.entries(userTypes).forEach(([type, data]) => {
         const { role, establishmentAndUserInfo } = data;
 
@@ -730,7 +730,7 @@ describe('permissions', () => {
       });
     });
 
-    describe('when non data owner workplace has dataPermissions = "Workplace" (= can view Workplace data)', () => {
+    describe('when workplace has dataPermissions = "Workplace and Staff"', () => {
       const shouldBeAbleToViewWorkers = ['Edit', 'ReadWithCanViewStaffRecords'];
 
       shouldBeAbleToViewWorkers.forEach((type) => {
@@ -768,7 +768,7 @@ describe('permissions', () => {
       });
     });
 
-    describe('when non data owner workplace has dataPermissions = "None"', () => {
+    describe('when workplace has dataPermissions = "None"', () => {
       Object.entries(userTypes).forEach(([type, data]) => {
         const { role, establishmentAndUserInfo } = data;
         it(`should not give canViewEstablishment or canViewWorker permission, type: ${type}`, () => {
