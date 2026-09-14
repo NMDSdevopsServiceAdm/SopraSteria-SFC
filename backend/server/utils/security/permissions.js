@@ -41,9 +41,20 @@ const getDataOwnerPermissions = (req, estabType, establishmentAndUserInfo) => {
 };
 
 const getViewingPermissions = (dataPermissions = 'None', role, establishmentAndUserInfo) => {
-  if (dataPermissions === 'Workplace' || (dataPermissions === 'Workplace and Staff' && role === 'Read'))
+  if (dataPermissions === 'Workplace') {
     return dataPermissionWorkplace(establishmentAndUserInfo);
-  if (dataPermissions === 'Workplace and Staff') return dataPermissionWorkplaceAndStaff(establishmentAndUserInfo);
+  }
+
+  if (dataPermissions === 'Workplace and Staff' && ['Read', 'Edit'].includes(role)) {
+    const isAllowedToViewStaffRecords =
+      role === 'Edit' || (role === 'Read' && establishmentAndUserInfo.userCanViewStaffRecords);
+
+    if (isAllowedToViewStaffRecords) {
+      return dataPermissionWorkplaceAndStaff(establishmentAndUserInfo);
+    } else {
+      return dataPermissionWorkplace(establishmentAndUserInfo);
+    }
+  }
 
   return dataPermissionNone(establishmentAndUserInfo);
 };
