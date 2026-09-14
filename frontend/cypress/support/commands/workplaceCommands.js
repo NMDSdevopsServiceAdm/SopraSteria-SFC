@@ -444,3 +444,13 @@ Cypress.Commands.add('resetPayAndPensionWorkplaceQuestions', (establishmentID) =
 
   cy.task('dbQuery', { queryString, parameters });
 });
+
+Cypress.Commands.add('setWorkplaceExpiresSoonAlertDate', (establishmentID, days = '90') => {
+  const queryString = `UPDATE cqc."Establishment"
+    SET "ExpiresSoonAlertDate" = $2
+    WHERE "EstablishmentID" = $1;`;
+
+  const parameters = [establishmentID, days];
+
+  cy.task('dbQuery', { queryString, parameters });
+});

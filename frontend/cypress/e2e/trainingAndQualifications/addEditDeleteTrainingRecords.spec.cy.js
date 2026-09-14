@@ -3,7 +3,6 @@
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
 import {
-  clickAddLinkForRow,
   clickUpdateLinkForRow,
   clickIntoWorkerTAndQRecordPage,
   expectTrainingRecordPageToHaveCourseDetails,
@@ -647,6 +646,7 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
     const categoryIdForCommunication = 4;
 
     before(() => {
+      cy.removeAllMandatoryTrainings(establishmentID);
       cy.deleteWorkerTrainingRecord({ workerName, establishmentID });
       cy.deleteTestWorkerFromDb(workerName);
       cy.insertTestWorker({ establishmentID, workerName, mainJobFKValue: jobID });
@@ -656,82 +656,134 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
         categoryId: categoryIdForCommunication,
         name: 'Communication course',
       });
+    });
 
-      cy.addWorkerTraining({
-        establishmentID,
-        workerName,
-        categoryId: categoryIdForAutism,
-        trainingTitle: 'Autism training',
-        completedDate: '2020-01-01',
-        expiryDate: '2021-01-01',
+    describe('manage expiry alerts', () => {
+      const today = new Date();
+      const nDaysAfterToday = (days) => {
+        let newDate = new Date();
+        newDate.setDate(today.getDate() + days);
+        return newDate.toISOString();
+      };
+
+      before(() => {
+        cy.setWorkplaceExpiresSoonAlertDate(establishmentID, '90');
+
+        [29, 32, 89, 92].forEach((numberOfDays) => {
+          cy.addWorkerTraining({
+            establishmentID,
+            workerName,
+            categoryId: categoryIdForAutism,
+            trainingTitle: `training expire after ${numberOfDays} days`,
+            completedDate: '2020-01-01',
+            expiryDate: nDaysAfterToday(numberOfDays),
+          });
+        });
       });
 
-      cy.addWorkerTrainingLinkedToCourse({
-        establishmentID,
-        workerName,
-        categoryId: categoryIdForCommunication,
-        trainingCourseName: 'Communication course',
-        trainingTitle: 'Communication course',
-        completedDate: '2020-06-01',
-        expiryDate: '2021-06-01',
+      it('should be able to change the expiry alerts days setting', () => {
+        // assert first 3 trainings have expires soon alert, and the one with 92 days remain does not
+        clickIntoWorkerTAndQRecordPage(workerName);
+        cy.contains('table', 'Actions list').find('td:contains("Expires soon")').should('have.length', 3);
+        cy.contains('tr', 'training expire after 29 days').should('contain.text', 'Expires soon');
+        cy.contains('tr', 'training expire after 32 days').should('contain.text', 'Expires soon');
+        cy.contains('tr', 'training expire after 89 days').should('contain.text', 'Expires soon');
+        cy.contains('tr', 'training expire after 92 days').should('not.contain.text', 'Expires soon');
+
+        // change expiry alerts to 30 days
+        onHomePage.clickTab('Training and qualifications');
+        cy.contains('button', 'Add and manage training').click();
+        cy.contains('a', 'Manage expiry alerts').click();
+
+        cy.get('h1').should('contain', 'Manage expiry alerts');
+        cy.getByLabel('30 days before the training expires').click();
+        cy.contains('Save and return').click();
+
+        cy.get('app-alert span').should('contain', "'Expires soon' alerts set to 30 days");
+
+        clickIntoWorkerTAndQRecordPage(workerName);
+        cy.contains('table', 'Actions list').find('td:contains("Expires soon")').should('have.length', 1);
+
+        cy.contains('tr', 'training expire after 29 days').should('contain.text', 'Expires soon');
+        cy.contains('tr', 'training expire after 32 days').should('not.contain.text', 'Expires soon');
       });
     });
 
-    after(() => {
-      cy.deleteWorkerTrainingRecord({ workerName, establishmentID });
-      cy.deleteTestWorkerFromDb(workerName);
-    });
+    describe('expired training warnings', () => {
+      before(() => {
+        cy.setWorkplaceExpiresSoonAlertDate(establishmentID, '90');
+        cy.deleteWorkerTrainingRecord({ workerName, establishmentID });
+        cy.addWorkerTraining({
+          establishmentID,
+          workerName,
+          categoryId: categoryIdForAutism,
+          trainingTitle: 'Autism training',
+          completedDate: '2020-01-01',
+          expiryDate: '2021-01-01',
+        });
 
-    it('should show a warning and an Update link for each expired training of a worker', () => {
-      onHomePage.clickTab('Training and qualifications');
-      cy.contains('a', '2 records have expired').should('be.visible').as('expiryWarning');
-      cy.get('@expiryWarning').click();
-
-      cy.get('h1').should('contain', 'Expired training records');
-
-      // if training record is not linked to a course, Update link should lead to old style edit training page
-      clickUpdateLinkForRow('Autism');
-      cy.get('h1').should('contain', 'Training record details');
-      cy.url().should('contain', 'edit-training-without-course');
-      cy.getByLabel('Training record name').should('have.value', 'Autism training');
-
-      cy.contains('a', 'Back').click();
-
-      // if training record is linked to a course, Update link should lead to course details page
-      clickUpdateLinkForRow('Communication');
-      cy.get('h1').should('contain', 'Training record details');
-      cy.url().should('contain', 'edit-training-with-course');
-      expectTrainingRecordPageToHaveCourseDetails({
-        courseName: 'Communication course',
-        completedDate: '2020-06-01',
-        expiryDate: '2021-06-01',
-      });
-    });
-
-    it('should show expiry warnings and Update links in the Action list', () => {
-      onHomePage.clickTab('Training and qualifications');
-      clickIntoWorkerTAndQRecordPage(workerName);
-      cy.contains('table', 'Actions list').within(() => {
-        cy.contains('Autism').should('be.visible');
-        cy.contains('Communication').should('be.visible');
+        cy.addWorkerTrainingLinkedToCourse({
+          establishmentID,
+          workerName,
+          categoryId: categoryIdForCommunication,
+          trainingCourseName: 'Communication course',
+          trainingTitle: 'Communication course',
+          completedDate: '2020-06-01',
+          expiryDate: '2021-06-01',
+        });
       });
 
-      // if training record is not linked to a course, Update link should lead to old style edit training page
-      clickUpdateLinkForRow('Autism');
-      cy.get('h1').should('contain', 'Training record details');
-      cy.url().should('contain', 'edit-training-without-course');
-      cy.getByLabel('Training record name').should('have.value', 'Autism training');
+      it('should show a warning and an Update link for each expired training of a worker', () => {
+        onHomePage.clickTab('Training and qualifications');
+        cy.contains('a', '2 records have expired').should('be.visible').as('expiryWarning');
+        cy.get('@expiryWarning').click();
 
-      cy.contains('a', 'Back').click();
+        cy.get('h1').should('contain', 'Expired training records');
 
-      // if training record is linked to a course, Update link should lead to course details page
-      clickUpdateLinkForRow('Communication');
-      cy.get('h1').should('contain', 'Training record details');
-      cy.url().should('contain', 'edit-training-with-course');
-      expectTrainingRecordPageToHaveCourseDetails({
-        courseName: 'Communication course',
-        completedDate: '2020-06-01',
-        expiryDate: '2021-06-01',
+        // if training record is not linked to a course, Update link should lead to old style edit training page
+        clickUpdateLinkForRow('Autism');
+        cy.get('h1').should('contain', 'Training record details');
+        cy.url().should('contain', 'edit-training-without-course');
+        cy.getByLabel('Training record name').should('have.value', 'Autism training');
+
+        cy.contains('a', 'Back').click();
+
+        // if training record is linked to a course, Update link should lead to course details page
+        clickUpdateLinkForRow('Communication');
+        cy.get('h1').should('contain', 'Training record details');
+        cy.url().should('contain', 'edit-training-with-course');
+        expectTrainingRecordPageToHaveCourseDetails({
+          courseName: 'Communication course',
+          completedDate: '2020-06-01',
+          expiryDate: '2021-06-01',
+        });
+      });
+
+      it('should show expiry warnings and Update links in the Action list', () => {
+        onHomePage.clickTab('Training and qualifications');
+        clickIntoWorkerTAndQRecordPage(workerName);
+        cy.contains('table', 'Actions list').within(() => {
+          cy.contains('Autism').should('be.visible');
+          cy.contains('Communication').should('be.visible');
+        });
+
+        // if training record is not linked to a course, Update link should lead to old style edit training page
+        clickUpdateLinkForRow('Autism');
+        cy.get('h1').should('contain', 'Training record details');
+        cy.url().should('contain', 'edit-training-without-course');
+        cy.getByLabel('Training record name').should('have.value', 'Autism training');
+
+        cy.contains('a', 'Back').click();
+
+        // if training record is linked to a course, Update link should lead to course details page
+        clickUpdateLinkForRow('Communication');
+        cy.get('h1').should('contain', 'Training record details');
+        cy.url().should('contain', 'edit-training-with-course');
+        expectTrainingRecordPageToHaveCourseDetails({
+          courseName: 'Communication course',
+          completedDate: '2020-06-01',
+          expiryDate: '2021-06-01',
+        });
       });
     });
   });
