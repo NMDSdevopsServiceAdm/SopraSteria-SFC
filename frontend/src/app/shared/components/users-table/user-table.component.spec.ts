@@ -197,5 +197,33 @@ describe('UserTableComponent', () => {
 
       expect(getByText('1 Jun 2024')).toBeTruthy();
     });
+
+    it('should show Workplace and staff when a Read user can view staff records', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.users[0].role = 'Read' as Roles;
+      component.users[0].isPrimary = false;
+      component.users[0].canViewStaffRecords = true;
+
+      fixture.detectChanges();
+
+      expect(queryByText('Read only')).toBeTruthy();
+      expect(queryByText('Workplace only')).toBeFalsy();
+      expect(queryByText('Workplace and staff')).toBeTruthy();
+    });
+
+    it('should show Workplace only when a Read user cannot view staff records', async () => {
+      const { component, fixture, queryByText } = await setup();
+
+      component.users[0].role = 'Read' as Roles;
+      component.users[0].isPrimary = false;
+      component.users[0].canViewStaffRecords = false;
+
+      fixture.detectChanges();
+
+      expect(queryByText('Read only')).toBeTruthy();
+      expect(queryByText('Workplace only')).toBeTruthy();
+      expect(queryByText('Workplace and staff')).toBeFalsy();
+    });
   });
 });

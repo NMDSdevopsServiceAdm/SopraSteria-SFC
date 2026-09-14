@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -162,5 +162,51 @@ describe('CreateUserAccountComponent', () => {
 
     const { getByText } = await setup();
     expect(getByText(message)).toBeTruthy();
+  });
+
+  it('should show Staff records checkbox when Read is selected', async () => {
+    const { fixture, getByText, getByRole } = await setup();
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    fireEvent.click(getByText('Read'));
+
+    expect(
+      getByRole('checkbox', {
+        name: /also allow this user to view staff records/i,
+      }),
+    ).toBeTruthy();
+  });
+
+  it('should call createAccount with canViewStaffRecords true when checkbox is selected', async () => {
+    const { fixture, getByText, getByRole, createAccountSpy } = await setup();
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    fireEvent.click(getByText('Read'));
+
+    const checkbox = getByRole('checkbox', {
+      name: /also allow this user to view staff records/i,
+    });
+
+    fireEvent.click(checkbox);
+
+    fireEvent.click(getByText('Save user'));
+
+    expect(createAccountSpy.calls.mostRecent().args[1].canViewStaffRecords).toBe(true);
+  });
+
+  it('should call createAccount with canViewStaffRecords false when checkbox is not selected', async () => {
+    const { fixture, getByText, createAccountSpy } = await setup();
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    fireEvent.click(getByText('Read'));
+    fireEvent.click(getByText('Save user'));
+
+    expect(createAccountSpy.calls.mostRecent().args[1].canViewStaffRecords).toBe(false);
   });
 });

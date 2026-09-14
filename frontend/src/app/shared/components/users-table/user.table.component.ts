@@ -30,6 +30,10 @@ export class UserTableComponent implements OnInit {
     return this.loggedUserUid === user.uid;
   }
 
+  public canViewStaffRecords(user: UserDetails): boolean {
+    return user.role === 'Read' && user.canViewStaffRecords === true;
+  }
+
   /**
    * Use locally stored last login for logged-in user,
    * otherwise use API value.
