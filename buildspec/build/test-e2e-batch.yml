@@ -23,7 +23,7 @@ batch:
             - '@workplace'
             - '@admin @benchmarks @others @registration'
             - '@staffRecords'
-            - '@trainingCourses'
+            - '@trainingCourses @mandatoryTraining'
           WORKERS:
             - 1
 
