@@ -13,6 +13,7 @@ export const ParentEstablishment = {
   nmdsId: 'G1001748',
   editUserLoginName: Cypress.expose('editParentUser'),
   readOnlyUserLoginName: Cypress.expose('readOnlyParentUser'),
+  postcode: 'SE23 2PX',
 };
 
 export const SubEstablishment = {

@@ -130,8 +130,7 @@ Cypress.Commands.add('deleteTestUserFromDb', (userFullName) => {
     `DELETE FROM cqc."UserAudit"
         USING cqc."User"
         WHERE "UserAudit"."UserFK" = "User"."RegistrationID"
-        AND "User"."FullNameValue" = $1
-        AND "When" >= CURRENT_DATE;`,
+        AND "User"."FullNameValue" = $1`,
     `DELETE FROM cqc."Login"
         USING cqc."User"
         WHERE "Login"."RegistrationID" = "User"."RegistrationID"
@@ -147,7 +146,7 @@ Cypress.Commands.add('deleteTestUserFromDb', (userFullName) => {
   cy.task('multipleDbQueries', dbQueries);
 });
 
-Cypress.Commands.add('addTestUser', (userFullName, username, establishmentID, userRoleValue) => {
+Cypress.Commands.add('addTestUser', (userFullName, username, establishmentID, userRoleValue, isPrimary = false) => {
   const mockUserDetails = {
     FullNameValue: userFullName,
     UserUID: uuidv4(),
@@ -159,8 +158,10 @@ Cypress.Commands.add('addTestUser', (userFullName, username, establishmentID, us
     SecurityQuestionAnswerValue: '4',
     UserRoleValue: userRoleValue ?? 'Read',
     Archived: false,
-    IsPrimary: false,
+    IsPrimary: isPrimary,
     updatedby: 'cypress test',
+    TrainingCoursesMessageViewedQuantity: 3,
+    LastViewedVacanciesAndTurnoverMessage: new Date(),
   };
   const mockPasswordHash = '$2a$10$mDCJKwlWQIfAYHF4dOBmBug9ZwIFxOzlLOWeszyMFCs0GwiyJ9EHq';
 
@@ -169,7 +170,7 @@ Cypress.Commands.add('addTestUser', (userFullName, username, establishmentID, us
             .map((columnName) => `"${columnName}"`)
             .join(', ')})
         VALUES
-          ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+          ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
         RETURNING "RegistrationID"
         ;`;
   const parameters = Object.values(mockUserDetails);
@@ -197,47 +198,17 @@ Cypress.Commands.add('addTestUser', (userFullName, username, establishmentID, us
   });
 });
 
-Cypress.Commands.add('deleteTestWorkplaceFromDb', (workplaceName) => {
-  const queryStrings = [
-    `DELETE FROM cqc."EstablishmentAudit"
-    USING cqc."Establishment"
-    WHERE "Establishment"."EstablishmentID" = "EstablishmentAudit"."EstablishmentFK"
-    AND "Establishment"."NameValue" = $1
-    AND "When" >= CURRENT_DATE;`,
-
-    `DELETE FROM "cqc"."EstablishmentCapacity"
-    USING cqc."Establishment"
-    WHERE "Establishment"."EstablishmentID" = "EstablishmentCapacity"."EstablishmentID"
-    AND "Establishment"."NameValue" = $1`,
-
-    `DELETE FROM "cqc"."EstablishmentJobs"
-    USING cqc."Establishment"
-    WHERE "Establishment"."EstablishmentID" = "EstablishmentJobs"."EstablishmentID"
-    AND "Establishment"."NameValue" = $1`,
-
-    `DELETE FROM "cqc"."EstablishmentServices"
-    USING cqc."Establishment"
-    WHERE "Establishment"."EstablishmentID" = "EstablishmentServices"."EstablishmentID"
-    AND "Establishment"."NameValue" = $1`,
-
-    `DELETE FROM "cqc"."EstablishmentServiceUsers"
-    USING cqc."Establishment"
-    WHERE "Establishment"."EstablishmentID" = "EstablishmentServiceUsers"."EstablishmentID"
-    AND "Establishment"."NameValue" = $1`,
-
-    `DELETE FROM cqc."EstablishmentDHActivities"
-    USING cqc."Establishment"
-    WHERE "Establishment"."EstablishmentID" = "EstablishmentDHActivities"."EstablishmentID"
-    AND "Establishment"."NameValue" = $1`,
-
-    `DELETE FROM "cqc"."Establishment"
-    WHERE "NameValue" = $1;`,
-  ];
-  const parameters = [workplaceName];
-
-  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
-
-  cy.task('multipleDbQueries', dbQueries);
+Cypress.Commands.add('createTestUserWithNewWorkplace', (userFullName, username, workplaceName) => {
+  return cy.createTestWorkplace(workplaceName).then(([establishmentID, nmdsId]) => {
+    return cy.addTestUser(userFullName, username, establishmentID, 'Edit', true).then(() => {
+      return {
+        name: workplaceName,
+        id: establishmentID,
+        nmdsId: nmdsId,
+        editUserLoginName: username,
+      };
+    });
+  });
 });
 
 Cypress.Commands.add('revertUserAttributes', (userFullName = 'editstandalone', userId = 769) => {
