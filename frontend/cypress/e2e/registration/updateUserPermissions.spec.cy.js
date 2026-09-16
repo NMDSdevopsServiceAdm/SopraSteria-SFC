@@ -48,6 +48,86 @@ describe('update user permissions', { tags: '@registration' }, () => {
     });
   });
 
+  describe('changing a users role', () => {
+    it('should change an edit user to read only', () => {
+      goToPermissionsPage(editToReadUser.fullname);
+
+      cy.getByLabel('Edit').should('be.checked');
+
+      cy.getByLabel('Read only').check();
+
+      cy.contains('button', 'Continue').click();
+
+      cy.get('h1').should('contain', 'User details');
+
+      expectRow('Permissions').toHaveValue('Read only');
+    });
+
+    it('should change an edit user to read only with access to staff records', () => {
+      goToPermissionsPage(staffRecordsUser.fullname);
+
+      cy.getByLabel('Edit').should('be.checked');
+
+      cy.getByLabel('Read only').check();
+
+      cy.getByLabel('Also allow this user to view staff records (optional)').should('be.visible').check();
+
+      cy.contains('button', 'Continue').click();
+
+      cy.get('h1').should('contain', 'User details');
+
+      expectRow('Permissions').toHaveValue('Read only');
+
+      // Verify the updated user can access staff records
+      cy.contains('a', 'Sign out').click();
+
+      cy.loginAsUserFromFrontpage(staffRecordsUser.username, userPassword);
+
+      onHomePage.clickTab('Staff records');
+
+      cy.url().should('contain', 'dashboard#staff-records');
+    });
+
+    it('should change a read only user to edit', () => {
+      goToPermissionsPage(readToEditUser.fullname);
+
+      cy.getByLabel('Read only').should('be.checked');
+
+      cy.getByLabel('Edit').check();
+
+      cy.contains('button', 'Continue').click();
+
+      cy.get('h1').should('contain', 'User details');
+
+      expectRow('Permissions').toHaveValue('Edit');
+
+      // Verify the updated user has Edit access
+      cy.contains('a', 'Sign out').click();
+
+      cy.loginAsUserFromFrontpage(readToEditUser.username, userPassword);
+
+      onHomePage.allTabs('edit');
+    });
+  });
+
+  describe('changing the primary user', () => {
+    it('should make an edit user the new primary user', () => {
+      goToPermissionsPage(newPrimaryUser.fullname);
+
+      cy.getByLabel('Edit').should('be.checked');
+
+      cy.getByLabel('Make primary user').should('be.visible').check();
+
+      cy.contains('button', 'Continue').click();
+
+      cy.get('h1').should('contain', 'User details');
+
+      cy.contains(`${newPrimaryUser.fullname} is the new primary user`).should('be.visible');
+
+      expectRow('Permissions').toHaveValue('Primary edit');
+    });
+  });
+
   const goToUser = (fullname) => {
     cy.contains('a', 'Users').click();
 
