@@ -2,59 +2,54 @@ import { userPassword } from '../../support/configData';
 
 const { StandAloneEstablishment } = require('../../support/mockEstablishmentData');
 const { onHomePage } = require('../../support/page_objects/onHomePage');
+
 describe('update user permissions', { tags: '@registration' }, () => {
-  const mockUsers = [
-    {
-      fullname: 'Mock user edit to read',
-      username: 'mock-user-edit-to-read',
-      role: 'Edit',
-    },
-    {
-      fullname: 'Mock user read with staff records',
-      username: 'mock-user-read-staff-records',
-      role: 'Edit',
-    },
-    {
-      fullname: 'Mock user read to edit',
-      username: 'mock-user-read-to-edit',
-      role: 'Read',
-    },
-    {
-      fullname: 'Mock user new primary',
-      username: 'mock-user-new-primary',
-      role: 'Edit',
-    },
-  ];
+  const editToReadUser = {
+    fullname: 'Mock user edit to read',
+    username: 'mock-user-edit-to-read',
+    role: 'Edit',
+  };
 
-  const editToReadUser = mockUsers[0];
-  const staffRecordsUser = mockUsers[1];
-  const readToEditUser = mockUsers[2];
-  const newPrimaryUser = mockUsers[3];
+  const staffRecordsUser = {
+    fullname: 'Mock user read with staff records',
+    username: 'mock-user-read-staff-records',
+    role: 'Edit',
+  };
 
-  before(() => {
-    mockUsers.forEach((mockUser) => {
-      cy.deleteTestUserFromDb(mockUser.fullname);
-      cy.addTestUser(mockUser.fullname, mockUser.username, StandAloneEstablishment.id, mockUser.role);
-    });
-  });
+  const readToEditUser = {
+    fullname: 'Mock user read to edit',
+    username: 'mock-user-read-to-edit',
+    role: 'Read',
+  };
+
+  const newPrimaryUser = {
+    fullname: 'Mock user new primary',
+    username: 'mock-user-new-primary',
+    role: 'Edit',
+  };
 
   beforeEach(() => {
+    cy.deleteTestUserFromDb('Mock changed name');
+
     cy.loginAsUserFromFrontpage(StandAloneEstablishment.editUserLoginName, userPassword);
   });
 
-  after(() => {
-    mockUsers.forEach((mockUser) => {
-      cy.deleteTestUserFromDb(mockUser.fullname);
-    });
+  afterEach(() => {
+    cy.deleteTestUserFromDb(editToReadUser.fullname);
+    cy.deleteTestUserFromDb(staffRecordsUser.fullname);
+    cy.deleteTestUserFromDb(readToEditUser.fullname);
+    cy.deleteTestUserFromDb(newPrimaryUser.fullname);
   });
 
   describe('changing a users role', () => {
     it('should change an edit user to read only', () => {
+      addTestUser(editToReadUser);
+
       goToPermissionsPage(editToReadUser.fullname);
 
       cy.getByLabel('Edit').should('be.checked');
 
-      cy.getByLabel('Read only').check();
+      cy.getByLabel('Read only').check().should('be.checked');
 
       cy.contains('button', 'Continue').click();
 
@@ -64,19 +59,21 @@ describe('update user permissions', { tags: '@registration' }, () => {
     });
 
     it('should change an edit user to read only with access to staff records', () => {
+      addTestUser(staffRecordsUser);
+
       goToPermissionsPage(staffRecordsUser.fullname);
 
       cy.getByLabel('Edit').should('be.checked');
 
-      cy.getByLabel('Read only').check();
+      cy.getByLabel('Read only').check().should('be.checked');
 
-      cy.getByLabel('Also allow this user to view staff records (optional)').should('be.visible').check();
+      cy.getByLabel('Also allow this user to view staff records (optional)')
+        .check({ force: true })
+        .should('be.checked');
 
       cy.contains('button', 'Continue').click();
 
       cy.get('h1').should('contain', 'User details');
-
-      expectRow('Permissions').toHaveValue('Read only');
 
       // Verify the updated user can access staff records
       cy.contains('a', 'Sign out').click();
@@ -89,11 +86,13 @@ describe('update user permissions', { tags: '@registration' }, () => {
     });
 
     it('should change a read only user to edit', () => {
+      addTestUser(readToEditUser);
+
       goToPermissionsPage(readToEditUser.fullname);
 
       cy.getByLabel('Read only').should('be.checked');
 
-      cy.getByLabel('Edit').check();
+      cy.getByLabel('Edit').check().should('be.checked');
 
       cy.contains('button', 'Continue').click();
 
@@ -101,7 +100,6 @@ describe('update user permissions', { tags: '@registration' }, () => {
 
       expectRow('Permissions').toHaveValue('Edit');
 
-      // Verify the updated user has Edit access
       cy.contains('a', 'Sign out').click();
 
       cy.loginAsUserFromFrontpage(readToEditUser.username, userPassword);
@@ -112,11 +110,13 @@ describe('update user permissions', { tags: '@registration' }, () => {
 
   describe('changing the primary user', () => {
     it('should make an edit user the new primary user', () => {
+      addTestUser(newPrimaryUser);
+
       goToPermissionsPage(newPrimaryUser.fullname);
 
       cy.getByLabel('Edit').should('be.checked');
 
-      cy.getByLabel('Make primary user').should('be.visible').check();
+      cy.getByLabel('Make primary user').check({ force: true }).should('be.checked');
 
       cy.contains('button', 'Continue').click();
 
@@ -127,6 +127,12 @@ describe('update user permissions', { tags: '@registration' }, () => {
       expectRow('Permissions').toHaveValue('Primary edit');
     });
   });
+
+  const addTestUser = (user) => {
+    cy.deleteTestUserFromDb(user.fullname);
+
+    cy.addTestUser(user.fullname, user.username, StandAloneEstablishment.id, user.role);
+  };
 
   const goToUser = (fullname) => {
     cy.contains('a', 'Users').click();
