@@ -16,16 +16,15 @@ const loadSendEmailResult = async () => {
   }
 };
 
-const storeSendEmailResult = async (responseContent) => {
+const storeSendEmailResult = async (result) => {
   try {
     const oneWeek = 60 * 60 * 24 * 7;
     const timestamp = new Date().toISOString();
     const dateOfToday = timestamp.slice(0, 10);
-    const stringifiedContent = JSON.stringify({ ...responseContent, timestamp });
+    const stringifiedContent = JSON.stringify({ ...result, timestamp });
 
     await redisClient.rpush(dateOfToday, stringifiedContent);
-
-    await redisClient.set(url, stringifiedContent, 'EX', oneWeek);
+    await redisClient.expire(dateOfToday, oneWeek);
   } catch (err) {
     console.error('Error occurred when trying to store the send email result');
     console.error(err);

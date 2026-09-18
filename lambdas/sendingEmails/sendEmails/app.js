@@ -1,6 +1,6 @@
 const SibApiV3Sdk = require('sib-api-v3-sdk');
 const config = require('./config/config');
-const { storeSendEmailResult } = require('./storeSendEmailResult');
+const redisStore = require('./storeSendEmailResult');
 
 const defaultClient = SibApiV3Sdk.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
@@ -22,21 +22,34 @@ const sendEmail = async (to, templateId, params) => {
   }
 };
 
-exports.lambdaHandler = async (event, context) => {
-  const message = event.Records[0].body;
+exports.lambdaHandler = async (event, _context) => {
+  let { to, templateId, params } = {};
   try {
-    const { to, templateId, params } = JSON.parse(message);
-    // await sendEmail(to, templateId, params);
+    const message = event.Records[0].body;
+    ({ to, templateId, params } = JSON.parse(message));
+    await sendEmail(to, templateId, params);
 
-    await storeSendEmailResult({ result: 'successful', templateId, to, messageId: event.Records[0]?.messageId });
+    await redisStore.storeSendEmailResult({
+      result: 'successful',
+      templateId,
+      to,
+      messageId: event.Records[0]?.messageId,
+    });
 
     return {
       statusCode: 200,
       body: 'Call Successful',
     };
   } catch (err) {
-    console.log(err);
-    await storeSendEmailResult({ result: 'failed', templateId, to, messageId: event.Records[0]?.messageId });
+    console.error(err);
+
+    await redisStore.storeSendEmailResult({
+      result: 'failed',
+      templateId,
+      to,
+      messageId: event?.Records?.[0]?.messageId,
+    });
+
     return err;
   }
 };
