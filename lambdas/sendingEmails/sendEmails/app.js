@@ -1,5 +1,6 @@
 const SibApiV3Sdk = require('sib-api-v3-sdk');
 const config = require('./config/config');
+const { storeSendEmailResult } = require('./storeSendEmailResult');
 
 const defaultClient = SibApiV3Sdk.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
@@ -19,20 +20,23 @@ const sendEmail = async (to, templateId, params) => {
     console.error(error);
     throw new Error(error);
   }
-}
+};
 
 exports.lambdaHandler = async (event, context) => {
   const message = event.Records[0].body;
   try {
     const { to, templateId, params } = JSON.parse(message);
-    await sendEmail(to, templateId, params);
+    // await sendEmail(to, templateId, params);
+
+    await storeSendEmailResult({ result: 'successful', templateId, to, messageId: event.Records[0]?.messageId });
 
     return {
       statusCode: 200,
       body: 'Call Successful',
-    }
+    };
   } catch (err) {
     console.log(err);
+    await storeSendEmailResult({ result: 'failed', templateId, to, messageId: event.Records[0]?.messageId });
     return err;
   }
 };
