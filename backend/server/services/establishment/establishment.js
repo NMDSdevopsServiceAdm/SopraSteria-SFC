@@ -6,6 +6,7 @@ const { Op } = require('sequelize');
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
 const models = require('../../models');
+const cqcLocationUtils = require('../../utils/cqcLocationUtils');
 
 const OTHER_MAX_LENGTH = 120;
 
@@ -99,6 +100,8 @@ const addEstablishment = async (req, res) => {
         );
       }
 
+      const providerId = await cqcLocationUtils.getProviderId(establishmentData.LocationID);
+
       const newEstablishment = new Establishment.Establishment();
       newEstablishment.initialise(
         establishmentData.Address1,
@@ -107,7 +110,7 @@ const addEstablishment = async (req, res) => {
         establishmentData.Town,
         establishmentData.County,
         establishmentData.LocationID,
-        null, // PROV ID is not captured yet on registration
+        providerId,
         establishmentData.PostCode,
         establishmentData.IsRegulated,
       );
