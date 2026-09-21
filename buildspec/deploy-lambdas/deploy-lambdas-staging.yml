@@ -12,7 +12,7 @@ phases:
       - echo Installing lambda package...
       - cd lambdas/bulkUpload
       - npm ci
-      - cd ../sendingEmails
+      - cd ../sendingEmails/sendEmails
       - npm ci
   build:
     commands:
