@@ -104,6 +104,7 @@ describe('send emails results', () => {
 
     it('should return 500 if failed to load the result', async () => {
       sinon.stub(redisStore, 'loadSendEmailsResult').rejects(new Error('some mock error'));
+      sinon.stub(models.EmailCampaignHistory, 'countToday').resolves(3);
 
       const req = httpMocks.createRequest(defaultMockRequest);
       const res = httpMocks.createResponse();
@@ -113,6 +114,7 @@ describe('send emails results', () => {
     });
 
     it('should return 500 if failed to load todays email campaign count', async () => {
+      sinon.stub(redisStore, 'loadSendEmailsResult').resolves({});
       sinon.stub(models.EmailCampaignHistory, 'countToday').rejects(new Error('mock database error'));
 
       const req = httpMocks.createRequest(defaultMockRequest);
