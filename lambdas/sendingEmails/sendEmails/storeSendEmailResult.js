@@ -1,12 +1,15 @@
 const config = require('./config/config');
 const RedisClient = require('ioredis');
 
-const redisClient = new RedisClient(config.get('redis.url'), { keyPrefix: 'brevoEmailStatus:' });
+const getRedisClient = () => {
+  return new RedisClient(config.get('redis.url'), { keyPrefix: 'brevoEmailStatus:' });
+};
 
 const loadSendEmailResult = async () => {
   try {
-    const dateOfToday = new Date().toISOString().slice(0, 10);
+    const redisClient = getRedisClient();
 
+    const dateOfToday = new Date().toISOString().slice(0, 10);
     const results = await redisClient.lrange(dateOfToday, 0, -1);
 
     return results.map((result) => JSON.parse(result));
@@ -18,6 +21,8 @@ const loadSendEmailResult = async () => {
 
 const storeSendEmailResult = async (result) => {
   try {
+    const redisClient = getRedisClient();
+
     const oneWeek = 60 * 60 * 24 * 7;
     const timestamp = new Date().toISOString();
     const dateOfToday = timestamp.slice(0, 10);
