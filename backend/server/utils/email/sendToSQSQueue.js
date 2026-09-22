@@ -1,6 +1,8 @@
 const { SendMessageCommand, SQSClient } = require('@aws-sdk/client-sqs');
-const config = require('../../config/config');
 const { fromContainerMetadata } = require('@aws-sdk/credential-providers');
+const uuid = require('uuid');
+
+const config = require('../../config/config');
 const env = String(config.get('env'));
 
 const getRegionFromQueueUrl = (queueUrl) => {
@@ -32,11 +34,11 @@ const getSqsClient = () => {
 const queueUrl = config.get('aws.sqsqueue').toString();
 const sqsClient = getSqsClient(queueUrl);
 
-const sendToSQSQueue = async (to, templateId, params, index) => {
+const sendToSQSQueue = async (to, templateId, params, _index) => {
   try {
     const command = new SendMessageCommand({
       MessageGroupId: String(templateId),
-      MessageDeduplicationId: String(index),
+      MessageDeduplicationId: uuid.v4(),
       MessageBody: JSON.stringify({
         to,
         templateId,
