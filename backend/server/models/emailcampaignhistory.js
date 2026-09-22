@@ -39,8 +39,8 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   EmailCampaignHistory.countToday = async function () {
-    const today = dayjs().format('YYYY-MM-DD');
-    const tomorrow = dayjs().add(1, 'day').format('YYYY-MM-DD');
+    const today = dayjs().format('YYYY-MM-DDT00:00:00');
+    const tomorrow = dayjs().add(1, 'day').format('YYYY-MM-DDT00:00:00');
 
     return this.count({
       where: {
