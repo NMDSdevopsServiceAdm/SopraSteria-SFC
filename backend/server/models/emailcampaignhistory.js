@@ -1,32 +1,54 @@
 'use strict';
-module.exports = (sequelize, DataTypes) => {
-  const EmailCampaignHistory = sequelize.define('EmailCampaignHistory', {
-    id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      autoIncrement: true,
-      field: '"id"',
-    },
-    emailCampaignID: DataTypes.INTEGER,
-    establishmentID: DataTypes.INTEGER,
-    template: DataTypes.STRING,
-    data: DataTypes.JSONB,
-    sentToName: DataTypes.STRING,
-    sentToEmail: DataTypes.STRING,
-  }, {
-    schema: 'cqc'
-  });
+const { Op } = require('sequelize');
+const dayjs = require('dayjs');
 
-  EmailCampaignHistory.associate = function(models) {
+module.exports = (sequelize, DataTypes) => {
+  const EmailCampaignHistory = sequelize.define(
+    'EmailCampaignHistory',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true,
+        field: '"id"',
+      },
+      emailCampaignID: DataTypes.INTEGER,
+      establishmentID: DataTypes.INTEGER,
+      template: DataTypes.STRING,
+      data: DataTypes.JSONB,
+      sentToName: DataTypes.STRING,
+      sentToEmail: DataTypes.STRING,
+      createdAt: DataTypes.DATE,
+    },
+    {
+      schema: 'cqc',
+    },
+  );
+
+  EmailCampaignHistory.associate = function (models) {
     EmailCampaignHistory.belongsTo(models.establishment, {
-      foreignKey : 'establishmentID',
+      foreignKey: 'establishmentID',
       targetKey: 'id',
     });
 
     EmailCampaignHistory.belongsTo(models.EmailCampaign, {
-      foreignKey : 'emailCampaignID',
+      foreignKey: 'emailCampaignID',
       targetKey: 'id',
+    });
+  };
+
+  EmailCampaignHistory.countToday = async function () {
+    const today = dayjs().format('YYYY-MM-DD');
+    const tomorrow = dayjs().add(1, 'day').format('YYYY-MM-DD');
+
+    return this.count({
+      where: {
+        createdAt: {
+          [Op.gt]: today,
+          [Op.lt]: tomorrow,
+        },
+      },
     });
   };
 

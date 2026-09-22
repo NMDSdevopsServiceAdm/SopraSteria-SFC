@@ -6,18 +6,20 @@ const redisClient = new RedisClient(config.get('redis.url'), { keyPrefix: 'brevo
 
 const loadSendEmailsResult = async () => {
   try {
-    const dateOfToday = new Date().toISOString().slice(0, 10);
+    const timestamp = new Date().toISOString();
+    const dateOfToday = timestamp.slice(0, 10);
 
     const storedResults = await redisClient.lrange(dateOfToday, 0, -1);
     const parsed = storedResults.map((result) => JSON.parse(result));
     const grouped = lodash.chain(parsed).groupBy('result').value();
 
     const result = {
+      timestamp,
       date: dateOfToday,
       successful: grouped?.successful ?? [],
-      successfulCounts: grouped?.successful?.length ?? 0,
+      successfulCount: grouped?.successful?.length ?? 0,
       failed: grouped?.failed ?? [],
-      failedCounts: grouped?.failed?.length ?? 0,
+      failedCount: grouped?.failed?.length ?? 0,
     };
 
     return result;
