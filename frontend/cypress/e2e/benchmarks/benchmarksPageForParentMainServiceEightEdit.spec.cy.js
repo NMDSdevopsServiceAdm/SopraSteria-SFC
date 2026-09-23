@@ -1,18 +1,17 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-
-import { editParentMainServiceEight, userPassword } from '../../support/configData';
+import { userPassword } from '../../support/configData';
 import { ParentEstablishment } from '../../support/mockEstablishmentData';
 import { onBenchmarksPage } from '../../support/page_objects/onBenchmarksPage';
 import { onHomePage } from '../../support/page_objects/onHomePage';
 
 describe('Parent benchmark page, main service 8, as edit user', { tags: '@benchmarks' }, () => {
   before(() => {
-    cy.setWorkplaceMainService(ParentEstablishment.id, '20'); // the ID for main service which have "reportingID" =  8
+    cy.setWorkplaceMainService(ParentEstablishment.id, '20'); // reportingID = 8
   });
 
   beforeEach(() => {
-    cy.loginAsUser(editParentMainServiceEight, userPassword);
+    cy.loginAsUser(ParentEstablishment.editUserLoginName, userPassword);
     onHomePage.clickTab('Benchmarks');
   });
 
