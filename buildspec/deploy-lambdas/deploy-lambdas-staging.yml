@@ -20,7 +20,6 @@ phases:
       - export $(printf "SEND_EMAILS_LAMBDA_ROLE_ARN=%s" $(aws iam get-role --role-name staging-send-email-role --query "Role.Arn"  --output text))
       - export BULK_UPLOAD_LAMBDA_REGION="eu-west-1"
       - export SEND_EMAILS_LAMBDA_REGION="eu-west-1"
-      - export STAGE=staging
       - echo "Deploying bulk upload lambdas with Serverless..."
       - cd lambdas/bulkUpload
       - npx serverless deploy function --function validateWorker --stage staging
