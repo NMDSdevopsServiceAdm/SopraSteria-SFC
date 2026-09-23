@@ -294,6 +294,101 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
       });
     });
 
+    describe('staff records funding page', () => {
+      const searchableWorker = 'Searchable funding worker';
+
+      const additionalWorkers = Array.from({ length: 15 }, (_, index) =>
+        index === 0 ? searchableWorker : `Funding search worker ${index}`,
+      );
+
+      afterEach(() => {
+        additionalWorkers.forEach((workerName) => {
+          cy.deleteTestWorkerFromDb(workerName);
+        });
+      });
+
+      it('should show what is not meeting the funding requirements for a staff record', () => {
+        clickIntoFundingSection();
+        clickIntoFundingStaffRecordsTab();
+
+        cy.contains(testWorker).click();
+
+        cy.contains('This staff record does not meet the funding requirements').should('be.visible');
+
+        cy.get('[data-testid="genderWdfWarning"]').should('contain.text', 'Add this information');
+      });
+
+      it('should allow user to update information to meet a funding requirement', () => {
+        clickIntoFundingSection();
+        clickIntoFundingStaffRecordsTab();
+
+        cy.contains(testWorker).click();
+
+        cy.get('[data-testid="genderWdfWarning"]').should('contain.text', 'Add this information');
+
+        cy.contains('.govuk-summary-list__row', 'Gender identity').find('a').contains('Add').click();
+
+        cy.contains("What's their gender identity?").should('be.visible');
+
+        cy.getByLabel('Female').check();
+
+        cy.get('form').find('button[type="submit"]').click();
+
+        cy.get('[data-testid="genderWdfWarning"]').should('not.exist');
+      });
+
+      it('should allow user to search staff records by name or ID number', () => {
+        additionalWorkers.forEach((workerName) => {
+          cy.insertTestWorker({
+            establishmentID: testWorkplace.id,
+            workerName,
+          });
+        });
+
+        clickIntoFundingSection();
+        clickIntoFundingStaffRecordsTab();
+
+        cy.getByLabel('Search by name or ID number').type(searchableWorker);
+
+        cy.contains(searchableWorker).should('be.visible');
+        cy.contains(testWorker).should('not.exist');
+      });
+
+      it('should allow user to sort staff records', () => {
+        additionalWorkers.forEach((workerName) => {
+          cy.insertTestWorker({
+            establishmentID: testWorkplace.id,
+            workerName,
+          });
+        });
+
+        clickIntoFundingSection();
+        clickIntoFundingStaffRecordsTab();
+
+        cy.getByLabel('Sort by').should('have.value', '0_asc');
+
+        cy.get('tbody.govuk-table__body tr')
+          .first()
+          .find('td')
+          .first()
+          .invoke('text')
+          .then((firstWorkerAscending) => {
+            cy.getByLabel('Sort by').select('0_dsc');
+
+            cy.getByLabel('Sort by').should('have.value', '0_dsc');
+
+            cy.get('tbody.govuk-table__body tr')
+              .first()
+              .find('td')
+              .first()
+              .invoke('text')
+              .should((firstWorkerDescending) => {
+                expect(firstWorkerDescending.trim()).not.to.equal(firstWorkerAscending.trim());
+              });
+          });
+      });
+    });
+
     const clickIntoFundingSection = () => {
       cy.get('a')
         .contains(/LDSS funding/)
@@ -308,6 +403,15 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
         cy.get('a').contains(testWorkplace.name).click();
         cy.get('h1').should('contain.text', `${testWorkplace.name}: data`);
       }
+    };
+
+    const clickIntoFundingStaffRecordsTab = () => {
+      if (!isTestingForParentViewSub) {
+        cy.get('div[data-testid="workplace-row"]').find('a').click();
+      }
+
+      cy.get('[data-testid="tab1"]').contains('Staff records').click();
+      cy.get('[data-testid="staffRecordsTab"]').should('be.visible');
     };
 
     const clickIntoFundingWorkplaceTab = () => {
