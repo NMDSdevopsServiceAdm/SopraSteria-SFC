@@ -1,5 +1,9 @@
 const { SendMessageCommand, SQSClient } = require('@aws-sdk/client-sqs');
+const { fromContainerMetadata } = require('@aws-sdk/credential-providers');
+const uuid = require('uuid');
+
 const config = require('../../config/config');
+const env = String(config.get('env'));
 
 const getRegionFromQueueUrl = (queueUrl) => {
   const match = /sqs\.(.*)\.amazonaws.com/.exec(queueUrl);
@@ -10,16 +14,31 @@ const getRegionFromQueueUrl = (queueUrl) => {
   return config.get('aws.region').toString();
 };
 
-const sendToSQSQueue = async (to, templateId, params, index) => {
+const getSqsClient = () => {
+  const region = getRegionFromQueueUrl(queueUrl);
+  if (env === 'localhost') {
+    return new SQSClient({
+      region,
+    });
+  }
+
+  return new SQSClient({
+    credentials: fromContainerMetadata({
+      timeout: 1000,
+      maxRetries: 0,
+    }),
+    region,
+  });
+};
+
+const queueUrl = config.get('aws.sqsqueue').toString();
+const sqsClient = getSqsClient(queueUrl);
+
+const sendToSQSQueue = async (to, templateId, params, _index) => {
   try {
-    const queueUrl = config.get('aws.sqsqueue').toString();
-    const region = getRegionFromQueueUrl(queueUrl);
-
-    const sqsClient = new SQSClient({ region, signatureVersion: 'v4' });
-
     const command = new SendMessageCommand({
       MessageGroupId: String(templateId),
-      MessageDeduplicationId: String(index),
+      MessageDeduplicationId: uuid.v4(),
       MessageBody: JSON.stringify({
         to,
         templateId,

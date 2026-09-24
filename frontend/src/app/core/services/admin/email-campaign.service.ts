@@ -91,6 +91,11 @@ export class EmailCampaignService {
 
     return this.http.post<any>(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/targeted-emails`, nmdsIdsFileData || payload, {
       headers: nmdsIdsFileData ? { InterceptorSkipHeader: 'true' } : {},
-    });
+    },
+    );
+  }
+
+  getSendEmailsResult(): Observable<any> {
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/send-emails-result`);
   }
 }
