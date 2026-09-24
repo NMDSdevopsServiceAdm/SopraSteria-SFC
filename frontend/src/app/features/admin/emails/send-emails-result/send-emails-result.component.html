@@ -39,6 +39,7 @@
 
     @if (timestamp()) {
       <p class="govuk-body"><strong>Last updated:</strong> {{ timestamp() | longDate }}</p>
+      <p class="govuk-body">(auto updates every minute while on this page)</p>
     }
 
     @if (failed()?.length >= 1) {
@@ -56,7 +57,7 @@
             <tbody class="govuk-table__body">
               @for (row of failed(); track $index) {
                 <tr class="govuk-table__row">
-                  <td class="govuk-table__cell">{{ row.timestamp | date: 'dd/MM/yyyy hh:mm' }}</td>
+                  <td class="govuk-table__cell">{{ row.timestamp | date: 'dd/MM/yyyy HH:mm' }}</td>
                   <td class="govuk-table__cell">{{ row?.to?.name }}</td>
                   <td class="govuk-table__cell">{{ row?.to?.email }}</td>
                 </tr>
