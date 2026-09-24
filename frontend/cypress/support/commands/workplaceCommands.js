@@ -1,3 +1,89 @@
+Cypress.Commands.add('createTestWorkplace', (workplaceName, mainServiceId = 9) => {
+  const queryString = `INSERT INTO cqc."Establishment"
+       ("NameValue","MainServiceFKValue", "IsRegulated", "NmdsID", "EstablishmentUID", "PostCode", "Address1", "EmployerTypeValue")
+     VALUES
+       ($1, $2, false, concat('W', FLOOR(RANDOM() * 999999 + 9000000)), gen_random_uuid(), 'AB1 2CD', 'Test address', 'Local Authority (adult services)')
+     RETURNING "EstablishmentID", "NmdsID";`;
+
+  const parameters = [workplaceName, mainServiceId];
+
+  return cy.task('dbQuery', { queryString: queryString, parameters }).then((response) => {
+    return [response.rows[0].EstablishmentID, response.rows[0].NmdsID];
+  });
+});
+
+Cypress.Commands.add('deleteTestWorkplaceFromDb', (workplaceName) => {
+  const queryStrings = [
+    `DELETE FROM cqc."EstablishmentAudit"
+    USING cqc."Establishment"
+    WHERE "Establishment"."EstablishmentID" = "EstablishmentAudit"."EstablishmentFK"
+    AND "Establishment"."NameValue" = $1
+    AND "When" >= CURRENT_DATE;`,
+
+    `DELETE FROM "cqc"."EstablishmentCapacity"
+    USING cqc."Establishment"
+    WHERE "Establishment"."EstablishmentID" = "EstablishmentCapacity"."EstablishmentID"
+    AND "Establishment"."NameValue" = $1`,
+
+    `DELETE FROM "cqc"."EstablishmentJobs"
+    USING cqc."Establishment"
+    WHERE "Establishment"."EstablishmentID" = "EstablishmentJobs"."EstablishmentID"
+    AND "Establishment"."NameValue" = $1`,
+
+    `DELETE FROM "cqc"."EstablishmentServices"
+    USING cqc."Establishment"
+    WHERE "Establishment"."EstablishmentID" = "EstablishmentServices"."EstablishmentID"
+    AND "Establishment"."NameValue" = $1`,
+
+    `DELETE FROM "cqc"."EstablishmentServiceUsers"
+    USING cqc."Establishment"
+    WHERE "Establishment"."EstablishmentID" = "EstablishmentServiceUsers"."EstablishmentID"
+    AND "Establishment"."NameValue" = $1`,
+
+    `DELETE FROM cqc."EstablishmentDHActivities"
+    USING cqc."Establishment"
+    WHERE "Establishment"."EstablishmentID" = "EstablishmentDHActivities"."EstablishmentID"
+    AND "Establishment"."NameValue" = $1`,
+
+    `DELETE FROM "cqc"."Establishment"
+    WHERE "NameValue" = $1;`,
+  ];
+  const parameters = [workplaceName];
+
+  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+
+  cy.task('multipleDbQueries', dbQueries);
+});
+
+Cypress.Commands.add('clearLinkToParentRequests', () => {
+  const queryString = `DELETE FROM cqc."LinkToParent"
+    WHERE "Created" > '2026-09-01'::date`;
+  const parameters = [];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
+Cypress.Commands.add('removeLinkToParent', (establishmentID) => {
+  const queryString = `UPDATE cqc."Establishment" e
+    SET "ParentID" = null, "ParentUID" = null, "DataPermissions" = null, "LinkToParentRequested" = null
+    WHERE "EstablishmentID" = $1`;
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
+Cypress.Commands.add('setupLinkToParent', (subEstablishmentID, parentEstablishmentID) => {
+  const queryString = `UPDATE cqc."Establishment" e
+    SET "ParentID" = $2,
+    "ParentUID" = (SELECT e."EstablishmentUID" FROM cqc."Establishment" e WHERE e."EstablishmentID" = $2),
+    "DataPermissions" = 'Workplace and Staff',
+    "LinkToParentRequested" = '2026-09-01'::date
+  WHERE "EstablishmentID" = $1`;
+  const parameters = [subEstablishmentID, parentEstablishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
 Cypress.Commands.add('resetStartersLeaversVacancies', (establishmentID) => {
   const queryStrings = [
     `UPDATE cqc."Establishment"
