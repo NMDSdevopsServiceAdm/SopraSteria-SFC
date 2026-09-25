@@ -139,6 +139,26 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         expect(validationErrors.length).to.equal(0);
       });
 
+      it('should set socialCareStartDate to null when STARTINSECT is blank', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'UPDATE',
+              STARTINSECT: '',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator.validate();
+
+        const worker = validator.toAPI();
+
+        expect(worker.socialCareStartDate).to.equal(null);
+      });
+
       it('should emit incorrect formatting warning when STARTINSECT is not a valid number', async () => {
         const validator = new WorkerCsvValidator(
           buildWorkerCsv({
