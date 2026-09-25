@@ -16,12 +16,16 @@ exports.WorkerSocialCareStartDateProperty = class WorkerSocialCareStartDatePrope
     const MAXIMUM_AGE = 100;
     const socialCareStartDate = document.socialCareStartDate;
 
+    if (socialCareStartDate === undefined) {
+      return;
+    }
+
     if (socialCareStartDate === null) {
       this.property = null;
       return;
     }
 
-    if (!socialCareStartDate || !START_DATE_TYPE.includes(socialCareStartDate.value)) {
+    if (!START_DATE_TYPE.includes(socialCareStartDate.value)) {
       this.property = null;
       return;
     }
