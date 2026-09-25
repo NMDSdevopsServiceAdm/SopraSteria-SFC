@@ -5,6 +5,7 @@ const START_DATE_TYPE = ['Yes', 'No'];
 exports.WorkerSocialCareStartDateProperty = class WorkerSocialCareStartDateProperty extends ChangePropertyPrototype {
   constructor() {
     super('SocialCareStartDate');
+    this._allowNull = true;
   }
 
   static clone() {
