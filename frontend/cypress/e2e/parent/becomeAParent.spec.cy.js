@@ -9,6 +9,10 @@ describe('Become a parent', { tags: '@parent' }, () => {
     cy.resetBecomeAParentRequest(StandAloneEstablishment.id);
   });
 
+  afterEach(() => {
+    cy.resetBecomeAParentRequest(StandAloneEstablishment.id);
+  });
+
   it('should request to become a parent and have the request rejected', () => {
     cy.intercept('POST', 'api/logout').as('logout');
 
