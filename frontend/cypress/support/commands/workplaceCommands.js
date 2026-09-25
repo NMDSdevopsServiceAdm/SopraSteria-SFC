@@ -55,6 +55,42 @@ Cypress.Commands.add('deleteTestWorkplaceFromDb', (workplaceName) => {
   cy.task('multipleDbQueries', dbQueries);
 });
 
+Cypress.Commands.add('resetBecomeAParentRequest', (establishmentID) => {
+  const queryStrings = [
+    `DELETE FROM cqc."Approvals"
+      WHERE "EstablishmentID" = $1
+      AND "ApprovalType" = 'BecomeAParent';`,
+
+    `UPDATE cqc."Establishment"
+      SET "IsParent" = false,
+          "IsParentApprovedBannerViewed" = false
+      WHERE "EstablishmentID" = $1;`,
+  ];
+
+  const parameters = [establishmentID];
+
+  const dbQueries = queryStrings.map((queryString) => ({
+    queryString,
+    parameters,
+  }));
+
+  cy.task('multipleDbQueries', dbQueries);
+});
+
+Cypress.Commands.add('checkBecomeAParentApproved', (establishmentID) => {
+  cy.task('dbQuery', {
+    queryString: `
+      SELECT "IsParent", "IsParentApprovedBannerViewed"
+      FROM cqc."Establishment"
+      WHERE "EstablishmentID" = $1
+    `,
+    parameters: [establishmentID],
+  }).then((response) => {
+    expect(response.rows[0].IsParent).to.equal(true);
+    expect(response.rows[0].IsParentApprovedBannerViewed).to.equal(false);
+  });
+});
+
 Cypress.Commands.add('clearLinkToParentRequests', () => {
   const queryString = `DELETE FROM cqc."LinkToParent"
     WHERE "Created" > '2026-09-01'::date`;
