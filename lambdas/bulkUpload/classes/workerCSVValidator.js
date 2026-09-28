@@ -3094,17 +3094,17 @@ class WorkerCsvValidator {
       completed: true, // on bulk upload, every Worker record is naturally completed!
     };
 
-    if (this._startInsect) {
-      if (this._startInsect === 999) {
-        changeProperties.socialCareStartDate = {
-          value: 'No',
-        };
-      } else {
-        changeProperties.socialCareStartDate = {
-          value: 'Yes',
-          year: this._startInsect,
-        };
-      }
+    if (this._startInsect === null) {
+      changeProperties.socialCareStartDate = null;
+    } else if (this._startInsect === 999) {
+      changeProperties.socialCareStartDate = {
+        value: 'No',
+      };
+    } else {
+      changeProperties.socialCareStartDate = {
+        value: 'Yes',
+        year: this._startInsect,
+      };
     }
 
     if (this.carryOutDelegatedHealthcareActivities) {
