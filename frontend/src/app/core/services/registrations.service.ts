@@ -21,7 +21,9 @@ export class RegistrationsService {
   }
 
   public getSingleRegistration(establishmentUid: string): Observable<Registration> {
-    return this.http.get<Registration>(`${environment.appRunnerEndpoint}/api/admin/registrations/status/${establishmentUid}`);
+    return this.http.get<Registration>(
+      `${environment.appRunnerEndpoint}/api/admin/registrations/status/${establishmentUid}`,
+    );
   }
 
   public updateWorkplaceId(data: UpdateWorkplaceIdRequest): Observable<any> {
@@ -29,12 +31,15 @@ export class RegistrationsService {
   }
 
   public updatePostcode(data): Observable<any> {
-
     return this.http.post<any>(`${environment.appRunnerEndpoint}/api/admin/registrations/updatePostcode`, data);
   }
 
   public updateRegistrationStatus(data: UpdateRegistrationStatusRequest): Observable<any> {
-    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/admin/registrations/updateRegistrationStatus`, data);
+    console.log('updateRegistrationStatus');
+    return this.http.put<any>(
+      `${environment.appRunnerEndpoint}/api/admin/registrations/updateRegistrationStatus`,
+      data,
+    );
   }
 
   public registrationApproval(data: object) {
@@ -50,6 +55,8 @@ export class RegistrationsService {
   }
 
   public getRegistrationNotes(establishmentUid: string): Observable<Note[]> {
-    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/admin/registrations/getRegistrationNotes/${establishmentUid}`);
+    return this.http.get<any>(
+      `${environment.appRunnerEndpoint}/api/admin/registrations/getRegistrationNotes/${establishmentUid}`,
+    );
   }
 }
