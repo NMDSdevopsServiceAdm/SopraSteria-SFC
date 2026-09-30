@@ -458,7 +458,7 @@ export class EstablishmentService {
   }
 
   public setExpiresSoonAlertDates(establishmentId: string, expiresSoonAlertDate: string): Observable<any> {
-    return this.http.post<any>(
+    return this.http.put<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/expiresSoonAlertDates`,
       { expiresSoonAlertDate },
     );
