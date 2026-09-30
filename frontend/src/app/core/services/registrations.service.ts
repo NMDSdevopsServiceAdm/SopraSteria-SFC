@@ -27,11 +27,11 @@ export class RegistrationsService {
   }
 
   public updateWorkplaceId(data: UpdateWorkplaceIdRequest): Observable<any> {
-    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/admin/registrations/updateWorkplaceId`, data);
+    return this.http.put<any>(`${environment.appRunnerEndpoint}/api/admin/registrations/updateWorkplaceId`, data);
   }
 
   public updatePostcode(data): Observable<any> {
-    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/admin/registrations/updatePostcode`, data);
+    return this.http.put<any>(`${environment.appRunnerEndpoint}/api/admin/registrations/updatePostcode`, data);
   }
 
   public updateRegistrationStatus(data: UpdateRegistrationStatusRequest): Observable<any> {
