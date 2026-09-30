@@ -140,7 +140,7 @@ const checkIfRequestBodyIsAllowed = (req) => {
 };
 
 router.route('/:property').get(hasPermission('canViewEstablishment'), getEstablishmentField);
-router.route('/:property').post(hasPermission('canEditEstablishment'), updateEstablishmentFieldWithAudit);
+router.route('/:property').put(hasPermission('canEditEstablishment'), updateEstablishmentFieldWithAudit);
 
 module.exports = router;
 module.exports.getEstablishmentField = getEstablishmentField;

@@ -273,7 +273,7 @@ export class EstablishmentService {
   }
 
   updateEstablishmentFieldWithAudit(establishmentId: string, property: string, data: any) {
-    return this.http.post<any>(
+    return this.http.put<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/establishmentField/${property}`,
       data,
     );
