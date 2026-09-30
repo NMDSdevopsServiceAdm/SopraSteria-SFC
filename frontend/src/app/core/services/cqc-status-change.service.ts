@@ -26,7 +26,7 @@ export class CqcStatusChangeService {
   }
 
   public updateApprovalStatus(data): Observable<any> {
-    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/admin/cqc-status-change/updateStatus`, data);
+    return this.http.put<any>(`${environment.appRunnerEndpoint}/api/admin/cqc-status-change/updateStatus`, data);
   }
 
   public getCqcRequestByEstablishmentId(establishmentId: number): Observable<ApprovalRequest<CqcChangeData>> {
