@@ -110,6 +110,6 @@ const updateLocationDetails = async (req, res) => {
 };
 
 router.route('/').get(hasPermission('canViewEstablishment'), getLocationDetails);
-router.route('/').post(hasPermission('canEditEstablishment'), updateLocationDetails);
+router.route('/').put(hasPermission('canEditEstablishment'), updateLocationDetails);
 
 module.exports = router;

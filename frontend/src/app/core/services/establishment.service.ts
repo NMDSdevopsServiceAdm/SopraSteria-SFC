@@ -347,8 +347,8 @@ export class EstablishmentService {
     );
   }
 
-  updateLocationDetails(establishmentId, data: CQCLocationChangeRequest): Observable<any> {
-    return this.http.post<Establishment>(
+  updateLocationDetails(establishmentId: string, data: CQCLocationChangeRequest): Observable<any> {
+    return this.http.put<Establishment>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/locationDetails`,
       data,
     );
