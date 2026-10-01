@@ -216,7 +216,7 @@ const getTrainingRecordStatus = (expiryDate, expiresSoonAlertDate) => {
   if (dayjs(expiryDate).isBefore(currentDate, 'day')) {
     return 'Expired';
   }
-  if (dayjs(expiryDate).isBefore(expiringSoonDate, 'day')) {
+  if (dayjs(expiryDate).isSame(expiringSoonDate, 'day') || dayjs(expiryDate).isBefore(expiringSoonDate, 'day')) {
     return 'Expiring soon';
   }
   return 'Up-to-date';
