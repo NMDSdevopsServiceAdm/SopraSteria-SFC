@@ -166,7 +166,7 @@ async function setMainService(req, res, establishment) {
 }
 
 router.route('/').get(hasPermission('canViewEstablishment'), getMainService);
-router.route('/').post(hasPermission('canEditEstablishment'), updateMainService);
+router.route('/').put(hasPermission('canEditEstablishment'), updateMainService);
 
 module.exports = router;
 module.exports.setMainService = setMainService;

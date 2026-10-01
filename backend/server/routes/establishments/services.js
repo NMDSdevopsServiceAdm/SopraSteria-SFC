@@ -105,6 +105,6 @@ const updateServices = async (req, res) => {
 };
 
 router.route('/').get(hasPermission('canViewEstablishment'), getServices);
-router.route('/').post(hasPermission('canEditEstablishment'), updateServices);
+router.route('/').put(hasPermission('canEditEstablishment'), updateServices);
 
 module.exports = router;

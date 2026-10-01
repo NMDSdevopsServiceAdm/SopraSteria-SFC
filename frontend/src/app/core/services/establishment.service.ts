@@ -291,14 +291,14 @@ export class EstablishmentService {
   }
 
   updateOtherServices(establishmentId, data: PostServicesModel) {
-    return this.http.post<PostServicesModel>(
+    return this.http.put<PostServicesModel>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/services`,
       data,
     );
   }
 
   updateMainService(establishmentId: string, data: MainServiceRequest) {
-    return this.http.post<MainServiceRequest>(
+    return this.http.put<MainServiceRequest>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/mainService`,
       data,
     );
