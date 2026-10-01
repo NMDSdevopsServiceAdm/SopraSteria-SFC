@@ -311,20 +311,6 @@ export class EstablishmentService {
     );
   }
 
-  updatePensionContribution(establishmentId: string, pensionData: PensionContribution): Observable<any> {
-    return this.http.post<Establishment>(
-      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/pensionContribution`,
-      pensionData,
-    );
-  }
-
-  updateLocalAuthorities(establishmentId, data) {
-    return this.http.post<Establishment>(
-      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/localAuthorities`,
-      data,
-    );
-  }
-
   updateJobs(establishmentId: string, data: UpdateJobsRequest): Observable<Partial<Establishment>> {
     return this.http
       .post<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/jobs`, data)
