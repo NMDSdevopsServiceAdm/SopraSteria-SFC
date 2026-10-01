@@ -305,7 +305,7 @@ export class EstablishmentService {
   }
 
   updateSingleEstablishmentField(establishmentId: string, data: any): Observable<any> {
-    return this.http.post<any>(
+    return this.http.put<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/updateSingleEstablishmentField`,
       data,
     );

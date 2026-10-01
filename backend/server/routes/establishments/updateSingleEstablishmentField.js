@@ -43,7 +43,7 @@ const updateEstablishment = async (req, res) => {
   }
 };
 
-router.route('/').post(hasPermission('canEditEstablishment'), updateEstablishment);
+router.route('/').put(hasPermission('canEditEstablishment'), updateEstablishment);
 
 module.exports = router;
 module.exports.updateEstablishment = updateEstablishment;
