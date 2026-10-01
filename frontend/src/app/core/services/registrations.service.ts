@@ -35,7 +35,6 @@ export class RegistrationsService {
   }
 
   public updateRegistrationStatus(data: UpdateRegistrationStatusRequest): Observable<any> {
-    console.log('updateRegistrationStatus');
     return this.http.put<any>(
       `${environment.appRunnerEndpoint}/api/admin/registrations/updateRegistrationStatus`,
       data,
