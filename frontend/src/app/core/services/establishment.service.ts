@@ -14,7 +14,6 @@ import {
   LocalIdentifiersRequest,
   LocalIdentifiersResponse,
   mandatoryTraining,
-  PensionContribution,
   setPermission,
   UpdateJobsRequest,
 } from '@core/model/establishment.model';
@@ -491,8 +490,8 @@ export class EstablishmentService {
     establishmentUid: string,
     payload: UpdateStaffKindDelegatedHealthcareActivitiesPayload,
   ) {
-    return this.http.post<UpdateStaffKindDelegatedHealthcareActivitiesResponse>(
-      `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/updateStaffKindDelegatedHealthcareActivities`,
+    return this.http.put<UpdateStaffKindDelegatedHealthcareActivitiesResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/staffKindDelegatedHealthcareActivities`,
       payload,
     );
   }
