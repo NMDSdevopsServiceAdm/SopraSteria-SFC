@@ -93,10 +93,10 @@ const updateServices = async (req, res) => {
     }
   } catch (err) {
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
-      console.error('Establishment::services POST: ', err.message);
+      console.error('Establishment PUT /services failed: ', err.message);
       return res.status(400).send(err.safe);
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
-      console.error('Establishment::services POST: ', err.message);
+      console.error('Establishment PUT /services failed: ', err.message);
       return res.status(500).send(err.safe);
     } else {
       console.error('Unexpected exception: ', err);

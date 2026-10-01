@@ -117,10 +117,10 @@ const updateJobs = async (req, res) => {
     }
   } catch (err) {
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
-      console.error('Establishment::staff POST: ', err.message);
+      console.error('Establishment PUT /jobs: failed:', err.message);
       return res.status(400).send(err.safe);
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
-      console.error('Establishment::staff POST: ', err.message);
+      console.error('Establishment PUT /jobs: failed:', err.message);
       return res.status(500).send(err.safe);
     } else {
       console.error('Unexpected exception: ', err);
