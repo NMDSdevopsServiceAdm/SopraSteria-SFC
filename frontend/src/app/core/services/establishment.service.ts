@@ -313,7 +313,7 @@ export class EstablishmentService {
 
   updateJobs(establishmentId: string, data: UpdateJobsRequest): Observable<Partial<Establishment>> {
     return this.http
-      .post<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/jobs`, data)
+      .put<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/jobs`, data)
       .pipe(
         mergeMap((response) => {
           this.setState({ ...this.establishment, ...response });
