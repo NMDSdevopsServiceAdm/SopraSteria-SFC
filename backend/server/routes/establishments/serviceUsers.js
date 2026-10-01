@@ -100,6 +100,6 @@ const updateServiceUsers = async (req, res) => {
 };
 
 router.route('/').get(hasPermission('canViewEstablishment'), getServiceUsers);
-router.route('/').post(hasPermission('canEditEstablishment'), updateServiceUsers);
+router.route('/').put(hasPermission('canEditEstablishment'), updateServiceUsers);
 
 module.exports = router;

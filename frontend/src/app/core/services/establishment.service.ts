@@ -284,7 +284,7 @@ export class EstablishmentService {
   }
 
   updateServiceUsers(establishmentId, data) {
-    return this.http.post<any>(
+    return this.http.put<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/serviceUsers`,
       data,
     );
