@@ -253,7 +253,7 @@ export class EstablishmentService {
   }
 
   updateCapacity(establishmentId, data) {
-    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/capacity`, data);
+    return this.http.put<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/capacity`, data);
   }
 
   workplaceOrSubHasTrainingCertificates(workplaceUid: string) {

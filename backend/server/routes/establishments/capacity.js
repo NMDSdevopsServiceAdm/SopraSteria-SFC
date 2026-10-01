@@ -100,6 +100,6 @@ const updateCapacity = async (req, res) => {
 };
 
 router.route('/').get(hasPermission('canViewEstablishment'), getCapacity);
-router.route('/').post(hasPermission('canEditEstablishment'), updateCapacity);
+router.route('/').put(hasPermission('canEditEstablishment'), updateCapacity);
 
 module.exports = router;
