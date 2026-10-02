@@ -44,7 +44,8 @@ import { SearchForGroupComponent } from './search/search-for-group/search-for-gr
 import { SearchForUserComponent } from './search/search-for-user/search-for-user.component';
 import { SearchForWorkplaceComponent } from './search/search-for-workplace/search-for-workplace.component';
 import { SearchComponent } from './search/search.component';
-import { StatusSummaryComponent} from './local-authorities-return/status-summary/status-summary.component';
+import { StatusSummaryComponent } from './local-authorities-return/status-summary/status-summary.component';
+import { SendEmailsResultComponent } from './emails/send-emails-result/send-emails-result.component';
 
 const routes: Routes = [
   {
@@ -214,6 +215,14 @@ const routes: Routes = [
               inactiveWorkplaces: InactiveWorkplacesResolver,
               emailCampaignHistory: EmailCampaignHistoryResolver,
               emailTemplates: EmailTemplateResolver,
+            },
+          },
+          {
+            path: 'send-emails-result',
+            component: SendEmailsResultComponent,
+            data: { title: 'Send emails result' },
+            resolve: {
+              emailCampaignHistory: EmailCampaignHistoryResolver,
             },
           },
         ],

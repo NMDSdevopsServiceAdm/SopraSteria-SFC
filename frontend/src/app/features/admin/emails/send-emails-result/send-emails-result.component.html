@@ -1,0 +1,71 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-row govuk-!-margin-bottom-4">
+      <div class="govuk-grid-column-one-half">
+        <div class="asc-summary-box">
+          <p class="asc-summary-box--title govuk-!-margin-bottom-0">Number of emails scheduled to send today:</p>
+          <strong>
+            {{ todayTotalCount() }}
+          </strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="govuk-grid-row govuk-!-margin-bottom-6">
+      <div class="govuk-grid-column-one-half">
+        <div class="asc-summary-box">
+          <p class="asc-summary-box--title">
+            <img src="/assets/images/large-green-tick.svg" alt="green-tick" />
+            Reached Brevo service:
+          </p>
+          <strong>
+            {{ successfulCount() }}
+          </strong>
+        </div>
+      </div>
+
+      <div class="govuk-grid-column-one-half">
+        <div class="asc-summary-box" [class]="{ 'asc-summary-box--failed': (failedCount() | number) >= 1 }">
+          <p class="asc-summary-box--title">
+            <img src="/assets/images/large-red-flag.svg" alt="red-flag" /> Failed to sent:
+          </p>
+
+          <strong>
+            {{ failedCount() }}
+          </strong>
+        </div>
+      </div>
+    </div>
+
+    @if (timestamp()) {
+      <p class="govuk-body"><strong>Last updated:</strong> {{ timestamp() | longDate }}</p>
+      <p class="govuk-body">(auto updates every minute while on this page)</p>
+    }
+
+    @if (failed()?.length >= 1) {
+      <div class="govuk-!-margin-top-8">
+        <div data-testid="emailCampaignHistory">
+          <h2>Emails failed to send</h2>
+          <table class="govuk-table">
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th class="govuk-table__header" scope="col">Time</th>
+                <th class="govuk-table__header" scope="col">Recipient name</th>
+                <th class="govuk-table__header" scope="col">Recipient email</th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              @for (row of failed(); track $index) {
+                <tr class="govuk-table__row">
+                  <td class="govuk-table__cell">{{ row.timestamp | date: 'dd/MM/yyyy HH:mm' }}</td>
+                  <td class="govuk-table__cell">{{ row?.to?.name }}</td>
+                  <td class="govuk-table__cell">{{ row?.to?.email }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  </div>
+</div>
