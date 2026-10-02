@@ -30,7 +30,7 @@ const newWorkplaceIdIsUnique = async (establishmentUid, nmdsId) => {
 
 const router = require('express').Router();
 
-router.route('/').post(updateWorkplaceId);
+router.route('/').put(updateWorkplaceId);
 
 module.exports = router;
 module.exports.updateWorkplaceId = updateWorkplaceId;

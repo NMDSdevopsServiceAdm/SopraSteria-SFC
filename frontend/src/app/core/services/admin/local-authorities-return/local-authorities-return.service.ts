@@ -27,7 +27,7 @@ export class LocalAuthoritiesReturnService {
   }
 
   public updateLA(localAuthorityId: string, localAuthority: Omit<IndividualLA, 'name'>): Observable<null> {
-    return this.http.post<null>(
+    return this.http.put<null>(
       `${environment.appRunnerEndpoint}/api/admin/local-authority-return/monitor/${localAuthorityId}`,
       localAuthority,
     );

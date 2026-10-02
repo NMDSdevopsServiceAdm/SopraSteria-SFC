@@ -1,5 +1,9 @@
+const express = require('express');
+const router = express.Router({ mergeParams: true });
+
 const Establishment = require('../../models/classes/establishment');
 const HttpError = require('../../utils/errors/httpError');
+const { hasPermission } = require('../../utils/security/hasPermission');
 
 const updateStaffKindDelegatedHealthcareActivities = async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -29,7 +33,7 @@ const updateStaffKindDelegatedHealthcareActivities = async (req, res) => {
 
     return res.status(200).send(jsonResponse);
   } catch (error) {
-    console.error('POST /updateStaffKindDelegatedHealthcareActivities - failed', error);
+    console.error('PUT /staffKindDelegatedHealthcareActivities - failed', error);
 
     if (error instanceof HttpError) {
       return res.status(error.statusCode).send(error.message);
@@ -41,4 +45,7 @@ const updateStaffKindDelegatedHealthcareActivities = async (req, res) => {
   }
 };
 
-module.exports = updateStaffKindDelegatedHealthcareActivities;
+router.put('/', hasPermission('canEditEstablishment'), updateStaffKindDelegatedHealthcareActivities);
+router.updateStaffKindDelegatedHealthcareActivities = updateStaffKindDelegatedHealthcareActivities;
+
+module.exports = router;
