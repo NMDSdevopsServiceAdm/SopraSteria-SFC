@@ -28,7 +28,7 @@ export class ParentRequestsService {
   }
 
   public updateApprovalStatus(data: object) {
-    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/admin/parent-approval/updateStatus`, data);
+    return this.http.put<any>(`${environment.appRunnerEndpoint}/api/admin/parent-approval/updateStatus`, data);
   }
 
   public parentApproval(data: object) {

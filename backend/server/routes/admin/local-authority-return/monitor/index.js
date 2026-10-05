@@ -71,7 +71,7 @@ router.get(
   getLocalAuthority,
 );
 
-router.post(
+router.put(
   '/:uid',
   celebrate({
     params: {

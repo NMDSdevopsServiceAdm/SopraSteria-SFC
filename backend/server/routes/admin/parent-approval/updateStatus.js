@@ -33,7 +33,7 @@ const updateStatus = async (req, res) => {
 
 const router = require('express').Router();
 
-router.route('/').post(updateStatus);
+router.route('/').put(updateStatus);
 
 module.exports = router;
 module.exports.updateStatus = updateStatus;
