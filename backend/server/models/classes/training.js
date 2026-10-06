@@ -930,9 +930,11 @@ class Training extends EntityValidator {
     let filter = { [Op.lt]: currentDate };
 
     if (status === 'expiring') {
-      filter = { [Op.gt]: currentDate, [Op.lt]: expiresSoon };
+      filter = {
+        [Op.gte]: currentDate,
+        [Op.lte]: expiresSoon,
+      };
     }
-
     const customOrder = this.buildCustomOrder(workerIds);
 
     return await models.worker.findAll({
