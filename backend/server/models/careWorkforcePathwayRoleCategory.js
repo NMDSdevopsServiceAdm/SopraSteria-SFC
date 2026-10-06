@@ -1,5 +1,7 @@
 /* jshint indent: 2 */
 
+const { CWPRoleCategoryGroupValues } = require('../data/constants');
+
 module.exports = function (sequelize, DataTypes) {
   const careWorkforcePathwayRoleCategory = sequelize.define(
     'careWorkforcePathwayRoleCategory',
@@ -26,6 +28,12 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"Description"',
       },
+      group: {
+        type: DataTypes.ENUM,
+        values: CWPRoleCategoryGroupValues,
+        allowNull: false,
+        field: '"Group"',
+      },
       analysisFileCode: {
         type: DataTypes.INTEGER,
         field: '"AnalysisFileCode"',
@@ -40,8 +48,17 @@ module.exports = function (sequelize, DataTypes) {
       schema: 'cqc',
       createdAt: false,
       updatedAt: false,
+
+      defaultScope: {
+        attributes: ['id', 'title', 'description', 'group'],
+        order: ['seq'],
+      },
+      scopes: {},
     },
   );
+  careWorkforcePathwayRoleCategory.addScope('bulkUpload', {
+    attributes: ['id', 'bulkUploadCode'],
+  });
 
   return careWorkforcePathwayRoleCategory;
 };
