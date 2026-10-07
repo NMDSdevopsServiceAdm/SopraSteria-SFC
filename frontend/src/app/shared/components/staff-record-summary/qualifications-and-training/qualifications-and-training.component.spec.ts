@@ -39,7 +39,9 @@ describe('QualificationsAndTrainingComponent', () => {
             snapshot: { params: {} },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       componentProperties: {
         canEditWorker: canEditWorker,
         workplace: establishmentBuilder() as Establishment,

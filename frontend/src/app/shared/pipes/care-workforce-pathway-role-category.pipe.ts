@@ -2,8 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { CareWorkforcePathwayRoleCategory } from '@core/model/careWorkforcePathwayCategory.model';
 
 @Pipe({
-    name: 'CWPRoleCategoryTitle',
-    standalone: false
+  name: 'CWPRoleCategoryTitle',
+  standalone: false,
 })
 export class CareWorkforcePathwayRoleCategoryPipe implements PipeTransform {
   transform(value: CareWorkforcePathwayRoleCategory): string {
@@ -15,7 +15,7 @@ export class CareWorkforcePathwayRoleCategoryPipe implements PipeTransform {
       case 'I do not know':
         return 'Not known';
 
-      case 'None of the above':
+      case 'None of these categories':
         return 'Role not included';
 
       default:
