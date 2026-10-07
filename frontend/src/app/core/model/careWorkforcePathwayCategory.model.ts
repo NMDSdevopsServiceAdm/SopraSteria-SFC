@@ -2,8 +2,15 @@ export interface CareWorkforcePathwayRoleCategory {
   id: number;
   title: string;
   description: string;
-  group: string;
-  isAlsoNominatedIndividual: boolean;
+  group: CWPRoleCategoryGroup;
+  isNominatedIndividual?: boolean;
+}
+
+export enum CWPRoleCategoryGroup {
+  CareProviding = 'Care Providing',
+  SeniorLeadership = 'Senior leadership',
+  NonCareProviding = 'Non-care providing',
+  Others = 'others',
 }
 
 export interface CareWorkforcePathwayRoleCategoryResponse {
