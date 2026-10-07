@@ -1,0 +1,21 @@
+service: 'sendEmails'
+frameworkVersion: '3'
+
+provider:
+  name: 'aws'
+  runtime: 'nodejs22.x'
+  lambdaHashingVersion: '20201221'
+  stage: ${opt:stage, "dev"}
+  region: ${env:SEND_EMAILS_LAMBDA_REGION, "eu-west-2"}
+  iam:
+    role: ${env:SEND_EMAILS_LAMBDA_ROLE_ARN}
+
+
+functions:
+  sendEmails:
+    handler: 'app.lambdaHandler'
+    name: ${opt:stage}-send-emails
+    environment:
+      ENVIRONMENT: ${opt:stage}
+      REDIS_ENDPOINT: ${ssm:/${opt:stage}/redis/endpoint}
+      SEND_IN_BLUE_KEY: ${ssm:/${opt:stage}/app_runner/send_in_blue_key}

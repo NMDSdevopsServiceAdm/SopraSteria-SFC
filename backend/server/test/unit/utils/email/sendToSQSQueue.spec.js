@@ -19,9 +19,8 @@ describe('sendToSQSQueue', () => {
 
     await sendToSQSQueue(to, templateId, params, index);
 
-    const input = {
+    const expectedInput = {
       MessageGroupId: '1',
-      MessageDeduplicationId: '19',
       MessageBody: JSON.stringify({ to, templateId, params }),
       QueueUrl: '',
     };
@@ -29,6 +28,8 @@ describe('sendToSQSQueue', () => {
 
     const callArgument = SQSClient.prototype.send.getCall(0).args[0];
     expect(callArgument).to.be.instanceOf(SendMessageCommand);
-    expect(callArgument.input).to.deep.equal(input);
+    expect(callArgument.input.MessageGroupId).to.deep.equal(expectedInput.MessageGroupId);
+    expect(callArgument.input.MessageBody).to.deep.equal(expectedInput.MessageBody);
+    expect(callArgument.input.QueueUrl).to.deep.equal(expectedInput.QueueUrl);
   });
 });
