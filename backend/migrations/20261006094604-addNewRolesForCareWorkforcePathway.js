@@ -34,7 +34,7 @@ const existingRoleCategories = [
     seq: 30,
     title: 'Enhanced care worker',
     oldDescription: 'Is delegated activities by regulated professionals or&nbsp;provides&nbsp;specialist&nbsp;support',
-    newDescription: "Delivers 'delegated healthcare activities' or specialist support but does not supervise",
+    newDescription: "Delivers 'delegated healthcare activities' or specialist support but does&nbsp;not&nbsp;supervise",
     group: Group.CareProviding,
   },
   {
