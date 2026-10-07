@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CareWorkforcePathwayWorkplaceAwarenessAnswer } from '@core/model/care-workforce-pathway.model';
 import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
-import { CareWorkforcePathwayRoleCategory } from '@core/model/careWorkforcePathwayCategory.model';
+import { CareWorkforcePathwayRoleCategory, CWPRoleCategoryGroup } from '@core/model/careWorkforcePathwayCategory.model';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 
 export const careWorkforcePathwayAwarenessAnswers = [
@@ -36,21 +36,25 @@ export const careWorkforcePathwayRoleCategories = [
     id: 1,
     title: 'New to care',
     description: "Is in a care-providing role that's a start point for a career in social care",
+    group: CWPRoleCategoryGroup.CareProviding,
   },
   {
     id: 2,
     title: 'Care or support worker',
     description: "Is established in their role, they've consolidated their skills and experience",
+    group: CWPRoleCategoryGroup.CareProviding,
   },
   {
     id: 101,
     title: 'I do not know',
     description: null,
+    group: CWPRoleCategoryGroup.Others,
   },
   {
     id: 102,
-    title: 'None of the above',
-    description: 'Select this for admin, ancillary and other roles not yet included in the care workforce pathway',
+    title: 'None of these categories',
+    description: null,
+    group: CWPRoleCategoryGroup.Others,
   },
 ];
 
