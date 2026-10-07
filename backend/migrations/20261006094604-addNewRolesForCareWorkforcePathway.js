@@ -197,9 +197,10 @@ module.exports = {
       );
 
       for (const data of existingRoleCategories) {
-        const { id, title, group } = data;
+        const { id, group } = data;
         const seq = data?.newSeq ?? data.seq;
         const description = data.newDescription;
+        const title = data?.newTitle ?? data.title;
         const replacements = { id, title, group, seq, description };
 
         const update = `UPDATE cqc."CareWorkforcePathwayRoleCategories"
