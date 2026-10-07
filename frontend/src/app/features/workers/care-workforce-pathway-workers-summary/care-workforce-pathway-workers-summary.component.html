@@ -2,10 +2,15 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-        <span class="govuk-caption-l" data-testid="section-heading">Training and qualifications</span>
-        <h1 class="govuk-fieldset__heading">Where are your staff on the care workforce pathway?</h1>
+        <span class="govuk-caption-l" data-testid="section-heading">Staff records</span>
+        <h1 class="govuk-fieldset__heading govuk-!-width-three-quarters">
+          Where are your staff on the Care Workforce Pathway?
+        </h1>
       </legend>
-      <app-details [title]="'What\'s the care workforce pathway (CWP)?'" data-testid="reveal-whatsCareWorkforcePathway">
+      <app-details
+        [title]="'Why assign Care Workforce Pathway role categories?'"
+        data-testid="reveal-whatsCareWorkforcePathway"
+      >
         <p>
           The care workforce pathway outlines the knowledge, skills, values and behaviours needed for a career in adult
           social care. It provides a clear career structure for your staff.
@@ -26,6 +31,20 @@
       </app-details>
     </div>
   </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p>
+        You can now choose from the full list of role categories published by the Department of Health and Social Care
+        (DHSC).
+      </p>
+      <p>
+        This table might not show all of your staff. Regulated professionals (like registered nurses or social workers)
+        are not listed because they have their own career structures.
+      </p>
+    </div>
+  </div>
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <table class="govuk-table govuk-!-margin-bottom-8">
@@ -40,7 +59,7 @@
           @for (worker of workersToShow; track worker.uid; let index = $index) {
             <tr class="govuk-table__row" [attr.data-testid]="'worker-row-' + index">
               <td class="govuk-table__cell">
-                <a [routerLink]="['../', worker.uid, 'staff-record-summary']">{{ worker.nameOrId }}</a>
+                {{ worker.nameOrId }}
               </td>
               <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
               <td class="govuk-table__cell">
@@ -62,6 +81,7 @@
           (currentPageIndexChange)="handlePageUpdate($event)"
           [currentPageIndex]="pageIndex"
         />
+        <p><strong>Check all pages before confirming.</strong></p>
       }
       <button class="govuk-button" type="button" (click)="returnToHome()">Return to home</button>
     </div>

@@ -56,7 +56,9 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const fixture = setuptools.fixture;
@@ -86,15 +88,19 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
   });
 
   it('should show a h1 heading', async () => {
-    const { getByRole } = await setup();
+    const { getByRole, getByTestId } = await setup();
 
     const h1Heading = getByRole('heading', { level: 1 });
     expect(h1Heading).toBeTruthy();
-    expect(h1Heading.textContent).toEqual('Where are your staff on the care workforce pathway?');
+    expect(h1Heading.textContent.trim()).toEqual('Where are your staff on the Care Workforce Pathway?');
+
+    const subHeading = getByTestId('section-heading');
+    expect(subHeading).toBeTruthy();
+    expect(subHeading.textContent).toEqual('Staff records');
   });
 
-  it('should show a reveal text to explain what is the care workforce pathway', async () => {
-    const reveal = "What's the care workforce pathway (CWP)?";
+  it('should show a reveal text to explain why assign CWP role categories', async () => {
+    const reveal = 'Why assign Care Workforce Pathway role categories?';
     const revealText = [
       'The care workforce pathway outlines the knowledge, skills, values and behaviours needed for a career in adult social care. It provides a clear career structure for your staff.',
       "You'll use the pathway to set out how staff can gain skills, learn and develop, and progress in their careers.",
@@ -135,8 +141,8 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
 
       mockWorkers.forEach((worker, index) => {
         const workerRow = getByTestId(`worker-row-${index}`);
-        const workerNameLink = within(workerRow).getByText(worker.nameOrId, { selector: 'a' }) as HTMLLinkElement;
-        expect(workerNameLink).toBeTruthy();
+        const workerName = within(workerRow).getByText(worker.nameOrId);
+        expect(workerName).toBeTruthy();
 
         const chooseACategoryLink = within(workerRow).getByText('Choose a category', {
           selector: 'a',
@@ -162,18 +168,21 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
 
   describe('pagination', () => {
     it('should show pagination links when number of non-answered workers is larger then number of workers per page', async () => {
-      const { getByTestId } = await setup({ workerCount: 20 });
+      const { getByTestId, getByText } = await setup({ workerCount: 20 });
 
       const pagination = getByTestId('pagination');
       expect(within(pagination).getByRole('link', { name: '2' })).toBeTruthy();
       expect(within(pagination).getByRole('link', { name: 'Next' })).toBeTruthy();
+
+      expect(getByText('Check all pages before confirming.')).toBeTruthy();
     });
 
     it('should not show pagination links when number of non-answered workers is less then or equal number of workers per page', async () => {
-      const { fixture, queryByTestId } = await setup({ workerCount: 15 });
+      const { fixture, queryByTestId, queryByText } = await setup({ workerCount: 15 });
       fixture.detectChanges();
 
       expect(queryByTestId('pagination')).toBeFalsy();
+      expect(queryByText('Check all pages before confirming.')).toBeFalsy();
     });
 
     it('should retrieve and display the workers for next page when "Next" link is clicked', async () => {
@@ -189,8 +198,8 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
 
       mockNextPageWorkers.forEach((worker, index) => {
         const workerRow = getByTestId(`worker-row-${index}`);
-        const workerNameLink = within(workerRow).getByText(worker.nameOrId, { selector: 'a' }) as HTMLLinkElement;
-        expect(workerNameLink).toBeTruthy();
+        const workerName = within(workerRow).getByText(worker.nameOrId);
+        expect(workerName).toBeTruthy();
       });
 
       const pagination = getByTestId('pagination');
