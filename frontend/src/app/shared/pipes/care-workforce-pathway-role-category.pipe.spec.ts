@@ -1,3 +1,4 @@
+import { CWPRoleCategoryGroup } from '@core/model/careWorkforcePathwayCategory.model';
 import { CareWorkforcePathwayRoleCategoryPipe } from './care-workforce-pathway-role-category.pipe';
 
 describe('CareWorkforcePathwayRoleCategoryPipe', () => {
@@ -18,8 +19,9 @@ describe('CareWorkforcePathwayRoleCategoryPipe', () => {
     const pipe = new CareWorkforcePathwayRoleCategoryPipe();
     const roleCategory = {
       id: 102,
-      title: 'None of the above',
+      title: 'None of these categories',
       description: '',
+      group: CWPRoleCategoryGroup.CareProviding,
     };
     const expectedValue = 'Role not included';
 
@@ -32,6 +34,7 @@ describe('CareWorkforcePathwayRoleCategoryPipe', () => {
       id: 101,
       title: 'I do not know',
       description: '',
+      group: CWPRoleCategoryGroup.CareProviding,
     };
     const expectedValue = 'Not known';
 
@@ -44,6 +47,7 @@ describe('CareWorkforcePathwayRoleCategoryPipe', () => {
       id: 1,
       title: 'New to care',
       description: '',
+      group: CWPRoleCategoryGroup.CareProviding,
     };
     const expectedValue = 'New to care';
 

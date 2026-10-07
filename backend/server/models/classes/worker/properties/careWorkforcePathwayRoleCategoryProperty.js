@@ -1,4 +1,6 @@
 // database models
+const lodash = require('lodash');
+const { CWPRoleCategoryGroup } = require('../../../../data/constants');
 const models = require('../../../index');
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
@@ -21,38 +23,61 @@ exports.CareWorkforcePathwayRoleCategoryProperty = class CareWorkforcePathwayRol
     }
 
     if (document.careWorkforcePathwayRoleCategory) {
-      const validatedData = await this.getRoleCategoryFromDatabase(document.careWorkforcePathwayRoleCategory);
+      const restoredProperty = await this.getRoleCategoryFromDatabase(document.careWorkforcePathwayRoleCategory);
 
-      if (validatedData) {
-        this.property = validatedData;
+      if (
+        document?.careWorkforcePathwayRoleCategory?.isNominatedIndividual &&
+        isSeniorLeadershipGroup(restoredProperty)
+      ) {
+        restoredProperty.isNominatedIndividual = true;
+      }
+
+      if (restoredProperty) {
+        this.property = restoredProperty;
       }
     }
   }
 
   restorePropertyFromSequelize(document) {
-    if (document.careWorkforcePathwayRoleCategory) {
-      return {
-        roleCategoryId: document.careWorkforcePathwayRoleCategory.id,
-        title: document.careWorkforcePathwayRoleCategory.title,
-        description: document.careWorkforcePathwayRoleCategory.description,
-      };
-    }
-
     if (document.careWorkforcePathwayRoleCategory === null) {
       return null;
     }
+    if (!document.careWorkforcePathwayRoleCategory) {
+      return;
+    }
+
+    const isNominatedIndividual =
+      isSeniorLeadershipGroup(document.careWorkforcePathwayRoleCategory) &&
+      document.CWPRoleCategoryIsAlsoNominatedIndividual;
+
+    const { id, title, description, group } = document.careWorkforcePathwayRoleCategory;
+
+    const property = { roleCategoryId: id, title, description, group };
+
+    if (isNominatedIndividual) {
+      property.isNominatedIndividual = true;
+    }
+
+    return property;
   }
 
   savePropertyToSequelize() {
     const fkValue = this.property === null ? null : this.property.roleCategoryId;
+    const isNominatedIndividual = this.property?.isNominatedIndividual ?? false;
 
     return {
       CareWorkforcePathwayRoleCategoryFK: fkValue,
+      CWPRoleCategoryIsAlsoNominatedIndividual: isNominatedIndividual,
     };
   }
 
   isEqual(currentValue, newValue) {
-    return currentValue && newValue && currentValue.roleCategoryId === newValue.roleCategoryId;
+    return (
+      currentValue &&
+      newValue &&
+      currentValue.roleCategoryId === newValue.roleCategoryId &&
+      currentValue.isNominatedIndividual === newValue.isNominatedIndividual
+    );
   }
 
   toJSON(withHistory = false, showPropertyHistoryOnly = true) {
@@ -72,25 +97,23 @@ exports.CareWorkforcePathwayRoleCategoryProperty = class CareWorkforcePathwayRol
   }
 
   async getRoleCategoryFromDatabase(payloadData) {
-    let roleCategory = null;
-    if (payloadData?.roleCategoryId) {
-      roleCategory = await models.careWorkforcePathwayRoleCategory.findOne({
-        where: {
-          id: payloadData.roleCategoryId,
-        },
-        attributes: ['id', 'title', 'description'],
-      });
-    }
+    const roleCategory = await models.careWorkforcePathwayRoleCategory.findByPk(payloadData?.roleCategoryId, {
+      raw: true,
+    });
 
-    if (roleCategory && roleCategory.id) {
-      // found a roleCategory match
-      return {
-        roleCategoryId: roleCategory.id,
-        title: roleCategory.title,
-        description: roleCategory.description,
-      };
+    if (roleCategory) {
+      return renameIdToRoleCategoryId(roleCategory);
     }
 
     return null;
   }
+};
+
+const isSeniorLeadershipGroup = (roleCategory) => roleCategory?.group === CWPRoleCategoryGroup.SeniorLeadership;
+
+const renameIdToRoleCategoryId = (roleCategory) => {
+  if (!roleCategory) {
+    return roleCategory;
+  }
+  return { ...lodash.omit(roleCategory, 'id'), roleCategoryId: roleCategory.id };
 };

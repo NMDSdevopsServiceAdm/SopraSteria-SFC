@@ -1003,6 +1003,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CareWorkforcePathwayRoleCategoryFK"',
       },
+      CWPRoleCategoryIsAlsoNominatedIndividual: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        field: '"CWPRoleCategoryIsAlsoNominatedIndividual"',
+      },
       CareWorkforcePathwayRoleCategorySavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
