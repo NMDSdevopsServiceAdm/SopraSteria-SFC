@@ -103,7 +103,7 @@ const newRoleCategories = [
 
     // NOTE: analysisFileCode and bulkUploadCode are not confirmed yet. may need to change later
     analysisFileCode: 9,
-    bulkUploadCode: 8,
+    bulkUploadCode: 9,
   },
 
   {
@@ -113,7 +113,7 @@ const newRoleCategories = [
     description: 'Plans social or therapeutic activities but does not deliver personal care',
     group: Group.NonCareProviding,
     analysisFileCode: 10,
-    bulkUploadCode: 9,
+    bulkUploadCode: 10,
   },
 
   {
@@ -122,7 +122,7 @@ const newRoleCategories = [
     title: 'Administration',
     description: 'Includes administration staff, supervisors and managers',
     group: Group.NonCareProviding,
-    analysisFileCode: 12,
+    analysisFileCode: 11,
     bulkUploadCode: 11,
   },
   {
@@ -131,7 +131,7 @@ const newRoleCategories = [
     title: 'Care technologist',
     description: 'Identifies, installs, and supports technology for care recipients',
     group: Group.NonCareProviding,
-    analysisFileCode: 13,
+    analysisFileCode: 12,
     bulkUploadCode: 12,
   },
   {
@@ -140,7 +140,7 @@ const newRoleCategories = [
     title: 'Catering',
     description: 'Includes catering staff, supervisors and managers',
     group: Group.NonCareProviding,
-    analysisFileCode: 14,
+    analysisFileCode: 13,
     bulkUploadCode: 13,
   },
   {
@@ -149,7 +149,7 @@ const newRoleCategories = [
     title: 'Domestic',
     description: 'Includes domestic staff, supervisors and managers',
     group: Group.NonCareProviding,
-    analysisFileCode: 15,
+    analysisFileCode: 14,
     bulkUploadCode: 14,
   },
   {
@@ -158,7 +158,7 @@ const newRoleCategories = [
     title: 'Learning and development practitioner',
     description: 'Supports workforce learning and promotes professional development',
     group: Group.NonCareProviding,
-    analysisFileCode: 16,
+    analysisFileCode: 15,
     bulkUploadCode: 15,
   },
   {
@@ -167,7 +167,7 @@ const newRoleCategories = [
     title: 'Maintenance',
     description: 'Includes maintenance staff, supervisors and managers',
     group: Group.NonCareProviding,
-    analysisFileCode: 17,
+    analysisFileCode: 16,
     bulkUploadCode: 16,
   },
   {
@@ -176,7 +176,7 @@ const newRoleCategories = [
     title: 'Quality assurance lead',
     description: 'Monitors, reviews and strengthens quality of care',
     group: Group.NonCareProviding,
-    analysisFileCode: 18,
+    analysisFileCode: 17,
     bulkUploadCode: 17,
   },
 ];
