@@ -1424,33 +1424,48 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Worker.getAndCountAllWorkersWithoutCareWorkforceCategory = async function ({
+  const sortByOptions = {
+    staffNameAsc: [['nameOrId', 'ASC']],
+    staffNameDesc: [['nameOrId', 'DESC']],
+    jobRoleAsc: [[sequelize.literal('"mainJob.title"'), 'ASC']],
+    jobRoleDesc: [[sequelize.literal('"mainJob.title"'), 'DESC']],
+  };
+
+  Worker.getAndCountAllWorkersForCareWorkforcePathwayRoleCategory = async function ({
     establishmentId,
     itemsPerPage,
     pageIndex,
+    sortBy,
   }) {
+    const order = sortByOptions[sortBy] ?? sortByOptions.staffNameAsc;
+
     const { count, rows } = await this.findAndCountAll({
-      attributes: ['uid', 'NameOrIdValue'],
+      attributes: ['uid', ['NameOrIdValue', 'nameOrId']],
       where: {
         establishmentFk: establishmentId,
         archived: false,
-        CareWorkforcePathwayRoleCategoryFK: null,
       },
       include: [
         {
           model: sequelize.models.job,
           as: 'mainJob',
           attributes: ['title'],
+          where: {
+            excludedFromCareWorkforcePathway: false,
+          },
+        },
+        {
+          model: sequelize.models.careWorkforcePathwayRoleCategory,
+          as: 'careWorkforcePathwayRoleCategory',
         },
       ],
-      order: [['NameOrIdValue', 'ASC']],
+      order,
       offset: itemsPerPage * pageIndex,
       limit: itemsPerPage,
     });
 
     const workers = rows.map((worker) => {
-      const { uid, mainJob, NameOrIdValue: nameOrId } = worker;
-      return { uid, mainJob, nameOrId };
+      return worker.toJSON();
     });
 
     return { count, workers };

@@ -4,6 +4,7 @@ const models = require('../../models');
 const { hasPermission } = require('../../utils/security/hasPermission');
 const { updateCareWorkforcePathwayUse } = require('./careWorkforcePathway/careWorkforcePathwayUse');
 const { updateCareWorkforcePathwayAwareness } = require('./careWorkforcePathway/careWorkforcePathwayAwareness');
+const { WorkerSortByOptions } = require('../../data/sortByOptions');
 
 const getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -32,11 +33,15 @@ const getWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) => {
   const itemsPerPage = parseIntWithDefault(req.query?.itemsPerPage, 15);
   const pageIndex = parseIntWithDefault(req.query?.pageIndex, 0);
 
+  const allowedSortByOptions = WorkerSortByOptions;
+  const sortBy = allowedSortByOptions.includes(req.query?.sortBy) ? req.query?.sortBy : 'staffNameAsc';
+
   try {
-    const { count, workers } = await models.worker.getAndCountAllWorkersWithoutCareWorkforceCategory({
+    const { count, workers } = await models.worker.getAndCountAllWorkersForCareWorkforcePathwayRoleCategory({
       establishmentId,
       itemsPerPage,
       pageIndex,
+      sortBy,
     });
 
     const responseBody = { workers, workerCount: count };
