@@ -195,6 +195,7 @@ export interface Establishment {
   leaversSavedAt?: string;
   lastStaffRecordMessageDismissedAt?: Date;
   nursesQuestionsMiniFlowViewed?: boolean;
+  cwpRoleCategoriesBannerViewed?: boolean;
 }
 export interface UpdateJobsRequest {
   leavers?: Leaver[] | string;

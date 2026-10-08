@@ -421,10 +421,11 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   }
 
   private setCWPRoleCategoriesBannerViewed(): void {
-    this.updateSingleEstablishmentField({
+    const cwpRoleCategoriesBannerViewedData = {
       property: 'cwpRoleCategoriesBannerViewed',
       value: true,
-    });
+    };
+    this.updateSingleEstablishmentField(cwpRoleCategoriesBannerViewedData);
   }
   public navigateToYourOtherWorkplaces(event: Event, yourOtherWorkplacesSortValue: string) {
     event.preventDefault();
@@ -537,6 +538,9 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     if (this.updateBanner()) {
       return;
     }
+
+    console.log('this.workplace.cwpRoleCategoriesBannerViewed', !this.workplace.cwpRoleCategoriesBannerViewed);
+    console.log('this.canEditWorker', this.canEditWorker);
 
     if (!this.workplace.cwpRoleCategoriesBannerViewed && this.canEditWorker) {
       this.updateBanner.set({
