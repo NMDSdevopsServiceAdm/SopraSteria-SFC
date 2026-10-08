@@ -96,9 +96,18 @@ import { SelectTrainingCategoryComponent } from '@features/training-and-qualific
 import { SelectQualificationTypeComponent } from '@features/training-and-qualifications/add-edit-qualification/select-qualification-type/select-qualification-type.component';
 import { AllNurseFieldsOfPracticeResolver } from '@core/resolvers/nurse-field-of-practice.resolver';
 import { RegisteredNursesResolver } from '@core/resolvers/registered-nurses.resolver';
+import { SelectSortByComponent } from '@shared/components/select-sort-by/select-sort-by.component';
 
 @NgModule({
-  imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
+  imports: [
+    CommonModule,
+    OverlayModule,
+    FormsModule,
+    ReactiveFormsModule,
+    SharedModule,
+    WorkersRoutingModule,
+    SelectSortByComponent,
+  ],
   declarations: [
     AddEditQualificationComponent,
     AddEditTrainingComponent,
