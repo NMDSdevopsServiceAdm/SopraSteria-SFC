@@ -420,6 +420,12 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     this.updateSingleEstablishmentField(nursesQuestionData);
   }
 
+  private setCWPRoleCategoriesBannerViewed(): void {
+    this.updateSingleEstablishmentField({
+      property: 'cwpRoleCategoriesBannerViewed',
+      value: true,
+    });
+  }
   public navigateToYourOtherWorkplaces(event: Event, yourOtherWorkplacesSortValue: string) {
     event.preventDefault();
     localStorage.setItem('yourOtherWorkplacesSortValue', yourOtherWorkplacesSortValue);
@@ -427,12 +433,9 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   }
 
   public setupUpdateBanner() {
+    this.setupUpdateBannerForCWPRoleCategories();
     this.setupUpdateBannerForPayAndPensionWorkplaceQuestions();
     this.setupUpdateBannerForCWPWorkplaceAwareness();
-
-    // Blue update banner for Care workforce pathway worker question is disabled temporarily, as CWP roles category update is planned ahead
-    // this.setupUpdateBannerForCWPWorkerQuestion();
-
     this.setupUpdateBannerForDHAWorkplaceQuestion();
     this.setupUpdateBannerForDHAWorkerQuestion();
     this.setupUpdateBannerForNursesQuestions();
@@ -530,18 +533,21 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  private setupUpdateBannerForCWPWorkerQuestion() {
+  private setupUpdateBannerForCWPRoleCategories() {
     if (this.updateBanner()) {
       return;
     }
-    const showBanner = this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0 && this.canEditWorker;
 
-    if (showBanner) {
+    if (!this.workplace.cwpRoleCategoriesBannerViewed && this.canEditWorker) {
       this.updateBanner.set({
-        content: 'Where are your staff on the care workforce pathway?',
-        linkText: 'Answer questions',
-        linkAriaDescription: ' about Where are your staff on the care workforce pathway',
+        content: 'The full list of care workforce pathway role categories is now available.',
+        linkText: 'Review records',
+        linkAriaDescription: 'Review care workforce pathway role categories',
         linkTo: ['/workplace', this.workplace.uid, 'staff-record', 'care-workforce-pathway-workers-summary'],
+        onLinkClicked: () => {
+          this.setCWPRoleCategoriesBannerViewed();
+          this.setReturnToHomeTab();
+        },
       });
     }
   }
