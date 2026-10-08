@@ -32,7 +32,7 @@
     </div>
   </div>
 
-  <div class="govuk-grid-row">
+  <div class="govuk-grid-row asc-sort-by-row">
     <div class="govuk-grid-column-two-thirds">
       <p>
         You can now choose from the full list of role categories published by the Department of Health and Social Care
@@ -43,6 +43,14 @@
         are not listed because they have their own career structures.
       </p>
     </div>
+    @if (workersToShow?.length > 1) {
+      <div class="govuk-grid-column-one-quarter asc-sort-by-row__sort-by-wrapper">
+        <app-select-sort-by
+          [sortByOptions]="sortByOptions"
+          (onSortChange)="handleSortChange($event)"
+        ></app-select-sort-by>
+      </div>
+    }
   </div>
 
   <div class="govuk-grid-row">
@@ -50,9 +58,10 @@
       <table class="govuk-table govuk-!-margin-bottom-8">
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header" width="30%">Name or ID number</th>
-            <th scope="col" class="govuk-table__header">Job role</th>
-            <th scope="col" class="govuk-table__header" width="25%">CWP role category</th>
+            <th scope="col" class="govuk-table__header" width="25%">Name or ID number</th>
+            <th scope="col" class="govuk-table__header" width="30%">Job role</th>
+            <th scope="col" class="govuk-table__header" width="28%">CWP role category</th>
+            <th scope="col" class="govuk-table__header" width="17%"></th>
           </tr>
         </thead>
         <tbody class="govuk-table__body">
@@ -63,10 +72,21 @@
               </td>
               <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
               <td class="govuk-table__cell">
+                @let cwpRole = worker?.careWorkforcePathwayRoleCategory;
+                @if (cwpRole?.title && cwpRole?.isNominatedIndividual) {
+                  <ul class="govuk-list govuk-!-margin-bottom-0">
+                    <li>{{ cwpRole.title }}</li>
+                    <li>Nominated individual</li>
+                  </ul>
+                } @else {
+                  {{ cwpRole?.title ?? '-' }}
+                }
+              </td>
+              <td class="govuk-table__cell govuk-util__align-right">
                 <a
                   [routerLink]="['../', worker.uid, 'staff-record-summary', 'care-workforce-pathway']"
                   (click)="setReturnToThisPage()"
-                  >Choose a category <span class="govuk-visually-hidden">for {{ worker.nameOrId }}</span></a
+                  >Check new roles <span class="govuk-visually-hidden">for {{ worker.nameOrId }}</span></a
                 >
               </td>
             </tr>
@@ -83,7 +103,7 @@
         />
         <p><strong>Check all pages before confirming.</strong></p>
       }
-      <button class="govuk-button" type="button" (click)="returnToHome()">Return to home</button>
+      <button class="govuk-button" type="button" (click)="visitReviewNewToCarePage()">Confirm role categories</button>
     </div>
   </div>
 }

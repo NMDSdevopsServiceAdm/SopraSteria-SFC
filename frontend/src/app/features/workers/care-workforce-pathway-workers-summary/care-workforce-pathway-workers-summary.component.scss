@@ -1,0 +1,13 @@
+@import 'govuk-frontend/govuk/base';
+
+.asc-sort-by-row {
+  @include govuk-media-query($from: tablet) {
+    display: flex;
+  }
+
+  .asc-sort-by-row__sort-by-wrapper {
+    align-self: flex-end;
+    margin-bottom: govuk-spacing(4);
+    margin-left: auto;
+  }
+}
