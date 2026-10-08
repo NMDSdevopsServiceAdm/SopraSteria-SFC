@@ -56,6 +56,7 @@ module.exports = function (sequelize, DataTypes) {
       scopes: {},
     },
   );
+
   careWorkforcePathwayRoleCategory.addScope('bulkUpload', {
     attributes: ['id', 'bulkUploadCode'],
   });

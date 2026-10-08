@@ -1,4 +1,5 @@
 const dayjs = require('dayjs');
+const lodash = require('lodash');
 const { Op } = require('sequelize');
 const { unsetDHAAnswerOnJobRoleChange } = require('./hooks/workerHooks');
 const { JobRoleId } = require('../data/constants');
@@ -1440,7 +1441,7 @@ module.exports = function (sequelize, DataTypes) {
     const order = sortByOptions[sortBy] ?? sortByOptions.staffNameAsc;
 
     const { count, rows } = await this.findAndCountAll({
-      attributes: ['uid', ['NameOrIdValue', 'nameOrId']],
+      attributes: ['uid', ['NameOrIdValue', 'nameOrId'], 'CWPRoleCategoryIsAlsoNominatedIndividual'],
       where: {
         establishmentFk: establishmentId,
         archived: false,
@@ -1465,7 +1466,9 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     const workers = rows.map((worker) => {
-      return worker.toJSON();
+      return lodash.merge({}, worker.toJSON(), {
+        careWorkforcePathwayRoleCategory: { isNominatedIndividual: worker.CWPRoleCategoryIsAlsoNominatedIndividual },
+      });
     });
 
     return { count, workers };
