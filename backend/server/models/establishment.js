@@ -1033,6 +1033,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'NursesQuestionsMiniFlowViewed',
       },
+      cwpRoleCategoriesBannerViewed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'CWPRoleCategoriesBannerViewed',
+      },
     },
     {
       defaultScope: {
