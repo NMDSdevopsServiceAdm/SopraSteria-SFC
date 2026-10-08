@@ -54,7 +54,7 @@ import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-week
 import { BasicRecordsSaveSuccessComponent } from './basic-records-save-success/basic-records-save-success.component';
 import { BritishCitizenshipComponent } from './british-citizenship/british-citizenship.component';
 import { CareCertificateComponent } from './care-certificate/care-certificate.component';
-import { CareWorkforcePathwayWorkersSummaryComponent as CareWorkforcePathwayWorkersSummaryComponent } from './care-workforce-pathway-workers-summary/care-workforce-pathway-workers-summary.component';
+import { CareWorkforcePathwayWorkersSummaryComponent } from './care-workforce-pathway-workers-summary/care-workforce-pathway-workers-summary.component';
 import { CareWorkforcePathwayRoleComponent } from './care-workforce-pathway/care-workforce-pathway.component';
 import { CarryOutDelegatedHealthcareActivitiesComponent } from './carry-out-delegated-healthcare-activities/carry-out-delegated-healthcare-activities.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
