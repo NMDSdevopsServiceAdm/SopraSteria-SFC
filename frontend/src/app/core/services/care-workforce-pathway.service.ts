@@ -76,7 +76,12 @@ export type CWPGetNumberOfWorkersResponse = {
 };
 
 export type CWPGetAllWorkersResponse = {
-  workers: { uid: string; nameOrId: string; mainJob: JobRole }[];
+  workers: {
+    uid: string;
+    nameOrId: string;
+    mainJob: JobRole;
+    careWorkforcePathwayRoleCategory: CareWorkforcePathwayRoleCategory;
+  }[];
   workerCount: number;
 };
 
