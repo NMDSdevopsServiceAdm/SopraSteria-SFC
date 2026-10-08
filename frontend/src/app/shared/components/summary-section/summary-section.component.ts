@@ -539,9 +539,6 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       return;
     }
 
-    console.log('this.workplace.cwpRoleCategoriesBannerViewed', !this.workplace.cwpRoleCategoriesBannerViewed);
-    console.log('this.canEditWorker', this.canEditWorker);
-
     if (!this.workplace.cwpRoleCategoriesBannerViewed && this.canEditWorker) {
       this.updateBanner.set({
         content: 'The full list of care workforce pathway role categories is now available.',
