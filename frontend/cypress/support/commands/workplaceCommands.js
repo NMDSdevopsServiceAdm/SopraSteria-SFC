@@ -236,6 +236,16 @@ Cypress.Commands.add('resetNursesQuestionForWorkplace', (establishmentID) => {
   cy.task('multipleDbQueries', dbQueries);
 });
 
+Cypress.Commands.add('resetCWPRoleCategoriesBannerForWorkplace', (establishmentID, value = false) => {
+  const queryString = `UPDATE cqc."Establishment"
+    SET "CWPRoleCategoriesBannerViewed" = $2
+    WHERE "EstablishmentID" = $1;`;
+
+  const parameters = [establishmentID, value];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
 Cypress.Commands.add('setWorkplaceCWPAwarenessQuestionViewed', (establishmentID) => {
   const queryString = `UPDATE cqc."Establishment"
       SET "CWPAwarenessQuestionViewed" = true
