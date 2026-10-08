@@ -143,4 +143,5 @@ module.exports.Establishment = {
   CWPAwarenessQuestionViewed: true,
   staffWhatKindDelegatedHealthcareActivities: null,
   nursesQuestionsMiniFlowViewed: true,
+  cwpRoleCategoriesBannerViewed: true,
 };

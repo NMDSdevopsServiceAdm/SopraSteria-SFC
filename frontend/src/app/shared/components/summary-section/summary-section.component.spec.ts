@@ -1340,6 +1340,106 @@ describe('Summary section', () => {
   });
 
   describe('Update banner section', () => {
+    describe('CWP role categories banner', () => {
+      const cwpBannerText = 'The full list of care workforce pathway role categories is now available.';
+
+      [false, null].forEach((viewed) => {
+        it(`should show the banner when cwpRoleCategoriesBannerViewed is ${viewed}`, async () => {
+          const establishment = {
+            ...Establishment,
+            cwpRoleCategoriesBannerViewed: viewed,
+          };
+
+          const { getByTestId } = await setup({
+            establishment,
+            canEditWorker: true,
+          });
+
+          const updateBannerArea = getByTestId('update-banner-area');
+
+          expect(within(updateBannerArea).getByText(cwpBannerText)).toBeTruthy();
+          expect(within(updateBannerArea).getByText('Review records')).toBeTruthy();
+        });
+      });
+
+      it('should not show the CWP banner when it has already been viewed', async () => {
+        const establishment = {
+          ...Establishment,
+          cwpRoleCategoriesBannerViewed: true,
+        };
+
+        const { queryByText } = await setup({ establishment });
+
+        expect(queryByText(cwpBannerText)).toBeFalsy();
+      });
+
+      it('should not show the CWP banner if user cannot edit workers', async () => {
+        const establishment = {
+          ...Establishment,
+          cwpRoleCategoriesBannerViewed: false,
+        };
+
+        const { queryByText } = await setup({
+          establishment,
+          canEditWorker: false,
+        });
+
+        expect(queryByText(cwpBannerText)).toBeFalsy();
+      });
+
+      it('should link to the CWP workers summary and update the viewed flag', async () => {
+        const establishment = {
+          ...Establishment,
+          cwpRoleCategoriesBannerViewed: false,
+        };
+
+        const { fixture, getByTestId, setReturnToSpy, updateSingleFieldSpy } = await setup({ establishment });
+
+        const updateBannerArea = getByTestId('update-banner-area');
+
+        expect(within(updateBannerArea).getByText(cwpBannerText)).toBeTruthy();
+
+        const link = within(updateBannerArea).getByText('Review records') as HTMLAnchorElement;
+
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${Establishment.uid}/staff-record/care-workforce-pathway-workers-summary`,
+        );
+
+        userEvent.click(link);
+        await fixture.whenStable();
+
+        expect(setReturnToSpy).toHaveBeenCalled();
+
+        expect(updateSingleFieldSpy).toHaveBeenCalledWith(establishment.uid, {
+          property: 'cwpRoleCategoriesBannerViewed',
+          value: true,
+        });
+      });
+
+      it('should prioritise the CWP banner over the pay and pension banner', async () => {
+        const establishment = {
+          ...Establishment,
+          cwpRoleCategoriesBannerViewed: false,
+          payAndPensionsMiniFlowViewed: null,
+          mainService: {
+            payAndPensionsGroup: 1,
+          },
+        };
+
+        const { getByTestId } = await setup({
+          establishment,
+          canEditWorker: true,
+          canEditEstablishment: true,
+        });
+
+        const updateBannerArea = getByTestId('update-banner-area');
+
+        expect(within(updateBannerArea).getByText(cwpBannerText)).toBeTruthy();
+
+        expect(within(updateBannerArea).queryByText('New questions about pay and pensions')).toBeFalsy();
+      });
+    });
+
     describe('pay and pension workplace questions', () => {
       const setupEstablishment = {
         ...Establishment,
