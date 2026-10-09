@@ -1415,13 +1415,22 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Worker.countAllWorkersWithoutCareWorkforceCategory = async function (establishmentId) {
+  Worker.countAllWorkersForCareWorkforcePathwayRoleCategory = async function (establishmentId) {
     return await this.count({
       where: {
         establishmentFk: establishmentId,
         archived: false,
-        CareWorkforcePathwayRoleCategoryFK: null,
       },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['title'],
+          where: {
+            excludedFromCareWorkforcePathway: false,
+          },
+        },
+      ],
     });
   };
 

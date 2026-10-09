@@ -6,10 +6,10 @@ const { updateCareWorkforcePathwayUse } = require('./careWorkforcePathway/careWo
 const { updateCareWorkforcePathwayAwareness } = require('./careWorkforcePathway/careWorkforcePathwayAwareness');
 const { WorkerSortByOptions } = require('../../data/sortByOptions');
 
-const getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) => {
+const countWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) => {
   const establishmentId = req.establishmentId;
   try {
-    const workerCount = await models.worker.countAllWorkersWithoutCareWorkforceCategory(establishmentId);
+    const workerCount = await models.worker.countAllWorkersForCareWorkforcePathwayRoleCategory(establishmentId);
 
     res.status(200).send({
       noOfWorkersWhoRequireAnswers: workerCount,
@@ -55,7 +55,7 @@ const getWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) => {
 router.route('/');
 router
   .route('/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer')
-  .get(hasPermission('canViewWorker'), getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer);
+  .get(hasPermission('canViewWorker'), countWorkersWhoRequireCareWorkforcePathwayRoleAnswer);
 
 router
   .route('/workersWhoRequireCareWorkforcePathwayRoleAnswer')
@@ -68,6 +68,6 @@ router
 
 module.exports = router;
 
-module.exports.getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer =
-  getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer;
+module.exports.countWorkersWhoRequireCareWorkforcePathwayRoleAnswer =
+  countWorkersWhoRequireCareWorkforcePathwayRoleAnswer;
 module.exports.getWorkersWhoRequireCareWorkforcePathwayRoleAnswer = getWorkersWhoRequireCareWorkforcePathwayRoleAnswer;
