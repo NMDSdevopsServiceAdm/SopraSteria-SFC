@@ -1,7 +1,7 @@
 <label for="sortBy" class="govuk-label">Sort by</label>
 <select class="govuk-select govuk-!-width-full" id="sortBy" name="sortBy" (change)="handleChange($event)">
   @for (option of sortByOptions() | keyvalue: null; track option.key) {
-    <option value="{{ option.key }}">
+    <option value="{{ option.key }}" [selected]="option.key === initialSortByValue()">
       {{ option.value }}
     </option>
   }

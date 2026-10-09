@@ -27,6 +27,8 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const workersToShow = overrides.workersToShow ?? mockWorkers;
     const workerCount = overrides.workerCount ?? workersToShow.length;
+    const previousPaginationSettings = overrides.previousPaginationSettings ?? null;
+
     const getCWPWorkersResponse = { workers: workersToShow, workerCount: workerCount };
     const getCWPWorkersSpy = jasmine.createSpy().and.returnValue(of(getCWPWorkersResponse));
 
@@ -43,6 +45,7 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
           provide: CareWorkforcePathwayService,
           useFactory: MockCareWorkforcePathwayService.factory({
             getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer: getCWPWorkersSpy,
+            _workerSummaryPaginationSettings: previousPaginationSettings,
           }),
         },
         provideRouter([]),
@@ -74,11 +77,13 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
     const workerService = injector.inject(WorkerService);
     const router = injector.inject(Router) as Router;
     const route = injector.inject(ActivatedRoute);
+    const careWorkforcePathwayService = injector.inject(CareWorkforcePathwayService);
 
     return {
       ...setuptools,
       component,
       fixture,
+      careWorkforcePathwayService,
       establishmentService,
       workerService,
       getCWPWorkersSpy,
@@ -274,6 +279,42 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
 
       userEvent.click(getByRole('link', { name: 'Next' }));
       await fixture.whenStable();
+
+      expect(getCWPWorkersSpy).toHaveBeenCalledWith('mocked-uid', {
+        pageIndex: 1,
+        itemsPerPage: 15,
+        sortBy: 'staffNameDesc',
+      });
+    });
+
+    it('should store the pagination setting in service', async () => {
+      const { fixture, getByText, getByRole, getByLabelText, getCWPWorkersSpy, careWorkforcePathwayService } =
+        await setup({ workerCount: 20 });
+
+      const setSpy = spyOnProperty(careWorkforcePathwayService, 'workerSummaryPaginationSettings', 'set');
+
+      getCWPWorkersSpy.and.returnValue(of({ workers: mockWorkers, workerCount: 20 }));
+
+      const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
+      userEvent.selectOptions(sortBySelectBox, getByText('Staff name (Z to A)'));
+
+      expect(setSpy).toHaveBeenCalledWith({ pageIndex: 0, itemsPerPage: 15, sortBy: 'staffNameDesc' });
+
+      userEvent.click(getByRole('link', { name: 'Next' }));
+      await fixture.whenStable();
+
+      expect(setSpy).toHaveBeenCalledWith({ pageIndex: 1, itemsPerPage: 15, sortBy: 'staffNameDesc' });
+    });
+
+    it('should try to load workers with previous pagination settings on page load', async () => {
+      const { fixture, getCWPWorkersSpy, getByLabelText } = await setup({
+        previousPaginationSettings: { pageIndex: 1, itemsPerPage: 15, sortBy: 'staffNameDesc' },
+      });
+
+      await fixture.whenStable();
+
+      const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
+      expect(sortBySelectBox.value).toEqual('staffNameDesc');
 
       expect(getCWPWorkersSpy).toHaveBeenCalledWith('mocked-uid', {
         pageIndex: 1,

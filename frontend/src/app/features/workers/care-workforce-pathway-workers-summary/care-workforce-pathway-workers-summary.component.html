@@ -48,6 +48,7 @@
         <app-select-sort-by
           [sortByOptions]="sortByOptions"
           (onSortChange)="handleSortChange($event)"
+          [initialSortByValue]="sortBy"
         ></app-select-sort-by>
       </div>
     }
