@@ -5,10 +5,10 @@ import { SortStaffOptionsForCWPWorkerSummary } from '@core/model/establishment.m
 import userEvent from '@testing-library/user-event';
 
 describe('SelectSortByComponent', () => {
-  const setup = async () => {
+  const setup = async (overrides: any = {}) => {
     const setupTools = await render(SelectSortByComponent, {
       imports: [SharedModule],
-      componentInputs: { sortByOptions: SortStaffOptionsForCWPWorkerSummary },
+      componentInputs: { sortByOptions: SortStaffOptionsForCWPWorkerSummary, ...overrides },
     });
 
     const component = setupTools.fixture.componentInstance;
@@ -28,6 +28,13 @@ describe('SelectSortByComponent', () => {
     sortByLabels.forEach((label) => {
       expect(within(sortBySelectBox).getByText(label)).toBeTruthy();
     });
+  });
+
+  it('should have the initialSortByValue pre-selected if it is given', async () => {
+    const { getByLabelText } = await setup({ initialSortByValue: 'jobRoleDesc' });
+    const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
+
+    expect(sortBySelectBox.value).toEqual('jobRoleDesc');
   });
 
   it('should emit onSortChange event when user select an option', async () => {

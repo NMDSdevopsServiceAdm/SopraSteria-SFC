@@ -9,6 +9,7 @@ import { Component, input, output } from '@angular/core';
 })
 export class SelectSortByComponent {
   sortByOptions = input.required<Record<string, string>[]>();
+  initialSortByValue = input<string>();
   onSortChange = output<string>();
 
   public handleChange(event: Event): void {

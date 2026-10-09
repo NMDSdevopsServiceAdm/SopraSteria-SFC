@@ -21,6 +21,7 @@ import { CareWorkforcePathwayWorkplaceAwareness } from '@core/model/establishmen
 })
 export class CareWorkforcePathwayService {
   private _awarenessAnswersTruthyIds = [1, 2, 3];
+  private _workerSummaryPaginationSettings: null | CWPWorkerSummaryPaginationSettings = null;
 
   constructor(private http: HttpClient) {}
 
@@ -67,6 +68,14 @@ export class CareWorkforcePathwayService {
   isAwareOfCareWorkforcePathway(awarenessAnswer: CareWorkforcePathwayWorkplaceAwareness): boolean {
     return this._awarenessAnswersTruthyIds.includes(awarenessAnswer?.id);
   }
+
+  get workerSummaryPaginationSettings(): CWPWorkerSummaryPaginationSettings | null {
+    return this._workerSummaryPaginationSettings;
+  }
+
+  set workerSummaryPaginationSettings(settings: CWPWorkerSummaryPaginationSettings | null) {
+    this._workerSummaryPaginationSettings = settings;
+  }
 }
 
 export type CWPCountWorkersResponse = {
@@ -85,4 +94,10 @@ export type CWPGetAllWorkersResponse = {
 
 export type CWPGetUseReasonsResponse = {
   allReasons: Array<CareWorkforcePathwayUseReason>;
+};
+
+export type CWPWorkerSummaryPaginationSettings = {
+  pageIndex: number;
+  itemsPerPage: number;
+  sortBy: string;
 };
