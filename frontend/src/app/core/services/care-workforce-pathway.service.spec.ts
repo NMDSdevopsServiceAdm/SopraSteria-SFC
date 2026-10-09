@@ -38,7 +38,7 @@ describe('CareWorkforcePathwayService', () => {
   });
 
   it('should call the /api/${establishmentId}/careWorkforcePathway/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer endpoint', () => {
-    service.getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentId).subscribe();
+    service.countWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentId).subscribe();
 
     const req = http.expectOne(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer`,

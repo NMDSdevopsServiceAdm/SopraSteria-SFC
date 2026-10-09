@@ -4,7 +4,7 @@ import { CheckPermissionsGuard } from '@core/guards/permissions/check-permission
 import { redirectIfLinkedToTrainingCourse } from '@core/guards/redirect-if-linked-to-training-course/redirect-if-linked-to-training-course.guard';
 import { RequireCWPAnswerForSomeWorkersGuard } from '@core/guards/require-cwp-answer-for-some-workers/require-cwp-answer-for-some-workers.guard';
 import { AvailableQualificationsResolver } from '@core/resolvers/available-qualification.resolver';
-import { GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/get-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
+import { GetWorkersForCWPSummaryResolver } from '@core/resolvers/careWorkforcePathway/get-workers-for-cwp-summary.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
 import { GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/get-workers-with-delegated-healthcare-activities-unanswered.resolver';
@@ -354,7 +354,7 @@ const routes: Routes = [
     path: 'care-workforce-pathway-workers-summary',
     component: CareWorkforcePathwayWorkersSummaryComponent,
     canActivate: [RequireCWPAnswerForSomeWorkersGuard],
-    resolve: { workersWhoRequireCWPAnswer: GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver },
+    resolve: { workersWhoRequireCWPAnswer: GetWorkersForCWPSummaryResolver },
   },
   {
     path: 'who-carry-out-delegated-healthcare-activities',

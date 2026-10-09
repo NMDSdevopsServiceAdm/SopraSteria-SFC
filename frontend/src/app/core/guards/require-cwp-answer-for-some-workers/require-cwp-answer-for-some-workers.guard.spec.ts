@@ -35,7 +35,7 @@ describe('RequireCWPAnswerForSomeWorkersGuard', () => {
     const parentSubsidiaryViewService = TestBed.inject(ParentSubsidiaryViewService);
     const route = TestBed.inject(ActivatedRoute).snapshot;
 
-    const cwpServiceSpy = spyOn(careWorkforcePathwayService, 'getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer');
+    const cwpServiceSpy = spyOn(careWorkforcePathwayService, 'countWorkersWhoRequireCareWorkforcePathwayRoleAnswer');
     cwpServiceSpy.and.returnValue(of({ noOfWorkersWhoRequireAnswers: overrides.noOfWorkersWhoRequireAnswers ?? 0 }));
 
     if (overrides.isViewingSubAsParent) {

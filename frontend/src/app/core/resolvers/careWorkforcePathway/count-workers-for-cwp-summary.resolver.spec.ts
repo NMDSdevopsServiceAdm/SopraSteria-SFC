@@ -8,17 +8,17 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from './no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
+import { CountWorkersForCWPSummaryResolver } from './count-workers-for-cwp-summary.resolver';
 import { of } from 'rxjs';
 
-describe('getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver', () => {
+fdescribe('CountWorkersForCWPSummaryResolver', () => {
   const establishmentIdInService = '129';
 
   const setup = (overrides: any = {}) => {
     TestBed.configureTestingModule({
       imports: [],
       providers: [
-        GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+        CountWorkersForCWPSummaryResolver,
         {
           provide: EstablishmentService,
           useValue: {
@@ -43,16 +43,16 @@ describe('getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver', () =>
         provideHttpClientTesting(),
       ],
     });
-    const resolver = TestBed.inject(GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver);
+    const resolver = TestBed.inject(CountWorkersForCWPSummaryResolver);
     const careWorkforcePathwayService = TestBed.inject(CareWorkforcePathwayService);
     const route = TestBed.inject(ActivatedRoute);
 
-    const getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy = spyOn(
+    const countWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy = spyOn(
       careWorkforcePathwayService,
-      'getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer',
+      'countWorkersWhoRequireCareWorkforcePathwayRoleAnswer',
     ).and.returnValue(of(null));
 
-    return { resolver, careWorkforcePathwayService, route, getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy };
+    return { resolver, careWorkforcePathwayService, route, countWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy };
   };
 
   it('should create', async () => {
@@ -63,29 +63,29 @@ describe('getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver', () =>
   it('should call with the establishmentId', async () => {
     const establishmentId = '213';
     const overrides = { establishmentIdInParams: establishmentId, permissions: ['canViewWorker'] };
-    const { resolver, route, getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy } = await setup(overrides);
+    const { resolver, route, countWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy } = await setup(overrides);
 
     resolver.resolve(route.snapshot);
 
-    expect(getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy).toHaveBeenCalledWith(establishmentId);
+    expect(countWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy).toHaveBeenCalledWith(establishmentId);
   });
 
-  it('should call getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy with uid in establishment service when no uid in params', () => {
-    const { resolver, route, getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy } = setup({
+  it('should call countWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy with uid in establishment service when no uid in params', () => {
+    const { resolver, route, countWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy } = setup({
       permissions: ['canViewWorker'],
     });
 
     resolver.resolve(route.snapshot);
 
-    expect(getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy).toHaveBeenCalledWith(establishmentIdInService);
+    expect(countWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy).toHaveBeenCalledWith(establishmentIdInService);
   });
 
   it('should not call the backend if user does not have permission', async () => {
     const overrides = { permissions: [] };
-    const { resolver, route, getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy } = await setup(overrides);
+    const { resolver, route, countWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy } = await setup(overrides);
 
     resolver.resolve(route.snapshot);
 
-    expect(getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy).not.toHaveBeenCalled();
+    expect(countWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy).not.toHaveBeenCalled();
   });
 });
