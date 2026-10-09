@@ -18,7 +18,7 @@ import { of } from 'rxjs';
 import { CareWorkforcePathwayWorkersSummaryComponent } from './care-workforce-pathway-workers-summary.component';
 import { SelectSortByComponent } from '@shared/components/select-sort-by/select-sort-by.component';
 
-fdescribe('CareWorkforcePathwayWorkersSummaryComponent', () => {
+describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
   const mockWorkers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
   mockWorkers.forEach((worker) => {
     worker.careWorkforcePathwayRoleCategory = { roleCategoryId: 1, title: 'New to care', description: '' };
