@@ -41,20 +41,15 @@ export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit, OnDe
     private router: Router,
     private careWorkforcePathwayService: CareWorkforcePathwayService,
     private route: ActivatedRoute,
-  ) {
-    effect(() => {
-      const paginationSettings = this.paginationSettings();
-      this.getWorkers(paginationSettings);
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
     this.backLinkService.showBackLink();
     this.workplaceUid = this.establishmentService.establishment.uid;
 
     this.handleGetWorkersResponse(this.route.snapshot.data.workersWhoRequireCWPAnswer);
-    const previousPaginationSettings = this.careWorkforcePathwayService.workerSummaryPaginationSettings;
 
+    const previousPaginationSettings = this.careWorkforcePathwayService.workerSummaryPaginationSettings;
     if (previousPaginationSettings) {
       this.paginationSettings.set(previousPaginationSettings);
     }
@@ -74,7 +69,9 @@ export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit, OnDe
     return this.paginationSettings().sortBy;
   }
 
-  private getWorkers(queryParams: CWPWorkerSummaryPaginationSettings): void {
+  private getWorkers(): void {
+    const queryParams = this.paginationSettings();
+
     this.subscriptions.add(
       this.careWorkforcePathwayService
         .getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(this.workplaceUid, queryParams)
@@ -99,11 +96,13 @@ export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit, OnDe
 
   public handleSortChange(sortBy: string): void {
     this.paginationSettings.update((prev) => ({ ...prev, sortBy, pageIndex: 0 }));
+    this.getWorkers();
     this.storePaginationSettingsInService();
   }
 
   public handlePageUpdate(pageIndex: number): void {
     this.paginationSettings.update((prev) => ({ ...prev, pageIndex }));
+    this.getWorkers();
     this.storePaginationSettingsInService();
   }
 

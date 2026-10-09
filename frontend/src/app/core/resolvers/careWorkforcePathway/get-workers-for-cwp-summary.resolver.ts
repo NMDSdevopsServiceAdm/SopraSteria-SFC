@@ -15,13 +15,15 @@ export class GetWorkersForCWPSummaryResolver {
   ) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    const queryParams = { pageIndex: 0, itemsPerPage: 15 };
-
     const workplaceUid = route.paramMap.get('establishmentuid')
       ? route.paramMap.get('establishmentuid')
       : this.establishmentService.establishmentId;
 
     if (!this.permissionsService.can(workplaceUid, 'canEditWorker')) return of(null);
+
+    const queryParams =
+      this.careWorkforcePathwayService.workerSummaryPaginationSettings ??
+      this.careWorkforcePathwayService.defaultPaginationSettings;
 
     return this.careWorkforcePathwayService
       .getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(workplaceUid, queryParams)
