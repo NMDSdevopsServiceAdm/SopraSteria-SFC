@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AvailableQualificationsResolver } from '@core/resolvers/available-qualification.resolver';
-import { GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/get-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
+import { GetWorkersForCWPSummaryResolver } from '@core/resolvers/careWorkforcePathway/get-workers-for-cwp-summary.resolver';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
 import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
 import { QualificationResolver } from '@core/resolvers/qualification.resolver';
@@ -195,7 +195,7 @@ import { SelectSortByComponent } from '@shared/components/select-sort-by/select-
     VacanciesAndTurnoverService,
     WorkerReasonsForLeavingResolver,
     CareWorkforcePathwayWorkersSummaryComponent,
-    GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+    GetWorkersForCWPSummaryResolver,
     GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
     WorkerHasAnyTrainingOrQualificationsResolver,
     DownloadCertificateService,

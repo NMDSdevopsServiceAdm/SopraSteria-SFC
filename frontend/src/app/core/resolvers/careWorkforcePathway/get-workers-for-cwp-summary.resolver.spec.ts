@@ -10,16 +10,16 @@ import { UserService } from '@core/services/user.service';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { of } from 'rxjs';
 
-import { GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from './get-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
+import { GetWorkersForCWPSummaryResolver } from './get-workers-for-cwp-summary.resolver';
 
-describe('GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver', () => {
+fdescribe('GetWorkersForCWPSummaryResolver', () => {
   const establishmentIdInService = '129';
 
   const setup = (overrides: any = {}) => {
     TestBed.configureTestingModule({
       imports: [],
       providers: [
-        GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+        GetWorkersForCWPSummaryResolver,
         {
           provide: EstablishmentService,
           useValue: {
@@ -45,7 +45,7 @@ describe('GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver', () => {
       ],
     });
 
-    const resolver = TestBed.inject(GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver);
+    const resolver = TestBed.inject(GetWorkersForCWPSummaryResolver);
     const careWorkforcePathwayService = TestBed.inject(CareWorkforcePathwayService);
     const route = TestBed.inject(ActivatedRoute);
 

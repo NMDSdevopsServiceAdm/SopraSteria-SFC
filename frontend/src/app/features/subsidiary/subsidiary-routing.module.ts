@@ -7,7 +7,7 @@ import { CheckPermissionsGuard } from '@core/guards/permissions/check-permission
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
-import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
+import { CountWorkersForCWPSummaryResolver } from '@core/resolvers/careWorkforcePathway/count-workers-for-cwp-summary.resolver';
 import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
@@ -93,8 +93,7 @@ const routes: Routes = [
       usefulLinksPay: UsefulLinkPayResolver,
       usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
       noOfWorkersWhoRequireInternationalRecruitment: GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
-      noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer:
-        GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+      noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer: CountWorkersForCWPSummaryResolver,
       noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer:
         GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
       cqcStatusCheck: CqcStatusCheckResolver,

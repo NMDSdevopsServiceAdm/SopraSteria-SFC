@@ -7,7 +7,7 @@ import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver {
+export class CountWorkersForCWPSummaryResolver {
   constructor(
     private permissionsService: PermissionsService,
     private careWorkforcePathwayService: CareWorkforcePathwayService,
@@ -21,7 +21,7 @@ export class GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver {
 
     if (!this.permissionsService.can(workplaceUid, 'canViewWorker')) return of(null);
 
-    return this.careWorkforcePathwayService.getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer(workplaceUid).pipe(
+    return this.careWorkforcePathwayService.countWorkersWhoRequireCareWorkforcePathwayRoleAnswer(workplaceUid).pipe(
       catchError(() => {
         return of(null);
       }),

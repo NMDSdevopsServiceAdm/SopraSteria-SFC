@@ -40,7 +40,7 @@ export class CareWorkforcePathwayService {
       .pipe(map((res) => res.careWorkforcePathwayRoleCategories));
   }
 
-  getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer(
+  countWorkersWhoRequireCareWorkforcePathwayRoleAnswer(
     establishmentId: string,
   ): Observable<CWPGetNumberOfWorkersResponse> {
     return this.http

@@ -7,7 +7,7 @@ import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver {
+export class GetWorkersForCWPSummaryResolver {
   constructor(
     private permissionsService: PermissionsService,
     private careWorkforcePathwayService: CareWorkforcePathwayService,
