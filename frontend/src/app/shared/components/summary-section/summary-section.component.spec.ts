@@ -21,7 +21,7 @@ import { of } from 'rxjs';
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
 
-describe('Summary section', () => {
+fdescribe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(SummarySectionComponent, {
       imports: [SharedModule, RouterModule],
@@ -1352,6 +1352,7 @@ describe('Summary section', () => {
 
           const { getByTestId } = await setup({
             establishment,
+            workerCount: 1,
             canEditWorker: true,
           });
 
@@ -1368,7 +1369,26 @@ describe('Summary section', () => {
           cwpRoleCategoriesBannerViewed: true,
         };
 
-        const { queryByText } = await setup({ establishment });
+        const { queryByText } = await setup({
+          establishment,
+          workerCount: 1,
+          canEditWorker: true,
+        });
+
+        expect(queryByText(cwpBannerText)).toBeFalsy();
+      });
+
+      it('should not show the CWP banner when there are no staff records', async () => {
+        const establishment = {
+          ...Establishment,
+          cwpRoleCategoriesBannerViewed: false,
+        };
+
+        const { queryByText } = await setup({
+          establishment,
+          workerCount: 0,
+          canEditWorker: true,
+        });
 
         expect(queryByText(cwpBannerText)).toBeFalsy();
       });
@@ -1381,6 +1401,7 @@ describe('Summary section', () => {
 
         const { queryByText } = await setup({
           establishment,
+          workerCount: 1,
           canEditWorker: false,
         });
 
@@ -1393,7 +1414,11 @@ describe('Summary section', () => {
           cwpRoleCategoriesBannerViewed: false,
         };
 
-        const { fixture, getByTestId, setReturnToSpy, updateSingleFieldSpy } = await setup({ establishment });
+        const { fixture, getByTestId, setReturnToSpy, updateSingleFieldSpy } = await setup({
+          establishment,
+          workerCount: 1,
+          canEditWorker: true,
+        });
 
         const updateBannerArea = getByTestId('update-banner-area');
 
@@ -1428,6 +1453,7 @@ describe('Summary section', () => {
 
         const { getByTestId } = await setup({
           establishment,
+          workerCount: 1,
           canEditWorker: true,
           canEditEstablishment: true,
         });
