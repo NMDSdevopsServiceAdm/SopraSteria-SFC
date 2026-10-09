@@ -14,7 +14,10 @@ import { map } from 'rxjs/operators';
 import { JobRole } from '@core/model/job.model';
 import { Params } from '@angular/router';
 import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
-import { CareWorkforcePathwayWorkplaceAwareness } from '@core/model/establishment.model';
+import {
+  CareWorkforcePathwayWorkplaceAwareness,
+  SortStaffOptionsForCWPWorkerSummary,
+} from '@core/model/establishment.model';
 
 @Injectable({
   providedIn: 'root',
@@ -76,6 +79,10 @@ export class CareWorkforcePathwayService {
   set workerSummaryPaginationSettings(settings: CWPWorkerSummaryPaginationSettings | null) {
     this._workerSummaryPaginationSettings = settings;
   }
+
+  get defaultPaginationSettings(): CWPWorkerSummaryPaginationSettings {
+    return DefaultPaginationSettingsForCWPWorkerSummary;
+  }
 }
 
 export type CWPCountWorkersResponse = {
@@ -100,4 +107,10 @@ export type CWPWorkerSummaryPaginationSettings = {
   pageIndex: number;
   itemsPerPage: number;
   sortBy: string;
+};
+
+const DefaultPaginationSettingsForCWPWorkerSummary: CWPWorkerSummaryPaginationSettings = {
+  itemsPerPage: 15,
+  pageIndex: 0,
+  sortBy: Object.keys(SortStaffOptionsForCWPWorkerSummary)[0],
 };

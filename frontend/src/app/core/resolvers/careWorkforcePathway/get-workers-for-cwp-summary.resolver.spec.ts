@@ -58,14 +58,14 @@ describe('GetWorkersForCWPSummaryResolver', () => {
   };
 
   it('should create', async () => {
-    const { resolver } = await setup();
+    const { resolver } = setup();
     expect(resolver).toBeTruthy();
   });
 
   it('should call getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer with the establishmentId when in params', async () => {
     const establishmentId = '213';
     const overrides = { establishmentIdInParams: establishmentId, permissions: ['canEditWorker'] };
-    const { resolver, route, getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy } = await setup(overrides);
+    const { resolver, route, getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy } = setup(overrides);
 
     resolver.resolve(route.snapshot);
 
@@ -91,19 +91,20 @@ describe('GetWorkersForCWPSummaryResolver', () => {
   it('should pass in default pagination params to getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer call', async () => {
     const establishmentId = '213';
     const overrides = { establishmentIdInParams: establishmentId, permissions: ['canEditWorker'] };
-    const { resolver, route, getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy } = await setup(overrides);
+    const { resolver, route, getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy } = setup(overrides);
 
     resolver.resolve(route.snapshot);
 
     expect(getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy).toHaveBeenCalledWith(jasmine.anything(), {
       pageIndex: 0,
       itemsPerPage: 15,
+      sortBy: 'staffNameAsc',
     });
   });
 
   it('should not make backend call if user does not have canEditWorker permission', async () => {
     const overrides = { permissions: [] };
-    const { resolver, route, getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy } = await setup(overrides);
+    const { resolver, route, getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy } = setup(overrides);
 
     resolver.resolve(route.snapshot);
 

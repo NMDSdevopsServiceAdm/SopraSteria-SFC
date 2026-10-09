@@ -306,8 +306,9 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
       expect(setSpy).toHaveBeenCalledWith({ pageIndex: 1, itemsPerPage: 15, sortBy: 'staffNameDesc' });
     });
 
-    it('should try to load workers with previous pagination settings on page load', async () => {
-      const { fixture, getCWPWorkersSpy, getByLabelText } = await setup({
+    it('should persist the previous pagination settings on page load', async () => {
+      const { fixture, getByTestId, getByLabelText } = await setup({
+        workerCount: 20,
         previousPaginationSettings: { pageIndex: 1, itemsPerPage: 15, sortBy: 'staffNameDesc' },
       });
 
@@ -316,11 +317,9 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
       const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
       expect(sortBySelectBox.value).toEqual('staffNameDesc');
 
-      expect(getCWPWorkersSpy).toHaveBeenCalledWith('mocked-uid', {
-        pageIndex: 1,
-        itemsPerPage: 15,
-        sortBy: 'staffNameDesc',
-      });
+      const pagination = getByTestId('pagination');
+      expect(within(pagination).getByRole('link', { name: '1' })).toBeTruthy();
+      expect(within(pagination).getByRole('link', { name: 'Previous' })).toBeTruthy();
     });
   });
 });
