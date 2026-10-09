@@ -4,7 +4,7 @@ import { render, within } from '@testing-library/angular';
 import { SortStaffOptionsForCWPWorkerSummary } from '@core/model/establishment.model';
 import userEvent from '@testing-library/user-event';
 
-fdescribe('SelectSortByComponent', () => {
+describe('SelectSortByComponent', () => {
   const setup = async () => {
     const setupTools = await render(SelectSortByComponent, {
       imports: [SharedModule],
