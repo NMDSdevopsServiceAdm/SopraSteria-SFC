@@ -15,10 +15,15 @@ import { StaffSummaryDirective } from '@shared/directives/staff-summary/staff-su
   standalone: false,
 })
 export class StaffSummaryComponent extends StaffSummaryDirective implements OnInit {
-  public showNewPill: boolean = false;
   public workplaceUid: string;
+
+  public showNewPillForUpdatePay: boolean = false;
   public showUpdatePayForMultipleStaffLink = false;
   public updatePayForMultipleStaffLinkText = 'Update pay for multiple staff';
+
+  public showNewPillForCwpWorkerSummaryLink: boolean = false;
+  public showCwpWorkerSummaryLink = false;
+  public cwpWorkerSummaryLinkText = 'Check your staff Care Workforce Pathway role categories';
 
   constructor(
     protected permissionsService: PermissionsService,
@@ -34,12 +39,15 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
   }
 
   protected init(): void {
-    this.showNewPill = !this.workplace?.updatePayForMultiStaffViewed;
+    this.showNewPillForUpdatePay = !this.workplace?.updatePayForMultiStaffViewed;
     this.workplaceUid = this.workplace.uid;
     const userHasEditPermissions =
       this.permissionsService.can(this.workplaceUid, 'canEditWorker') &&
       this.permissionsService.can(this.workplaceUid, 'canEditEstablishment');
     this.showUpdatePayForMultipleStaffLink = userHasEditPermissions && this.workerCount > 1;
+
+    const workersCountForCWPSummary = this.route.snapshot.data?.workersCountForCWPSummary?.workerCount;
+    this.showCwpWorkerSummaryLink = userHasEditPermissions && workersCountForCWPSummary >= 1;
   }
 
   public getWorkerRecordPath(event: Event, worker: Worker) {
@@ -58,10 +66,14 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
     );
   }
 
-  public handleOnClick(): void {
-    if (this.showNewPill) {
+  public visitUpdatePayForMultipleStaff(): void {
+    if (this.showNewPillForUpdatePay) {
       this.setUpdatePayForMultiStaffViewed();
     }
     this.router.navigate(['workplace', this.workplaceUid, 'staff-record', 'update-pay-for-multiple-staff']);
+  }
+
+  public visitCWPWorkerSummary(): void {
+    this.router.navigate(['workplace', this.workplaceUid, 'staff-record', 'care-workforce-pathway-workers-summary']);
   }
 }

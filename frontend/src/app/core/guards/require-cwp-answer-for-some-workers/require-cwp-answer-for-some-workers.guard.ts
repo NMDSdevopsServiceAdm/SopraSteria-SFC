@@ -20,7 +20,7 @@ export class RequireCWPAnswerForSomeWorkersGuard implements CanActivate {
     const response = await this.careWorkforcePathwayService
       .countWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentUid)
       .toPromise();
-    const numberOfWorkers = response?.noOfWorkersWhoRequireAnswers ?? 0;
+    const numberOfWorkers = response?.workerCount ?? 0;
 
     if (numberOfWorkers > 0) {
       return true;

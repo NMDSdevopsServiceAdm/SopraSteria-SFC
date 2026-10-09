@@ -36,7 +36,7 @@ describe('RequireCWPAnswerForSomeWorkersGuard', () => {
     const route = TestBed.inject(ActivatedRoute).snapshot;
 
     const cwpServiceSpy = spyOn(careWorkforcePathwayService, 'countWorkersWhoRequireCareWorkforcePathwayRoleAnswer');
-    cwpServiceSpy.and.returnValue(of({ noOfWorkersWhoRequireAnswers: overrides.noOfWorkersWhoRequireAnswers ?? 0 }));
+    cwpServiceSpy.and.returnValue(of({ workerCount: overrides.workerCount ?? 0 }));
 
     if (overrides.isViewingSubAsParent) {
       establishmentService.establishment.uid = 'mock-subsidiary-uid';
@@ -56,9 +56,9 @@ describe('RequireCWPAnswerForSomeWorkersGuard', () => {
     expect(guard).toBeTruthy();
   });
 
-  it('should return true when some workers still require answer for CWP Role Category question', async () => {
+  it('should return true when some workers has job role that should see for CWP Role Category question', async () => {
     const { guard, route, establishmentService, cwpServiceSpy } = await setup({
-      noOfWorkersWhoRequireAnswers: 2,
+      workerCount: 2,
     });
 
     const result = await guard.canActivate(route, mockRouterStateSnapshot);
@@ -70,7 +70,7 @@ describe('RequireCWPAnswerForSomeWorkersGuard', () => {
   it('should redirect to dashboard home tab when every worker has got the CWP question answered', async () => {
     const { guard, route, establishmentService, cwpServiceSpy } = await setup({
       isViewingSubAsParent: false,
-      noOfWorkersWhoRequireAnswers: 0,
+      workerCount: 0,
     });
 
     const result = await guard.canActivate(route, mockRouterStateSnapshot);
@@ -83,7 +83,7 @@ describe('RequireCWPAnswerForSomeWorkersGuard', () => {
   it('should redirect to subsidiary dashboard home tab when every worker has got the CWP question answered and viewing sub as parent', async () => {
     const { guard, route, cwpServiceSpy } = await setup({
       isViewingSubAsParent: true,
-      noOfWorkersWhoRequireAnswers: 0,
+      workerCount: 0,
     });
 
     const result = await guard.canActivate(route, mockRouterStateSnapshot);

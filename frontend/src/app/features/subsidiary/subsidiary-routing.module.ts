@@ -93,7 +93,7 @@ const routes: Routes = [
       usefulLinksPay: UsefulLinkPayResolver,
       usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
       noOfWorkersWhoRequireInternationalRecruitment: GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
-      noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer: CountWorkersForCWPSummaryResolver,
+      workersCountForCWPSummary: CountWorkersForCWPSummaryResolver,
       noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer:
         GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
       cqcStatusCheck: CqcStatusCheckResolver,

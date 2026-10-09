@@ -10,19 +10,31 @@
   [maintainedPageIndex]="maintainedPageIndex"
   [sortByValue]="sortByValue"
 >
-  @if (showUpdatePayForMultipleStaffLink) {
-    <ng-container placeAboveSearchBox>
-      <div class="govuk-grid-column-three-quarters">
+  <ng-container placeAboveSearchBox>
+    <div class="govuk-grid-column-full">
+      @if (showUpdatePayForMultipleStaffLink) {
         <app-new-pill-with-link
           placeAboveSearchBox
           [linkText]="updatePayForMultipleStaffLinkText"
-          [showNewPill]="showNewPill"
+          [showNewPill]="showNewPillForUpdatePay"
           data-testid="update-pay-for-multiple-staff-link"
-          (clicked)="handleOnClick()"
+          (clicked)="visitUpdatePayForMultipleStaff()"
         ></app-new-pill-with-link>
-      </div>
-    </ng-container>
-  }
+        <br />
+      }
+
+      @if (showCwpWorkerSummaryLink) {
+        <app-new-pill-with-link
+          placeAboveSearchBox
+          [linkText]="cwpWorkerSummaryLinkText"
+          [showNewPill]="showNewPillForCwpWorkerSummaryLink"
+          data-testid="care-workforce-pathway-worker-summary-link"
+          (clicked)="visitCWPWorkerSummary()"
+        ></app-new-pill-with-link>
+        <br />
+      }
+    </div>
+  </ng-container>
   @if (workerCount) {
     <table class="govuk-table">
       <thead class="govuk-table__head">
