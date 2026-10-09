@@ -3,7 +3,7 @@ const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 const models = require('../../../../models');
 const {
-  getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer,
+  countWorkersWhoRequireCareWorkforcePathwayRoleAnswer,
   getWorkersWhoRequireCareWorkforcePathwayRoleAnswer,
 } = require('../../../../routes/establishments/careWorkforcePathway');
 
@@ -39,12 +39,12 @@ describe('careWorkforcePathwayRole', () => {
     },
   ];
 
-  xdescribe('getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer', () => {
+  xdescribe('countWorkersWhoRequireCareWorkforcePathwayRoleAnswer', () => {
     const establishmentId = 'some-uuid';
 
     const request = {
       method: 'GET',
-      url: `/api/establishment/${establishmentId}/getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer`,
+      url: `/api/establishment/${establishmentId}/countWorkersWhoRequireCareWorkforcePathwayRoleAnswer`,
       params: {
         establishmentId,
       },
@@ -52,11 +52,11 @@ describe('careWorkforcePathwayRole', () => {
     };
 
     it('should return the number when there are workers with care workforce pathway category unanswered', async () => {
-      sinon.stub(models.worker, 'countAllWorkersWithoutCareWorkforceCategory').returns(workersFromDB.length);
+      sinon.stub(models.worker, 'countAllWorkersForCareWorkforcePathwayRoleCategory').returns(workersFromDB.length);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
-      await getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer(req, res);
+      await countWorkersWhoRequireCareWorkforcePathwayRoleAnswer(req, res);
 
       const response = res._getData();
 
@@ -65,11 +65,11 @@ describe('careWorkforcePathwayRole', () => {
     });
 
     it('should return 0 when there are no workers with care workforce pathway category unanswered', async () => {
-      sinon.stub(models.worker, 'countAllWorkersWithoutCareWorkforceCategory').returns(0);
+      sinon.stub(models.worker, 'countAllWorkersForCareWorkforcePathwayRoleCategory').returns(0);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
-      await getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer(req, res);
+      await countWorkersWhoRequireCareWorkforcePathwayRoleAnswer(req, res);
 
       const response = res._getData();
 
@@ -78,11 +78,11 @@ describe('careWorkforcePathwayRole', () => {
     });
 
     it('should return an error', async () => {
-      sinon.stub(models.worker, 'countAllWorkersWithoutCareWorkforceCategory').throws();
+      sinon.stub(models.worker, 'countAllWorkersForCareWorkforcePathwayRoleCategory').throws();
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
-      await getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer(req, res);
+      await countWorkersWhoRequireCareWorkforcePathwayRoleAnswer(req, res);
 
       expect(res.statusCode).to.deep.equal(500);
     });
