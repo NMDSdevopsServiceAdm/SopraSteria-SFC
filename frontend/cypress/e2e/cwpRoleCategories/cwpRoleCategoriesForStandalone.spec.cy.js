@@ -1,6 +1,6 @@
 import { userPassword } from '../../support/configData';
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
-import { runTestsForCWPRoleCategories } from './runTestsForCWPRoleCategories';
+import { runTestsForCWPRoleCategories } from './runTestForCWPRoleCategories';
 
 describe('CWP role categories blue banner for standalone workplace', { tags: '@staffRecords' }, () => {
   beforeEach(() => {

@@ -246,6 +246,81 @@ Cypress.Commands.add('resetCWPRoleCategoriesBannerForWorkplace', (establishmentI
   cy.task('dbQuery', { queryString, parameters });
 });
 
+Cypress.Commands.add('archiveActiveWorkersForCWPTest', (establishmentID) => {
+  const queryString = `
+    UPDATE cqc."Worker"
+    SET "Archived" = true
+    WHERE "EstablishmentFK" = $1
+      AND "Archived" = false
+    RETURNING "ID";
+  `;
+
+  return cy.task('dbQuery', {
+    queryString,
+    parameters: [establishmentID],
+  });
+});
+
+Cypress.Commands.add('restoreWorkersForCWPTest', (workerIds) => {
+  if (!workerIds.length) {
+    return cy.wrap(null);
+  }
+
+  const queryString = `
+    UPDATE cqc."Worker"
+    SET "Archived" = false
+    WHERE "ID" = ANY($1);
+  `;
+
+  return cy.task('dbQuery', {
+    queryString,
+    parameters: [workerIds],
+  });
+});
+
+Cypress.Commands.add('ensureActiveWorkerForCWPTest', (establishmentID) => {
+  const queryString = `
+    WITH selected_worker AS (
+      SELECT "ID", "Archived"
+      FROM cqc."Worker"
+      WHERE "EstablishmentFK" = $1
+      ORDER BY
+      CASE WHEN "Archived" = false THEN 0 ELSE 1 END,
+      "ID" ASC
+      LIMIT 1
+    ),
+    updated_worker AS (
+      UPDATE cqc."Worker"
+      SET "Archived" = false
+      WHERE "ID" = (SELECT "ID" FROM selected_worker)
+      RETURNING "ID"
+    )
+    SELECT
+      selected_worker."ID",
+      selected_worker."Archived" AS "OriginallyArchived"
+    FROM selected_worker
+    JOIN updated_worker
+      ON updated_worker."ID" = selected_worker."ID";
+  `;
+
+  return cy.task('dbQuery', {
+    queryString,
+    parameters: [establishmentID],
+  });
+});
+
+Cypress.Commands.add('restoreOriginalWorkerStatusForCWPTest', (workerId, originallyArchived) => {
+  const queryString = `
+    UPDATE cqc."Worker"
+    SET "Archived" = $2
+    WHERE "ID" = $1;
+  `;
+
+  return cy.task('dbQuery', {
+    queryString,
+    parameters: [workerId, originallyArchived],
+  });
+});
 Cypress.Commands.add('setWorkplaceCWPAwarenessQuestionViewed', (establishmentID) => {
   const queryString = `UPDATE cqc."Establishment"
       SET "CWPAwarenessQuestionViewed" = true

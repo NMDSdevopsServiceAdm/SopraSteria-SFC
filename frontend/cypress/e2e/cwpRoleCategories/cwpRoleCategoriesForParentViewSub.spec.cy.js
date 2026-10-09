@@ -1,6 +1,6 @@
 import { userPassword } from '../../support/configData';
 import { ParentEstablishment, SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentData';
-import { runTestsForCWPRoleCategories } from './runTestsForCWPRoleCategories';
+import { runTestsForCWPRoleCategories } from './runTestForCWPRoleCategories';
 
 describe('CWP role categories blue banner for parent viewing subsidiary', { tags: '@staffRecords' }, () => {
   const subsidiaryToView = SubEstablishmentNotDataOwner;
