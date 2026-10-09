@@ -12,7 +12,7 @@ const countWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) =>
     const workerCount = await models.worker.countAllWorkersForCareWorkforcePathwayRoleCategory(establishmentId);
 
     res.status(200).send({
-      noOfWorkersWhoRequireAnswers: workerCount,
+      workerCount,
     });
   } catch (err) {
     console.error('worker::GET:total - failed', err);

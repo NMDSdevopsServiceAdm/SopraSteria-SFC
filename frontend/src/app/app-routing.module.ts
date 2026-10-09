@@ -214,7 +214,7 @@ const routes: Routes = [
           usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
           noOfWorkersWhoRequireInternationalRecruitment:
             GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
-          noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer: CountWorkersForCWPSummaryResolver,
+          workersCountForCWPSummary: CountWorkersForCWPSummaryResolver,
           noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer:
             GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
           trainingCourses: TrainingCourseResolver,

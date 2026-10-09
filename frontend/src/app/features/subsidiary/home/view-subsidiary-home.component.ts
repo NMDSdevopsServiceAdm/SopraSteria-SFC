@@ -93,7 +93,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
       this.route.snapshot.data.noOfWorkersWhoRequireInternationalRecruitment?.noOfWorkersWhoRequireAnswers;
 
     this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered =
-      this.route.snapshot.data.noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer?.noOfWorkersWhoRequireAnswers;
+      this.route.snapshot.data.workersCountForCWPSummary?.workerCount;
     this.noOfWorkersWithDelegatedHealthcareUnanswered =
       this.route.snapshot.data.noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer?.noOfWorkersWhoRequiresAnswer;
 

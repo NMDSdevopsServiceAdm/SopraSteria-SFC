@@ -11,7 +11,7 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { CountWorkersForCWPSummaryResolver } from './count-workers-for-cwp-summary.resolver';
 import { of } from 'rxjs';
 
-fdescribe('CountWorkersForCWPSummaryResolver', () => {
+describe('CountWorkersForCWPSummaryResolver', () => {
   const establishmentIdInService = '129';
 
   const setup = (overrides: any = {}) => {

@@ -40,11 +40,9 @@ export class CareWorkforcePathwayService {
       .pipe(map((res) => res.careWorkforcePathwayRoleCategories));
   }
 
-  countWorkersWhoRequireCareWorkforcePathwayRoleAnswer(
-    establishmentId: string,
-  ): Observable<CWPGetNumberOfWorkersResponse> {
+  countWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentId: string): Observable<CWPCountWorkersResponse> {
     return this.http
-      .get<CWPGetNumberOfWorkersResponse>(
+      .get<CWPCountWorkersResponse>(
         `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer`,
       )
       .pipe(map((res) => res));
@@ -71,8 +69,8 @@ export class CareWorkforcePathwayService {
   }
 }
 
-export type CWPGetNumberOfWorkersResponse = {
-  noOfWorkersWhoRequireAnswers: number;
+export type CWPCountWorkersResponse = {
+  workerCount: number;
 };
 
 export type CWPGetAllWorkersResponse = {

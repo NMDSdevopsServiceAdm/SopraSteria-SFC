@@ -12,7 +12,7 @@ import { of } from 'rxjs';
 
 import { GetWorkersForCWPSummaryResolver } from './get-workers-for-cwp-summary.resolver';
 
-fdescribe('GetWorkersForCWPSummaryResolver', () => {
+describe('GetWorkersForCWPSummaryResolver', () => {
   const establishmentIdInService = '129';
 
   const setup = (overrides: any = {}) => {
