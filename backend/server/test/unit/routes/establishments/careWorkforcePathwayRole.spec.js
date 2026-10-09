@@ -39,7 +39,7 @@ describe('careWorkforcePathwayRole', () => {
     },
   ];
 
-  xdescribe('countWorkersWhoRequireCareWorkforcePathwayRoleAnswer', () => {
+  describe('countWorkersWhoRequireCareWorkforcePathwayRoleAnswer', () => {
     const establishmentId = 'some-uuid';
 
     const request = {
@@ -51,8 +51,8 @@ describe('careWorkforcePathwayRole', () => {
       establishmentId,
     };
 
-    it('should return the number when there are workers with care workforce pathway category unanswered', async () => {
-      sinon.stub(models.worker, 'countAllWorkersForCareWorkforcePathwayRoleCategory').returns(workersFromDB.length);
+    it('should return the number when there are workers who should see care workforce pathway worker questions', async () => {
+      sinon.stub(models.worker, 'countAllWorkersForCareWorkforcePathwayRoleCategory').resolves(workersFromDB.length);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -61,11 +61,11 @@ describe('careWorkforcePathwayRole', () => {
       const response = res._getData();
 
       expect(res.statusCode).to.deep.equal(200);
-      expect(response).to.deep.equal({ noOfWorkersWhoRequireAnswers: workersFromDB.length });
+      expect(response).to.deep.equal({ workerCount: workersFromDB.length });
     });
 
     it('should return 0 when there are no workers with care workforce pathway category unanswered', async () => {
-      sinon.stub(models.worker, 'countAllWorkersForCareWorkforcePathwayRoleCategory').returns(0);
+      sinon.stub(models.worker, 'countAllWorkersForCareWorkforcePathwayRoleCategory').resolves(0);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -74,11 +74,14 @@ describe('careWorkforcePathwayRole', () => {
       const response = res._getData();
 
       expect(res.statusCode).to.deep.equal(200);
-      expect(response).to.deep.equal({ noOfWorkersWhoRequireAnswers: 0 });
+      expect(response).to.deep.equal({ workerCount: 0 });
     });
 
-    it('should return an error', async () => {
-      sinon.stub(models.worker, 'countAllWorkersForCareWorkforcePathwayRoleCategory').throws();
+    it('should return an error if something went wrong during database query', async () => {
+      sinon
+        .stub(models.worker, 'countAllWorkersForCareWorkforcePathwayRoleCategory')
+        .rejects(new Error('some database error'));
+      sinon.stub(console, 'error');
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -107,7 +110,7 @@ describe('careWorkforcePathwayRole', () => {
     it('should respond with 200 and a list of workers whose job role can have CWP role category', async () => {
       sinon
         .stub(models.worker, 'getAndCountAllWorkersForCareWorkforcePathwayRoleCategory')
-        .returns({ workers: workersFromDB, count: workersFromDB.length });
+        .resolves({ workers: workersFromDB, count: workersFromDB.length });
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -126,7 +129,7 @@ describe('careWorkforcePathwayRole', () => {
     it('should respond with 200 and an empty array and workerCount = 0 if no worker meet the condition', async () => {
       sinon
         .stub(models.worker, 'getAndCountAllWorkersForCareWorkforcePathwayRoleCategory')
-        .returns({ workers: [], count: 0 });
+        .resolves({ workers: [], count: 0 });
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -143,7 +146,9 @@ describe('careWorkforcePathwayRole', () => {
     });
 
     it('should respond with 500 error if something went wrong during database query', async () => {
-      sinon.stub(models.worker, 'getAndCountAllWorkersForCareWorkforcePathwayRoleCategory').throws();
+      sinon
+        .stub(models.worker, 'getAndCountAllWorkersForCareWorkforcePathwayRoleCategory')
+        .rejects(new Error('some database error'));
       sinon.stub(console, 'error'); // suppress error msg in test log
 
       const req = httpMocks.createRequest(request);
