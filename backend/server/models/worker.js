@@ -1439,6 +1439,8 @@ module.exports = function (sequelize, DataTypes) {
     staffNameDesc: [['nameOrId', 'DESC']],
     jobRoleAsc: [[sequelize.literal('"mainJob.title"'), 'ASC']],
     jobRoleDesc: [[sequelize.literal('"mainJob.title"'), 'DESC']],
+    cwpRoleAsc: [[sequelize.literal('"careWorkforcePathwayRoleCategory.title"'), 'ASC']],
+    cwpRoleDesc: [[sequelize.literal('"careWorkforcePathwayRoleCategory.title"'), 'DESC']],
   };
 
   Worker.getAndCountAllWorkersForCareWorkforcePathwayRoleCategory = async function ({

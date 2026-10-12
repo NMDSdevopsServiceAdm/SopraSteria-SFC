@@ -4,7 +4,7 @@ const models = require('../../models');
 const { hasPermission } = require('../../utils/security/hasPermission');
 const { updateCareWorkforcePathwayUse } = require('./careWorkforcePathway/careWorkforcePathwayUse');
 const { updateCareWorkforcePathwayAwareness } = require('./careWorkforcePathway/careWorkforcePathwayAwareness');
-const { WorkerSortByOptions } = require('../../data/sortByOptions');
+const { CWPWorkerSummarySortByOptions } = require('../../data/sortByOptions');
 
 const countWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -33,7 +33,7 @@ const getWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) => {
   const itemsPerPage = parseIntWithDefault(req.query?.itemsPerPage, 15);
   const pageIndex = parseIntWithDefault(req.query?.pageIndex, 0);
 
-  const allowedSortByOptions = WorkerSortByOptions;
+  const allowedSortByOptions = CWPWorkerSummarySortByOptions;
   const sortBy = allowedSortByOptions.includes(req.query?.sortBy) ? req.query?.sortBy : 'staffNameAsc';
 
   try {
