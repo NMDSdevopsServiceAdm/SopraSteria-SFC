@@ -67,7 +67,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public workplacesCount: number;
   public tilesData: BenchmarksResponse;
   public noOfWorkersWhoRequireInternationalRecruitment: number;
-  public noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
+  public numberOfStaffIncludedInCWPRoleCategories: number;
   public noOfWorkersWithDelegatedHealthcareUnanswered: number;
   public showCheckCqcDetails: boolean;
 
@@ -92,8 +92,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     this.noOfWorkersWhoRequireInternationalRecruitment =
       this.route.snapshot.data.noOfWorkersWhoRequireInternationalRecruitment?.noOfWorkersWhoRequireAnswers;
 
-    this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered =
-      this.route.snapshot.data.workersCountForCWPSummary?.workerCount;
+    this.numberOfStaffIncludedInCWPRoleCategories = this.route.snapshot.data.workersCountForCWPSummary?.workerCount;
     this.noOfWorkersWithDelegatedHealthcareUnanswered =
       this.route.snapshot.data.noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer?.noOfWorkersWhoRequiresAnswer;
 
