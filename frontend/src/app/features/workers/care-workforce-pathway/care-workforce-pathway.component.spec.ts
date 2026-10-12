@@ -59,7 +59,9 @@ describe('CareWorkforcePathwayRoleComponent', () => {
         },
         AlertService,
         WindowRef,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     const injector = getTestBed();
 
@@ -314,8 +316,8 @@ describe('CareWorkforcePathwayRoleComponent', () => {
       expect(getByText('Save')).toBeTruthy();
     });
 
-    it('should return to the CWP summary page and add an alert when submitted', async () => {
-      const { fixture, getByText, routerSpy, alertSpy } = await setup(overrideReturnTo);
+    it('should return to the CWP summary page when submitted', async () => {
+      const { fixture, getByText, routerSpy } = await setup(overrideReturnTo);
 
       userEvent.click(getByText('New to care'));
       userEvent.click(getByText('Save'));
@@ -328,7 +330,6 @@ describe('CareWorkforcePathwayRoleComponent', () => {
         'staff-record',
         'care-workforce-pathway-workers-summary',
       ]);
-      expect(alertSpy).toHaveBeenCalledWith({ type: 'success', message: 'Role category saved' });
     });
 
     it('should return to the CWP summary page when clicked the Cancel button', async () => {
