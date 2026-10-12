@@ -519,7 +519,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
     if (!CWPAwarenessQuestionViewed && !careWorkforcePathwayWorkplaceAwareness && this.canEditEstablishment) {
       this.updateBanner.set({
-        content: 'How aware of the care workforce pathway is your workplace?',
+        content: 'How aware of the Care Workforce Pathway is your workplace?',
         linkText: 'Answer questions',
         linkAriaDescription: ' about How aware of the care workforce pathway is your workplace',
         linkTo: this.establishmentService.buildPathForWorkplaceSummary(
@@ -541,7 +541,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     const hasEligibleWorkers = this.numberOfStaffIncludedInCWPRoleCategories > 0;
     if (!this.workplace.cwpRoleCategoriesBannerViewed && this.canEditWorker && hasEligibleWorkers) {
       this.updateBanner.set({
-        content: 'The full list of care workforce pathway role categories is now available.',
+        content: 'The full list of Care Workforce Pathway role categories is now available.',
         linkText: 'Review records',
         linkAriaDescription: 'Review care workforce pathway role categories',
         linkTo: ['/workplace', this.workplace.uid, 'staff-record', 'care-workforce-pathway-workers-summary'],
