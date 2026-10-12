@@ -5,7 +5,7 @@ import { onHomePage } from '../../support/page_objects/onHomePage';
 export const runTestsForCWPRoleCategories = (mockEstablishmentData) => {
   const establishmentId = mockEstablishmentData.id;
 
-  const bannerMessage = 'The full list of care workforce pathway role categories is now available.';
+  const bannerMessage = 'The full list of Care Workforce Pathway role categories is now available.';
 
   const assertBannerNotShowing = () => {
     onHomePage.assertUpdateBannerNotShowing(bannerMessage);
