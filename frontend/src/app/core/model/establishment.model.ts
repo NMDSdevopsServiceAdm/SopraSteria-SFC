@@ -295,7 +295,7 @@ export const StaffSummarySortByParamMap = {
 } as const;
 
 export type SortByKey = keyof typeof StaffSummarySortByParamMap;
-export type SortByParam = typeof StaffSummarySortByParamMap[SortByKey];
+export type SortByParam = (typeof StaffSummarySortByParamMap)[SortByKey];
 
 export enum SortStaffOptions {
   '0_asc' = 'Staff name (A to Z)',
@@ -371,6 +371,8 @@ export enum FilterTrainingAndQualsOptions {
 export enum SortStaffOptionsForCWPWorkerSummary {
   'staffNameAsc' = 'Staff name (A to Z)',
   'staffNameDesc' = 'Staff name (Z to A)',
+  'cwpRoleAsc' = 'CWP role category (A to Z)',
+  'cwpRoleDesc' = 'CWP role category (Z to A)',
   'jobRoleAsc' = 'Job role (A to Z)',
   'jobRoleDesc' = 'Job role (Z to A)',
 }
