@@ -113,8 +113,8 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
   it('should show a reveal text to explain why assign CWP role categories', async () => {
     const reveal = 'Why assign Care Workforce Pathway role categories?';
     const revealText = [
-      'The care workforce pathway outlines the knowledge, skills, values and behaviours needed for a career in adult social care. It provides a clear career structure for your staff.',
-      "You'll use the pathway to set out how staff can gain skills, learn and develop, and progress in their careers.",
+      'The Care Workforce Pathway is the national career structure for adult social care. It sets out knowledge and skills requirements, and suggests learning opportunities for your team.',
+      'Assigning role categories aligns your workplace with this structure. It also provides data to help the Department of Health and Social Care shape national policy on funding and training.',
       'Read more about the care workforce pathway',
     ];
 
