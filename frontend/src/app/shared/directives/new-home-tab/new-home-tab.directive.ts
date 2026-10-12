@@ -80,7 +80,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   public isParentSubsidiaryView: boolean;
   public article: Article;
   public noOfWorkersWhoRequireInternationalRecruitment: number;
-  public noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
+  public numberOfStaffIncludedInCWPRoleCategories: number;
   public noOfWorkersWithDelegatedHealthcareUnanswered: number;
   public workplacesNeedAttention: boolean;
   public showCheckCqcDetails: boolean;
@@ -112,8 +112,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
       this.route.snapshot.data.noOfWorkersWhoRequireInternationalRecruitment?.noOfWorkersWhoRequireAnswers;
     this.showCheckCqcDetails = this.route.snapshot.data?.cqcStatusCheck?.cqcStatusMatch === false;
 
-    this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered =
-      this.route.snapshot.data.workersCountForCWPSummary?.workerCount;
+    this.numberOfStaffIncludedInCWPRoleCategories = this.route.snapshot.data.workersCountForCWPSummary?.workerCount;
     this.noOfWorkersWithDelegatedHealthcareUnanswered =
       this.route.snapshot.data.noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer?.noOfWorkersWhoRequiresAnswer;
 
