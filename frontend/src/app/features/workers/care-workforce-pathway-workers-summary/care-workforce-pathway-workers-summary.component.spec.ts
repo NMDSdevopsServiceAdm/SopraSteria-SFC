@@ -115,7 +115,7 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
     const revealText = [
       'The Care Workforce Pathway is the national career structure for adult social care. It sets out knowledge and skills requirements, and suggests learning opportunities for your team.',
       'Assigning role categories aligns your workplace with this structure. It also provides data to help the Department of Health and Social Care shape national policy on funding and training.',
-      'Read more about the care workforce pathway',
+      'Read more about the Care Workforce Pathway',
     ];
 
     const { getByTestId } = await setup();
