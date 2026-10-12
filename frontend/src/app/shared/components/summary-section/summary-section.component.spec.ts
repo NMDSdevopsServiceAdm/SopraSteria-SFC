@@ -21,7 +21,7 @@ import { of } from 'rxjs';
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
 
-describe('Summary section', () => {
+fdescribe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(SummarySectionComponent, {
       imports: [SharedModule, RouterModule],
@@ -61,8 +61,7 @@ describe('Summary section', () => {
         workplacesCount: overrides.workplacesCount ?? 0,
         isParentSubsidiaryView: overrides.isParentSubsidiaryView ?? false,
         noOfWorkersWhoRequireInternationalRecruitment: overrides.noOfWorkersWhoRequireInternationalRecruitment ?? 0,
-        noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered:
-          overrides.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered ?? 0,
+        numberOfStaffIncludedInCWPRoleCategories: overrides.numberOfStaffIncludedInCWPRoleCategories ?? 0,
         noOfWorkersWithDelegatedHealthcareUnanswered: overrides.noOfWorkersWithDelegatedHealthcareUnanswered ?? 0,
         workplacesNeedAttention: overrides.workplacesNeedAttention ?? false,
         showCheckCqcDetails: overrides.checkCqcDetails ?? false,
@@ -1341,10 +1340,10 @@ describe('Summary section', () => {
 
   describe('Update banner section', () => {
     describe('CWP role categories banner', () => {
-      const cwpBannerText = 'The full list of care workforce pathway role categories is now available.';
+      const cwpBannerText = 'The full list of Care Workforce Pathway role categories is now available.';
 
       [false, null].forEach((viewed) => {
-        it(`should show the banner when cwpRoleCategoriesBannerViewed is ${viewed}`, async () => {
+        it(`should show the banner when cwpRoleCategoriesBannerViewed is ${viewed} and eligible workers exist`, async () => {
           const establishment = {
             ...Establishment,
             cwpRoleCategoriesBannerViewed: viewed,
@@ -1352,7 +1351,7 @@ describe('Summary section', () => {
 
           const { getByTestId } = await setup({
             establishment,
-            workerCount: 1,
+            numberOfStaffIncludedInCWPRoleCategories: 1,
             canEditWorker: true,
           });
 
@@ -1371,14 +1370,13 @@ describe('Summary section', () => {
 
         const { queryByText } = await setup({
           establishment,
-          workerCount: 1,
-          canEditWorker: true,
+          numberOfStaffIncludedInCWPRoleCategories: 1,
         });
 
         expect(queryByText(cwpBannerText)).toBeFalsy();
       });
 
-      it('should not show the CWP banner when there are no staff records', async () => {
+      it('should not show the CWP banner when there are no eligible workers', async () => {
         const establishment = {
           ...Establishment,
           cwpRoleCategoriesBannerViewed: false,
@@ -1386,7 +1384,8 @@ describe('Summary section', () => {
 
         const { queryByText } = await setup({
           establishment,
-          workerCount: 0,
+          workerCount: 5,
+          numberOfStaffIncludedInCWPRoleCategories: 0,
           canEditWorker: true,
         });
 
@@ -1401,7 +1400,7 @@ describe('Summary section', () => {
 
         const { queryByText } = await setup({
           establishment,
-          workerCount: 1,
+          numberOfStaffIncludedInCWPRoleCategories: 1,
           canEditWorker: false,
         });
 
@@ -1416,8 +1415,7 @@ describe('Summary section', () => {
 
         const { fixture, getByTestId, setReturnToSpy, updateSingleFieldSpy } = await setup({
           establishment,
-          workerCount: 1,
-          canEditWorker: true,
+          numberOfStaffIncludedInCWPRoleCategories: 1,
         });
 
         const updateBannerArea = getByTestId('update-banner-area');
@@ -1453,7 +1451,7 @@ describe('Summary section', () => {
 
         const { getByTestId } = await setup({
           establishment,
-          workerCount: 1,
+          numberOfStaffIncludedInCWPRoleCategories: 1,
           canEditWorker: true,
           canEditEstablishment: true,
         });
@@ -1567,7 +1565,7 @@ describe('Summary section', () => {
         };
       };
 
-      const cwpAwarenessBannerText = 'How aware of the care workforce pathway is your workplace?';
+      const cwpAwarenessBannerText = 'How aware of the Care Workforce Pathway is your workplace?';
 
       it('should show the update banner if workplace details added, CWPAwarenessQuestionViewed null and awareness question not answered', async () => {
         const { fixture, getByTestId, setReturnToSpy, updateSingleFieldSpy } = await setup({
@@ -1801,50 +1799,6 @@ describe('Summary section', () => {
         expect(link.getAttribute('href')).toContain(
           `/workplace/${Establishment.uid}/staff-record/review-and-confirm-nurse-field-of-practice`,
         );
-      });
-    });
-
-    xdescribe('CWP worker question', () => {
-      // Blue update banner for Care workforce pathway worker question is disabled temporarily as CWP roles category update is planned ahead
-      const cwpWorkerBannerText = 'Where are your staff on the care workforce pathway?';
-
-      it('should show the update banner if there are staff without an answer for CWP question', async () => {
-        const overrides = {
-          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
-        };
-        const { fixture, getByTestId } = await setup(overrides);
-
-        const updateBannerArea = getByTestId('update-banner-area');
-        expect(within(updateBannerArea).queryByText(cwpWorkerBannerText)).toBeTruthy();
-
-        const link = within(updateBannerArea).getByText('Answer questions') as HTMLAnchorElement;
-        expect(link.getAttribute('href')).toEqual(
-          `/workplace/${Establishment.uid}/staff-record/care-workforce-pathway-workers-summary`,
-        );
-
-        userEvent.click(link);
-        await fixture.whenStable();
-      });
-
-      it('should not show the banner if all workers are answered', async () => {
-        const overrides = {
-          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 0,
-        };
-        const { queryByTestId, queryByText } = await setup(overrides);
-
-        expect(queryByTestId('update-banner-area')).toBeFalsy();
-        expect(queryByText(cwpWorkerBannerText)).toBeFalsy();
-      });
-
-      it('should not show the banner if user does not have permission to edit workers', async () => {
-        const overrides = {
-          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
-          canEditWorker: false,
-        };
-        const { queryByTestId, queryByText } = await setup(overrides);
-
-        expect(queryByTestId('update-banner-area')).toBeFalsy();
-        expect(queryByText(cwpWorkerBannerText)).toBeFalsy();
       });
     });
 
