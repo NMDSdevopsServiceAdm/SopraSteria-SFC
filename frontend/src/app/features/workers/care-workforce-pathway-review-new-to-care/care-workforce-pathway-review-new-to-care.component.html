@@ -1,0 +1,64 @@
+@if (workersToShow?.length) {
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+      <span class="govuk-caption-l" data-testid="section-heading">Staff records</span>
+      <h1 class="govuk-fieldset__heading govuk-!-width-three-quarters">
+        Review whether these staff are still 'New to care'
+      </h1>
+    </legend>
+    <p>These staff are listed for on of the following reasons:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>they have been in their role for more than 12 months</li>
+      <li>their staff record does not show when they started</li>
+    </ul>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <table class="govuk-table govuk-!-margin-bottom-8">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header" width="25%">Name or ID number</th>
+          <th scope="col" class="govuk-table__header" width="30%">Job role</th>
+          <th scope="col" class="govuk-table__header" width="19%">Start date</th>
+          <th scope="col" class="govuk-table__header" width="28%">CWP role category</th>
+          <th scope="col" class="govuk-table__header" width="17%"></th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        @for (worker of workersToShow; track worker.uid; let index = $index) {
+        <tr class="govuk-table__row" [attr.data-testid]="'worker-row-' + index">
+          <td class="govuk-table__cell">
+            {{ worker.nameOrId }}
+          </td>
+          <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
+          <td class="govuk-table__cell">1 Aug 2025</td>
+          <td class="govuk-table__cell">
+            @let cwpRole = worker?.careWorkforcePathwayRoleCategory; @if (cwpRole?.title &&
+            cwpRole?.isNominatedIndividual) {
+            <ul class="govuk-list govuk-!-margin-bottom-0">
+              <li>{{ cwpRole.title }}</li>
+              <li>Nominated individual</li>
+            </ul>
+            } @else {
+            {{ cwpRole?.title ?? '-' }}
+            }
+          </td>
+          <td class="govuk-table__cell govuk-util__align-right">
+            <a
+              [routerLink]="['../', worker.uid, 'staff-record-summary', 'care-workforce-pathway']"
+              (click)="setReturnToThisPage()"
+              >Change <span class="govuk-visually-hidden">for {{ worker.nameOrId }}</span></a
+            >
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+
+    <button class="govuk-button" type="button">Return to home</button>
+  </div>
+</div>
+}
