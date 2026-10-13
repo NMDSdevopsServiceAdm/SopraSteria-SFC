@@ -33,17 +33,19 @@
           }
           <p class="govuk-body">Only select one role category.</p>
 
-          @for (group of groupedCategories; track group.title) {
+          @for (group of groupedCategories; track group.title) { @if (group.title === 'Other options') {
+          <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-6 govuk-!-margin-bottom-6" />
+          } @else {
           <h2 class="govuk-heading-s">{{ group.title }}</h2>
+          }
 
-          <div class="govuk-radios govuk-!-margin-bottom-6" data-module="govuk-radios">
+          <div class="govuk-radios govuk-!-margin-bottom-6">
             @for (category of group.categories; track category.id) {
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
                 id="careWorkforcePathwayRoleCategory-{{ category.id }}"
                 formControlName="careWorkforcePathwayRoleCategory"
-                name="careWorkforcePathwayRoleCategory"
                 type="radio"
                 [value]="category.id"
                 [attr.aria-describedby]="category.description ? 'category-description-' + category.id : null"
@@ -61,7 +63,26 @@
               ></div>
               }
             </div>
-            }
+
+            @if ( category.group === 'Senior leadership' && +form.get('careWorkforcePathwayRoleCategory')?.value ===
+            category.id ) {
+            <div class="govuk-radios__conditional cwp-nominated-conditional">
+              <div class="govuk-checkboxes">
+                <div class="govuk-checkboxes__item">
+                  <input
+                    class="govuk-checkboxes__input"
+                    id="isNominatedIndividual"
+                    type="checkbox"
+                    formControlName="isNominatedIndividual"
+                  />
+
+                  <label class="govuk-label govuk-checkboxes__label" for="isNominatedIndividual">
+                    Also a nominated individual
+                  </label>
+                </div>
+              </div>
+            </div>
+            } }
           </div>
           }
         </fieldset>
