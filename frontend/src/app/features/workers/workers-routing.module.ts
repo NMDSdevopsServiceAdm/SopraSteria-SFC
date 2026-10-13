@@ -97,6 +97,7 @@ import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workp
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WhoCarryOutDelegatedHealthcareActivitiesComponent } from './who-carry-out-delegated-healthcare-activities/who-carry-out-delegated-healthcare-activities.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
+import { CareWorkforcePathwayNewToCareComponent } from './care-workforce-pathway-review-new-to-care/care-workforce-pathway-review-new-to-care.component';
 
 const editTrainingRecordRoute = {
   path: 'training/:trainingRecordId',
@@ -352,7 +353,14 @@ const routes: Routes = [
   },
   {
     path: 'care-workforce-pathway-workers-summary',
+
     component: CareWorkforcePathwayWorkersSummaryComponent,
+    canActivate: [RequireCWPAnswerForSomeWorkersGuard],
+    resolve: { workersWhoRequireCWPAnswer: GetWorkersForCWPSummaryResolver },
+  },
+  {
+    path: 'review-new-to-care',
+    component: CareWorkforcePathwayNewToCareComponent,
     canActivate: [RequireCWPAnswerForSomeWorkersGuard],
     resolve: { workersWhoRequireCWPAnswer: GetWorkersForCWPSummaryResolver },
   },
