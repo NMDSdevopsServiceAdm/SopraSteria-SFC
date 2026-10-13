@@ -16,20 +16,26 @@ import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
 
 import { CareWorkforcePathwayWorkersSummaryComponent } from './care-workforce-pathway-workers-summary.component';
+import { SelectSortByComponent } from '@shared/components/select-sort-by/select-sort-by.component';
 
 describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
   const mockWorkers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
+  mockWorkers.forEach((worker) => {
+    worker.careWorkforcePathwayRoleCategory = { roleCategoryId: 1, title: 'New to care', description: '' };
+  });
 
   const setup = async (overrides: any = {}) => {
     const workersToShow = overrides.workersToShow ?? mockWorkers;
     const workerCount = overrides.workerCount ?? workersToShow.length;
+    const previousPaginationSettings = overrides.previousPaginationSettings ?? null;
+
     const getCWPWorkersResponse = { workers: workersToShow, workerCount: workerCount };
     const getCWPWorkersSpy = jasmine.createSpy().and.returnValue(of(getCWPWorkersResponse));
 
     const routerSpy = jasmine.createSpy('navigate').and.resolveTo(true);
 
     const setuptools = await render(CareWorkforcePathwayWorkersSummaryComponent, {
-      imports: [SharedModule, RouterModule],
+      imports: [SharedModule, RouterModule, SelectSortByComponent],
       providers: [
         {
           provide: EstablishmentService,
@@ -39,6 +45,7 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
           provide: CareWorkforcePathwayService,
           useFactory: MockCareWorkforcePathwayService.factory({
             getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer: getCWPWorkersSpy,
+            _workerSummaryPaginationSettings: previousPaginationSettings,
           }),
         },
         provideRouter([]),
@@ -56,7 +63,9 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const fixture = setuptools.fixture;
@@ -67,14 +76,18 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
     const establishmentService = injector.inject(EstablishmentService);
     const workerService = injector.inject(WorkerService);
     const router = injector.inject(Router) as Router;
+    const route = injector.inject(ActivatedRoute);
+    const careWorkforcePathwayService = injector.inject(CareWorkforcePathwayService);
 
     return {
       ...setuptools,
       component,
       fixture,
+      careWorkforcePathwayService,
       establishmentService,
       workerService,
       getCWPWorkersSpy,
+      route,
       router,
       routerSpy,
     };
@@ -86,19 +99,23 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
   });
 
   it('should show a h1 heading', async () => {
-    const { getByRole } = await setup();
+    const { getByRole, getByTestId } = await setup();
 
     const h1Heading = getByRole('heading', { level: 1 });
     expect(h1Heading).toBeTruthy();
-    expect(h1Heading.textContent).toEqual('Where are your staff on the care workforce pathway?');
+    expect(h1Heading.textContent.trim()).toEqual('Where are your staff on the Care Workforce Pathway?');
+
+    const subHeading = getByTestId('section-heading');
+    expect(subHeading).toBeTruthy();
+    expect(subHeading.textContent).toEqual('Staff records');
   });
 
-  it('should show a reveal text to explain what is the care workforce pathway', async () => {
-    const reveal = "What's the care workforce pathway (CWP)?";
+  it('should show a reveal text to explain why assign CWP role categories', async () => {
+    const reveal = 'Why assign Care Workforce Pathway role categories?';
     const revealText = [
-      'The care workforce pathway outlines the knowledge, skills, values and behaviours needed for a career in adult social care. It provides a clear career structure for your staff.',
-      "You'll use the pathway to set out how staff can gain skills, learn and develop, and progress in their careers.",
-      'Read more about the care workforce pathway',
+      'The Care Workforce Pathway is the national career structure for adult social care. It sets out knowledge and skills requirements, and suggests learning opportunities for your team.',
+      'Assigning role categories aligns your workplace with this structure. It also provides data to help the Department of Health and Social Care shape national policy on funding and training.',
+      'Read more about the Care Workforce Pathway',
     ];
 
     const { getByTestId } = await setup();
@@ -110,15 +127,15 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
     });
   });
 
-  it('should show a return to home button', async () => {
-    const { getByRole, routerSpy } = await setup();
+  it('should show a "Confirm role categories" CTA button', async () => {
+    const { getByRole, routerSpy, route } = await setup();
 
-    const returnToHomeButton = getByRole('button', { name: 'Return to home' });
-    expect(returnToHomeButton).toBeTruthy();
+    const button = getByRole('button', { name: 'Confirm role categories' });
+    expect(button).toBeTruthy();
 
-    userEvent.click(returnToHomeButton);
+    userEvent.click(button);
 
-    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
+    expect(routerSpy).toHaveBeenCalledWith(['./review-new-to-care'], { relativeTo: route });
   });
 
   it('should redirect to home page if all workers have been answered', async () => {
@@ -130,26 +147,32 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
   });
 
   describe('workers table', () => {
-    it('should display a row for each worker whose CWP role category is not answered', async () => {
+    it('should display a row for each worker', async () => {
       const { getByTestId } = await setup();
 
       mockWorkers.forEach((worker, index) => {
         const workerRow = getByTestId(`worker-row-${index}`);
-        const workerNameLink = within(workerRow).getByText(worker.nameOrId, { selector: 'a' }) as HTMLLinkElement;
-        expect(workerNameLink).toBeTruthy();
+        const workerName = within(workerRow).getByText(worker.nameOrId);
+        expect(workerName).toBeTruthy();
 
-        const chooseACategoryLink = within(workerRow).getByText('Choose a category', {
+        const workerJobRole = within(workerRow).getByText(worker.mainJob.title!);
+        expect(workerJobRole).toBeTruthy();
+
+        const workerCWPAnswer = within(workerRow).getByText(worker.careWorkforcePathwayRoleCategory?.title!);
+        expect(workerCWPAnswer).toBeTruthy();
+
+        const chooseACategoryLink = within(workerRow).getByText('Check new roles', {
           selector: 'a',
         }) as HTMLLinkElement;
         expect(chooseACategoryLink).toBeTruthy();
       });
     });
 
-    it('should set returnTo as this page when "Choose a category" link is clicked', async () => {
+    it('should set returnTo as this page when "Check new roles" link is clicked', async () => {
       const { router, getAllByText, workerService } = await setup();
       const setReturnToSpy = spyOn(workerService, 'setReturnTo').and.callThrough();
 
-      const chooseACategoryLink = getAllByText('Choose a category', {
+      const chooseACategoryLink = getAllByText('Check new roles', {
         selector: 'a',
       })[0] as HTMLLinkElement;
 
@@ -160,20 +183,23 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
     });
   });
 
-  describe('pagination', () => {
+  describe('pagination and sorting', () => {
     it('should show pagination links when number of non-answered workers is larger then number of workers per page', async () => {
-      const { getByTestId } = await setup({ workerCount: 20 });
+      const { getByTestId, getByText } = await setup({ workerCount: 20 });
 
       const pagination = getByTestId('pagination');
       expect(within(pagination).getByRole('link', { name: '2' })).toBeTruthy();
       expect(within(pagination).getByRole('link', { name: 'Next' })).toBeTruthy();
+
+      expect(getByText('Check all pages before confirming.')).toBeTruthy();
     });
 
     it('should not show pagination links when number of non-answered workers is less then or equal number of workers per page', async () => {
-      const { fixture, queryByTestId } = await setup({ workerCount: 15 });
+      const { fixture, queryByTestId, queryByText } = await setup({ workerCount: 15 });
       fixture.detectChanges();
 
       expect(queryByTestId('pagination')).toBeFalsy();
+      expect(queryByText('Check all pages before confirming.')).toBeFalsy();
     });
 
     it('should retrieve and display the workers for next page when "Next" link is clicked', async () => {
@@ -185,13 +211,111 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
       userEvent.click(getByRole('link', { name: 'Next' }));
       await fixture.whenStable();
 
-      expect(getCWPWorkersSpy).toHaveBeenCalledWith('mocked-uid', { pageIndex: 1, itemsPerPage: 15 });
+      expect(getCWPWorkersSpy).toHaveBeenCalledWith('mocked-uid', {
+        pageIndex: 1,
+        itemsPerPage: 15,
+        sortBy: 'staffNameAsc',
+      });
 
       mockNextPageWorkers.forEach((worker, index) => {
         const workerRow = getByTestId(`worker-row-${index}`);
-        const workerNameLink = within(workerRow).getByText(worker.nameOrId, { selector: 'a' }) as HTMLLinkElement;
-        expect(workerNameLink).toBeTruthy();
+        const workerName = within(workerRow).getByText(worker.nameOrId);
+        expect(workerName).toBeTruthy();
       });
+
+      const pagination = getByTestId('pagination');
+      expect(within(pagination).getByRole('link', { name: '1' })).toBeTruthy();
+      expect(within(pagination).getByRole('link', { name: 'Previous' })).toBeTruthy();
+    });
+
+    it('should show a sort by select box if more than one worker', async () => {
+      const { getByLabelText } = await setup();
+
+      const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
+      expect(sortBySelectBox).toBeTruthy();
+
+      const expectedOptions = ['Staff name (A to Z)', 'Staff name (Z to A)', 'Job role (A to Z)', 'Job role (Z to A)'];
+      expectedOptions.forEach((option) => {
+        expect(within(sortBySelectBox).getByText(option)).toBeTruthy();
+      });
+    });
+
+    it('should not show the sort by select box if there is only one worker', async () => {
+      const { queryByLabelText } = await setup({ workerCount: 1, workersToShow: [mockWorkers[0]] });
+      const sortBySelectBox = queryByLabelText('Sort by') as HTMLSelectElement;
+      expect(sortBySelectBox).toBeFalsy();
+    });
+
+    it('should fetch and update workers when user select another sortBy option', async () => {
+      const { fixture, getByText, getByTestId, getByLabelText, getCWPWorkersSpy } = await setup();
+
+      getCWPWorkersSpy.and.returnValue(of({ workers: [...mockWorkers].reverse(), workerCount: 20 }));
+
+      const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
+      expect(sortBySelectBox).toBeTruthy();
+
+      userEvent.selectOptions(sortBySelectBox, getByText('Staff name (Z to A)'));
+
+      expect(getCWPWorkersSpy).toHaveBeenCalledWith('mocked-uid', {
+        pageIndex: 0,
+        itemsPerPage: 15,
+        sortBy: 'staffNameDesc',
+      });
+
+      await fixture.whenStable();
+
+      expect(getByTestId('worker-row-0').textContent).toContain(mockWorkers[2].nameOrId);
+      expect(getByTestId('worker-row-1').textContent).toContain(mockWorkers[1].nameOrId);
+      expect(getByTestId('worker-row-2').textContent).toContain(mockWorkers[0].nameOrId);
+    });
+
+    it('should persist the selected sorting order when user click another page', async () => {
+      const { fixture, getByText, getByRole, getByLabelText, getCWPWorkersSpy } = await setup();
+
+      getCWPWorkersSpy.and.returnValue(of({ workers: [...mockWorkers].reverse(), workerCount: 20 }));
+
+      const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
+      userEvent.selectOptions(sortBySelectBox, getByText('Staff name (Z to A)'));
+
+      userEvent.click(getByRole('link', { name: 'Next' }));
+      await fixture.whenStable();
+
+      expect(getCWPWorkersSpy).toHaveBeenCalledWith('mocked-uid', {
+        pageIndex: 1,
+        itemsPerPage: 15,
+        sortBy: 'staffNameDesc',
+      });
+    });
+
+    it('should store the pagination setting in service', async () => {
+      const { fixture, getByText, getByRole, getByLabelText, getCWPWorkersSpy, careWorkforcePathwayService } =
+        await setup({ workerCount: 20 });
+
+      const setSpy = spyOnProperty(careWorkforcePathwayService, 'workerSummaryPaginationSettings', 'set');
+
+      getCWPWorkersSpy.and.returnValue(of({ workers: mockWorkers, workerCount: 20 }));
+
+      const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
+      userEvent.selectOptions(sortBySelectBox, getByText('Staff name (Z to A)'));
+
+      expect(setSpy).toHaveBeenCalledWith({ pageIndex: 0, itemsPerPage: 15, sortBy: 'staffNameDesc' });
+
+      userEvent.click(getByRole('link', { name: 'Next' }));
+      await fixture.whenStable();
+
+      expect(setSpy).toHaveBeenCalledWith({ pageIndex: 1, itemsPerPage: 15, sortBy: 'staffNameDesc' });
+    });
+
+    it('should persist the previous pagination settings on page load', async () => {
+      const { fixture, getByTestId, getByLabelText } = await setup({
+        workerCount: 20,
+        previousPaginationSettings: { pageIndex: 1, itemsPerPage: 15, sortBy: 'staffNameDesc' },
+      });
+
+      await fixture.whenStable();
+
+      const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
+      expect(sortBySelectBox.value).toEqual('staffNameDesc');
 
       const pagination = getByTestId('pagination');
       expect(within(pagination).getByRole('link', { name: '1' })).toBeTruthy();

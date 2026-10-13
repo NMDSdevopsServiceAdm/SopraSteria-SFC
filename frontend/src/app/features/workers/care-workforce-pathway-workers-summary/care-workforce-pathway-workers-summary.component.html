@@ -2,23 +2,29 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-        <span class="govuk-caption-l" data-testid="section-heading">Training and qualifications</span>
-        <h1 class="govuk-fieldset__heading">Where are your staff on the care workforce pathway?</h1>
+        <span class="govuk-caption-l" data-testid="section-heading">Staff records</span>
+        <h1 class="govuk-fieldset__heading govuk-!-width-three-quarters">
+          Where are your staff on the Care Workforce Pathway?
+        </h1>
       </legend>
-      <app-details [title]="'What\'s the care workforce pathway (CWP)?'" data-testid="reveal-whatsCareWorkforcePathway">
+      <app-details
+        [title]="'Why assign Care Workforce Pathway role categories?'"
+        data-testid="reveal-whatsCareWorkforcePathway"
+      >
         <p>
-          The care workforce pathway outlines the knowledge, skills, values and behaviours needed for a career in adult
-          social care. It provides a clear career structure for your staff.
+          The Care Workforce Pathway is the national career structure for adult social care. It sets out knowledge and
+          skills requirements, and suggests learning opportunities for your team.
         </p>
         <p>
-          You'll use the pathway to set out how staff can gain skills, learn and develop, and progress in their careers.
+          Assigning role categories aligns your workplace with this structure. It also provides data to help the
+          Department of Health and Social Care shape national policy on funding and training.
         </p>
         <p>
           <a
             href="https://www.gov.uk/government/publications/care-workforce-pathway-for-adult-social-care/care-workforce-pathway-for-adult-social-care-overview"
             class="govuk-link"
             target="_blank"
-            >Read more about the care workforce pathway<span class="govuk-visually-hidden">
+            >Read more about the Care Workforce Pathway<span class="govuk-visually-hidden">
               (opens in a new window)</span
             ></a
           >
@@ -26,28 +32,63 @@
       </app-details>
     </div>
   </div>
+
+  <div class="govuk-grid-row asc-sort-by-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p>
+        You can now choose from the full list of role categories published by the Department of Health and Social Care
+        (DHSC).
+      </p>
+      <p>
+        This table might not show all of your staff. Regulated professionals (like registered nurses or social workers)
+        are not listed because they have their own career structures.
+      </p>
+    </div>
+    @if (workersToShow?.length > 1) {
+      <div class="govuk-grid-column-one-third asc-sort-by-row__sort-by-wrapper">
+        <app-select-sort-by
+          [sortByOptions]="sortByOptions"
+          (onSortChange)="handleSortChange($event)"
+          [initialSortByValue]="sortBy"
+        ></app-select-sort-by>
+      </div>
+    }
+  </div>
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <table class="govuk-table govuk-!-margin-bottom-8">
+      <table class="govuk-table govuk-!-margin-bottom-6">
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header" width="30%">Name or ID number</th>
-            <th scope="col" class="govuk-table__header">Job role</th>
-            <th scope="col" class="govuk-table__header" width="25%">CWP role category</th>
+            <th scope="col" class="govuk-table__header" width="25%">Name or ID number</th>
+            <th scope="col" class="govuk-table__header" width="30%">Job role</th>
+            <th scope="col" class="govuk-table__header" width="28%">CWP role category</th>
+            <th scope="col" class="govuk-table__header" width="17%"></th>
           </tr>
         </thead>
         <tbody class="govuk-table__body">
           @for (worker of workersToShow; track worker.uid; let index = $index) {
             <tr class="govuk-table__row" [attr.data-testid]="'worker-row-' + index">
               <td class="govuk-table__cell">
-                <a [routerLink]="['../', worker.uid, 'staff-record-summary']">{{ worker.nameOrId }}</a>
+                {{ worker.nameOrId }}
               </td>
               <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
               <td class="govuk-table__cell">
+                @let cwpRole = worker?.careWorkforcePathwayRoleCategory;
+                @if (cwpRole?.title && cwpRole?.isNominatedIndividual) {
+                  <ul class="govuk-list govuk-!-margin-bottom-0">
+                    <li>{{ cwpRole.title }}</li>
+                    <li>Nominated individual</li>
+                  </ul>
+                } @else {
+                  {{ cwpRole?.title ?? '-' }}
+                }
+              </td>
+              <td class="govuk-table__cell govuk-util__align-right">
                 <a
                   [routerLink]="['../', worker.uid, 'staff-record-summary', 'care-workforce-pathway']"
                   (click)="setReturnToThisPage()"
-                  >Choose a category <span class="govuk-visually-hidden">for {{ worker.nameOrId }}</span></a
+                  >Check new roles <span class="govuk-visually-hidden">for {{ worker.nameOrId }}</span></a
                 >
               </td>
             </tr>
@@ -62,8 +103,9 @@
           (currentPageIndexChange)="handlePageUpdate($event)"
           [currentPageIndex]="pageIndex"
         />
+        <p><strong>Check all pages before confirming.</strong></p>
       }
-      <button class="govuk-button" type="button" (click)="returnToHome()">Return to home</button>
+      <button class="govuk-button" type="button" (click)="visitReviewNewToCarePage()">Confirm role categories</button>
     </div>
   </div>
 }

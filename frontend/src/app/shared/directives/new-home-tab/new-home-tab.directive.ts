@@ -113,7 +113,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.showCheckCqcDetails = this.route.snapshot.data?.cqcStatusCheck?.cqcStatusMatch === false;
 
     this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered =
-      this.route.snapshot.data.noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer?.noOfWorkersWhoRequireAnswers;
+      this.route.snapshot.data.workersCountForCWPSummary?.workerCount;
     this.noOfWorkersWithDelegatedHealthcareUnanswered =
       this.route.snapshot.data.noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer?.noOfWorkersWhoRequiresAnswer;
 

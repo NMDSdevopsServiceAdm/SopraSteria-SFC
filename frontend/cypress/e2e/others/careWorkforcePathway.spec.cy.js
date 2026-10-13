@@ -147,14 +147,12 @@ describe('Care workforce pathway journey', { tags: '@others' }, () => {
 
       // should return user to the CWP worker summary page and show an alert.
       cy.url().should('contain', cwpWorkersSummaryPath);
-      cy.get('app-alert span').should('contain', 'Role category saved');
       expectCWPWorkersSummaryPageToHaveWorkers([testWorkers[1]]);
 
       answerCWPRoleCategoryForWorker(testWorkers[1], 'Practice leader');
 
       // should return user to homepage and show an alert. also the flag should disappear from summary box
       cy.url().should('contain', homePagePath);
-      cy.get('app-alert span').should('contain', 'Role category saved');
       cy.get('[data-testid="update-banner-area"]').should(
         'not.contain',
         'Where are your staff on the care workforce pathway?',

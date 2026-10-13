@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AvailableQualificationsResolver } from '@core/resolvers/available-qualification.resolver';
-import { GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/get-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
+import { GetWorkersForCWPSummaryResolver } from '@core/resolvers/careWorkforcePathway/get-workers-for-cwp-summary.resolver';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
 import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
 import { QualificationResolver } from '@core/resolvers/qualification.resolver';
@@ -96,9 +96,18 @@ import { SelectTrainingCategoryComponent } from '@features/training-and-qualific
 import { SelectQualificationTypeComponent } from '@features/training-and-qualifications/add-edit-qualification/select-qualification-type/select-qualification-type.component';
 import { AllNurseFieldsOfPracticeResolver } from '@core/resolvers/nurse-field-of-practice.resolver';
 import { RegisteredNursesResolver } from '@core/resolvers/registered-nurses.resolver';
+import { SelectSortByComponent } from '@shared/components/select-sort-by/select-sort-by.component';
 
 @NgModule({
-  imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
+  imports: [
+    CommonModule,
+    OverlayModule,
+    FormsModule,
+    ReactiveFormsModule,
+    SharedModule,
+    WorkersRoutingModule,
+    SelectSortByComponent,
+  ],
   declarations: [
     AddEditQualificationComponent,
     AddEditTrainingComponent,
@@ -186,7 +195,7 @@ import { RegisteredNursesResolver } from '@core/resolvers/registered-nurses.reso
     VacanciesAndTurnoverService,
     WorkerReasonsForLeavingResolver,
     CareWorkforcePathwayWorkersSummaryComponent,
-    GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+    GetWorkersForCWPSummaryResolver,
     GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
     WorkerHasAnyTrainingOrQualificationsResolver,
     DownloadCertificateService,

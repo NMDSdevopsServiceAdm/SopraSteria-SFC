@@ -5,7 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
 import { CareWorkforcePathwayWorkplaceAwarenessAnswersResolver } from '@core/resolvers/careWorkforcePathway/care-workforce-pathway-workplace-awareness';
-import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
+import { CountWorkersForCWPSummaryResolver } from '@core/resolvers/careWorkforcePathway/count-workers-for-cwp-summary.resolver';
 import { CheckIfAnyWorkerHasDHAAnsweredResolver } from '@core/resolvers/delegated-healthcare-activities/check-if-any-worker-has-dha-answered.resolver';
 import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
@@ -66,7 +66,7 @@ import { WorkplaceModule } from '@features/workplace/workplace.module';
     UsefulLinkRecruitmentResolver,
     GetMissingCqcLocationsResolver,
     GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
-    GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+    CountWorkersForCWPSummaryResolver,
     GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
     FeatureFlagsResolver,
     CareWorkforcePathwayUseReasonsResolver,

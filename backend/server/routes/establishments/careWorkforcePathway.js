@@ -4,14 +4,15 @@ const models = require('../../models');
 const { hasPermission } = require('../../utils/security/hasPermission');
 const { updateCareWorkforcePathwayUse } = require('./careWorkforcePathway/careWorkforcePathwayUse');
 const { updateCareWorkforcePathwayAwareness } = require('./careWorkforcePathway/careWorkforcePathwayAwareness');
+const { CWPWorkerSummarySortByOptions } = require('../../data/sortByOptions');
 
-const getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) => {
+const countWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) => {
   const establishmentId = req.establishmentId;
   try {
-    const workerCount = await models.worker.countAllWorkersWithoutCareWorkforceCategory(establishmentId);
+    const workerCount = await models.worker.countAllWorkersForCareWorkforcePathwayRoleCategory(establishmentId);
 
     res.status(200).send({
-      noOfWorkersWhoRequireAnswers: workerCount,
+      workerCount,
     });
   } catch (err) {
     console.error('worker::GET:total - failed', err);
@@ -32,11 +33,15 @@ const getWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) => {
   const itemsPerPage = parseIntWithDefault(req.query?.itemsPerPage, 15);
   const pageIndex = parseIntWithDefault(req.query?.pageIndex, 0);
 
+  const allowedSortByOptions = CWPWorkerSummarySortByOptions;
+  const sortBy = allowedSortByOptions.includes(req.query?.sortBy) ? req.query?.sortBy : 'staffNameAsc';
+
   try {
-    const { count, workers } = await models.worker.getAndCountAllWorkersWithoutCareWorkforceCategory({
+    const { count, workers } = await models.worker.getAndCountAllWorkersForCareWorkforcePathwayRoleCategory({
       establishmentId,
       itemsPerPage,
       pageIndex,
+      sortBy,
     });
 
     const responseBody = { workers, workerCount: count };
@@ -50,7 +55,7 @@ const getWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) => {
 router.route('/');
 router
   .route('/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer')
-  .get(hasPermission('canViewWorker'), getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer);
+  .get(hasPermission('canViewWorker'), countWorkersWhoRequireCareWorkforcePathwayRoleAnswer);
 
 router
   .route('/workersWhoRequireCareWorkforcePathwayRoleAnswer')
@@ -63,6 +68,6 @@ router
 
 module.exports = router;
 
-module.exports.getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer =
-  getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer;
+module.exports.countWorkersWhoRequireCareWorkforcePathwayRoleAnswer =
+  countWorkersWhoRequireCareWorkforcePathwayRoleAnswer;
 module.exports.getWorkersWhoRequireCareWorkforcePathwayRoleAnswer = getWorkersWhoRequireCareWorkforcePathwayRoleAnswer;

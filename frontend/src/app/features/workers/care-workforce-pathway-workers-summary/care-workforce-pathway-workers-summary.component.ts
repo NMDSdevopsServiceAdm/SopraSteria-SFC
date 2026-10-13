@@ -1,25 +1,38 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { JobRole } from '@core/model/job.model';
+import { Component, effect, OnDestroy, OnInit, Signal, signal } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { SortStaffOptionsForCWPWorkerSummary } from '@core/model/establishment.model';
 import { BackLinkService } from '@core/services/backLink.service';
-import { CareWorkforcePathwayService, CWPGetAllWorkersResponse } from '@core/services/care-workforce-pathway.service';
+import {
+  CareWorkforcePathwayService,
+  CWPGetAllWorkersResponse,
+  CWPWorkerSummaryPaginationSettings,
+} from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { filter, take } from 'rxjs/operators';
+
+const defaultPaginationSettings: CWPWorkerSummaryPaginationSettings = {
+  itemsPerPage: 15,
+  pageIndex: 0,
+  sortBy: Object.keys(SortStaffOptionsForCWPWorkerSummary)[0],
+};
 
 @Component({
-    selector: 'app-care-workforce-pathway-workers-summary',
-    templateUrl: './care-workforce-pathway-workers-summary.component.html',
-    standalone: false
+  selector: 'app-care-workforce-pathway-workers-summary',
+  templateUrl: './care-workforce-pathway-workers-summary.component.html',
+  styleUrl: './care-workforce-pathway-workers-summary.component.scss',
+  standalone: false,
 })
 export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   private workplaceUid: string;
-  public workersToShow: Array<{ uid: string; nameOrId: string; mainJob: JobRole }> = [];
+
+  public workersToShow: CWPGetAllWorkersResponse['workers'] = [];
   public workerCount: number;
-  public itemsPerPage: number = 15;
-  public pageIndex: number = 0;
+
+  public paginationSettings = signal(defaultPaginationSettings);
+  public sortByOptions: Record<string, string> = SortStaffOptionsForCWPWorkerSummary;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -35,10 +48,29 @@ export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit, OnDe
     this.workplaceUid = this.establishmentService.establishment.uid;
 
     this.handleGetWorkersResponse(this.route.snapshot.data.workersWhoRequireCWPAnswer);
+
+    const previousPaginationSettings = this.careWorkforcePathwayService.workerSummaryPaginationSettings;
+    if (previousPaginationSettings) {
+      this.paginationSettings.set(previousPaginationSettings);
+    }
+
+    this.clearPaginationSettingsWhenClickedAway();
+  }
+
+  public get pageIndex() {
+    return this.paginationSettings().pageIndex;
+  }
+
+  public get itemsPerPage() {
+    return this.paginationSettings().itemsPerPage;
+  }
+
+  public get sortBy() {
+    return this.paginationSettings().sortBy;
   }
 
   private getWorkers(): void {
-    const queryParams = { pageIndex: this.pageIndex, itemsPerPage: this.itemsPerPage };
+    const queryParams = this.paginationSettings();
 
     this.subscriptions.add(
       this.careWorkforcePathwayService
@@ -46,6 +78,11 @@ export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit, OnDe
         .pipe(take(1))
         .subscribe((response) => this.handleGetWorkersResponse(response)),
     );
+  }
+
+  private storePaginationSettingsInService(): void {
+    const currentSettings = this.paginationSettings();
+    this.careWorkforcePathwayService.workerSummaryPaginationSettings = currentSettings;
   }
 
   private handleGetWorkersResponse(response: CWPGetAllWorkersResponse): void {
@@ -57,6 +94,37 @@ export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit, OnDe
     }
   }
 
+  public handleSortChange(sortBy: string): void {
+    this.paginationSettings.update((prev) => ({ ...prev, sortBy, pageIndex: 0 }));
+    this.getWorkers();
+    this.storePaginationSettingsInService();
+  }
+
+  public handlePageUpdate(pageIndex: number): void {
+    this.paginationSettings.update((prev) => ({ ...prev, pageIndex }));
+    this.getWorkers();
+    this.storePaginationSettingsInService();
+  }
+
+  public clearPaginationSettingsWhenClickedAway(): void {
+    const urlOfThisPage = this.router?.url;
+    const urlPatternOfWorkerQuestion = /staff-record-summary\/care-workforce-pathway$/;
+    const hasClickedAway = (event: NavigationEnd) => {
+      const newUrl = event.urlAfterRedirects;
+      return newUrl !== urlOfThisPage && !urlPatternOfWorkerQuestion.test(newUrl);
+    };
+
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        filter(hasClickedAway),
+        take(1),
+      )
+      .subscribe(() => {
+        this.careWorkforcePathwayService.workerSummaryPaginationSettings = null;
+      });
+  }
+
   public setReturnToThisPage(): void {
     const urlOfThisPage = this.router.url;
     this.workerService.setReturnTo({ url: [urlOfThisPage] });
@@ -66,9 +134,8 @@ export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit, OnDe
     this.router.navigate(['/dashboard'], { fragment: 'home' });
   }
 
-  public handlePageUpdate(pageIndex: number): void {
-    this.pageIndex = pageIndex;
-    this.getWorkers();
+  public visitReviewNewToCarePage(): void {
+    this.router.navigate(['./review-new-to-care'], { relativeTo: this.route });
   }
 
   ngOnDestroy(): void {
