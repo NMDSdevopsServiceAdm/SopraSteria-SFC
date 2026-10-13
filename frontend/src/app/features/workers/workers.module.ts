@@ -97,6 +97,7 @@ import { SelectQualificationTypeComponent } from '@features/training-and-qualifi
 import { AllNurseFieldsOfPracticeResolver } from '@core/resolvers/nurse-field-of-practice.resolver';
 import { RegisteredNursesResolver } from '@core/resolvers/registered-nurses.resolver';
 import { SelectSortByComponent } from '@shared/components/select-sort-by/select-sort-by.component';
+import { CareWorkforcePathwayNewToCareComponent } from './care-workforce-pathway-review-new-to-care/care-workforce-pathway-review-new-to-care.component';
 
 @NgModule({
   imports: [
@@ -174,6 +175,7 @@ import { SelectSortByComponent } from '@shared/components/select-sort-by/select-
     FastTrackPayUpdatesComponent,
     SelectTrainingCategoryComponent,
     SelectQualificationTypeComponent,
+    CareWorkforcePathwayNewToCareComponent,
   ],
   providers: [
     DialogService,
