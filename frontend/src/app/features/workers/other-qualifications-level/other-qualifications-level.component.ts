@@ -9,16 +9,17 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
 
-import { QuestionComponent } from '../question/question.component';
+import { FinalQuestionComponent } from '../final-question/final-question.component';
 
 @Component({
-    selector: 'app-other-qualifications-level',
-    templateUrl: './other-qualifications-level.component.html',
-    standalone: false
+  selector: 'app-other-qualifications-level',
+  templateUrl: './other-qualifications-level.component.html',
+  standalone: false,
 })
-export class OtherQualificationsLevelComponent extends QuestionComponent {
+export class OtherQualificationsLevelComponent extends FinalQuestionComponent {
   public qualifications: QualificationLevel[];
   public section = 'Training and qualifications';
+
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
@@ -27,11 +28,19 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
-    private qualificationService: QualificationService,
     protected alertService: AlertService,
+    private qualificationService: QualificationService,
   ) {
-    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
-
+    super(
+      formBuilder,
+      router,
+      route,
+      backLinkService,
+      errorSummaryService,
+      workerService,
+      establishmentService,
+      alertService,
+    );
     this.form = this.formBuilder.group({
       qualification: null,
     });
@@ -44,7 +53,14 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
       this.prefill();
     }
 
-    this.next = this.getRoutePath('care-workforce-pathway');
+    const shouldSkipCareWorkforcePathwayQuestion = this.worker.mainJob?.excludedFromCareWorkforcePathway;
+    if (shouldSkipCareWorkforcePathwayQuestion) {
+      this.continueToNextQuestion = false;
+      this.next = this.getRoutePath('staff-record-summary');
+    } else {
+      this.continueToNextQuestion = true;
+      this.next = this.getRoutePath('care-workforce-pathway');
+    }
   }
 
   private prefill(): void {

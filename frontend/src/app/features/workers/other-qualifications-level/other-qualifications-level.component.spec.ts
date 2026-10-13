@@ -18,6 +18,7 @@ import { OtherQualificationsLevelComponent } from './other-qualifications-level.
 
 describe('OtherQualificationsLevelComponent', () => {
   async function setup(overrides: any = {}) {
+    const workerOverrides = overrides?.worker ?? {};
     const setupTools = await render(OtherQualificationsLevelComponent, {
       imports: [SharedModule, RouterModule, WorkersModule],
       providers: [
@@ -41,9 +42,9 @@ describe('OtherQualificationsLevelComponent', () => {
         },
         {
           provide: WorkerService,
-          // useFactory: MockWorkerServiceWithOverrides.factory(overrides),
           deps: [HttpClient],
           useFactory: MockWorkerServiceWithOverrides.factory({
+            worker: workerOverrides,
             returnTo: () => {
               return overrides.returnUrl
                 ? {
@@ -60,7 +61,9 @@ describe('OtherQualificationsLevelComponent', () => {
         },
         AlertService,
         WindowRef,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     const injector = getTestBed();
 
@@ -149,47 +152,94 @@ describe('OtherQualificationsLevelComponent', () => {
   });
 
   describe('navigation', () => {
-    it('should navigate to care-workforce-pathway page when submitting from flow', async () => {
-      const overrides = { returnUrl: false };
-      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(overrides);
+    describe('when worker main job role should see care workforce pathway question', () => {
+      const overrides = { returnUrl: false, worker: { mainJob: { excludedFromCareWorkforcePathway: false } } };
 
-      await fixture.whenStable();
+      it('should navigate to care-workforce-pathway page when submitting from flow', async () => {
+        const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(overrides);
 
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
+        await fixture.whenStable();
 
-      fireEvent.click(getByLabelText('Level 1'));
+        const workerId = component.worker.uid;
+        const workplaceId = component.workplace.uid;
 
-      const saveButton = getByText('Save and continue');
-      fireEvent.click(saveButton);
-      fixture.detectChanges();
+        fireEvent.click(getByLabelText('Level 1'));
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        workplaceId,
-        'staff-record',
-        workerId,
-        'care-workforce-pathway',
-      ]);
+        const saveButton = getByText('Save and continue');
+        fireEvent.click(saveButton);
+        fixture.detectChanges();
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          workplaceId,
+          'staff-record',
+          workerId,
+          'care-workforce-pathway',
+        ]);
+      });
+
+      it('should navigate to care-workforce-pathway page when skipping the question in the flow', async () => {
+        const { component, routerSpy, getByText } = await setup(overrides);
+
+        const workerId = component.worker.uid;
+        const workplaceId = component.workplace.uid;
+
+        const skipButton = getByText('Skip this question');
+        fireEvent.click(skipButton);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          workplaceId,
+          'staff-record',
+          workerId,
+          'care-workforce-pathway',
+        ]);
+      });
     });
 
-    it('should navigate to care-workforce-pathway page when skipping the question in the flow', async () => {
-      const overrides = { returnUrl: false };
-      const { component, routerSpy, getByText } = await setup(overrides);
+    describe('when worker main job role should NOT see care workforce pathway question', () => {
+      const overrides = { returnUrl: false, worker: { mainJob: { excludedFromCareWorkforcePathway: true } } };
 
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
+      it('should navigate to care-workforce-pathway page when submitting from flow', async () => {
+        const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(overrides);
 
-      const skipButton = getByText('Skip this question');
-      fireEvent.click(skipButton);
+        await fixture.whenStable();
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        workplaceId,
-        'staff-record',
-        workerId,
-        'care-workforce-pathway',
-      ]);
+        const workerId = component.worker.uid;
+        const workplaceId = component.workplace.uid;
+
+        fireEvent.click(getByLabelText('Level 1'));
+
+        const saveButton = getByText('Save and continue');
+        fireEvent.click(saveButton);
+        fixture.detectChanges();
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          workplaceId,
+          'staff-record',
+          workerId,
+          'staff-record-summary',
+        ]);
+      });
+
+      it('should navigate to care-workforce-pathway page when skipping the question in the flow', async () => {
+        const { component, routerSpy, getByText } = await setup(overrides);
+
+        const workerId = component.worker.uid;
+        const workplaceId = component.workplace.uid;
+
+        const skipButton = getByText('Skip this question');
+        fireEvent.click(skipButton);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          workplaceId,
+          'staff-record',
+          workerId,
+          'staff-record-summary',
+        ]);
+      });
     });
 
     it('should navigate to staff-summary-page page when pressing save and return', async () => {
