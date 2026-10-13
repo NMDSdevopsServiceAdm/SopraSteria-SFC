@@ -14,6 +14,7 @@ import { FinalQuestionComponent } from '../final-question/final-question.compone
 @Component({
   selector: 'app-care-workforce-pathway',
   templateUrl: './care-workforce-pathway.component.html',
+  styleUrl: './care-workforce-pathway.component.scss',
   standalone: false,
 })
 export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
@@ -51,6 +52,7 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
 
     this.form = this.formBuilder.group({
       careWorkforcePathwayRoleCategory: null,
+      isNominatedIndividual: false,
     });
   }
 
@@ -103,6 +105,7 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
     this.cameFromCWPSummaryPage = Boolean(
       this.return?.url?.some((urlPart) => urlPart?.includes('care-workforce-pathway-workers-summary')),
     );
+    console.log('this.cameFromCWPSummaryPage ', this.cameFromCWPSummaryPage);
 
     if (!this.cameFromCWPSummaryPage) {
       return;
