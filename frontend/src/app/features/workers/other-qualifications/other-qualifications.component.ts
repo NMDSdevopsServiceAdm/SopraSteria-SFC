@@ -7,14 +7,14 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
-import { QuestionComponent } from '../question/question.component';
+import { FinalQuestionComponent } from '../final-question/final-question.component';
 
 @Component({
-    selector: 'app-other-qualifications',
-    templateUrl: './other-qualifications.component.html',
-    standalone: false
+  selector: 'app-other-qualifications',
+  templateUrl: './other-qualifications.component.html',
+  standalone: false,
 })
-export class OtherQualificationsComponent extends QuestionComponent {
+export class OtherQualificationsComponent extends FinalQuestionComponent {
   public answersAvailable = [
     { value: 'Yes', tag: 'Yes' },
     { value: 'No', tag: 'No' },
@@ -30,7 +30,16 @@ export class OtherQualificationsComponent extends QuestionComponent {
     protected establishmentService: EstablishmentService,
     protected alertService: AlertService,
   ) {
-    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
+    super(
+      formBuilder,
+      router,
+      route,
+      backLinkService,
+      errorSummaryService,
+      workerService,
+      establishmentService,
+      alertService,
+    );
 
     this.form = this.formBuilder.group({
       otherQualification: null,
@@ -41,7 +50,8 @@ export class OtherQualificationsComponent extends QuestionComponent {
     if (this.worker.otherQualification) {
       this.prefill();
     }
-    this.next = this.getRoutePath('care-workforce-pathway');
+
+    this.next = this.determineConditionalRouting();
   }
 
   private prefill(): void {
@@ -65,10 +75,18 @@ export class OtherQualificationsComponent extends QuestionComponent {
     const { otherQualification } = this.form.value;
 
     if (otherQualification === 'Yes') {
-      nextRoute.push('other-qualifications-level');
-    } else if (otherQualification !== 'Yes' && this.insideFlow) {
-      nextRoute.push('care-workforce-pathway');
+      this.continueToNextQuestion = true;
+      return [...nextRoute, 'other-qualifications-level'];
     }
+
+    const shouldSeeCareWorkforcePathwayQuestion = !this.worker.mainJob?.excludedFromCareWorkforcePathway;
+
+    if (this.insideFlow && shouldSeeCareWorkforcePathwayQuestion) {
+      this.continueToNextQuestion = true;
+      return [...nextRoute, 'care-workforce-pathway'];
+    }
+
+    this.continueToNextQuestion = false;
     return nextRoute;
   }
 
