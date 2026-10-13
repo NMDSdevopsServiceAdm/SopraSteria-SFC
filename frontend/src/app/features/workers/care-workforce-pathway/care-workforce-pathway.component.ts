@@ -71,6 +71,8 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
   prefill() {
     this.form.patchValue({
       careWorkforcePathwayRoleCategory: this.worker.careWorkforcePathwayRoleCategory.roleCategoryId,
+
+      isNominatedIndividual: this.worker.careWorkforcePathwayRoleCategory.isNominatedIndividual ?? false,
     });
   }
 
@@ -115,12 +117,24 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
   }
 
   generateUpdateProps() {
-    const { careWorkforcePathwayRoleCategory } = this.form.value;
+    const { careWorkforcePathwayRoleCategory, isNominatedIndividual } = this.form.value;
+
     if (!careWorkforcePathwayRoleCategory) {
       return null;
     }
+
+    const selectedCategoryId = parseInt(careWorkforcePathwayRoleCategory, 10);
+
+    const selectedCategory = this.careWorkforcePathwayCategories?.find(
+      (category) => category.id === selectedCategoryId,
+    );
+
     return {
-      careWorkforcePathwayRoleCategory: { roleCategoryId: parseInt(careWorkforcePathwayRoleCategory, 10) },
+      careWorkforcePathwayRoleCategory: {
+        roleCategoryId: selectedCategoryId,
+        isNominatedIndividual:
+          selectedCategory?.group === CWPRoleCategoryGroup.SeniorLeadership ? Boolean(isNominatedIndividual) : false,
+      },
     };
   }
 
