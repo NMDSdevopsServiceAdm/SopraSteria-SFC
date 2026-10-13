@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CareWorkforcePathwayRoleCategory } from '@core/model/careWorkforcePathwayCategory.model';
+import { CareWorkforcePathwayRoleCategory, CWPRoleCategoryGroup } from '@core/model/careWorkforcePathwayCategory.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
@@ -18,10 +18,14 @@ import { FinalQuestionComponent } from '../final-question/final-question.compone
 })
 export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
   public section = 'Training and qualifications';
-  public heading = 'Where are they currently on the care workforce pathway?';
+  public heading = 'Where are they currently on the Care Workforce Pathway?';
   public careWorkforcePathwayCategories: CareWorkforcePathwayRoleCategory[];
-  public revealTitle = "What's the care workforce pathway?";
+  public revealTitle = 'Why assign Care Workforce Pathway role categories?';
   public cameFromCWPSummaryPage: boolean;
+  public groupedCategories: {
+    title: string;
+    categories: CareWorkforcePathwayRoleCategory[];
+  }[] = [];
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -74,6 +78,18 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
         (categories) => {
           if (categories) {
             this.careWorkforcePathwayCategories = categories;
+
+            const groups = [
+              { value: CWPRoleCategoryGroup.CareProviding, title: 'Care providing' },
+              { value: CWPRoleCategoryGroup.SeniorLeadership, title: 'Senior leadership' },
+              { value: CWPRoleCategoryGroup.NonCareProviding, title: 'Non-care providing' },
+              { value: CWPRoleCategoryGroup.Others, title: 'Other options' },
+            ];
+
+            this.groupedCategories = groups.map((group) => ({
+              title: group.title,
+              categories: categories.filter((category) => category.group === group.value),
+            }));
           }
         },
         (error) => {
@@ -91,8 +107,7 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
     if (!this.cameFromCWPSummaryPage) {
       return;
     }
-
-    this.heading = 'Where are your staff on the care workforce pathway?';
+    this.section = 'Staff records';
     this.returnUrl = this.return.url;
   }
 
