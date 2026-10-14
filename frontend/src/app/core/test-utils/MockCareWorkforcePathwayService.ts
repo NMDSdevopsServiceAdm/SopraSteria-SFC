@@ -56,6 +56,12 @@ export const careWorkforcePathwayRoleCategories = [
     description: null,
     group: CWPRoleCategoryGroup.Others,
   },
+  {
+    id: 7,
+    title: 'Registered manager',
+    description: 'Is focused on regulatory and legal requirements, and runs the service',
+    group: CWPRoleCategoryGroup.SeniorLeadership,
+  },
 ];
 
 export const MockCWPRoleCategories = lodash.mapValues(
@@ -64,6 +70,7 @@ export const MockCWPRoleCategories = lodash.mapValues(
     CareOrSupportWorker: careWorkforcePathwayRoleCategories[1],
     IDoNotKnow: careWorkforcePathwayRoleCategories[2],
     NoneOfTheAbove: careWorkforcePathwayRoleCategories[3],
+    RegisteredManager: careWorkforcePathwayRoleCategories[4],
   },
   (obj) => ({ ...obj, roleCategoryId: obj.id }),
 );
