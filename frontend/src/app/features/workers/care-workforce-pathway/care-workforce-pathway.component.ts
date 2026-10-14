@@ -54,6 +54,11 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
       careWorkforcePathwayRoleCategory: null,
       isNominatedIndividual: false,
     });
+    this.subscriptions.add(
+      this.form.get('careWorkforcePathwayRoleCategory').valueChanges.subscribe(() => {
+        this.form.get('isNominatedIndividual').setValue(false);
+      }),
+    );
   }
 
   async init() {
@@ -107,13 +112,18 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
     this.cameFromCWPSummaryPage = Boolean(
       this.return?.url?.some((urlPart) => urlPart?.includes('care-workforce-pathway-workers-summary')),
     );
-    console.log('this.cameFromCWPSummaryPage ', this.cameFromCWPSummaryPage);
 
     if (!this.cameFromCWPSummaryPage) {
       return;
     }
     this.section = 'Staff records';
     this.returnUrl = this.return.url;
+  }
+
+  public isSelectedSeniorLeadershipRole(category: CareWorkforcePathwayRoleCategory): boolean {
+    const selectedRoleId = Number(this.form.get('careWorkforcePathwayRoleCategory')?.value);
+
+    return category.group === CWPRoleCategoryGroup.SeniorLeadership && selectedRoleId === category.id;
   }
 
   generateUpdateProps() {

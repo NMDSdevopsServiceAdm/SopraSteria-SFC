@@ -64,8 +64,7 @@
               }
             </div>
 
-            @if ( category.group === 'Senior leadership' && +form.get('careWorkforcePathwayRoleCategory')?.value ===
-            category.id ) {
+            @if (isSelectedSeniorLeadershipRole(category)) {
             <div class="govuk-radios__conditional cwp-nominated-conditional">
               <div class="govuk-checkboxes">
                 <div class="govuk-checkboxes__item">
