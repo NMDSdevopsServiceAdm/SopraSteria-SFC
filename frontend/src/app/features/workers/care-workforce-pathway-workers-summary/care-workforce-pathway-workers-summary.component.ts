@@ -135,7 +135,7 @@ export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit, OnDe
   }
 
   public visitReviewNewToCarePage(): void {
-    this.router.navigate(['./review-new-to-care'], { relativeTo: this.route });
+    this.router.navigate(['../review-new-to-care'], { relativeTo: this.route });
   }
 
   ngOnDestroy(): void {
