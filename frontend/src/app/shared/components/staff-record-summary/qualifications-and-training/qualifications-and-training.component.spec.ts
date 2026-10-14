@@ -229,5 +229,14 @@ describe('QualificationsAndTrainingComponent', () => {
         `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,
       );
     });
+
+    it("should not show the row when worker's main job role is excluded from care workforce pathway", async () => {
+      const workerOverrides = { mainJob: { excludedFromCareWorkforcePathway: true } };
+
+      const { queryByText } = await setup({ workerOverrides });
+
+      const section = queryByText('Care workforce pathway role category');
+      expect(section).toBeFalsy();
+    });
   });
 });
