@@ -539,12 +539,6 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       return;
     }
     const hasEligibleWorkers = this.numberOfStaffIncludedInCWPRoleCategories > 0;
-    console.log('CWP Banner:', {
-      workplace: this.workplace.name,
-      eligibleWorkers: this.numberOfStaffIncludedInCWPRoleCategories,
-      canEditWorker: this.canEditWorker,
-      bannerViewed: this.workplace.cwpRoleCategoriesBannerViewed,
-    });
     if (!this.workplace.cwpRoleCategoriesBannerViewed && this.canEditWorker && hasEligibleWorkers) {
       this.updateBanner.set({
         content: 'The full list of Care Workforce Pathway role categories is now available.',
