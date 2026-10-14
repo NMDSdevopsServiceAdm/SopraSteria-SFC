@@ -1,14 +1,16 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 
-const { unsetDHAAnswerOnJobRoleChange } = require('../../../../models/hooks/workerHooks');
+const {
+  unsetDHAAnswerOnJobRoleChange,
+  unsetCWPRoleCategoryOnJobRoleChange,
+} = require('../../../../models/hooks/workerHooks');
 
 describe('Worker sequelize hooks', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
   describe('beforeSave: unsetDHAAnswerOnJobRoleChange', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
     const mockWorkerSequelizeInstance = {
       changed: (fieldName) => {
         return ['MainJobFkValue', 'updated'].includes(fieldName);
@@ -52,6 +54,57 @@ describe('Worker sequelize hooks', () => {
 
       expect(mockWorker.getMainJob).not.to.have.been.called;
       expect(mockWorker.carryOutDelegatedHealthcareActivities).to.deep.equal('Yes');
+    });
+  });
+
+  describe('beforeSave: unsetCWPRoleCategoryOnJobRoleChange', () => {
+    const mockWorkerSequelizeInstance = {
+      changed: (fieldName) => {
+        return ['MainJobFkValue', 'updated'].includes(fieldName);
+      },
+      CareWorkforcePathwayRoleCategoryFK: 7,
+      CWPRoleCategoryIsAlsoNominatedIndividual: true,
+      getMainJob() {
+        return Promise.resolve({ id: 23, title: 'Registered nurse', excludedFromCareWorkforcePathway: true });
+      },
+    };
+
+    it('should set CareWorkforcePathwayRoleCategoryFK to null and CWPRoleCategoryIsAlsoNominatedIndividual to false if new job role is exclude from CareWorkforcePathway', async () => {
+      const mockWorker = { ...mockWorkerSequelizeInstance };
+      await unsetCWPRoleCategoryOnJobRoleChange(mockWorker);
+
+      expect(mockWorker.CareWorkforcePathwayRoleCategoryFK).to.equal(null);
+      expect(mockWorker.CWPRoleCategoryIsAlsoNominatedIndividual).to.equal(false);
+    });
+
+    it('should keep carryOutDelegatedHealthcareActivities unchanged if new job role is included in CareWorkforcePathway', async () => {
+      const mockWorker = {
+        ...mockWorkerSequelizeInstance,
+        getMainJob() {
+          return Promise.resolve({ id: 10, title: 'Care worker', excludedFromCareWorkforcePathway: false });
+        },
+      };
+
+      await unsetCWPRoleCategoryOnJobRoleChange(mockWorker);
+
+      expect(mockWorker.CareWorkforcePathwayRoleCategoryFK).to.deep.equal(7);
+      expect(mockWorker.CWPRoleCategoryIsAlsoNominatedIndividual).to.deep.equal(true);
+    });
+
+    it('should do nothing if not changing the main job', async () => {
+      const mockWorker = {
+        ...mockWorkerSequelizeInstance,
+        changed: () => {
+          return false;
+        },
+        getMainJob: sinon.stub(),
+      };
+
+      await unsetCWPRoleCategoryOnJobRoleChange(mockWorker);
+
+      expect(mockWorker.getMainJob).not.to.have.been.called;
+      expect(mockWorker.CareWorkforcePathwayRoleCategoryFK).to.deep.equal(7);
+      expect(mockWorker.CWPRoleCategoryIsAlsoNominatedIndividual).to.deep.equal(true);
     });
   });
 });

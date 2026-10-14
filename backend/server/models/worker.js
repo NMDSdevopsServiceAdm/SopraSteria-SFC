@@ -1,7 +1,7 @@
 const dayjs = require('dayjs');
 const lodash = require('lodash');
 const { Op } = require('sequelize');
-const { unsetDHAAnswerOnJobRoleChange } = require('./hooks/workerHooks');
+const { unsetDHAAnswerOnJobRoleChange, unsetCWPRoleCategoryOnJobRoleChange } = require('./hooks/workerHooks');
 const { JobRoleId } = require('../data/constants');
 
 module.exports = function (sequelize, DataTypes) {
@@ -1623,6 +1623,7 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Worker.addHook('beforeSave', 'unsetDHAAnswerOnJobRoleChange', unsetDHAAnswerOnJobRoleChange);
+  Worker.addHook('beforeSave', 'unsetCWPRoleCategoryOnJobRoleChange', unsetCWPRoleCategoryOnJobRoleChange);
 
   return Worker;
 };
