@@ -202,6 +202,23 @@ describe('QualificationsAndTrainingComponent', () => {
       );
     });
 
+    it('should render Change link and the role category name with "Nominated individual" when isNominatedIndividual is true', async () => {
+      const workerOverrides = {
+        careWorkforcePathwayRoleCategory: { ...MockCWPRoleCategories.RegisteredManager, isNominatedIndividual: true },
+      };
+      const { component, getByText } = await setup({ workerOverrides });
+
+      const section = getByText('Care workforce pathway role category').parentElement;
+      const changeLink = within(section).getByText('Change');
+
+      expect(within(section).getByText('Registered manager')).toBeTruthy();
+      expect(within(section).getByText('Nominated individual')).toBeTruthy();
+
+      expect(changeLink.getAttribute('href')).toBe(
+        `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,
+      );
+    });
+
     it('should render Change link and "Not known" when the answer is "I do not know"', async () => {
       const workerOverrides = { careWorkforcePathwayRoleCategory: MockCWPRoleCategories.IDoNotKnow };
       const { component, getByText } = await setup({ workerOverrides });
@@ -210,20 +227,6 @@ describe('QualificationsAndTrainingComponent', () => {
       const changeLink = within(section).getByText('Change');
 
       expect(within(section).getByText('Not known')).toBeTruthy();
-
-      expect(changeLink.getAttribute('href')).toBe(
-        `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,
-      );
-    });
-
-    it('should render Change link and "Role not included" when the answer is "None of the above"', async () => {
-      const workerOverrides = { careWorkforcePathwayRoleCategory: MockCWPRoleCategories.NoneOfTheAbove };
-      const { component, getByText } = await setup({ workerOverrides });
-
-      const section = getByText('Care workforce pathway role category').parentElement;
-      const changeLink = within(section).getByText('Change');
-
-      expect(within(section).getByText('Role not included')).toBeTruthy();
 
       expect(changeLink.getAttribute('href')).toBe(
         `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,

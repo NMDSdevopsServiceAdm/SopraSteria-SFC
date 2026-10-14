@@ -248,7 +248,9 @@
     <div class="govuk-summary-list__row">
       <dt class="govuk-summary-list__key">Care workforce pathway role category</dt>
       <dd class="govuk-summary-list__value">
-        {{ worker.careWorkforcePathwayRoleCategory | CWPRoleCategoryTitle }}
+        <app-display-cwp-role-category
+          [careWorkforcePathwayRoleCategory]="worker.careWorkforcePathwayRoleCategory"
+        ></app-display-cwp-role-category>
       </dd>
       @if (canEditWorker) {
         <dd class="govuk-summary-list__actions">

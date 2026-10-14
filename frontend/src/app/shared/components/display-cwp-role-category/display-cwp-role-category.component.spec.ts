@@ -2,7 +2,7 @@ import { render } from '@testing-library/angular';
 import { DisplayCwpRoleCategoryComponent } from './display-cwp-role-category.component';
 import { SharedModule } from '@shared/shared.module';
 
-fdescribe('DisplayCwpRoleCategoryComponent', () => {
+describe('DisplayCwpRoleCategoryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const careWorkforcePathwayRoleCategory = overrides?.careWorkforcePathwayRoleCategory ?? null;
     const setupTools = await render(DisplayCwpRoleCategoryComponent, {
