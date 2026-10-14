@@ -114,7 +114,6 @@ import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-bu
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workforce-pathway-awareness.pipe';
-import { CareWorkforcePathwayRoleCategoryPipe } from './pipes/care-workforce-pathway-role-category.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { DataViewPermissionsPipe } from './pipes/data-view-permissions.pipe';
 import { DontKnowPipe } from './pipes/dont-know.pipe';
@@ -296,7 +295,6 @@ import { DisplayCwpRoleCategoryComponent } from './components/display-cwp-role-c
     SelectJobRolesToAddComponent,
     NumberInputWithButtonsComponent,
     JobRoleNumbersTableComponent,
-    CareWorkforcePathwayRoleCategoryPipe,
     HasValuePipe,
     FormatCwpUsePipe,
     CareWorkforcePathwayWorkplaceAwarenessTitle,
@@ -437,7 +435,6 @@ import { DisplayCwpRoleCategoryComponent } from './components/display-cwp-role-c
     FormatStartersLeaversVacanciesPipe,
     NumberInputWithButtonsComponent,
     JobRoleNumbersTableComponent,
-    CareWorkforcePathwayRoleCategoryPipe,
     HasValuePipe,
     FormatCwpUsePipe,
     CareWorkforcePathwayWorkplaceAwarenessTitle,
