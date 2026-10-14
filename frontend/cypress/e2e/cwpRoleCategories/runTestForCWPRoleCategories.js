@@ -1,5 +1,4 @@
 /* eslint-disable no-undef */
-import { SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
 
 export const runTestsForCWPRoleCategories = (mockEstablishmentData) => {
@@ -69,10 +68,7 @@ export const runTestsForCWPRoleCategories = (mockEstablishmentData) => {
 
       cy.get('a').contains('Back').click();
 
-      const isParentViewSub = establishmentId === SubEstablishmentNotDataOwner.id;
-      const expectedPath = isParentViewSub ? '/subsidiary' : '/dashboard#home';
-
-      cy.url().should('contain', expectedPath);
+      cy.url().should('contain', '/dashboard#home');
 
       assertBannerNotShowing();
     });
