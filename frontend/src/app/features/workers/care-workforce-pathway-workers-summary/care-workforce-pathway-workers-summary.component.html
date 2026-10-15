@@ -97,9 +97,11 @@
           (currentPageIndexChange)="handlePageUpdate($event)"
           [currentPageIndex]="pageIndex"
         />
-        <p><strong>Check all pages before confirming.</strong></p>
+        <p class="govuk-!-margin-bottom-0"><strong>Check all pages before confirming.</strong></p>
       }
-      <button class="govuk-button" type="button" (click)="visitReviewNewToCarePage()">Confirm role categories</button>
+      <button class="govuk-button govuk-!-margin-top-4" type="button" (click)="visitReviewNewToCarePage()">
+        Confirm role categories
+      </button>
     </div>
   </div>
 }
