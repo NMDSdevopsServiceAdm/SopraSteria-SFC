@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AlertService } from '@core/services/alert.service';
 
 import { BackLinkService } from '@core/services/backLink.service';
 import { CWPGetAllWorkersResponse } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
+import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -24,7 +26,7 @@ export class CareWorkforcePathwayNewToCareComponent implements OnInit, OnDestroy
     private workerService: WorkerService,
     private backLinkService: BackLinkService,
     private router: Router,
-
+    private alertService: AlertService,
     private route: ActivatedRoute,
   ) {}
 
@@ -35,6 +37,9 @@ export class CareWorkforcePathwayNewToCareComponent implements OnInit, OnDestroy
     this.handleGetWorkersResponse(this.route.snapshot.data.workersWhoRequireCWPAnswer);
   }
 
+  formatMainStartDate(date: string) {
+    return dayjs(date).format('D MMM YYYY');
+  }
   // private getWorkers(): void {
   //   const queryParams = this.paginationSettings();
 
@@ -61,7 +66,12 @@ export class CareWorkforcePathwayNewToCareComponent implements OnInit, OnDestroy
   }
 
   public returnToHome(): void {
-    this.router.navigate(['/dashboard'], { fragment: 'home' });
+    this.router.navigate(['/dashboard'], { fragment: 'home' }).then(() => {
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Care Workforce Pathway role categories reviewed',
+      });
+    });
   }
 
   ngOnDestroy(): void {

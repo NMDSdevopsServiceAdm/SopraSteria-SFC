@@ -21,7 +21,7 @@
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
           <th scope="col" class="govuk-table__header" width="25%">Name or ID number</th>
-          <th scope="col" class="govuk-table__header" width="30%">Job role</th>
+          <th scope="col" class="govuk-table__header" width="25%">Job role</th>
           <th scope="col" class="govuk-table__header" width="19%">Start date</th>
           <th scope="col" class="govuk-table__header" width="28%">CWP role category</th>
           <th scope="col" class="govuk-table__header" width="17%"></th>
@@ -34,7 +34,10 @@
             {{ worker.nameOrId }}
           </td>
           <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
-          <td class="govuk-table__cell">{{ worker.MainJobStartDateValue }}</td>
+          <td class="govuk-table__cell">
+            {{ worker.MainJobStartDateValue ? formatMainStartDate(worker.MainJobStartDateValue) : '-' }}
+          </td>
+
           <td class="govuk-table__cell">
             @let cwpRole = worker?.careWorkforcePathwayRoleCategory; @if (cwpRole?.title &&
             cwpRole?.isNominatedIndividual) {
@@ -58,7 +61,9 @@
       </tbody>
     </table>
 
-    <button class="govuk-button" type="button">Return to home</button>
+    <button data-testid="returnToHomeButton" type="button" (click)="returnToHome()" class="govuk-button">
+      Return to home
+    </button>
   </div>
 </div>
 }
