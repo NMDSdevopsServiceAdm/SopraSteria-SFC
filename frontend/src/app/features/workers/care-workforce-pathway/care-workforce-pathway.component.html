@@ -13,7 +13,7 @@
             </h1>
           </legend>
 
-          <app-details [title]="revealTitle" data-testid="reveal-whatsCareWorkforcePathway">
+          <app-details [title]="revealTitle" class="cwp-reveal-content" data-testid="reveal-whatsCareWorkforcePathway">
             <p>
               The Care Workforce Pathway is the national career structure for adult social care. It sets out knowledge
               and skills requirements, and suggests learning opportunities for your team.
@@ -22,6 +22,16 @@
             <p>
               Assigning role categories aligns your workplace with this structure. It also provides data to help the
               Department of Health and Social Care shape national policy on funding and training.
+            </p>
+            <p>
+              <a
+                href="https://www.gov.uk/government/publications/care-workforce-pathway-for-adult-social-care/care-workforce-pathway-for-adult-social-care-overview"
+                class="govuk-link"
+                target="_blank"
+                >Read more about the Care Workforce Pathway<span class="govuk-visually-hidden">
+                  (opens in a new window)</span
+                ></a
+              >
             </p>
           </app-details>
 
@@ -33,7 +43,8 @@
           }
           <p class="govuk-body">Only select one role category.</p>
 
-          @for (group of groupedCategories; track group.title) { @if (group.title === 'Other options') {
+          @for (group of groupedCategories; track group.title; let last = $last) { @if (group.title === 'Other options')
+          {
           <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-6 govuk-!-margin-bottom-6" />
           } @else {
           <h2 class="govuk-heading-s">{{ group.title }}</h2>
@@ -102,12 +113,17 @@
 
   @if (cameFromCWPSummaryPage) {
   <app-submit-button
+    class="cwp-submit-button"
     [overrideCallToActionLabel]="true"
     [callToAction]="'Save'"
     [return]="!insideFlow"
     (clicked)="setSubmitAction($event)"
   ></app-submit-button>
   } @else {
-  <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
+  <app-submit-button
+    class="cwp-submit-button"
+    [return]="!insideFlow"
+    (clicked)="setSubmitAction($event)"
+  ></app-submit-button>
   }
 </form>
