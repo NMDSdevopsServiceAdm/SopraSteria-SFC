@@ -30,6 +30,7 @@ export const runTestsForNursesQuestionsMiniFlow = (mockEstablishmentData) => {
     before(() => {
       cy.resetNursesQuestionForWorkplace(establishmentId);
       cy.setPayAndPensionsMiniFlowViewed(establishmentId);
+      cy.resetCWPRoleCategoriesBannerForWorkplace(establishmentId, true);
       cy.setWorkplaceCWPAwarenessQuestionViewed(establishmentId);
       cy.setWorkplaceDHAAnswers(establishmentId, { staffDoDelegatedHealthcareActivities: 'Yes' });
       cy.archiveAllWorkersInWorkplace(establishmentId);
