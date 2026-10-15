@@ -174,7 +174,13 @@ describe('OtherQualificationsComponent', () => {
 
           fireEvent.click(getByText('Skip this question'));
 
-          expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'staff-record', component.worker.uid]);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            'mocked-uid',
+            'staff-record',
+            component.worker.uid,
+            'staff-record-summary',
+          ]);
         });
 
         ['No', 'I do not know', null].forEach((answer) => {
@@ -190,7 +196,13 @@ describe('OtherQualificationsComponent', () => {
 
             fireEvent.click(getByText('Save and continue'));
 
-            expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'staff-record', component.worker.uid]);
+            expect(routerSpy).toHaveBeenCalledWith([
+              '/workplace',
+              'mocked-uid',
+              'staff-record',
+              component.worker.uid,
+              'staff-record-summary',
+            ]);
           });
         });
       });
