@@ -1,28 +1,29 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
+import { of } from 'rxjs';
+
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { provideRouter, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { PermissionType } from '@core/model/permissions.model';
 import { Worker } from '@core/model/worker.model';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { SortByService } from '@core/services/sort-by.service';
+import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { MockSortByService } from '@core/test-utils/MockSortByService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { of } from 'rxjs';
+
 import { PaginationComponent } from '../pagination/pagination.component';
 import { TablePaginationWrapperComponent } from '../table-pagination-wrapper/table-pagination-wrapper.component';
 import { StaffSummaryComponent } from './staff-summary.component';
-import { PermissionType } from '@core/model/permissions.model';
-import { SortByService } from '@core/services/sort-by.service';
-import { MockSortByService } from '@core/test-utils/MockSortByService';
-import { TabsService } from '@core/services/tabs.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 
 describe('StaffSummaryComponent', () => {
   const workplaceUid = 'mocked-uid';
@@ -30,7 +31,10 @@ describe('StaffSummaryComponent', () => {
   async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;
     establishment.updatePayForMultiStaffViewed = overrides?.updatePayForMultiStaffViewed ?? false;
+    establishment.cwpRoleCategoriesBannerViewed = overrides?.cwpRoleCategoriesBannerViewed ?? false;
     establishment.uid = workplaceUid;
+
+    const workersCountForCWPSummary = overrides?.workersCountForCWPSummary ?? null;
 
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
     const allWorkers = [
@@ -58,6 +62,14 @@ describe('StaffSummaryComponent', () => {
         provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: { workersCountForCWPSummary },
+            },
+          },
+        },
       ],
       componentProperties: {
         workplace: establishment,
@@ -382,6 +394,97 @@ describe('StaffSummaryComponent', () => {
       const overrides = {
         ...defaultOverrides,
         updatePayForMultiStaffViewed: true,
+      };
+      const { fixture, getByText, updateSingleFieldSpy } = await setup(overrides);
+
+      const link = getByText(linkText);
+      fireEvent.click(link);
+      fixture.autoDetectChanges();
+
+      expect(updateSingleFieldSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Check your staff Care Workforce Pathway role categories link', () => {
+    const linkText = 'Check your staff Care Workforce Pathway role categories';
+    const defaultOverrides = {
+      cwpRoleCategoriesBannerViewed: false,
+      workersCountForCWPSummary: { workerCount: 1 },
+      permissions: ['canViewWorker', 'canEditWorker', 'canViewEstablishment', 'canEditEstablishment'],
+    };
+
+    it('should show a link with new pill when cwpRoleCategoriesBannerViewed is false, workersCountForCWPSummary > 0', async () => {
+      const { getByTestId } = await setup(defaultOverrides);
+
+      const newPillWithLink = getByTestId('care-workforce-pathway-workers-summary-link');
+
+      expect(newPillWithLink).toBeTruthy();
+      expect(within(newPillWithLink).getByText(linkText)).toBeTruthy();
+      expect(within(newPillWithLink).getByTestId('new-pill')).toBeTruthy();
+    });
+
+    it('should show the link without the new pill when cwpRoleCategoriesBannerViewed is true', async () => {
+      const overrides = {
+        ...defaultOverrides,
+        cwpRoleCategoriesBannerViewed: true,
+      };
+
+      const { getByTestId } = await setup(overrides);
+
+      const newPillWithLink = getByTestId('care-workforce-pathway-workers-summary-link');
+
+      expect(newPillWithLink).toBeTruthy();
+      expect(within(newPillWithLink).getByText(linkText)).toBeTruthy();
+      expect(within(newPillWithLink).queryByTestId('new-pill')).toBeFalsy();
+    });
+
+    it('should navigate to the care-workforce-pathway-workers-summary page', async () => {
+      const { fixture, getByTestId, routerSpy } = await setup(defaultOverrides);
+
+      const newPillWithLink = getByTestId('care-workforce-pathway-workers-summary-link');
+      const link = within(newPillWithLink).getByText(linkText);
+
+      fireEvent.click(link);
+      fixture.autoDetectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        'workplace',
+        workplaceUid,
+        'staff-record',
+        'care-workforce-pathway-workers-summary',
+      ]);
+    });
+
+    it('should not show the link when user does not have permission to edit worker', async () => {
+      const { queryByText } = await setup({
+        ...defaultOverrides,
+        permissions: ['canViewEstablishment', 'canViewWorker'],
+      });
+
+      const link = queryByText(linkText);
+      expect(link).toBeFalsy();
+    });
+
+    it('should call updateSingleEstablishmentField if cwpRoleCategoriesBannerViewed is false', async () => {
+      const { fixture, getByText, updateSingleFieldSpy } = await setup({
+        ...defaultOverrides,
+        cwpRoleCategoriesBannerViewed: false,
+      });
+
+      const link = getByText(linkText);
+      fireEvent.click(link);
+      fixture.autoDetectChanges();
+
+      expect(updateSingleFieldSpy).toHaveBeenCalledWith(workplaceUid, {
+        property: 'cwpRoleCategoriesBannerViewed',
+        value: true,
+      });
+    });
+
+    it(`should not call updateSingleEstablishmentField if cwpRoleCategoriesBannerViewed is true`, async () => {
+      const overrides = {
+        ...defaultOverrides,
+        cwpRoleCategoriesBannerViewed: true,
       };
       const { fixture, getByText, updateSingleFieldSpy } = await setup(overrides);
 
