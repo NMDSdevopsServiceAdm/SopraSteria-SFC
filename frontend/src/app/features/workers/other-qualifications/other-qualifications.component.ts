@@ -81,9 +81,14 @@ export class OtherQualificationsComponent extends FinalQuestionComponent {
 
     const shouldSeeCareWorkforcePathwayQuestion = !this.worker.mainJob?.excludedFromCareWorkforcePathway;
 
-    if (this.insideFlow && shouldSeeCareWorkforcePathwayQuestion) {
-      this.continueToNextQuestion = true;
-      return [...nextRoute, 'care-workforce-pathway'];
+    if (this.insideFlow) {
+      if (shouldSeeCareWorkforcePathwayQuestion) {
+        this.continueToNextQuestion = true;
+        return [...nextRoute, 'care-workforce-pathway'];
+      } else {
+        this.continueToNextQuestion = false;
+        return this.getRoutePath('staff-record-summary');
+      }
     }
 
     this.continueToNextQuestion = false;
