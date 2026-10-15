@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 
@@ -7,19 +7,16 @@ import { CWPGetAllWorkersResponse } from '@core/services/care-workforce-pathway.
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-care-workforce-pathway-new-to-care',
   templateUrl: './care-workforce-pathway-review-new-to-care.component.html',
   standalone: false,
 })
-export class CareWorkforcePathwayNewToCareComponent implements OnInit, OnDestroy {
-  private subscriptions: Subscription = new Subscription();
+export class CareWorkforcePathwayNewToCareComponent implements OnInit {
   private workplaceUid: string;
 
   public workersToShow: CWPGetAllWorkersResponse['workers'] = [];
-  public workerCount: number;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -40,23 +37,10 @@ export class CareWorkforcePathwayNewToCareComponent implements OnInit, OnDestroy
   formatMainStartDate(date: string) {
     return dayjs(date).format('D MMM YYYY');
   }
-  // private getWorkers(): void {
-  //   const queryParams = this.paginationSettings();
-
-  //   this.subscriptions.add(
-  //     this.careWorkforcePathwayService
-  //       .getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(this.workplaceUid, queryParams)
-  //       .pipe(take(1))
-  //       .subscribe((response) => this.handleGetWorkersResponse(response)),
-  //   );
-  // }
 
   private handleGetWorkersResponse(response: CWPGetAllWorkersResponse): void {
     if (response?.workers?.length) {
       this.workersToShow = response.workers;
-      this.workerCount = response?.workerCount;
-    } else {
-      this.returnToHome();
     }
   }
 
@@ -72,9 +56,5 @@ export class CareWorkforcePathwayNewToCareComponent implements OnInit, OnDestroy
         message: 'Care Workforce Pathway role categories reviewed',
       });
     });
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
   }
 }
