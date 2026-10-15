@@ -48,6 +48,8 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
 
     const workersCountForCWPSummary = this.route.snapshot.data?.workersCountForCWPSummary?.workerCount;
     this.showCwpWorkerSummaryLink = userHasEditPermissions && workersCountForCWPSummary >= 1;
+    this.showNewPillForCwpWorkerSummaryLink =
+      this.showCwpWorkerSummaryLink && !this.workplace?.cwpRoleCategoriesBannerViewed;
   }
 
   public getWorkerRecordPath(event: Event, worker: Worker) {
@@ -73,7 +75,20 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
     this.router.navigate(['workplace', this.workplaceUid, 'staff-record', 'update-pay-for-multiple-staff']);
   }
 
+  private setCWPRoleCategoriesBannerViewed(): void {
+    const data = {
+      property: 'cwpRoleCategoriesBannerViewed',
+      value: true,
+    };
+    this.subscriptions.add(
+      this.establishmentService.updateSingleEstablishmentField(this.workplaceUid, data).subscribe(),
+    );
+  }
+
   public visitCWPWorkerSummary(): void {
+    if (this.showNewPillForCwpWorkerSummaryLink) {
+      this.setCWPRoleCategoriesBannerViewed();
+    }
     this.router.navigate(['workplace', this.workplaceUid, 'staff-record', 'care-workforce-pathway-workers-summary']);
   }
 }
