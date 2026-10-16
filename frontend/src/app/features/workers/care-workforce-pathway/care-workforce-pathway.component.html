@@ -35,7 +35,7 @@
             </p>
           </app-details>
 
-          @if (cameFromCWPSummaryPage) {
+          @if (cameFromCWPSummaryPage || cameFromCWPNewTocarePage) {
             <div class="govuk-!-margin-bottom-6">
               <h2 class="govuk-heading-s govuk-!-margin-bottom-1">Name or ID number</h2>
               <p class="govuk-body">{{ worker.nameOrId }}</p>
