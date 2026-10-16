@@ -34,14 +34,25 @@ export class CareWorkforcePathwayNewToCareComponent implements OnInit {
     this.handleGetWorkersResponse(this.route.snapshot.data.workersWhoRequireCWPAnswer);
   }
 
-  formatMainStartDate(date: string) {
-    return dayjs(date).format('D MMM YYYY');
+  formatMainStartDate(date: string | null) {
+    return date ? dayjs(date).format('D MMM YYYY') : '';
   }
 
   private handleGetWorkersResponse(response: CWPGetAllWorkersResponse): void {
-    if (response?.workers?.length) {
-      this.workersToShow = response.workers;
-    }
+    const twelveMonthsAgo = dayjs().subtract(12, 'month').startOf('day');
+
+    this.workersToShow =
+      response?.workers?.filter((worker) => {
+        const isNewToCare = worker.careWorkforcePathwayRoleCategory?.title === 'New to care';
+
+        const startDate = worker.MainJobStartDateValue;
+        const hasNoStartDate = !startDate;
+
+        const startedMoreThan12MonthsAgo =
+          !!startDate && dayjs(startDate).isValid() && dayjs(startDate).isBefore(twelveMonthsAgo);
+
+        return isNewToCare && (hasNoStartDate || startedMoreThan12MonthsAgo);
+      }) ?? [];
   }
 
   public setReturnToThisPage(): void {
