@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 
 import { BackLinkService } from '@core/services/backLink.service';
-import { CWPGetAllWorkersResponse } from '@core/services/care-workforce-pathway.service';
+import { CareWorkforcePathwayService, CWPGetAllWorkersResponse } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
@@ -25,6 +25,7 @@ export class CareWorkforcePathwayNewToCareComponent implements OnInit {
     private router: Router,
     private alertService: AlertService,
     private route: ActivatedRoute,
+    private careWorkforcePathwayService: CareWorkforcePathwayService,
   ) {}
 
   ngOnInit(): void {
@@ -39,20 +40,7 @@ export class CareWorkforcePathwayNewToCareComponent implements OnInit {
   }
 
   private handleGetWorkersResponse(response: CWPGetAllWorkersResponse): void {
-    const twelveMonthsAgo = dayjs().subtract(12, 'month').startOf('day');
-
-    this.workersToShow =
-      response?.workers?.filter((worker) => {
-        const isNewToCare = worker.careWorkforcePathwayRoleCategory?.title === 'New to care';
-
-        const startDate = worker.MainJobStartDateValue;
-        const hasNoStartDate = !startDate;
-
-        const startedMoreThan12MonthsAgo =
-          !!startDate && dayjs(startDate).isValid() && dayjs(startDate).isBefore(twelveMonthsAgo);
-
-        return isNewToCare && (hasNoStartDate || startedMoreThan12MonthsAgo);
-      }) ?? [];
+    this.workersToShow = this.careWorkforcePathwayService.getWorkersWhoMeetNewToCareCriteria(response?.workers ?? []);
   }
 
   public setReturnToThisPage(): void {
