@@ -20,7 +20,7 @@ import userEvent from '@testing-library/user-event';
 import { WorkersModule } from '../workers.module';
 import { CareWorkforcePathwayRoleComponent } from './care-workforce-pathway.component';
 
-fdescribe('CareWorkforcePathwayRoleComponent', () => {
+describe('CareWorkforcePathwayRoleComponent', () => {
   const categorySelected = careWorkforcePathwayRoleCategories[0].title;
 
   async function setup(overrides: any = {}) {
