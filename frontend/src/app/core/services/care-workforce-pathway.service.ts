@@ -94,7 +94,7 @@ export type CWPGetAllWorkersResponse = {
     uid: string;
     nameOrId: string;
     mainJob: JobRole;
-    MainJobStartDateValue: Date;
+    MainJobStartDateValue: string | null;
     careWorkforcePathwayRoleCategory: CareWorkforcePathwayRoleCategory;
   }[];
   workerCount: number;
