@@ -18,6 +18,7 @@ import {
   CareWorkforcePathwayWorkplaceAwareness,
   SortStaffOptionsForCWPWorkerSummary,
 } from '@core/model/establishment.model';
+import dayjs from 'dayjs';
 
 @Injectable({
   providedIn: 'root',
@@ -60,6 +61,25 @@ export class CareWorkforcePathwayService {
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/workersWhoRequireCareWorkforcePathwayRoleAnswer`,
       { params: queryParams },
     );
+  }
+
+  getWorkersWhoMeetNewToCareCriteria(
+    workers: CWPGetAllWorkersResponse['workers'],
+  ): CWPGetAllWorkersResponse['workers'] {
+    const twelveMonthsAgo = dayjs().subtract(12, 'month').startOf('day');
+
+    return workers.filter((worker) => {
+      const isNewToCare = worker.careWorkforcePathwayRoleCategory?.title === 'New to care';
+
+      const startDate = worker.MainJobStartDateValue;
+
+      const hasNoStartDate = !startDate;
+
+      const startedMoreThan12MonthsAgo =
+        !!startDate && dayjs(startDate).isValid() && dayjs(startDate).isBefore(twelveMonthsAgo);
+
+      return isNewToCare && (hasNoStartDate || startedMoreThan12MonthsAgo);
+    });
   }
 
   getAllCareWorkforcePathwayUseReasons(): Observable<CWPGetUseReasonsResponse> {
