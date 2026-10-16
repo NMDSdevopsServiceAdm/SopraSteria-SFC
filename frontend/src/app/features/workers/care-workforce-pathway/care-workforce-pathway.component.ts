@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CareWorkforcePathwayRoleCategory } from '@core/model/careWorkforcePathwayCategory.model';
+import { CareWorkforcePathwayRoleCategory, CWPRoleCategoryGroup } from '@core/model/careWorkforcePathwayCategory.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
@@ -14,14 +14,19 @@ import { FinalQuestionComponent } from '../final-question/final-question.compone
 @Component({
   selector: 'app-care-workforce-pathway',
   templateUrl: './care-workforce-pathway.component.html',
+  styleUrl: './care-workforce-pathway.component.scss',
   standalone: false,
 })
 export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
   public section = 'Training and qualifications';
-  public heading = 'Where are they currently on the care workforce pathway?';
+  public heading = 'Where are they currently on the Care Workforce Pathway?';
   public careWorkforcePathwayCategories: CareWorkforcePathwayRoleCategory[];
-  public revealTitle = "What's the care workforce pathway?";
+  public revealTitle = 'Why assign Care Workforce Pathway role categories?';
   public cameFromCWPSummaryPage: boolean;
+  public groupedCategories: {
+    title: string;
+    categories: CareWorkforcePathwayRoleCategory[];
+  }[] = [];
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -47,7 +52,13 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
 
     this.form = this.formBuilder.group({
       careWorkforcePathwayRoleCategory: null,
+      isNominatedIndividual: false,
     });
+    this.subscriptions.add(
+      this.form.get('careWorkforcePathwayRoleCategory').valueChanges.subscribe(() => {
+        this.form.get('isNominatedIndividual').setValue(false);
+      }),
+    );
   }
 
   async init() {
@@ -65,6 +76,8 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
   prefill() {
     this.form.patchValue({
       careWorkforcePathwayRoleCategory: this.worker.careWorkforcePathwayRoleCategory.roleCategoryId,
+
+      isNominatedIndividual: this.worker.careWorkforcePathwayRoleCategory.isNominatedIndividual ?? false,
     });
   }
 
@@ -74,6 +87,18 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
         (categories) => {
           if (categories) {
             this.careWorkforcePathwayCategories = categories;
+
+            const groups = [
+              { value: CWPRoleCategoryGroup.CareProviding, title: 'Care providing' },
+              { value: CWPRoleCategoryGroup.SeniorLeadership, title: 'Senior leadership' },
+              { value: CWPRoleCategoryGroup.NonCareProviding, title: 'Non-care providing' },
+              { value: CWPRoleCategoryGroup.Others, title: 'Other options' },
+            ];
+
+            this.groupedCategories = groups.map((group) => ({
+              title: group.title,
+              categories: categories.filter((category) => category.group === group.value),
+            }));
           }
         },
         (error) => {
@@ -91,18 +116,35 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
     if (!this.cameFromCWPSummaryPage) {
       return;
     }
-
-    this.heading = 'Where are your staff on the care workforce pathway?';
+    this.section = 'Staff records';
     this.returnUrl = this.return.url;
   }
 
+  public isSelectedSeniorLeadershipRole(category: CareWorkforcePathwayRoleCategory): boolean {
+    const selectedRoleId = Number(this.form.get('careWorkforcePathwayRoleCategory')?.value);
+
+    return category.group === CWPRoleCategoryGroup.SeniorLeadership && selectedRoleId === category.id;
+  }
+
   generateUpdateProps() {
-    const { careWorkforcePathwayRoleCategory } = this.form.value;
+    const { careWorkforcePathwayRoleCategory, isNominatedIndividual } = this.form.value;
+
     if (!careWorkforcePathwayRoleCategory) {
       return null;
     }
+
+    const selectedCategoryId = parseInt(careWorkforcePathwayRoleCategory, 10);
+
+    const selectedCategory = this.careWorkforcePathwayCategories?.find(
+      (category) => category.id === selectedCategoryId,
+    );
+
     return {
-      careWorkforcePathwayRoleCategory: { roleCategoryId: parseInt(careWorkforcePathwayRoleCategory, 10) },
+      careWorkforcePathwayRoleCategory: {
+        roleCategoryId: selectedCategoryId,
+        isNominatedIndividual:
+          selectedCategory?.group === CWPRoleCategoryGroup.SeniorLeadership ? Boolean(isNominatedIndividual) : false,
+      },
     };
   }
 

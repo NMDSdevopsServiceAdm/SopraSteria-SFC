@@ -13,80 +13,117 @@
             </h1>
           </legend>
 
-          <app-details [title]="revealTitle" data-testid="reveal-whatsCareWorkforcePathway">
+          <app-details [title]="revealTitle" class="cwp-reveal-content" data-testid="reveal-whatsCareWorkforcePathway">
             <p>
-              The care workforce pathway outlines the knowledge, skills, values and behaviours needed for a career in
-              adult social care. It provides a clear career structure for your staff.
+              The Care Workforce Pathway is the national career structure for adult social care. It sets out knowledge
+              and skills requirements, and suggests learning opportunities for your team.
             </p>
+
             <p>
-              You'll use the pathway to set out how staff can gain skills, learn and develop, and progress in their
-              careers.
+              Assigning role categories aligns your workplace with this structure. It also provides data to help the
+              Department of Health and Social Care shape national policy on funding and training.
             </p>
             <p>
               <a
                 href="https://www.gov.uk/government/publications/care-workforce-pathway-for-adult-social-care/care-workforce-pathway-for-adult-social-care-overview"
                 class="govuk-link"
                 target="_blank"
-                >Read more about the care workforce pathway</a
+                >Read more about the Care Workforce Pathway<span class="govuk-visually-hidden">
+                  (opens in a new window)</span
+                ></a
               >
             </p>
           </app-details>
 
           @if (cameFromCWPSummaryPage) {
-            <div class="govuk-!-margin-bottom-6">
-              <h2 class="govuk-heading-s govuk-!-margin-bottom-1">Name or ID number</h2>
-              <p class="govuk-body">{{ worker.nameOrId }}</p>
-            </div>
+          <div class="govuk-!-margin-bottom-6">
+            <h2 class="govuk-heading-s govuk-!-margin-bottom-1">Name or ID number</h2>
+            <p class="govuk-body">{{ worker.nameOrId }}</p>
+          </div>
+          }
+          <p class="govuk-body">Only select one role category.</p>
+
+          @for (group of groupedCategories; track group.title; let last = $last) { @if (group.title === 'Other options')
+          {
+          <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-6 govuk-!-margin-bottom-6" />
+          } @else {
+          <h2 class="govuk-heading-s">{{ group.title }}</h2>
           }
 
-          <h2 class="govuk-heading-s">Care workforce pathway role categories</h2>
-          <div class="govuk-radios" data-module="govuk-radios">
-            @for (careWorkforcePathwayCategory of careWorkforcePathwayCategories; track $index; let idx = $index) {
-              <div class="govuk-radios__item">
-                <input
-                  class="govuk-radios__input"
-                  id="careWorkforcePathwayRoleCategory-{{ idx }}"
-                  [formControlName]="'careWorkforcePathwayRoleCategory'"
-                  name="careWorkforcePathwayRoleCategory"
-                  type="radio"
-                  [value]="careWorkforcePathwayCategory.id"
-                  aria-describedby="careWorkforcePathwayCategory-description"
-                />
-                <label class="govuk-label govuk-radios__label" for="careWorkforcePathwayRoleCategory-{{ idx }}">
-                  {{ careWorkforcePathwayCategory.title }}
-                </label>
-                <div
-                  id="careWorkforcePathwayCategory-description"
-                  class="govuk-hint govuk-radios__hint"
-                  [innerHTML]="careWorkforcePathwayCategory.description"
-                ></div>
+          <div class="govuk-radios govuk-!-margin-bottom-6">
+            @for (category of group.categories; track category.id) {
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="careWorkforcePathwayRoleCategory-{{ category.id }}"
+                formControlName="careWorkforcePathwayRoleCategory"
+                type="radio"
+                [value]="category.id"
+                [attr.aria-describedby]="category.description ? 'category-description-' + category.id : null"
+              />
+
+              <label class="govuk-label govuk-radios__label" for="careWorkforcePathwayRoleCategory-{{ category.id }}">
+                {{ category.title }}
+              </label>
+
+              @if (category.description) {
+              <div
+                id="category-description-{{ category.id }}"
+                class="govuk-hint govuk-radios__hint"
+                [innerHTML]="category.description"
+              ></div>
+              }
+            </div>
+
+            @if (isSelectedSeniorLeadershipRole(category)) {
+            <div class="govuk-radios__conditional cwp-nominated-conditional">
+              <div class="govuk-checkboxes">
+                <div class="govuk-checkboxes__item">
+                  <input
+                    class="govuk-checkboxes__input"
+                    id="isNominatedIndividual"
+                    type="checkbox"
+                    formControlName="isNominatedIndividual"
+                  />
+
+                  <label class="govuk-label govuk-checkboxes__label" for="isNominatedIndividual">
+                    Also a nominated individual
+                  </label>
+                </div>
               </div>
-            }
+            </div>
+            } }
           </div>
+          }
         </fieldset>
       </div>
     </div>
     @if (insideFlow) {
-      <div class="govuk-grid-column-one-third">
-        <div class="govuk-!-margin-left-8">
-          <app-progress-bar
-            data-testid="progress-bar"
-            [sections]="staffRecordSections"
-            [currentSection]="section"
-          ></app-progress-bar>
-        </div>
+    <div class="govuk-grid-column-one-third">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="staffRecordSections"
+          [currentSection]="section"
+        ></app-progress-bar>
       </div>
+    </div>
     }
   </div>
 
   @if (cameFromCWPSummaryPage) {
-    <app-submit-button
-      [overrideCallToActionLabel]="true"
-      [callToAction]="'Save'"
-      [return]="!insideFlow"
-      (clicked)="setSubmitAction($event)"
-    ></app-submit-button>
+  <app-submit-button
+    class="cwp-submit-button"
+    [overrideCallToActionLabel]="true"
+    [callToAction]="'Save'"
+    [return]="!insideFlow"
+    (clicked)="setSubmitAction($event)"
+  ></app-submit-button>
   } @else {
-    <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
+  <app-submit-button
+    class="cwp-submit-button"
+    [return]="!insideFlow"
+    (clicked)="setSubmitAction($event)"
+  ></app-submit-button>
   }
 </form>

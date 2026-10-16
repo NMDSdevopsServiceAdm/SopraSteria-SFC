@@ -105,6 +105,7 @@ export interface Worker {
     roleCategoryId: number;
     title: string;
     description: string;
+    isNominatedIndividual?: boolean;
   };
   trainingProvided?: boolean;
 }

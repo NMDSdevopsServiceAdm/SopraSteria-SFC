@@ -1,5 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
@@ -89,13 +88,13 @@ describe('CareWorkforcePathwayRoleComponent', () => {
   });
 
   it('should show the heading and caption', async () => {
-    const { getByText, getByTestId, component } = await setup();
+    const { getByText, getByTestId } = await setup();
 
     const sectionHeading = getByTestId('section-heading');
 
     expect(sectionHeading).toBeTruthy();
     expect(within(sectionHeading).getByText('Training and qualifications')).toBeTruthy();
-    expect(getByText('Where are they currently on the care workforce pathway?')).toBeTruthy;
+    expect(getByText('Where are they currently on the Care Workforce Pathway?')).toBeTruthy();
   });
 
   describe('reveal', () => {
@@ -105,27 +104,36 @@ describe('CareWorkforcePathwayRoleComponent', () => {
       const reveal = getByTestId('reveal-whatsCareWorkforcePathway');
 
       expect(reveal).toBeTruthy();
-      expect(within(reveal).getByText("What's the care workforce pathway?")).toBeTruthy();
+      expect(within(reveal).getByText('Why assign Care Workforce Pathway role categories?')).toBeTruthy();
     });
 
     it('should show the link for more information', async () => {
-      const { getByText, getByTestId, component } = await setup();
+      const { getByText, getByTestId } = await setup();
 
       const reveal = getByTestId('reveal-whatsCareWorkforcePathway');
       expect(reveal).toBeTruthy();
 
-      const link = getByText('Read more about the care workforce pathway');
+      const link = getByText('Read more about the Care Workforce Pathway');
 
       expect(link.getAttribute('href')).toBe(
         'https://www.gov.uk/government/publications/care-workforce-pathway-for-adult-social-care/care-workforce-pathway-for-adult-social-care-overview',
       );
+      expect(link.getAttribute('target')).toBe('_blank');
     });
   });
 
-  it('should show the sub text for radios', async () => {
+  it('should show the instruction for selecting a role category', async () => {
     const { getByText } = await setup();
 
-    expect(getByText('Care workforce pathway role categories')).toBeTruthy();
+    expect(getByText('Only select one role category.')).toBeTruthy();
+  });
+
+  it('should display the role category group headings', async () => {
+    const { getByRole } = await setup();
+
+    expect(getByRole('heading', { name: 'Care providing' })).toBeTruthy();
+    expect(getByRole('heading', { name: 'Senior leadership' })).toBeTruthy();
+    expect(getByRole('heading', { name: 'Non-care providing' })).toBeTruthy();
   });
 
   describe('progress bar', () => {
@@ -295,23 +303,24 @@ describe('CareWorkforcePathwayRoleComponent', () => {
       },
     };
 
-    it('should show a different h1 heading', async () => {
-      const { getByRole } = await setup({ ...overrideReturnTo });
+    it('should show the existing heading and Staff records caption', async () => {
+      const { getByRole, getByTestId } = await setup(overrideReturnTo);
 
       expect(getByRole('heading', { level: 1 }).textContent).toContain(
-        'Where are your staff on the care workforce pathway?',
+        'Where are they currently on the Care Workforce Pathway?',
       );
+      expect(getByTestId('section-heading').textContent).toContain('Staff records');
     });
 
     it("should show the worker's nameOrId", async () => {
-      const { getByText } = await setup({ ...overrideReturnTo });
+      const { getByText } = await setup(overrideReturnTo);
 
       expect(getByText('Name or ID number')).toBeTruthy();
       expect(getByText(mockWorker.nameOrId as string)).toBeTruthy();
     });
 
     it('should set submit button text as "Save"', async () => {
-      const { getByText } = await setup({ ...overrideReturnTo });
+      const { getByText } = await setup(overrideReturnTo);
 
       expect(getByText('Save')).toBeTruthy();
     });
