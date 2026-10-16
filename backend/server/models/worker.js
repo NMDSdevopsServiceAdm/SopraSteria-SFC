@@ -1,7 +1,7 @@
 const dayjs = require('dayjs');
 const lodash = require('lodash');
 const { Op } = require('sequelize');
-const { unsetDHAAnswerOnJobRoleChange } = require('./hooks/workerHooks');
+const { unsetDHAAnswerOnJobRoleChange, unsetCWPRoleCategoryOnJobRoleChange } = require('./hooks/workerHooks');
 const { JobRoleId } = require('../data/constants');
 
 module.exports = function (sequelize, DataTypes) {
@@ -1477,9 +1477,13 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     const workers = rows.map((worker) => {
-      return lodash.merge({}, worker.toJSON(), {
-        careWorkforcePathwayRoleCategory: { isNominatedIndividual: worker.CWPRoleCategoryIsAlsoNominatedIndividual },
-      });
+      if (worker.CWPRoleCategoryIsAlsoNominatedIndividual) {
+        return lodash.merge({}, worker.toJSON(), {
+          careWorkforcePathwayRoleCategory: { isNominatedIndividual: worker.CWPRoleCategoryIsAlsoNominatedIndividual },
+        });
+      } else {
+        return worker.toJSON();
+      }
     });
 
     return { count, workers };
@@ -1623,6 +1627,7 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Worker.addHook('beforeSave', 'unsetDHAAnswerOnJobRoleChange', unsetDHAAnswerOnJobRoleChange);
+  Worker.addHook('beforeSave', 'unsetCWPRoleCategoryOnJobRoleChange', unsetCWPRoleCategoryOnJobRoleChange);
 
   return Worker;
 };

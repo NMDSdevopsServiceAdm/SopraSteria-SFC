@@ -16,6 +16,7 @@ describe('Care workforce pathway journey', { tags: '@others' }, () => {
       cy.deleteTestWorkerFromDb(workerName);
     });
 
+    cy.resetCWPRoleCategoriesBannerForWorkplace(establishmentID, true);
     cy.resetWorkplaceCWPAnswers(establishmentID);
     cy.setPayAndPensionsMiniFlowViewed(establishmentID, true);
     cy.archiveAllWorkersInWorkplace(establishmentID);
@@ -34,7 +35,7 @@ describe('Care workforce pathway journey', { tags: '@others' }, () => {
 
       cy.url().should('contain', 'dashboard');
     });
-    const cwpAwarenessFlagMessage = 'How aware of the care workforce pathway is your workplace?';
+    const cwpAwarenessFlagMessage = 'How aware of the Care Workforce Pathway is your workplace?';
 
     it('should show an update banner if workplace has not answered the CWP awareness question', () => {
       cy.get('[data-testid="update-banner-area"]').should('contain', cwpAwarenessFlagMessage);

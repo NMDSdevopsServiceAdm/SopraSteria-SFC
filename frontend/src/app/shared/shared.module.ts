@@ -114,7 +114,6 @@ import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-bu
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workforce-pathway-awareness.pipe';
-import { CareWorkforcePathwayRoleCategoryPipe } from './pipes/care-workforce-pathway-role-category.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { DataViewPermissionsPipe } from './pipes/data-view-permissions.pipe';
 import { DontKnowPipe } from './pipes/dont-know.pipe';
@@ -153,6 +152,7 @@ import { NewAutoSuggestComponent } from './components/auto-suggest-new/new-auto-
 import { SearchInputAutoSuggestComponent } from './components/search-input-auto-suggest/search-input-auto-suggest.component';
 import { UpdateBannerComponent } from './components/update-banner/update-banner.component';
 import { DisplaySlvDataComponent } from './components/display-slv-data/display-slv-data.component';
+import { DisplayCwpRoleCategoryComponent } from './components/display-cwp-role-category/display-cwp-role-category.component';
 
 @NgModule({
   imports: [
@@ -295,7 +295,6 @@ import { DisplaySlvDataComponent } from './components/display-slv-data/display-s
     SelectJobRolesToAddComponent,
     NumberInputWithButtonsComponent,
     JobRoleNumbersTableComponent,
-    CareWorkforcePathwayRoleCategoryPipe,
     HasValuePipe,
     FormatCwpUsePipe,
     CareWorkforcePathwayWorkplaceAwarenessTitle,
@@ -312,6 +311,7 @@ import { DisplaySlvDataComponent } from './components/display-slv-data/display-s
     NewPillWithLinkComponent,
     UpdateBannerComponent,
     DisplaySlvDataComponent,
+    DisplayCwpRoleCategoryComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -435,7 +435,6 @@ import { DisplaySlvDataComponent } from './components/display-slv-data/display-s
     FormatStartersLeaversVacanciesPipe,
     NumberInputWithButtonsComponent,
     JobRoleNumbersTableComponent,
-    CareWorkforcePathwayRoleCategoryPipe,
     HasValuePipe,
     FormatCwpUsePipe,
     CareWorkforcePathwayWorkplaceAwarenessTitle,
@@ -453,6 +452,7 @@ import { DisplaySlvDataComponent } from './components/display-slv-data/display-s
     NewPillWithLinkComponent,
     UpdateBannerComponent,
     DisplaySlvDataComponent,
+    DisplayCwpRoleCategoryComponent,
   ],
   providers: [
     DialogService,

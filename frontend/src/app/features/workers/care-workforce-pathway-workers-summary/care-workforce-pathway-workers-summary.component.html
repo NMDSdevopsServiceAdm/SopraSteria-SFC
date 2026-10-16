@@ -8,6 +8,7 @@
         </h1>
       </legend>
       <app-details
+        class="cwp-reveal-content"
         [title]="'Why assign Care Workforce Pathway role categories?'"
         data-testid="reveal-whatsCareWorkforcePathway"
       >
@@ -74,15 +75,9 @@
               </td>
               <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
               <td class="govuk-table__cell">
-                @let cwpRole = worker?.careWorkforcePathwayRoleCategory;
-                @if (cwpRole?.title && cwpRole?.isNominatedIndividual) {
-                  <ul class="govuk-list govuk-!-margin-bottom-0">
-                    <li>{{ cwpRole.title }}</li>
-                    <li>Nominated individual</li>
-                  </ul>
-                } @else {
-                  {{ cwpRole?.title ?? '-' }}
-                }
+                <app-display-cwp-role-category
+                  [careWorkforcePathwayRoleCategory]="worker.careWorkforcePathwayRoleCategory"
+                ></app-display-cwp-role-category>
               </td>
               <td class="govuk-table__cell govuk-util__align-right">
                 <a
@@ -103,9 +98,11 @@
           (currentPageIndexChange)="handlePageUpdate($event)"
           [currentPageIndex]="pageIndex"
         />
-        <p><strong>Check all pages before confirming.</strong></p>
+        <p class="govuk-!-margin-bottom-0"><strong>Check all pages before confirming.</strong></p>
       }
-      <button class="govuk-button" type="button" (click)="visitReviewNewToCarePage()">Confirm role categories</button>
+      <button class="govuk-button govuk-!-margin-top-4" type="button" (click)="visitReviewNewToCarePage()">
+        Confirm role categories
+      </button>
     </div>
   </div>
 }
