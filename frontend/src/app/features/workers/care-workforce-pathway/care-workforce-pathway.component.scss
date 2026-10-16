@@ -1,4 +1,12 @@
-.cwp-nominated-conditional {
-  margin-top: -48px;
-  padding-top: 55px;
+.govuk-radios__hint.cwp-radios__hint--nominated-conditional {
+  border-left: 5px solid #b1b4b6;
+  margin-left: -22px;
+  padding-left: 32px;
+  margin-top: 10px;
+  padding-bottom: 5px;
+  margin-bottom: -10px !important;
+
+  > div {
+    transform: translateY(-10px);
+  }
 }

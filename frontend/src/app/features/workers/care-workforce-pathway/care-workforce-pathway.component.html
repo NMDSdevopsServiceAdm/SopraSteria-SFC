@@ -36,94 +36,100 @@
           </app-details>
 
           @if (cameFromCWPSummaryPage) {
-          <div class="govuk-!-margin-bottom-6">
-            <h2 class="govuk-heading-s govuk-!-margin-bottom-1">Name or ID number</h2>
-            <p class="govuk-body">{{ worker.nameOrId }}</p>
-          </div>
+            <div class="govuk-!-margin-bottom-6">
+              <h2 class="govuk-heading-s govuk-!-margin-bottom-1">Name or ID number</h2>
+              <p class="govuk-body">{{ worker.nameOrId }}</p>
+            </div>
           }
           <p class="govuk-body">Only select one role category.</p>
 
-          @for (group of groupedCategories; track group.title; let last = $last) { @if (group.title === 'Other options')
-          {
-          <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-6 govuk-!-margin-bottom-6" />
-          } @else {
-          <h2 class="govuk-heading-s">{{ group.title }}</h2>
-          }
+          @for (group of groupedCategories; track group.title; let last = $last) {
+            @if (group.title === 'Other options') {
+              <app-seperator-line></app-seperator-line>
+            } @else {
+              <h2 class="govuk-heading-s">{{ group.title }}</h2>
+            }
 
-          <div class="govuk-radios govuk-!-margin-bottom-6">
-            @for (category of group.categories; track category.id) {
-            <div class="govuk-radios__item">
-              <input
-                class="govuk-radios__input"
-                id="careWorkforcePathwayRoleCategory-{{ category.id }}"
-                formControlName="careWorkforcePathwayRoleCategory"
-                type="radio"
-                [value]="category.id"
-                [attr.aria-describedby]="category.description ? 'category-description-' + category.id : null"
-              />
-
-              <label class="govuk-label govuk-radios__label" for="careWorkforcePathwayRoleCategory-{{ category.id }}">
-                {{ category.title }}
-              </label>
-
-              @if (category.description) {
-              <div
-                id="category-description-{{ category.id }}"
-                class="govuk-hint govuk-radios__hint"
-                [innerHTML]="category.description"
-              ></div>
-              }
-            </div>
-
-            @if (isSelectedSeniorLeadershipRole(category)) {
-            <div class="govuk-radios__conditional cwp-nominated-conditional">
-              <div class="govuk-checkboxes">
-                <div class="govuk-checkboxes__item">
+            <div class="govuk-radios" [class]="{ 'govuk-!-margin-bottom-6': !$last }">
+              @for (category of group.categories; track category.id) {
+                <div class="govuk-radios__item">
                   <input
-                    class="govuk-checkboxes__input"
-                    id="isNominatedIndividual"
-                    type="checkbox"
-                    formControlName="isNominatedIndividual"
+                    class="govuk-radios__input"
+                    id="careWorkforcePathwayRoleCategory-{{ category.id }}"
+                    formControlName="careWorkforcePathwayRoleCategory"
+                    type="radio"
+                    [value]="category.id"
+                    [attr.aria-describedby]="category.description ? 'category-description-' + category.id : null"
                   />
 
-                  <label class="govuk-label govuk-checkboxes__label" for="isNominatedIndividual">
-                    Also a nominated individual
+                  <label
+                    class="govuk-label govuk-radios__label"
+                    for="careWorkforcePathwayRoleCategory-{{ category.id }}"
+                  >
+                    {{ category.title }}
                   </label>
+
+                  @if (category.description) {
+                    <div
+                      id="category-description-{{ category.id }}"
+                      class="govuk-hint govuk-radios__hint"
+                      [class]="{ 'cwp-radios__hint--nominated-conditional': isSelectedSeniorLeadershipRole(category) }"
+                    >
+                      <div [innerHTML]="category.description"></div>
+                    </div>
+                  }
                 </div>
-              </div>
+
+                @if (isSelectedSeniorLeadershipRole(category)) {
+                  <div class="govuk-radios__conditional">
+                    <div class="govuk-checkboxes">
+                      <div class="govuk-checkboxes__item">
+                        <input
+                          class="govuk-checkboxes__input"
+                          id="isNominatedIndividual"
+                          type="checkbox"
+                          formControlName="isNominatedIndividual"
+                        />
+
+                        <label class="govuk-label govuk-checkboxes__label" for="isNominatedIndividual">
+                          Also a nominated individual
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                }
+              }
             </div>
-            } }
-          </div>
           }
         </fieldset>
       </div>
     </div>
     @if (insideFlow) {
-    <div class="govuk-grid-column-one-third">
-      <div class="govuk-!-margin-left-8">
-        <app-progress-bar
-          data-testid="progress-bar"
-          [sections]="staffRecordSections"
-          [currentSection]="section"
-        ></app-progress-bar>
+      <div class="govuk-grid-column-one-third">
+        <div class="govuk-!-margin-left-8">
+          <app-progress-bar
+            data-testid="progress-bar"
+            [sections]="staffRecordSections"
+            [currentSection]="section"
+          ></app-progress-bar>
+        </div>
       </div>
-    </div>
     }
   </div>
 
   @if (cameFromCWPSummaryPage) {
-  <app-submit-button
-    class="cwp-submit-button"
-    [overrideCallToActionLabel]="true"
-    [callToAction]="'Save'"
-    [return]="!insideFlow"
-    (clicked)="setSubmitAction($event)"
-  ></app-submit-button>
+    <app-submit-button
+      class="cwp-submit-button"
+      [overrideCallToActionLabel]="true"
+      [callToAction]="'Save'"
+      [return]="!insideFlow"
+      (clicked)="setSubmitAction($event)"
+    ></app-submit-button>
   } @else {
-  <app-submit-button
-    class="cwp-submit-button"
-    [return]="!insideFlow"
-    (clicked)="setSubmitAction($event)"
-  ></app-submit-button>
+    <app-submit-button
+      class="cwp-submit-button"
+      [return]="!insideFlow"
+      (clicked)="setSubmitAction($event)"
+    ></app-submit-button>
   }
 </form>
