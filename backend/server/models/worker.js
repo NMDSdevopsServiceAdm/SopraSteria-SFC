@@ -1452,7 +1452,12 @@ module.exports = function (sequelize, DataTypes) {
     const order = sortByOptions[sortBy] ?? sortByOptions.staffNameAsc;
 
     const { count, rows } = await this.findAndCountAll({
-      attributes: ['uid', ['NameOrIdValue', 'nameOrId'], 'CWPRoleCategoryIsAlsoNominatedIndividual'],
+      attributes: [
+        'uid',
+        ['NameOrIdValue', 'nameOrId'],
+        'CWPRoleCategoryIsAlsoNominatedIndividual',
+        'MainJobStartDateValue',
+      ],
       where: {
         establishmentFk: establishmentId,
         archived: false,
