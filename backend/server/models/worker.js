@@ -1477,9 +1477,13 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     const workers = rows.map((worker) => {
-      return lodash.merge({}, worker.toJSON(), {
-        careWorkforcePathwayRoleCategory: { isNominatedIndividual: worker.CWPRoleCategoryIsAlsoNominatedIndividual },
-      });
+      if (worker.CWPRoleCategoryIsAlsoNominatedIndividual) {
+        return lodash.merge({}, worker.toJSON(), {
+          careWorkforcePathwayRoleCategory: { isNominatedIndividual: worker.CWPRoleCategoryIsAlsoNominatedIndividual },
+        });
+      } else {
+        return worker.toJSON();
+      }
     });
 
     return { count, workers };
