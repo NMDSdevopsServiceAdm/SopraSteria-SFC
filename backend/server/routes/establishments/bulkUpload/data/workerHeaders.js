@@ -37,6 +37,7 @@ const workerHeaders = [
   'SCQUAL',
   'NONSCQUAL',
   'CWPCATEGORY',
+  'CWPNOMIND',
   'QUALACH01',
   'QUALACH01NOTES',
   'QUALACH02',

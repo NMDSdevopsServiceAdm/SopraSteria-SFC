@@ -78,7 +78,31 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       { ASC: 3, BUDI: 3 },
       { ASC: 4, BUDI: 4 },
     ];
-    Object.assign(mappings, { NURSE_FIELD_OF_PRACTICE: mockNurseFieldOfPracticeMappings });
+    const mockCwpCategoryMappings = [
+      { ASC: 1, BUDI: 1 },
+      { ASC: 2, BUDI: 2 },
+      { ASC: 3, BUDI: 3 },
+      { ASC: 4, BUDI: 4 },
+      { ASC: 5, BUDI: 5 },
+      { ASC: 6, BUDI: 6 },
+      { ASC: 7, BUDI: 7 },
+      { ASC: 8, BUDI: 9 },
+      { ASC: 9, BUDI: 10 },
+      { ASC: 10, BUDI: 11 },
+      { ASC: 11, BUDI: 12 },
+      { ASC: 12, BUDI: 13 },
+      { ASC: 13, BUDI: 14 },
+      { ASC: 14, BUDI: 15 },
+      { ASC: 15, BUDI: 16 },
+      { ASC: 16, BUDI: 17 },
+      { ASC: 101, BUDI: 999 },
+      { ASC: 102, BUDI: 998 },
+    ];
+
+    Object.assign(mappings, {
+      NURSE_FIELD_OF_PRACTICE: mockNurseFieldOfPracticeMappings,
+      CWP_CATEGORY: mockCwpCategoryMappings,
+    });
   });
 
   describe('validations', () => {
@@ -2375,22 +2399,24 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
   describe(' _validateCwpCategory()', () => {
     describe('Valid inputs', () => {
-      const allowedCwpCategoryValues = [1, 2, 3, 4, 5, 6, 7, 998, 999];
+      const allowedCwpCategoryValues = [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 998, 999];
 
-      it(`should not add warning when the CWPCATEGORY value is valid:(${allowedCwpCategoryValues})`, async () => {
-        const worker = buildWorkerCsv({
-          overrides: {
-            STATUS: 'NEW',
-            CWPCATEGORY: allowedCwpCategoryValues,
-          },
+      allowedCwpCategoryValues.forEach((category) => {
+        it(`should not add warning when CWPCATEGORY is ${category}`, () => {
+          const worker = buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              CWPCATEGORY: String(category),
+            },
+          });
+
+          const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+          validator.validate();
+          validator.transform();
+
+          expect(validator._validationErrors).to.deep.equal([]);
         });
-        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
-
-        validator.validate();
-        validator.transform();
-
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._validationErrors.length).to.equal(0);
       });
     });
 

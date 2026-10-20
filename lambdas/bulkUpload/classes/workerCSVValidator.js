@@ -33,6 +33,7 @@ class WorkerCsvValidator {
     this._healthAndCareVisa = null;
     this._employedFromOutsideUk = null;
     this._careWorkForcePathwayCategory = null;
+    this._cwpNominatedIndividual = false;
 
     this._disabled = null;
     this._careCert = null;
@@ -413,6 +414,10 @@ class WorkerCsvValidator {
 
   static get CWPCATEGORY_WARNING() {
     return 5650;
+  }
+
+  static get CWPNOMIND_WARNING() {
+    return 5651;
   }
 
   static get DHA_WARNING() {
@@ -1247,28 +1252,48 @@ class WorkerCsvValidator {
   }
 
   _validateCwpCategory() {
-    const allowedCwpCategoryValues = [1, 2, 3, 4, 5, 6, 7, 998, 999];
-
     const myCwpCategory = parseInt(this._currentLine.CWPCATEGORY, 10);
 
     if (this._currentLine.CWPCATEGORY && this._currentLine.CWPCATEGORY.length > 0) {
-      if (isNaN(myCwpCategory) || !allowedCwpCategoryValues.includes(myCwpCategory)) {
+      const mappedCategory = this.BUDI.cwpCategory(this.BUDI.TO_ASC, myCwpCategory);
+
+      if (isNaN(myCwpCategory) || !mappedCategory) {
         this._validationErrors.push(
           this._generateWarning(
             'The code you have entered for CWPCATEGORY is incorrect and will be ignored',
             'CWPCATEGORY',
           ),
         );
-
         return false;
-      } else {
-        this._careWorkForcePathwayCategory = myCwpCategory;
-
-        return true;
       }
-    } else {
-      return true;
+
+      this._careWorkForcePathwayCategory = myCwpCategory;
     }
+
+    return true;
+  }
+
+  _validateCwpNominatedIndividual() {
+    const allowedValues = [1, 2];
+    const cwpNominatedIndividualValue = this._currentLine.CWPNOMIND;
+
+    if (cwpNominatedIndividualValue && cwpNominatedIndividualValue.length > 0) {
+      const nominatedIndividual = parseInt(cwpNominatedIndividualValue, 10);
+
+      if (isNaN(nominatedIndividual) || !allowedValues.includes(nominatedIndividual)) {
+        this._validationErrors.push(
+          this._generateWarning(
+            'The code you have entered for CWPNOMIND is incorrect and will be ignored',
+            'CWPNOMIND',
+          ),
+        );
+        return false;
+      }
+
+      this._cwpNominatedIndividual = nominatedIndividual === 1;
+    }
+
+    return true;
   }
 
   _validateDisabled() {
@@ -2871,9 +2896,19 @@ class WorkerCsvValidator {
             'CWPCATEGORY',
           ),
         );
+
+        this._careWorkForcePathwayCategory = null;
       } else {
         this._careWorkForcePathwayCategory = myValidatedCwpCategory;
       }
+    }
+
+    const cwpCategory = this.BUDI.mappings.CWP_CATEGORY.find(
+      (category) => category.ASC === this._careWorkForcePathwayCategory,
+    );
+
+    if (cwpCategory?.group !== 'Senior leadership') {
+      this._cwpNominatedIndividual = false;
     }
   }
 
@@ -2926,6 +2961,7 @@ class WorkerCsvValidator {
       status = !this._validateNonSocialCareQualification() ? false : status;
       status = !this._validateAmhp() ? false : status;
       status = !this._validateCwpCategory() ? false : status;
+      status = !this._validateCwpNominatedIndividual() ? false : status;
     }
 
     return status;
@@ -2987,6 +3023,7 @@ class WorkerCsvValidator {
       careWorkforcePathwayRoleCategory: this._careWorkForcePathwayCategory
         ? {
             roleCategoryId: this._careWorkForcePathwayCategory,
+            isNominatedIndividual: this._cwpNominatedIndividual,
           }
         : undefined,
 
@@ -3081,6 +3118,7 @@ class WorkerCsvValidator {
       careWorkforcePathwayRoleCategory: this._careWorkForcePathwayCategory
         ? {
             roleCategoryId: this._careWorkForcePathwayCategory,
+            isNominatedIndividual: this._cwpNominatedIndividual,
           }
         : undefined,
 
