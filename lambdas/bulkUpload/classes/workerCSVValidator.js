@@ -1252,47 +1252,124 @@ class WorkerCsvValidator {
   }
 
   _validateCwpCategory() {
-    const myCwpCategory = parseInt(this._currentLine.CWPCATEGORY, 10);
+    const jobId = this.BUDI.jobRoles(this.BUDI.TO_ASC, this._mainJobRole);
 
-    if (this._currentLine.CWPCATEGORY && this._currentLine.CWPCATEGORY.length > 0) {
-      const mappedCategory = this.BUDI.cwpCategory(this.BUDI.TO_ASC, myCwpCategory);
+    if (this._isMainJobRoleExcludedFromCwp(jobId)) {
+      const cwpCategory = this._currentLine.CWPCATEGORY?.trim();
 
-      if (isNaN(myCwpCategory) || !mappedCategory) {
+      if (cwpCategory) {
         this._validationErrors.push(
           this._generateWarning(
-            'The code you have entered for CWPCATEGORY is incorrect and will be ignored',
+            'The code you have entered for CWPCATEGORY will be ignored as your MAINJOBROLE is excluded',
             'CWPCATEGORY',
           ),
         );
-        return false;
       }
 
-      this._careWorkForcePathwayCategory = myCwpCategory;
+      this._careWorkForcePathwayCategory = null;
+      return true;
     }
+
+    const cwpCategoryCode = this._currentLine.CWPCATEGORY?.trim();
+
+    if (!cwpCategoryCode) {
+      return true;
+    }
+
+    const isValidFormat = /^\d+$/.test(cwpCategoryCode);
+
+    const mappedCategory = isValidFormat ? this.BUDI.cwpCategory(this.BUDI.TO_ASC, Number(cwpCategoryCode)) : null;
+
+    if (!mappedCategory) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'The code you have entered for CWPCATEGORY is incorrect and will be ignored',
+          'CWPCATEGORY',
+        ),
+      );
+      return true;
+    }
+
+    this._careWorkForcePathwayCategory = Number(cwpCategoryCode);
 
     return true;
   }
 
   _validateCwpNominatedIndividual() {
-    const allowedValues = [1, 2];
-    const cwpNominatedIndividualValue = this._currentLine.CWPNOMIND;
+    const cwpNominated = this._currentLine.CWPNOMIND?.trim();
+    const cwpCategoryCode = this._currentLine.CWPCATEGORY?.trim();
 
-    if (cwpNominatedIndividualValue && cwpNominatedIndividualValue.length > 0) {
-      const nominatedIndividual = parseInt(cwpNominatedIndividualValue, 10);
+    const jobId = this.BUDI.jobRoles(this.BUDI.TO_ASC, this._mainJobRole);
+    const isExcluded = this._isMainJobRoleExcludedFromCwp(jobId);
 
-      if (isNaN(nominatedIndividual) || !allowedValues.includes(nominatedIndividual)) {
+    const mappedCategory = cwpCategoryCode ? this.BUDI.cwpCategory(this.BUDI.TO_ASC, Number(cwpCategoryCode)) : null;
+
+    const category = this.BUDI.mappings.CWP_CATEGORY.find((category) => category.ASC === mappedCategory);
+
+    // Main job role excluded from CWP
+    if (isExcluded) {
+      if (cwpNominated) {
+        this._validationErrors.push(
+          this._generateWarning(
+            'The code you have entered for CWPNOMIND will be ignored as your MAINJOBROLE is excluded',
+            'CWPNOMIND',
+          ),
+        );
+      }
+      return true;
+    }
+
+    if (!cwpCategoryCode) {
+      if (cwpNominated) {
+        this._validationErrors.push(
+          this._generateWarning(
+            'The code you have entered for CWPNOMIND is incorrect and will be ignored.',
+            'CWPNOMIND',
+          ),
+        );
+      }
+      return true;
+    }
+
+    // Warn for CWPNOMIND when the CWP category is invalid, as both values will be ignored.
+    if (cwpCategoryCode && !category) {
+      if (cwpNominated) {
         this._validationErrors.push(
           this._generateWarning(
             'The code you have entered for CWPNOMIND is incorrect and will be ignored',
             'CWPNOMIND',
           ),
         );
-        return false;
       }
-
-      this._cwpNominatedIndividual = nominatedIndividual === 1;
+      return true;
     }
 
+    // CWPNOMIND is only applicable to Senior leadership
+    if (category?.group !== 'Senior leadership') {
+      if (cwpNominated) {
+        this._validationErrors.push(
+          this._generateWarning(
+            // TODO: Confirm warning message with Jackie
+            'CWPNOMIND is not applicable to this CWP category and will be ignored',
+            'CWPNOMIND',
+          ),
+        );
+      }
+      return true;
+    }
+
+    if (!cwpNominated) {
+      return true;
+    }
+
+    if (cwpNominated !== '1') {
+      this._validationErrors.push(
+        this._generateWarning('The code you have entered for CWPNOMIND is incorrect and will be ignored', 'CWPNOMIND'),
+      );
+      return true;
+    }
+
+    this._cwpNominatedIndividual = true;
     return true;
   }
 
@@ -2885,33 +2962,39 @@ class WorkerCsvValidator {
     }
   }
 
+  _isMainJobRoleExcludedFromCwp(jobId) {
+    const job = this.BUDI.mappings.JOB_ROLE_CWP_EXCLUSIONS.find((job) => job.ASC === jobId);
+
+    return job?.excludedFromCareWorkforcePathway === true;
+  }
+
   _transformCwpCategory() {
-    if (this._careWorkForcePathwayCategory) {
-      const myValidatedCwpCategory = this.BUDI.cwpCategory(this.BUDI.TO_ASC, this._careWorkForcePathwayCategory);
-
-      if (!myValidatedCwpCategory) {
-        this._validationErrors.push(
-          this._generateWarning(
-            'The code you have entered for CWPCATEGORY is incorrect and will be ignored',
-            'CWPCATEGORY',
-          ),
-        );
-
-        this._careWorkForcePathwayCategory = null;
-      } else {
-        this._careWorkForcePathwayCategory = myValidatedCwpCategory;
-      }
+    // Main job role excluded from CWP
+    if (this._isMainJobRoleExcludedFromCwp(this._mainJobRole)) {
+      this._careWorkForcePathwayCategory = null;
+      this._cwpNominatedIndividual = false;
+      return true;
     }
 
+    // Convert CWP category from CSV code to database ID
+    if (this._careWorkForcePathwayCategory) {
+      const mappedCategory = this.BUDI.cwpCategory(this.BUDI.TO_ASC, this._careWorkForcePathwayCategory);
+
+      this._careWorkForcePathwayCategory = mappedCategory || null;
+    }
+
+    // Check whether the category belongs to Senior leadership
     const cwpCategory = this.BUDI.mappings.CWP_CATEGORY.find(
       (category) => category.ASC === this._careWorkForcePathwayCategory,
     );
 
+    // Nominated individual only applies to Senior leadership
     if (cwpCategory?.group !== 'Senior leadership') {
       this._cwpNominatedIndividual = false;
     }
-  }
 
+    return true;
+  }
   // returns true on success, false is any attribute of Worker fails
   validate() {
     let status = true;
@@ -3020,13 +3103,14 @@ class WorkerCsvValidator {
       yearOfEntry: this._yearOfEntry ? this._yearOfEntry : undefined,
       healthAndCareVisa: this._healthAndCareVisa ? this._healthAndCareVisa : undefined,
       employedFromOutsideUk: this._employedFromOutsideUk ? this._employedFromOutsideUk : undefined,
-      careWorkforcePathwayRoleCategory: this._careWorkForcePathwayCategory
-        ? {
-            roleCategoryId: this._careWorkForcePathwayCategory,
-            isNominatedIndividual: this._cwpNominatedIndividual,
-          }
-        : undefined,
-
+      careWorkforcePathwayRoleCategory: this._isMainJobRoleExcludedFromCwp(this._mainJobRole)
+        ? null
+        : this._careWorkForcePathwayCategory
+          ? {
+              roleCategoryId: this._careWorkForcePathwayCategory,
+              isNominatedIndividual: this._cwpNominatedIndividual,
+            }
+          : undefined,
       disabled: this._disabled !== null ? this._disabled : undefined,
       careCertificate: this._careCert
         ? {
@@ -3115,12 +3199,14 @@ class WorkerCsvValidator {
         : undefined,
       healthAndCareVisa: this._healthAndCareVisa ? this._healthAndCareVisa : undefined,
       employedFromOutsideUk: this._employedFromOutsideUk ? this._employedFromOutsideUk : undefined,
-      careWorkforcePathwayRoleCategory: this._careWorkForcePathwayCategory
-        ? {
-            roleCategoryId: this._careWorkForcePathwayCategory,
-            isNominatedIndividual: this._cwpNominatedIndividual,
-          }
-        : undefined,
+      careWorkforcePathwayRoleCategory: this._isMainJobRoleExcludedFromCwp(this._mainJobRole)
+        ? null
+        : this._careWorkForcePathwayCategory
+          ? {
+              roleCategoryId: this._careWorkForcePathwayCategory,
+              isNominatedIndividual: this._cwpNominatedIndividual,
+            }
+          : undefined,
 
       disability: this._disabled ? this._disabled : undefined,
       careCertificate: this._careCert ? this._careCert : undefined,
