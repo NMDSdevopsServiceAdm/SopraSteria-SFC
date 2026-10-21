@@ -1253,10 +1253,8 @@ class WorkerCsvValidator {
 
   _validateCwpCategory() {
     const jobId = this.BUDI.jobRoles(this.BUDI.TO_ASC, this._mainJobRole);
-
+    const cwpCategory = this._currentLine.CWPCATEGORY?.trim();
     if (this._isMainJobRoleExcludedFromCwp(jobId)) {
-      const cwpCategory = this._currentLine.CWPCATEGORY?.trim();
-
       if (cwpCategory) {
         this._validationErrors.push(
           this._generateWarning(
@@ -1270,13 +1268,11 @@ class WorkerCsvValidator {
       return true;
     }
 
-    const cwpCategoryCode = this._currentLine.CWPCATEGORY?.trim();
-
-    if (!cwpCategoryCode) {
+    if (!cwpCategory) {
       return true;
     }
 
-    const isValidFormat = /^\d+$/.test(cwpCategoryCode);
+    const isValidFormat = /^\d+$/.test(cwpCategory);
 
     const mappedCategory = isValidFormat ? this.BUDI.cwpCategory(this.BUDI.TO_ASC, Number(cwpCategoryCode)) : null;
 
@@ -1290,7 +1286,7 @@ class WorkerCsvValidator {
       return true;
     }
 
-    this._careWorkForcePathwayCategory = Number(cwpCategoryCode);
+    this._careWorkForcePathwayCategory = Number(cwpCategory);
 
     return true;
   }
@@ -1302,7 +1298,10 @@ class WorkerCsvValidator {
     const jobId = this.BUDI.jobRoles(this.BUDI.TO_ASC, this._mainJobRole);
     const isExcluded = this._isMainJobRoleExcludedFromCwp(jobId);
 
-    const mappedCategory = cwpCategoryCode ? this.BUDI.cwpCategory(this.BUDI.TO_ASC, Number(cwpCategoryCode)) : null;
+    const mappedCategory =
+      this._careWorkForcePathwayCategory !== null
+        ? this.BUDI.cwpCategory(this.BUDI.TO_ASC, this._careWorkForcePathwayCategory)
+        : null;
 
     const category = this.BUDI.mappings.CWP_CATEGORY.find((category) => category.ASC === mappedCategory);
 
@@ -1331,8 +1330,8 @@ class WorkerCsvValidator {
       return true;
     }
 
-    // Warn for CWPNOMIND when the CWP category is invalid, as both values will be ignored.
-    if (cwpCategoryCode && !category) {
+    // If the CWP category is invalid, as both values will be ignored.
+    if (!category) {
       if (cwpNominated) {
         this._validationErrors.push(
           this._generateWarning(
@@ -1349,8 +1348,7 @@ class WorkerCsvValidator {
       if (cwpNominated) {
         this._validationErrors.push(
           this._generateWarning(
-            // TODO: Confirm warning message with Jackie
-            'CWPNOMIND is not applicable to this CWP category and will be ignored',
+            'The code you have entered for CWPNOMIND is incorrect and will be ignored',
             'CWPNOMIND',
           ),
         );
@@ -3074,6 +3072,29 @@ class WorkerCsvValidator {
     }
   }
 
+  _getCwpRoleCategoryValue() {
+    if (this._isMainJobRoleExcludedFromCwp(this._mainJobRole)) {
+      return null;
+    }
+
+    const cwpCategoryCode = this._currentLine.CWPCATEGORY?.trim();
+
+    // An empty category clears any existing CWP values.
+    if (!cwpCategoryCode) {
+      return null;
+    }
+
+    // Invalid populated categories should not overwrite existing values.
+    if (this._careWorkForcePathwayCategory === null) {
+      return undefined;
+    }
+
+    return {
+      roleCategoryId: this._careWorkForcePathwayCategory,
+      isNominatedIndividual: this._cwpNominatedIndividual,
+    };
+  }
+
   toJSON(isValidation = false) {
     const extraFields = {};
     if (isValidation) {
@@ -3103,14 +3124,7 @@ class WorkerCsvValidator {
       yearOfEntry: this._yearOfEntry ? this._yearOfEntry : undefined,
       healthAndCareVisa: this._healthAndCareVisa ? this._healthAndCareVisa : undefined,
       employedFromOutsideUk: this._employedFromOutsideUk ? this._employedFromOutsideUk : undefined,
-      careWorkforcePathwayRoleCategory: this._isMainJobRoleExcludedFromCwp(this._mainJobRole)
-        ? null
-        : this._careWorkForcePathwayCategory
-          ? {
-              roleCategoryId: this._careWorkForcePathwayCategory,
-              isNominatedIndividual: this._cwpNominatedIndividual,
-            }
-          : undefined,
+      careWorkforcePathwayRoleCategory: this._getCwpRoleCategoryValue(),
       disabled: this._disabled !== null ? this._disabled : undefined,
       careCertificate: this._careCert
         ? {
@@ -3199,14 +3213,7 @@ class WorkerCsvValidator {
         : undefined,
       healthAndCareVisa: this._healthAndCareVisa ? this._healthAndCareVisa : undefined,
       employedFromOutsideUk: this._employedFromOutsideUk ? this._employedFromOutsideUk : undefined,
-      careWorkforcePathwayRoleCategory: this._isMainJobRoleExcludedFromCwp(this._mainJobRole)
-        ? null
-        : this._careWorkForcePathwayCategory
-          ? {
-              roleCategoryId: this._careWorkForcePathwayCategory,
-              isNominatedIndividual: this._cwpNominatedIndividual,
-            }
-          : undefined,
+      careWorkforcePathwayRoleCategory: this._getCwpRoleCategoryValue(),
 
       disability: this._disabled ? this._disabled : undefined,
       careCertificate: this._careCert ? this._careCert : undefined,
