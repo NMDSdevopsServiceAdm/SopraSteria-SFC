@@ -459,6 +459,11 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
       : '',
   );
 
+  // CWPNOMIND
+  columns.push(
+    entity.careWorkforcePathwayRoleCategory && entity.CWPRoleCategoryIsAlsoNominatedIndividual === true ? 1 : '',
+  );
+
   const myQualifications = entity.qualifications.slice(0, MAX_QUALIFICATIONS);
   const len = Math.max(3, Math.min(myQualifications.length, MAX_QUALIFICATIONS));
 
