@@ -1,3 +1,13 @@
 input.select-upload-file-hidden {
   display: none;
 }
+
+.asc-ngx-dropzone__padding {
+  padding: 0px 20px;
+}
+
+.asc-ngx-dropzone__inner-wrapper {
+  display: flex;
+  align-items: baseline;
+  column-gap: 40px;
+}

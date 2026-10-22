@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, viewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, viewChild } from '@angular/core';
 import { NgxDropzoneChangeEvent, NgxDropzoneComponent } from 'ngx-dropzone';
 
 @Component({
@@ -7,7 +7,7 @@ import { NgxDropzoneChangeEvent, NgxDropzoneComponent } from 'ngx-dropzone';
   styleUrls: ['./select-upload-file.component.scss'],
   standalone: false,
 })
-export class SelectUploadFileComponent {
+export class SelectUploadFileComponent implements AfterViewInit {
   @Input() accept: string = '';
   @Input() multiple: boolean = false;
   @Input() buttonId: string | null = 'select-upload-file';
@@ -22,6 +22,15 @@ export class SelectUploadFileComponent {
 
   private hiddenFileInput = viewChild<ElementRef<HTMLInputElement>>('hiddenFileInput');
   private dropzone = viewChild<NgxDropzoneComponent>('dropzone');
+
+  ngAfterViewInit(): void {
+    const dropzone = this.dropzone();
+    if (this.dropzone()) {
+      const nativeFileInput = dropzone?._fileInput.nativeElement as HTMLInputElement;
+      nativeFileInput.setAttribute('data-testid', 'fileInput');
+      nativeFileInput.classList.add('asc-util__display-none');
+    }
+  }
 
   public handleFileInputChange(event: Event): void {
     if (!(event.target instanceof HTMLInputElement)) {

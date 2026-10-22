@@ -13,17 +13,19 @@
   <ng-container *ngTemplateOutlet="selectFileButton"></ng-container>
 } @else {
   <ngx-dropzone
-    data-testid="drag-and-drop"
+    data-testid="dragAndDrop"
     (change)="handleFileDrop($event)"
     [maxFileSize]="20000000"
     [accept]="accept"
     disableClick="true"
-    class="govuk-drag-and-drop"
+    class="govuk-drag-and-drop asc-ngx-dropzone__padding"
     #dropzone
   >
-    <span class="govuk-body">{{ dragAndDropZoneText }}</span>
+    <div class="asc-ngx-dropzone__inner-wrapper">
+      <span class="govuk-body">{{ dragAndDropZoneText }}</span>
 
-    <ng-container *ngTemplateOutlet="selectFileButton"></ng-container>
+      <ng-container *ngTemplateOutlet="selectFileButton"></ng-container>
+    </div>
   </ngx-dropzone>
 }
 
