@@ -1833,6 +1833,7 @@ module.exports = function (sequelize, DataTypes) {
             'Level2CareCertificateValue',
             'Level2CareCertificateYear',
             'CareWorkforcePathwayRoleCategoryFK',
+            'CWPRoleCategoryIsAlsoNominatedIndividual',
             'carryOutDelegatedHealthcareActivities',
           ],
           as: 'workers',
