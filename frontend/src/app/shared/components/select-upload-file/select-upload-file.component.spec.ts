@@ -1,25 +1,26 @@
+import { NgxDropzoneModule } from 'ngx-dropzone';
+
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-
-import { SelectUploadFileComponent } from './select-upload-file.component';
 import userEvent from '@testing-library/user-event';
 
-describe('SelectUploadFileComponent', () => {
+import { SelectUploadFileComponent } from './select-upload-file.component';
+import { fireEvent, within } from '@testing-library/dom';
+
+fdescribe('SelectUploadFileComponent', () => {
   const setup = async (inputOverride = {}) => {
-    const { fixture, getByTestId, getByRole } = await render(SelectUploadFileComponent, {
-      imports: [SharedModule],
+    const setupTools = await render(SelectUploadFileComponent, {
+      imports: [SharedModule, NgxDropzoneModule],
       componentProperties: {
         ...inputOverride,
       },
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByRole,
-      getByTestId,
     };
   };
 
@@ -85,5 +86,59 @@ describe('SelectUploadFileComponent', () => {
 
       expect(selectFilesSpy).toHaveBeenCalledWith([mockFile1, mockFile2]);
     });
+  });
+
+  describe('drag and drop', () => {
+    const overrides = {
+      accept: '.csv',
+      multiple: 'true',
+      showDragAndDropZone: true,
+      buttonText: 'Select file',
+      dragAndDropZoneText: 'Drag and drop the certificate here',
+    };
+
+    it('should show a drag and drop zone when showDragAndDropZone is true', async () => {
+      const { getByTestId } = await setup(overrides);
+
+      const dragAndDropZone = getByTestId('drag-and-drop');
+      expect(dragAndDropZone).toBeTruthy();
+
+      const selectFileButton = within(dragAndDropZone).getByRole('button', { name: 'Select file' });
+      expect(selectFileButton).toBeTruthy();
+
+      expect(within(dragAndDropZone).getByText('Drag and drop the certificate here')).toBeTruthy();
+    });
+
+    it('should handle file drop event and call selectFiles emitter', async () => {
+      const { component, fixture, getByTestId } = await setup(overrides);
+
+      const selectFilesSpy = spyOn(component.selectFiles, 'emit').and.callThrough();
+
+      const mockFile1 = new File(['some file content'], 'cert1.pdf', { type: 'application/pdf' });
+      const mockFile2 = new File(['some file content'], 'cert2.pdf', { type: 'application/pdf' });
+      const event = mockFileDropEvent([mockFile1, mockFile2]);
+
+      const dragAndDropZone = getByTestId('drag-and-drop');
+      fireEvent(dragAndDropZone, event);
+
+      await fixture.whenStable();
+
+      expect(selectFilesSpy).toHaveBeenCalledWith([mockFile1, mockFile2]);
+    });
+
+    const mockFileDropEvent = (files: File[]) => {
+      const mockFileList = [...files];
+
+      //@ts-ignore
+      mockFileList.item = (index) => {
+        return files[index];
+      };
+      const event = new Event('drop');
+      //@ts-ignore
+      event.dataTransfer = {
+        files: mockFileList,
+      };
+      return event;
+    };
   });
 });
