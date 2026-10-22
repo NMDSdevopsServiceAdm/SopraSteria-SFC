@@ -1274,7 +1274,7 @@ class WorkerCsvValidator {
 
     const isValidFormat = /^\d+$/.test(cwpCategory);
 
-    const mappedCategory = isValidFormat ? this.BUDI.cwpCategory(this.BUDI.TO_ASC, Number(cwpCategoryCode)) : null;
+    const mappedCategory = isValidFormat ? this.BUDI.cwpCategory(this.BUDI.TO_ASC, Number(cwpCategory)) : null;
 
     if (!mappedCategory) {
       this._validationErrors.push(
