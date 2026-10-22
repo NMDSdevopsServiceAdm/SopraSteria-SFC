@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { SelectUploadFileComponent } from './select-upload-file.component';
 import { fireEvent, within } from '@testing-library/dom';
 
-fdescribe('SelectUploadFileComponent', () => {
+describe('SelectUploadFileComponent', () => {
   const setup = async (inputOverride = {}) => {
     const setupTools = await render(SelectUploadFileComponent, {
       imports: [SharedModule, NgxDropzoneModule],
@@ -100,7 +100,7 @@ fdescribe('SelectUploadFileComponent', () => {
     it('should show a drag and drop zone when showDragAndDropZone is true', async () => {
       const { getByTestId } = await setup(overrides);
 
-      const dragAndDropZone = getByTestId('drag-and-drop');
+      const dragAndDropZone = getByTestId('dragAndDrop');
       expect(dragAndDropZone).toBeTruthy();
 
       const selectFileButton = within(dragAndDropZone).getByRole('button', { name: 'Select file' });
@@ -118,7 +118,7 @@ fdescribe('SelectUploadFileComponent', () => {
       const mockFile2 = new File(['some file content'], 'cert2.pdf', { type: 'application/pdf' });
       const event = mockFileDropEvent([mockFile1, mockFile2]);
 
-      const dragAndDropZone = getByTestId('drag-and-drop');
+      const dragAndDropZone = getByTestId('dragAndDrop');
       fireEvent(dragAndDropZone, event);
 
       await fixture.whenStable();

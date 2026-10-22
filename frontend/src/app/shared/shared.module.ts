@@ -153,6 +153,7 @@ import { NewAutoSuggestComponent } from './components/auto-suggest-new/new-auto-
 import { SearchInputAutoSuggestComponent } from './components/search-input-auto-suggest/search-input-auto-suggest.component';
 import { UpdateBannerComponent } from './components/update-banner/update-banner.component';
 import { DisplaySlvDataComponent } from './components/display-slv-data/display-slv-data.component';
+import { NgxDropzoneModule } from 'ngx-dropzone';
 
 @NgModule({
   imports: [
@@ -165,6 +166,7 @@ import { DisplaySlvDataComponent } from './components/display-slv-data/display-s
     CdkListboxModule,
     AddWorkplaceDetailsPathPipe,
     WorkplaceSummaryPathPipe,
+    NgxDropzoneModule,
   ],
   declarations: [
     AbsoluteNumberPipe,
