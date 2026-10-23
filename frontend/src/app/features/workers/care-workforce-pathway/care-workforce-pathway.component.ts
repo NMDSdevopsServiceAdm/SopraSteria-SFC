@@ -23,6 +23,7 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
   public careWorkforcePathwayCategories: CareWorkforcePathwayRoleCategory[];
   public revealTitle = 'Why assign Care Workforce Pathway role categories?';
   public cameFromCWPSummaryPage: boolean;
+  public cameFromCWPNewTocarePage: boolean;
   public groupedCategories: {
     title: string;
     categories: CareWorkforcePathwayRoleCategory[];
@@ -68,9 +69,13 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
       this.prefill();
     }
 
-    this.setupPageWhenCameFromCWPSummaryPage();
+    this.setupPageWhenCameFromCWPPage();
 
-    this.next = this.getRoutePath('staff-record-summary');
+    if (this.cameFromCWPNewTocarePage) {
+      this.next = this.getRoutePath('review-new-to-care');
+    } else {
+      this.next = this.getRoutePath('staff-record-summary');
+    }
   }
 
   prefill() {
@@ -107,15 +112,19 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
       ),
     );
   }
-
-  private setupPageWhenCameFromCWPSummaryPage(): void {
+  private setupPageWhenCameFromCWPPage(): void {
     this.cameFromCWPSummaryPage = Boolean(
       this.return?.url?.some((urlPart) => urlPart?.includes('care-workforce-pathway-workers-summary')),
     );
 
-    if (!this.cameFromCWPSummaryPage) {
+    this.cameFromCWPNewTocarePage = Boolean(
+      this.return?.url?.some((urlPart) => urlPart?.includes('review-new-to-care')),
+    );
+
+    if (!this.cameFromCWPSummaryPage && !this.cameFromCWPNewTocarePage) {
       return;
     }
+
     this.section = 'Staff records';
     this.returnUrl = this.return.url;
   }
@@ -154,6 +163,12 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
 
   _onSuccess(data: any) {
     this.workerService.setState({ ...this.worker, ...data });
+
+    if (this.cameFromCWPNewTocarePage) {
+      this.returnToHomeIfNoNewToCareWorkersRemain();
+      return;
+    }
+
     this.onSuccess();
     this.navigate().then(() => this.addAlert());
   }
@@ -161,5 +176,31 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
   protected formValueIsEmpty(): boolean {
     const { careWorkforcePathwayRoleCategory } = this.form.value;
     return careWorkforcePathwayRoleCategory === null;
+  }
+
+  private returnToHomeIfNoNewToCareWorkersRemain(): void {
+    const establishmentUid = this.establishmentService.establishment.uid;
+
+    this.careWorkforcePathwayService.getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentUid).subscribe({
+      next: (response) => {
+        const workers = this.careWorkforcePathwayService
+          .getWorkersWhoMeetNewToCareCriteria(response?.workers ?? [])
+          .filter((worker) => worker.uid !== this.worker.uid);
+
+        if (workers.length === 0) {
+          this.router.navigate(['/dashboard'], { fragment: 'home' }).then(() => {
+            this.alertService.addAlert({
+              type: 'success',
+              message: 'Care Workforce Pathway role categories reviewed',
+            });
+          });
+        } else {
+          this.router.navigate(this.returnUrl);
+        }
+      },
+      error: () => {
+        this.router.navigate(this.returnUrl);
+      },
+    });
   }
 }

@@ -1,6 +1,7 @@
 import { Component, effect, OnDestroy, OnInit, Signal, signal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { SortStaffOptionsForCWPWorkerSummary } from '@core/model/establishment.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import {
   CareWorkforcePathwayService,
@@ -9,6 +10,7 @@ import {
 } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
+import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
@@ -41,6 +43,7 @@ export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit, OnDe
     private router: Router,
     private careWorkforcePathwayService: CareWorkforcePathwayService,
     private route: ActivatedRoute,
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
@@ -130,12 +133,28 @@ export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit, OnDe
     this.workerService.setReturnTo({ url: [urlOfThisPage] });
   }
 
-  public returnToHome(): void {
-    this.router.navigate(['/dashboard'], { fragment: 'home' });
+  public visitReviewNewToCarePage(): void {
+    const workers = this.careWorkforcePathwayService.getWorkersWhoMeetNewToCareCriteria(
+      this.route.snapshot.data.workersWhoRequireCWPAnswer?.workers ?? [],
+    );
+
+    if (workers.length === 0) {
+      this.returnToHome();
+      return;
+    }
+
+    this.router.navigate(['../review-new-to-care'], {
+      relativeTo: this.route,
+    });
   }
 
-  public visitReviewNewToCarePage(): void {
-    this.router.navigate(['./review-new-to-care'], { relativeTo: this.route });
+  public returnToHome(): void {
+    this.router.navigate(['/dashboard'], { fragment: 'home' }).then(() => {
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Care Workforce Pathway role categories reviewed',
+      });
+    });
   }
 
   ngOnDestroy(): void {
