@@ -78,7 +78,11 @@ export class CareWorkforcePathwayService {
       const startedMoreThan12MonthsAgo =
         !!startDate && dayjs(startDate).isValid() && dayjs(startDate).isBefore(twelveMonthsAgo);
 
-      return isNewToCare && (hasNoStartDate || startedMoreThan12MonthsAgo);
+      const categoryChangedToday =
+        !!worker.CareWorkforcePathwayRoleCategoryChangedAt &&
+        dayjs(worker.CareWorkforcePathwayRoleCategoryChangedAt).isSame(dayjs(), 'day');
+
+      return isNewToCare && (hasNoStartDate || startedMoreThan12MonthsAgo) && !categoryChangedToday;
     });
   }
 
@@ -115,6 +119,8 @@ export type CWPGetAllWorkersResponse = {
     nameOrId: string;
     mainJob: JobRole;
     MainJobStartDateValue: string | null;
+    CareWorkforcePathwayRoleCategorySavedAt?: string | null;
+    CareWorkforcePathwayRoleCategoryChangedAt?: string | null;
     careWorkforcePathwayRoleCategory: CareWorkforcePathwayRoleCategory;
   }[];
   workerCount: number;

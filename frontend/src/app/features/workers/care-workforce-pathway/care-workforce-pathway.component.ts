@@ -183,7 +183,9 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
 
     this.careWorkforcePathwayService.getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentUid).subscribe({
       next: (response) => {
-        const workers = this.careWorkforcePathwayService.getWorkersWhoMeetNewToCareCriteria(response?.workers ?? []);
+        const workers = this.careWorkforcePathwayService
+          .getWorkersWhoMeetNewToCareCriteria(response?.workers ?? [])
+          .filter((worker) => worker.uid !== this.worker.uid);
 
         if (workers.length === 0) {
           this.router.navigate(['/dashboard'], { fragment: 'home' }).then(() => {
