@@ -1457,6 +1457,8 @@ module.exports = function (sequelize, DataTypes) {
         ['NameOrIdValue', 'nameOrId'],
         'CWPRoleCategoryIsAlsoNominatedIndividual',
         'MainJobStartDateValue',
+        'CareWorkforcePathwayRoleCategorySavedAt',
+        'CareWorkforcePathwayRoleCategoryChangedAt',
       ],
       where: {
         establishmentFk: establishmentId,
