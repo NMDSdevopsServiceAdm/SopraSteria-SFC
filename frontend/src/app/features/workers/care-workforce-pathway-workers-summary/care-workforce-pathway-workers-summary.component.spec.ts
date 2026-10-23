@@ -19,7 +19,7 @@ import { CareWorkforcePathwayWorkersSummaryComponent } from './care-workforce-pa
 import { SelectSortByComponent } from '@shared/components/select-sort-by/select-sort-by.component';
 import { AlertService } from '@core/services/alert.service';
 
-fdescribe('CareWorkforcePathwayWorkersSummaryComponent', () => {
+describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
   const mockWorkers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
   mockWorkers.forEach((worker) => {
     worker.careWorkforcePathwayRoleCategory = { roleCategoryId: 1, title: 'New to care', description: '' };
@@ -36,8 +36,7 @@ fdescribe('CareWorkforcePathwayWorkersSummaryComponent', () => {
     const routerSpy = jasmine.createSpy('navigate').and.resolveTo(true);
     const getWorkersWhoMeetNewToCareCriteriaSpy = jasmine
       .createSpy('getWorkersWhoMeetNewToCareCriteria')
-      .and.returnValue(workersToShow);
-
+      .and.returnValue(overrides.workersWhoMeetNewToCareCriteria ?? workersToShow);
     const setuptools = await render(CareWorkforcePathwayWorkersSummaryComponent, {
       imports: [SharedModule, RouterModule, SelectSortByComponent],
       providers: [
@@ -146,6 +145,25 @@ fdescribe('CareWorkforcePathwayWorkersSummaryComponent', () => {
     expect(getWorkersWhoMeetNewToCareCriteriaSpy).toHaveBeenCalledWith(mockWorkers);
 
     expect(routerSpy).toHaveBeenCalledWith(['../review-new-to-care'], {
+      relativeTo: route,
+    });
+  });
+
+  it('should redirect to home when no workers meet the New to care criteria', async () => {
+    const { fixture, getByRole, routerSpy, route, getWorkersWhoMeetNewToCareCriteriaSpy } = await setup({
+      workersWhoMeetNewToCareCriteria: [],
+    });
+
+    await userEvent.click(getByRole('button', { name: 'Confirm role categories' }));
+    await fixture.whenStable();
+
+    expect(getWorkersWhoMeetNewToCareCriteriaSpy).toHaveBeenCalledWith(mockWorkers);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
+      fragment: 'home',
+    });
+
+    expect(routerSpy).not.toHaveBeenCalledWith(['../review-new-to-care'], {
       relativeTo: route,
     });
   });
