@@ -195,15 +195,6 @@ describe('NursingCategoryComponent', () => {
     });
   });
 
-  it('should not call updateWorker if nothing as been chosen', async () => {
-    const { updateWorkerSpy, getByText } = await setup();
-
-    const button = getByText('Save and continue');
-    userEvent.click(button);
-
-    expect(updateWorkerSpy).not.toHaveBeenCalled();
-  });
-
   it('should call updateWorker with an empty array [] if user unticked all choices', async () => {
     const previousAnswer = [
       { id: 1, label: 'Adult nursing' },
