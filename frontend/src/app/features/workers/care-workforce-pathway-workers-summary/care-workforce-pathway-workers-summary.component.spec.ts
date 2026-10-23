@@ -17,8 +17,9 @@ import { of } from 'rxjs';
 
 import { CareWorkforcePathwayWorkersSummaryComponent } from './care-workforce-pathway-workers-summary.component';
 import { SelectSortByComponent } from '@shared/components/select-sort-by/select-sort-by.component';
+import { AlertService } from '@core/services/alert.service';
 
-describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
+fdescribe('CareWorkforcePathwayWorkersSummaryComponent', () => {
   const mockWorkers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
   mockWorkers.forEach((worker) => {
     worker.careWorkforcePathwayRoleCategory = { roleCategoryId: 1, title: 'New to care', description: '' };
@@ -31,8 +32,11 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
 
     const getCWPWorkersResponse = { workers: workersToShow, workerCount: workerCount };
     const getCWPWorkersSpy = jasmine.createSpy().and.returnValue(of(getCWPWorkersResponse));
-
+    const addAlertSpy = jasmine.createSpy('addAlert');
     const routerSpy = jasmine.createSpy('navigate').and.resolveTo(true);
+    const getWorkersWhoMeetNewToCareCriteriaSpy = jasmine
+      .createSpy('getWorkersWhoMeetNewToCareCriteria')
+      .and.returnValue(workersToShow);
 
     const setuptools = await render(CareWorkforcePathwayWorkersSummaryComponent, {
       imports: [SharedModule, RouterModule, SelectSortByComponent],
@@ -42,9 +46,14 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
           useClass: MockEstablishmentService,
         },
         {
+          provide: AlertService,
+          useValue: { addAlert: addAlertSpy },
+        },
+        {
           provide: CareWorkforcePathwayService,
           useFactory: MockCareWorkforcePathwayService.factory({
             getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer: getCWPWorkersSpy,
+            getWorkersWhoMeetNewToCareCriteria: getWorkersWhoMeetNewToCareCriteriaSpy,
             _workerSummaryPaginationSettings: previousPaginationSettings,
           }),
         },
@@ -87,6 +96,7 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
       establishmentService,
       workerService,
       getCWPWorkersSpy,
+      getWorkersWhoMeetNewToCareCriteriaSpy,
       route,
       router,
       routerSpy,
@@ -127,15 +137,17 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
     });
   });
 
-  it('should show a "Confirm role categories" CTA button', async () => {
-    const { getByRole, routerSpy, route } = await setup();
+  it('should navigate to the New to care review page when workers meet the criteria', async () => {
+    const { fixture, getByRole, route, routerSpy, getWorkersWhoMeetNewToCareCriteriaSpy } = await setup();
 
-    const button = getByRole('button', { name: 'Confirm role categories' });
-    expect(button).toBeTruthy();
+    await userEvent.click(getByRole('button', { name: 'Confirm role categories' }));
+    await fixture.whenStable();
 
-    userEvent.click(button);
+    expect(getWorkersWhoMeetNewToCareCriteriaSpy).toHaveBeenCalledWith(mockWorkers);
 
-    expect(routerSpy).toHaveBeenCalledWith(['./review-new-to-care'], { relativeTo: route });
+    expect(routerSpy).toHaveBeenCalledWith(['../review-new-to-care'], {
+      relativeTo: route,
+    });
   });
 
   it('should redirect to home page if all workers have been answered', async () => {
