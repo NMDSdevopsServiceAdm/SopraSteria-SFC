@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
-
 import { BackLinkService } from '@core/services/backLink.service';
 import { CareWorkforcePathwayService, CWPGetAllWorkersResponse } from '@core/services/care-workforce-pathway.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
 
@@ -14,12 +12,9 @@ import dayjs from 'dayjs';
   standalone: false,
 })
 export class CareWorkforcePathwayNewToCareComponent implements OnInit {
-  private workplaceUid: string;
-
   public workersToShow: CWPGetAllWorkersResponse['workers'] = [];
 
   constructor(
-    private establishmentService: EstablishmentService,
     private workerService: WorkerService,
     private backLinkService: BackLinkService,
     private router: Router,
@@ -30,7 +25,6 @@ export class CareWorkforcePathwayNewToCareComponent implements OnInit {
 
   ngOnInit(): void {
     this.backLinkService.showBackLink();
-    this.workplaceUid = this.establishmentService.establishment.uid;
 
     this.handleGetWorkersResponse(this.route.snapshot.data.workersWhoRequireCWPAnswer);
   }
