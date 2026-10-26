@@ -33,6 +33,7 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangeProper
         title: document.mainJob.title,
         other: document.MainJobFkOther ? document.MainJobFkOther : undefined,
         canDoDelegatedHealthcareActivities: document.mainJob.canDoDelegatedHealthcareActivities,
+        excludedFromCareWorkforcePathway: document.mainJob.excludedFromCareWorkforcePathway,
       };
     }
   }
@@ -100,14 +101,14 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangeProper
         where: {
           id: jobDef.jobId,
         },
-        attributes: ['id', 'title', 'other', 'canDoDelegatedHealthcareActivities'],
+        attributes: ['id', 'title', 'other', 'canDoDelegatedHealthcareActivities', 'excludedFromCareWorkforcePathway'],
       });
     } else {
       referenceJob = await models.job.findOne({
         where: {
           title: jobDef.title,
         },
-        attributes: ['id', 'title', 'other', 'canDoDelegatedHealthcareActivities'],
+        attributes: ['id', 'title', 'other', 'canDoDelegatedHealthcareActivities', 'excludedFromCareWorkforcePathway'],
       });
     }
 
@@ -121,6 +122,7 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangeProper
           title: referenceJob.title,
           other: referenceJob.other && jobDef.other ? jobDef.other : undefined,
           canDoDelegatedHealthcareActivities: referenceJob.canDoDelegatedHealthcareActivities,
+          excludedFromCareWorkforcePathway: referenceJob.excludedFromCareWorkforcePathway,
         };
       }
     } else {
