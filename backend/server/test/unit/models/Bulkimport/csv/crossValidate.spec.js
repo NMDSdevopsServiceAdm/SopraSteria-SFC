@@ -3,7 +3,12 @@ const expect = require('chai').expect;
 
 const WorkerCsvValidator =
   require('../../../../../../../lambdas/bulkUpload/classes/workerCSVValidator.js').WorkerCsvValidator;
-const mappings = require('../../../../../models/BulkImport/BUDI/index.js').mappings;
+const { mappings } = require('../../../../../../reference/BUDIMappings');
+const workerMappings = {
+  ...mappings,
+  JOB_ROLE_CWP_EXCLUSIONS: [],
+  CWP_CATEGORY: [],
+};
 
 const {
   crossValidate,
@@ -21,7 +26,7 @@ describe('crossValidate', () => {
     it('should add error to csvWorkerSchemaErrors if establishment not CQC regulated and main role ID is 4', () => {
       const csvWorkerSchemaErrors = [];
 
-      const worker = new WorkerCsvValidator(null, null, null, mappings);
+      const worker = new WorkerCsvValidator({}, null, null, workerMappings);
       const JSONWorker = worker.toJSON();
       JSONWorker.status = 'NEW';
       JSONWorker.mainJobRoleId = 4;
@@ -45,7 +50,7 @@ describe('crossValidate', () => {
     it('should not add error to csvWorkerSchemaErrors if establishment is CQC regulated and main role ID is 4', () => {
       const csvWorkerSchemaErrors = [];
 
-      const worker = new WorkerCsvValidator(null, null, null, mappings);
+      const worker = new WorkerCsvValidator({}, null, null, workerMappings);
       const JSONWorker = worker.toJSON();
       JSONWorker.status = 'NEW';
       JSONWorker.mainJobRoleId = 4;
@@ -58,7 +63,7 @@ describe('crossValidate', () => {
     it('should not add error to csvWorkerSchemaErrors if establishment is not CQC regulated and main role ID is not 4', () => {
       const csvWorkerSchemaErrors = [];
 
-      const worker = new WorkerCsvValidator(null, null, null, mappings);
+      const worker = new WorkerCsvValidator({}, null, null, workerMappings);
       const JSONWorker = worker.toJSON();
       JSONWorker.status = 'NEW';
       JSONWorker.mainJobRoleId = 2;
@@ -71,7 +76,7 @@ describe('crossValidate', () => {
 
   describe('crossValidate', () => {
     it('should return false when JSONWorker is UNCHECKED', async () => {
-      const worker = new WorkerCsvValidator(null, null, null, mappings);
+      const worker = new WorkerCsvValidator({}, null, null, workerMappings);
       const JSONWorker = worker.toJSON();
       JSONWorker.status = 'UNCHECKED';
 
@@ -87,7 +92,7 @@ describe('crossValidate', () => {
     });
 
     const newWorker = (establishmentKey = 'HELLO') => {
-      const worker = new WorkerCsvValidator(null, null, null, mappings);
+      const worker = new WorkerCsvValidator({}, null, null, workerMappings);
       worker._status = 'NEW';
       const JSONWorker = worker.toJSON();
       JSONWorker.establishmentKey = establishmentKey;
@@ -95,7 +100,7 @@ describe('crossValidate', () => {
     };
 
     const transferringWorker = (establishmentKey = 'HELLO') => {
-      const worker = new WorkerCsvValidator(null, null, null, mappings);
+      const worker = new WorkerCsvValidator({}, null, null, workerMappings);
       worker._status = 'UPDATE';
       worker._transferStaffRecord = establishmentKey;
       const JSONWorker = worker.toJSON();
@@ -214,7 +219,7 @@ describe('crossValidate', () => {
 
   describe('crossValidateTransferStaffRecord', () => {
     const buildMockJSONWorker = (override) => {
-      const worker = new WorkerCsvValidator(null, null, null, mappings);
+      const worker = new WorkerCsvValidator({}, null, null, workerMappings);
       return {
         ...worker.toJSON(),
         status: 'UPDATE',
@@ -525,7 +530,7 @@ describe('crossValidate', () => {
 
     it('should not add errors if no workers with transferStaffRecord', async () => {
       const buildMockJSONWorkerWithoutTransferStaffRecord = (override) => {
-        const worker = new WorkerCsvValidator(null, null, null, mappings);
+        const worker = new WorkerCsvValidator({}, null, null, workerMappings);
         return {
           ...worker.toJSON(),
           status: 'UPDATE',
@@ -599,7 +604,7 @@ describe('crossValidate', () => {
     };
 
     const createJSONWorker = (overrides = {}) => {
-      const worker = new WorkerCsvValidator(null, 2, null, mappings);
+      const worker = new WorkerCsvValidator({}, 2, null, workerMappings);
       const JSONWorker = worker.toJSON();
       Object.assign(JSONWorker, {
         uniqueWorkerId: 'worker ref id',
