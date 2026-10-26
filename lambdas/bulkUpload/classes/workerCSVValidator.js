@@ -1330,7 +1330,7 @@ class WorkerCsvValidator {
       return true;
     }
 
-    // If the CWP category is invalid, as both values will be ignored.
+    // If the CWP category is invalid , both values will be ignored
     if (!category) {
       if (cwpNominated) {
         this._validationErrors.push(
@@ -2967,14 +2967,14 @@ class WorkerCsvValidator {
   }
 
   _transformCwpCategory() {
-    // Main job role excluded from CWP
     if (this._isMainJobRoleExcludedFromCwp(this._mainJobRole)) {
+      // Main job role excluded from CWP
       this._careWorkForcePathwayCategory = null;
       this._cwpNominatedIndividual = false;
       return true;
     }
 
-    // Convert CWP category from CSV code to database ID
+    // Convert CWP category code to database ID
     if (this._careWorkForcePathwayCategory) {
       const mappedCategory = this.BUDI.cwpCategory(this.BUDI.TO_ASC, this._careWorkForcePathwayCategory);
 
@@ -2986,7 +2986,6 @@ class WorkerCsvValidator {
       (category) => category.ASC === this._careWorkForcePathwayCategory,
     );
 
-    // Nominated individual only applies to Senior leadership
     if (cwpCategory?.group !== 'Senior leadership') {
       this._cwpNominatedIndividual = false;
     }
@@ -3079,12 +3078,11 @@ class WorkerCsvValidator {
 
     const cwpCategoryCode = this._currentLine.CWPCATEGORY?.trim();
 
-    // An empty category clears any existing CWP values.
+    // If category is empty clears existing cwp values if any
     if (!cwpCategoryCode) {
       return null;
     }
 
-    // Invalid populated categories should not overwrite existing values.
     if (this._careWorkForcePathwayCategory === null) {
       return undefined;
     }
