@@ -80,12 +80,6 @@ export class NursingCategoryComponent extends QuestionComponent {
   }
 
   generateUpdateProps() {
-    const formHasChanged = this.form.dirty;
-
-    if (!formHasChanged) {
-      return null;
-    }
-
     return { nurseFieldOfPractice: this.chosenFields };
   }
 

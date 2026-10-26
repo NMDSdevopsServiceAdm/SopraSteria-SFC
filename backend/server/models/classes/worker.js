@@ -716,6 +716,26 @@ class Worker extends EntityValidator {
             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
           }
 
+          const additionalModels = this._properties.additionalModels;
+          const additionalModelsByname = Object.keys(additionalModels);
+
+          const createMmodelPromises = [];
+          additionalModelsByname.forEach(async (thisModelByName) => {
+            const thisModelData = additionalModels[thisModelByName];
+            createMmodelPromises.push(
+              models[thisModelByName].bulkCreate(
+                thisModelData.map((thisRecord) => {
+                  return {
+                    ...thisRecord,
+                    workerFk: this._id,
+                  };
+                }),
+                { transaction: thisTransaction },
+              ),
+            );
+          });
+          await Promise.all(createMmodelPromises);
+
           // having the worker id we can now create the audit record; inserting the workerFk
           const allAuditEvents = [
             {
