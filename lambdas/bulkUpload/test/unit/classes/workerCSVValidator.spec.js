@@ -2559,7 +2559,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
       expect(nominatedWarnings).to.have.lengthOf(1);
       expect(nominatedWarnings[0].warning).to.equal(
-        'The code you have entered for CWPNOMIND is incorrect and will be ignored',
+        'The code you have entered for CWPNOMIND will be ignored as the chosen CWPCATEGORY cannot be a nominated individual',
       );
       expect(validator._cwpNominatedIndividual).to.not.equal(true);
     });
