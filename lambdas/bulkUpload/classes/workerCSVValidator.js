@@ -1327,7 +1327,7 @@ class WorkerCsvValidator {
       if (cwpNominated) {
         this._validationErrors.push(
           this._generateWarning(
-            'The code you have entered for CWPNOMIND is incorrect and will be ignored.',
+            'The code you have entered for CWPNOMIND will be ignored as no CWPCATEGORY has been provided',
             'CWPNOMIND',
           ),
         );
@@ -1353,7 +1353,7 @@ class WorkerCsvValidator {
       if (cwpNominated) {
         this._validationErrors.push(
           this._generateWarning(
-            'The code you have entered for CWPNOMIND is incorrect and will be ignored',
+            'The code you have entered for CWPNOMIND will be ignored as the chosen CWPCATEGORY cannot be a nominated individual',
             'CWPNOMIND',
           ),
         );
