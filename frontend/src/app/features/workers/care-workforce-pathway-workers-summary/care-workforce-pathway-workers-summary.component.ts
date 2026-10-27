@@ -1,4 +1,7 @@
-import { Component, effect, OnDestroy, OnInit, Signal, signal } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
+
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { SortStaffOptionsForCWPWorkerSummary } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
@@ -10,9 +13,6 @@ import {
 } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
-import dayjs from 'dayjs';
-import { Subscription } from 'rxjs';
-import { filter, take } from 'rxjs/operators';
 
 const defaultPaginationSettings: CWPWorkerSummaryPaginationSettings = {
   itemsPerPage: 15,
@@ -134,18 +134,19 @@ export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit, OnDe
   }
 
   public visitReviewNewToCarePage(): void {
-    const workers = this.careWorkforcePathwayService.getWorkersWhoMeetNewToCareCriteria(
-      this.route.snapshot.data.workersWhoRequireCWPAnswer?.workers ?? [],
+    this.subscriptions.add(
+      this.careWorkforcePathwayService
+        .getWorkersWhoMeetNewToCareCriteria(this.workplaceUid)
+        .subscribe((newToCareWorkers) => {
+          if (newToCareWorkers?.length > 0) {
+            this.router.navigate(['../review-new-to-care'], {
+              relativeTo: this.route,
+            });
+          } else {
+            this.returnToHome();
+          }
+        }),
     );
-
-    if (workers.length === 0) {
-      this.returnToHome();
-      return;
-    }
-
-    this.router.navigate(['../review-new-to-care'], {
-      relativeTo: this.route,
-    });
   }
 
   public returnToHome(): void {

@@ -18,7 +18,6 @@ import {
   CareWorkforcePathwayWorkplaceAwareness,
   SortStaffOptionsForCWPWorkerSummary,
 } from '@core/model/establishment.model';
-import dayjs from 'dayjs';
 
 @Injectable({
   providedIn: 'root',
@@ -65,9 +64,9 @@ export class CareWorkforcePathwayService {
 
   getWorkersWhoMeetNewToCareCriteria(
     establishmentId: string,
-  ): Observable<CWPGetAllWorkersWhoMeetNewToCareCriteriaResponse['workers']> {
+  ): Observable<CWPGetWorkersWhoMeetNewToCareCriteriaResponse['workers']> {
     return this.http
-      .get<CWPGetAllWorkersWhoMeetNewToCareCriteriaResponse>(
+      .get<CWPGetWorkersWhoMeetNewToCareCriteriaResponse>(
         `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/workersWhoMeetNewToCareCriteria`,
       )
       .pipe(map((res) => res.workers));
@@ -113,7 +112,7 @@ export type CWPGetAllWorkersResponse = {
   workerCount: number;
 };
 
-export type CWPGetAllWorkersWhoMeetNewToCareCriteriaResponse = {
+export type CWPGetWorkersWhoMeetNewToCareCriteriaResponse = {
   workers: {
     uid: string;
     nameOrId: string;

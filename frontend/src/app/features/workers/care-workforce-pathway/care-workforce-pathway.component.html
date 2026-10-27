@@ -117,7 +117,7 @@
     }
   </div>
 
-  @if (cameFromCWPSummaryPage) {
+  @if (cameFromCWPSummaryPage || cameFromCWPNewTocarePage) {
     <app-submit-button
       class="cwp-submit-button"
       [overrideCallToActionLabel]="true"
