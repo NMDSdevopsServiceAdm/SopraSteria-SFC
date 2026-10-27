@@ -99,97 +99,13 @@ describe('CareWorkforcePathwayService', () => {
   });
 
   describe('getWorkersWhoMeetNewToCareCriteria', () => {
-    const createWorker = (overrides: any = {}) => ({
-      uid: 'worker-1',
-      nameOrId: 'Test Worker',
-      MainJobStartDateValue: null,
-      careWorkforcePathwayRoleCategory: {
-        id: 1,
-        title: 'New to care',
-      },
-      CareWorkforcePathwayRoleCategoryChangedAt: null,
-      ...overrides,
-    });
+    const endpoint = '/careWorkforcePathway/workersWhoMeetNewToCareCriteria';
 
-    it('should include a New to care worker with no start date', () => {
-      const worker = createWorker();
+    it('should call the expected endpoint', () => {
+      service.getWorkersWhoMeetNewToCareCriteria(establishmentId).subscribe();
 
-      const result = service.getWorkersWhoMeetNewToCareCriteria([worker]);
-
-      expect(result).toEqual([worker]);
-    });
-
-    it('should include a New to care worker whose start date was more than 12 months ago', () => {
-      const worker = createWorker({
-        MainJobStartDateValue: dayjs().subtract(13, 'month').format('YYYY-MM-DD'),
-      });
-
-      const result = service.getWorkersWhoMeetNewToCareCriteria([worker]);
-
-      expect(result).toEqual([worker]);
-    });
-
-    it('should exclude a New to care worker whose start date was less than 12 months ago', () => {
-      const worker = createWorker({
-        MainJobStartDateValue: dayjs().subtract(6, 'month').format('YYYY-MM-DD'),
-      });
-
-      const result = service.getWorkersWhoMeetNewToCareCriteria([worker]);
-
-      expect(result).toEqual([]);
-    });
-
-    it('should exclude a worker who is not in the New to care category', () => {
-      const worker = createWorker({
-        careWorkforcePathwayRoleCategory: {
-          id: 2,
-          title: 'Experienced in care',
-        },
-      });
-
-      const result = service.getWorkersWhoMeetNewToCareCriteria([worker]);
-
-      expect(result).toEqual([]);
-    });
-    // yet to be confirmed with Dave to change today
-    it('should exclude a New to care worker whose role category changed today', () => {
-      const worker = createWorker({
-        MainJobStartDateValue: null,
-        CareWorkforcePathwayRoleCategoryChangedAt: dayjs().format('YYYY-MM-DD'),
-      });
-
-      const result = service.getWorkersWhoMeetNewToCareCriteria([worker]);
-
-      expect(result).toEqual([]);
-    });
-
-    it('should include a New to care worker whose role category changed before today', () => {
-      const worker = createWorker({
-        MainJobStartDateValue: null,
-        CareWorkforcePathwayRoleCategoryChangedAt: dayjs().subtract(1, 'day').format('YYYY-MM-DD'),
-      });
-
-      const result = service.getWorkersWhoMeetNewToCareCriteria([worker]);
-
-      expect(result).toEqual([worker]);
-    });
-
-    it('should return an empty array when no workers meet the criteria', () => {
-      const workers = [
-        createWorker({
-          MainJobStartDateValue: dayjs().subtract(6, 'month').format('YYYY-MM-DD'),
-        }),
-        createWorker({
-          careWorkforcePathwayRoleCategory: {
-            id: 2,
-            title: 'Experienced in care',
-          },
-        }),
-      ];
-
-      const result = service.getWorkersWhoMeetNewToCareCriteria(workers);
-
-      expect(result).toEqual([]);
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}${endpoint}`);
+      expect(req.request.method).toBe('GET');
     });
   });
 });

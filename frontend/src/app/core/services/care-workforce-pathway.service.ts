@@ -64,26 +64,13 @@ export class CareWorkforcePathwayService {
   }
 
   getWorkersWhoMeetNewToCareCriteria(
-    workers: CWPGetAllWorkersResponse['workers'],
-  ): CWPGetAllWorkersResponse['workers'] {
-    const twelveMonthsAgo = dayjs().subtract(12, 'month').startOf('day');
-
-    return workers.filter((worker) => {
-      const isNewToCare = worker.careWorkforcePathwayRoleCategory?.title === 'New to care';
-
-      const startDate = worker.MainJobStartDateValue;
-
-      const hasNoStartDate = !startDate;
-
-      const startedMoreThan12MonthsAgo =
-        !!startDate && dayjs(startDate).isValid() && dayjs(startDate).isBefore(twelveMonthsAgo);
-
-      const categoryChangedToday =
-        !!worker.CareWorkforcePathwayRoleCategoryChangedAt &&
-        dayjs(worker.CareWorkforcePathwayRoleCategoryChangedAt).isSame(dayjs(), 'day');
-
-      return isNewToCare && (hasNoStartDate || startedMoreThan12MonthsAgo) && !categoryChangedToday;
-    });
+    establishmentId: string,
+  ): Observable<CWPGetAllWorkersWhoMeetNewToCareCriteriaResponse['workers']> {
+    return this.http
+      .get<CWPGetAllWorkersWhoMeetNewToCareCriteriaResponse>(
+        `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/workersWhoMeetNewToCareCriteria`,
+      )
+      .pipe(map((res) => res.workers));
   }
 
   getAllCareWorkforcePathwayUseReasons(): Observable<CWPGetUseReasonsResponse> {
@@ -124,6 +111,18 @@ export type CWPGetAllWorkersResponse = {
     careWorkforcePathwayRoleCategory: CareWorkforcePathwayRoleCategory;
   }[];
   workerCount: number;
+};
+
+export type CWPGetAllWorkersWhoMeetNewToCareCriteriaResponse = {
+  workers: {
+    uid: string;
+    nameOrId: string;
+    mainJob: JobRole;
+    MainJobStartDateValue: string | null;
+    CareWorkforcePathwayRoleCategorySavedAt?: string | null;
+    CareWorkforcePathwayRoleCategoryChangedAt?: string | null;
+    careWorkforcePathwayRoleCategory: CareWorkforcePathwayRoleCategory;
+  }[];
 };
 
 export type CWPGetUseReasonsResponse = {
