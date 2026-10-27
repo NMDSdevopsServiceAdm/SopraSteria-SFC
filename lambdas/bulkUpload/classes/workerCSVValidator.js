@@ -1305,6 +1305,11 @@ class WorkerCsvValidator {
 
     const category = this.BUDI.mappings.CWP_CATEGORY.find((category) => category.ASC === mappedCategory);
 
+    // No CWPNOMIND value provided
+    if (!cwpNominated) {
+      return true;
+    }
+
     // Main job role excluded from CWP
     if (isExcluded) {
       if (cwpNominated) {
@@ -1353,10 +1358,6 @@ class WorkerCsvValidator {
           ),
         );
       }
-      return true;
-    }
-
-    if (!cwpNominated) {
       return true;
     }
 
