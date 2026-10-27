@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
-import { CareWorkforcePathwayService, CWPGetAllWorkersResponse } from '@core/services/care-workforce-pathway.service';
+import { CWPGetWorkersWhoMeetNewToCareCriteriaResponse } from '@core/services/care-workforce-pathway.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
 
@@ -12,7 +12,7 @@ import dayjs from 'dayjs';
   standalone: false,
 })
 export class CareWorkforcePathwayNewToCareComponent implements OnInit {
-  public workersToShow: CWPGetAllWorkersResponse['workers'] = [];
+  public workersToShow: CWPGetWorkersWhoMeetNewToCareCriteriaResponse['workers'] = [];
 
   constructor(
     private workerService: WorkerService,
@@ -20,21 +20,15 @@ export class CareWorkforcePathwayNewToCareComponent implements OnInit {
     private router: Router,
     private alertService: AlertService,
     private route: ActivatedRoute,
-    private careWorkforcePathwayService: CareWorkforcePathwayService,
   ) {}
 
   ngOnInit(): void {
     this.backLinkService.showBackLink();
-
-    this.handleGetWorkersResponse(this.route.snapshot.data.workersWhoRequireCWPAnswer);
+    this.workersToShow = this.route.snapshot.data?.workersWhoMeetNewToCareCriteria;
   }
 
   formatMainStartDate(date: string | null) {
     return date ? dayjs(date).format('D MMM YYYY') : '';
-  }
-
-  private handleGetWorkersResponse(response: CWPGetAllWorkersResponse): void {
-    this.workersToShow = this.careWorkforcePathwayService.getWorkersWhoMeetNewToCareCriteria(response?.workers ?? []);
   }
 
   public setReturnToThisPage(): void {

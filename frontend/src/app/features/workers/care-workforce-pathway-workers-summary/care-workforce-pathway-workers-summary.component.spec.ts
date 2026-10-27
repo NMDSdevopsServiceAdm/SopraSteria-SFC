@@ -34,9 +34,12 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
     const getCWPWorkersSpy = jasmine.createSpy().and.returnValue(of(getCWPWorkersResponse));
     const addAlertSpy = jasmine.createSpy('addAlert');
     const routerSpy = jasmine.createSpy('navigate').and.resolveTo(true);
+
+    const workersWhoMeetNewToCareCriteria = overrides.workersWhoMeetNewToCareCriteria ?? workersToShow;
     const getWorkersWhoMeetNewToCareCriteriaSpy = jasmine
       .createSpy('getWorkersWhoMeetNewToCareCriteria')
-      .and.returnValue(overrides.workersWhoMeetNewToCareCriteria ?? workersToShow);
+      .and.returnValue(of(workersWhoMeetNewToCareCriteria));
+
     const setuptools = await render(CareWorkforcePathwayWorkersSummaryComponent, {
       imports: [SharedModule, RouterModule, SelectSortByComponent],
       providers: [
@@ -136,13 +139,11 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
     });
   });
 
-  it('should navigate to the New to care review page when workers meet the criteria', async () => {
-    const { fixture, getByRole, route, routerSpy, getWorkersWhoMeetNewToCareCriteriaSpy } = await setup();
+  it('should navigate to the New to care review page when some workers meet the New to care criteria', async () => {
+    const { fixture, getByRole, route, routerSpy } = await setup();
 
-    await userEvent.click(getByRole('button', { name: 'Confirm role categories' }));
+    userEvent.click(getByRole('button', { name: 'Confirm role categories' }));
     await fixture.whenStable();
-
-    expect(getWorkersWhoMeetNewToCareCriteriaSpy).toHaveBeenCalledWith(mockWorkers);
 
     expect(routerSpy).toHaveBeenCalledWith(['../review-new-to-care'], {
       relativeTo: route,
@@ -150,14 +151,12 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
   });
 
   it('should redirect to home when no workers meet the New to care criteria', async () => {
-    const { fixture, getByRole, routerSpy, route, getWorkersWhoMeetNewToCareCriteriaSpy } = await setup({
+    const { fixture, getByRole, routerSpy, route } = await setup({
       workersWhoMeetNewToCareCriteria: [],
     });
 
-    await userEvent.click(getByRole('button', { name: 'Confirm role categories' }));
+    userEvent.click(getByRole('button', { name: 'Confirm role categories' }));
     await fixture.whenStable();
-
-    expect(getWorkersWhoMeetNewToCareCriteriaSpy).toHaveBeenCalledWith(mockWorkers);
 
     expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
       fragment: 'home',

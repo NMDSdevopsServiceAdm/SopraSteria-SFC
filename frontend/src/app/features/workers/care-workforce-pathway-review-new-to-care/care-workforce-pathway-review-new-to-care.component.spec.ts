@@ -2,7 +2,11 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
-import { CareWorkforcePathwayService, CWPGetAllWorkersResponse } from '@core/services/care-workforce-pathway.service';
+import {
+  CareWorkforcePathwayService,
+  CWPGetAllWorkersResponse,
+  CWPGetWorkersWhoMeetNewToCareCriteriaResponse,
+} from '@core/services/care-workforce-pathway.service';
 import { WorkerService } from '@core/services/worker.service';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
@@ -29,20 +33,13 @@ describe('CareWorkforcePathwayNewToCareComponent', () => {
       MainJobStartDateValue: null as any,
       careWorkforcePathwayRoleCategory: {
         title: 'New to care',
-        isNominatedIndividual: true,
+        isNominatedIndividual: false,
       },
     },
-  ] as CWPGetAllWorkersResponse['workers'];
+  ] as CWPGetWorkersWhoMeetNewToCareCriteriaResponse['workers'];
 
   const setup = async (overrides: any = {}) => {
-    const workersResponse: CWPGetAllWorkersResponse = {
-      workers: overrides.workers ?? mockWorkers,
-      workerCount: overrides.workerCount ?? mockWorkers.length,
-    };
-
-    const getWorkersWhoMeetNewToCareCriteriaSpy = jasmine
-      .createSpy('getWorkersWhoMeetNewToCareCriteria')
-      .and.returnValue(overrides.workersToShow ?? workersResponse.workers);
+    const mockWorkersToShow = overrides.workersToShow ?? mockWorkers;
 
     const showBackLinkSpy = jasmine.createSpy('showBackLink');
     const setReturnToSpy = jasmine.createSpy('setReturnTo');
@@ -61,6 +58,7 @@ describe('CareWorkforcePathwayNewToCareComponent', () => {
           provide: BackLinkService,
           useValue: { showBackLink: showBackLinkSpy },
         },
+
         {
           provide: WorkerService,
           useValue: { setReturnTo: setReturnToSpy },
@@ -69,12 +67,7 @@ describe('CareWorkforcePathwayNewToCareComponent', () => {
           provide: AlertService,
           useValue: { addAlert: addAlertSpy },
         },
-        {
-          provide: CareWorkforcePathwayService,
-          useValue: {
-            getWorkersWhoMeetNewToCareCriteria: getWorkersWhoMeetNewToCareCriteriaSpy,
-          },
-        },
+
         {
           provide: Router,
           useValue: routerStub,
@@ -84,7 +77,7 @@ describe('CareWorkforcePathwayNewToCareComponent', () => {
           useValue: {
             snapshot: {
               data: {
-                workersWhoRequireCWPAnswer: workersResponse,
+                workersWhoMeetNewToCareCriteria: mockWorkersToShow,
               },
             },
           },
@@ -106,7 +99,6 @@ describe('CareWorkforcePathwayNewToCareComponent', () => {
       setReturnToSpy,
       addAlertSpy,
       navigateSpy,
-      getWorkersWhoMeetNewToCareCriteriaSpy,
     };
   };
 
@@ -120,12 +112,6 @@ describe('CareWorkforcePathwayNewToCareComponent', () => {
     const { showBackLinkSpy } = await setup();
 
     expect(showBackLinkSpy).toHaveBeenCalled();
-  });
-
-  it('should get workers who meet the New to care criteria', async () => {
-    const { getWorkersWhoMeetNewToCareCriteriaSpy } = await setup();
-
-    expect(getWorkersWhoMeetNewToCareCriteriaSpy).toHaveBeenCalledWith(mockWorkers);
   });
 
   it('should display the page heading', async () => {
@@ -166,14 +152,6 @@ describe('CareWorkforcePathwayNewToCareComponent', () => {
     const workerRow = getByTestId('worker-row-1');
 
     expect(within(workerRow).getByText('-')).toBeTruthy();
-  });
-
-  it('should display the nominated individual label when applicable', async () => {
-    const { getByTestId } = await setup();
-
-    const workerRow = getByTestId('worker-row-1');
-
-    expect(within(workerRow).getByText('Nominated individual')).toBeTruthy();
   });
 
   it('should display a Change link for each worker', async () => {

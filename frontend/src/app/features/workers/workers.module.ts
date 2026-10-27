@@ -98,6 +98,7 @@ import { AllNurseFieldsOfPracticeResolver } from '@core/resolvers/nurse-field-of
 import { RegisteredNursesResolver } from '@core/resolvers/registered-nurses.resolver';
 import { SelectSortByComponent } from '@shared/components/select-sort-by/select-sort-by.component';
 import { CareWorkforcePathwayNewToCareComponent } from './care-workforce-pathway-review-new-to-care/care-workforce-pathway-review-new-to-care.component';
+import { GetWorkersWhoMeetNewToCareCriteriaResolver } from '@core/resolvers/careWorkforcePathway/get-workers-who-meet-new-to-care-criteria.resolver';
 
 @NgModule({
   imports: [
@@ -198,6 +199,7 @@ import { CareWorkforcePathwayNewToCareComponent } from './care-workforce-pathway
     WorkerReasonsForLeavingResolver,
     CareWorkforcePathwayWorkersSummaryComponent,
     GetWorkersForCWPSummaryResolver,
+    GetWorkersWhoMeetNewToCareCriteriaResolver,
     GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
     WorkerHasAnyTrainingOrQualificationsResolver,
     DownloadCertificateService,
