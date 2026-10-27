@@ -2,7 +2,7 @@ const dayjs = require('dayjs');
 const lodash = require('lodash');
 const { Op } = require('sequelize');
 const { unsetDHAAnswerOnJobRoleChange, unsetCWPRoleCategoryOnJobRoleChange } = require('./hooks/workerHooks');
-const { JobRoleId } = require('../data/constants');
+const { JobRoleId, CWPNewToCareRoleCategoryID } = require('../data/constants');
 
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
@@ -1452,14 +1452,7 @@ module.exports = function (sequelize, DataTypes) {
     const order = sortByOptions[sortBy] ?? sortByOptions.staffNameAsc;
 
     const { count, rows } = await this.findAndCountAll({
-      attributes: [
-        'uid',
-        ['NameOrIdValue', 'nameOrId'],
-        'CWPRoleCategoryIsAlsoNominatedIndividual',
-        'MainJobStartDateValue',
-        'CareWorkforcePathwayRoleCategorySavedAt',
-        'CareWorkforcePathwayRoleCategoryChangedAt',
-      ],
+      attributes: ['uid', ['NameOrIdValue', 'nameOrId'], 'CWPRoleCategoryIsAlsoNominatedIndividual'],
       where: {
         establishmentFk: establishmentId,
         archived: false,
@@ -1494,6 +1487,49 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     return { count, workers };
+  };
+
+  Worker.getAllWorkersWhoMeetNewToCareCriteria = async function (establishmentId) {
+    const oneYearAgo = dayjs(new Date()).subtract(1, 'year').toDate();
+    const today = dayjs(new Date()).format('YYYY-MM-DDT00:00:00');
+
+    const workers = await this.findAll({
+      attributes: [
+        'uid',
+        ['NameOrIdValue', 'nameOrId'],
+        'MainJobStartDateValue',
+        'CareWorkforcePathwayRoleCategorySavedAt',
+        'CareWorkforcePathwayRoleCategoryChangedAt',
+      ],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+        CareWorkforcePathwayRoleCategoryFK: CWPNewToCareRoleCategoryID,
+        CareWorkforcePathwayRoleCategoryChangedAt: {
+          [Op.or]: [{ [Op.is]: null }, { [Op.lt]: today }],
+        },
+        MainJobStartDateValue: {
+          [Op.or]: [{ [Op.is]: null }, { [Op.lt]: oneYearAgo }],
+        },
+      },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['title'],
+          where: {
+            excludedFromCareWorkforcePathway: false,
+          },
+        },
+        {
+          model: sequelize.models.careWorkforcePathwayRoleCategory,
+          as: 'careWorkforcePathwayRoleCategory',
+        },
+      ],
+      order: [['nameOrId', 'ASC']],
+    });
+
+    return workers;
   };
 
   Worker.countAllWorkersWithoutDelegatedHealthCareActivities = async function (establishmentId) {

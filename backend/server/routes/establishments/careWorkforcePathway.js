@@ -52,6 +52,17 @@ const getWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) => {
   }
 };
 
+const getWorkersWhoMeetNewToCareCriteria = async (req, res) => {
+  const establishmentId = req.establishmentId;
+  try {
+    const workers = await models.worker.getAllWorkersWhoMeetNewToCareCriteria(establishmentId);
+    return res.status(200).send({ workers });
+  } catch (err) {
+    console.error('GET /getWorkersWhoMeetNewToCareCriteria - failed', err);
+    return res.status(500).send('Failed to get workers for workplace with id: ' + establishmentId);
+  }
+};
+
 router.route('/');
 router
   .route('/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer')
@@ -60,6 +71,10 @@ router
 router
   .route('/workersWhoRequireCareWorkforcePathwayRoleAnswer')
   .get(hasPermission('canViewWorker'), getWorkersWhoRequireCareWorkforcePathwayRoleAnswer);
+
+router
+  .route('/workersWhoMeetNewToCareCriteria')
+  .get(hasPermission('canViewWorker'), getWorkersWhoMeetNewToCareCriteria);
 
 router.route('/careWorkforcePathwayUse').post(hasPermission('canEditEstablishment'), updateCareWorkforcePathwayUse);
 router
@@ -71,3 +86,4 @@ module.exports = router;
 module.exports.countWorkersWhoRequireCareWorkforcePathwayRoleAnswer =
   countWorkersWhoRequireCareWorkforcePathwayRoleAnswer;
 module.exports.getWorkersWhoRequireCareWorkforcePathwayRoleAnswer = getWorkersWhoRequireCareWorkforcePathwayRoleAnswer;
+module.exports.getWorkersWhoMeetNewToCareCriteria = getWorkersWhoMeetNewToCareCriteria;

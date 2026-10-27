@@ -19,6 +19,8 @@ const CWPRoleCategoryGroup = {
 
 const CWPRoleCategoryGroupValues = Object.values(CWPRoleCategoryGroup);
 
+const CWPNewToCareRoleCategoryID = 1;
+
 module.exports = {
   UserAccountStatus,
   MaxLoginAttempts,
@@ -26,4 +28,5 @@ module.exports = {
   JobRoleId,
   CWPRoleCategoryGroup,
   CWPRoleCategoryGroupValues,
+  CWPNewToCareRoleCategoryID,
 };

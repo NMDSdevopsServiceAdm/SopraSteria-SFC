@@ -5,6 +5,7 @@ const models = require('../../../../models');
 const {
   countWorkersWhoRequireCareWorkforcePathwayRoleAnswer,
   getWorkersWhoRequireCareWorkforcePathwayRoleAnswer,
+  getWorkersWhoMeetNewToCareCriteria,
 } = require('../../../../routes/establishments/careWorkforcePathway');
 
 describe('careWorkforcePathwayRole', () => {
@@ -240,6 +241,49 @@ describe('careWorkforcePathwayRole', () => {
           sortBy: 'staffNameAsc',
         });
       });
+    });
+  });
+
+  describe('GET /workersWhoMeetNewToCareCriteria', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    const establishmentId = 'mock-workplace-uuid';
+
+    const request = {
+      method: 'GET',
+      url: `/api/establishment/${establishmentId}/workersWhoMeetNewToCareCriteria`,
+      params: {
+        id: establishmentId,
+      },
+      establishmentId,
+    };
+
+    it('should respond with 200 and a list of workers who meet the new to care criteria', async () => {
+      sinon.stub(models.worker, 'getAllWorkersWhoMeetNewToCareCriteria').resolves(workersFromDB);
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+      await getWorkersWhoMeetNewToCareCriteria(req, res);
+
+      const expectedResponseBody = {
+        workers: workersFromDB,
+      };
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getData()).to.deep.equal(expectedResponseBody);
+    });
+
+    it('should respond with 500 if error occured', async () => {
+      sinon.stub(models.worker, 'getAllWorkersWhoMeetNewToCareCriteria').rejects(new Error('mock database error'));
+      sinon.stub(console, 'error');
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+      await getWorkersWhoMeetNewToCareCriteria(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
     });
   });
 });
