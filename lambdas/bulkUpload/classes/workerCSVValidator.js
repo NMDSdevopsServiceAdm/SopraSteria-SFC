@@ -1312,52 +1312,44 @@ class WorkerCsvValidator {
 
     // Main job role excluded from CWP
     if (isExcluded) {
-      if (cwpNominated) {
-        this._validationErrors.push(
-          this._generateWarning(
-            'The code you have entered for CWPNOMIND will be ignored as your MAINJOBROLE is excluded',
-            'CWPNOMIND',
-          ),
-        );
-      }
+      this._validationErrors.push(
+        this._generateWarning(
+          'The code you have entered for CWPNOMIND will be ignored as your MAINJOBROLE is excluded',
+          'CWPNOMIND',
+        ),
+      );
       return true;
     }
 
     if (!cwpCategoryCode) {
-      if (cwpNominated) {
-        this._validationErrors.push(
-          this._generateWarning(
-            'The code you have entered for CWPNOMIND will be ignored as no CWPCATEGORY has been provided',
-            'CWPNOMIND',
-          ),
-        );
-      }
+      this._validationErrors.push(
+        this._generateWarning(
+          'The code you have entered for CWPNOMIND will be ignored as no CWPCATEGORY has been provided',
+          'CWPNOMIND',
+        ),
+      );
       return true;
     }
 
-    // If the CWP category is invalid , both values will be ignored
+    // If the CWP category is invalid, both values will be ignored
     if (!category) {
-      if (cwpNominated) {
-        this._validationErrors.push(
-          this._generateWarning(
-            'The code you have entered for CWPNOMIND will be ignored as CWPCATEGORY is invalid',
-            'CWPNOMIND',
-          ),
-        );
-      }
+      this._validationErrors.push(
+        this._generateWarning(
+          'The code you have entered for CWPNOMIND will be ignored as CWPCATEGORY is invalid',
+          'CWPNOMIND',
+        ),
+      );
       return true;
     }
 
     // CWPNOMIND is only applicable to Senior leadership
     if (category?.group !== 'Senior leadership') {
-      if (cwpNominated) {
-        this._validationErrors.push(
-          this._generateWarning(
-            'The code you have entered for CWPNOMIND will be ignored as the chosen CWPCATEGORY cannot be a nominated individual',
-            'CWPNOMIND',
-          ),
-        );
-      }
+      this._validationErrors.push(
+        this._generateWarning(
+          'The code you have entered for CWPNOMIND will be ignored as the chosen CWPCATEGORY cannot be a nominated individual',
+          'CWPNOMIND',
+        ),
+      );
       return true;
     }
 
