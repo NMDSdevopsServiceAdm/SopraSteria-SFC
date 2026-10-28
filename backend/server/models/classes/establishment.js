@@ -699,15 +699,6 @@ class Establishment extends EntityValidator {
         if ('travelTimePay' in document) {
           this._travelTimePay = document.travelTimePay;
         }
-        if ('payAndPensionsMiniFlowViewed' in document) {
-          this._payAndPensionsMiniFlowViewed = document.payAndPensionsMiniFlowViewed;
-        }
-        if ('nursesQuestionsMiniFlowViewed' in document) {
-          this._nursesQuestionsMiniFlowViewed = document.nursesQuestionsMiniFlowViewed;
-        }
-        if ('cwpRoleCategoriesBannerViewed' in document) {
-          this._cwpRoleCategoriesBannerViewed = document.cwpRoleCategoriesBannerViewed;
-        }
       }
 
       // allow for deep restoration of entities (associations - namely Worker here)

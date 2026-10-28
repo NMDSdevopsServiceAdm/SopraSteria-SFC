@@ -46,16 +46,6 @@ describe('Establishment Class', () => {
       expect(parent.parentPostcode).to.equal('LE5 1AA');
       expect(parentEst).to.deep.equal(true);
     });
-
-    booleanValues.forEach((value) => {
-      it(`should return payAndPensionsMiniFlowViewed when in the document and the value is ${value} `, async () => {
-        const document = { payAndPensionsMiniFlowViewed: value };
-        const establishmentLoaded = await establishment.load(document);
-
-        expect(establishmentLoaded).to.deep.equal(true);
-        expect(establishment._payAndPensionsMiniFlowViewed).to.deep.equal(value);
-      });
-    });
   });
 
   describe('save()', () => {
