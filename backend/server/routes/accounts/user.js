@@ -697,6 +697,15 @@ const finishAddUser = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
+  const establishment = await models.establishment.findOne({
+    attributes: ['id', 'parentId', 'isParent', 'dataOwner'],
+    where: {
+      id: req.establishmentId,
+    },
+  });
+
+  const isParentOwnedSub =
+    establishment?.parentId != null && establishment?.isParent === false && establishment?.dataOwner === 'Parent';
   const userId = req.params.userid;
 
   const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
@@ -712,7 +721,7 @@ const deleteUser = async (req, res) => {
         return res.status(400).send('Cannot delete own user account');
       }
 
-      if (thisUser._isPrimary) {
+      if (thisUser._isPrimary && !isParentOwnedSub) {
         return res.status(400).send('Cannot delete primary account');
       }
 
