@@ -1,5 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -287,6 +286,69 @@ describe('UserAccountViewComponent', () => {
 
     expect(deleteButton).toBeTruthy();
     expect(routerSpy.calls.mostRecent().args[0]).toEqual(['select-primary-user-delete']);
+  });
+  describe('deleteUserNavigation', () => {
+    const mockEvent = () =>
+      ({
+        preventDefault: jasmine.createSpy('preventDefault'),
+      } as unknown as Event);
+
+    it('should navigate directly to delete-user when deleting the last primary user of a parent-owned subsidiary', async () => {
+      const { component, routerSpy } = await setup();
+
+      component.establishment.parentUid = 'parent-uid';
+      component.establishment.dataOwner = 'Parent' as typeof component.establishment.dataOwner;
+
+      component.allUsers = [component.user];
+
+      component.deleteUserNavigation(mockEvent());
+
+      const route = getTestBed().inject(ActivatedRoute);
+
+      expect(routerSpy).toHaveBeenCalledWith(['delete-user'], { relativeTo: route });
+    });
+
+    it('should require a replacement when a parent-owned subsidiary has multiple users', async () => {
+      const { component, routerSpy } = await setup();
+
+      component.establishment.parentUid = 'parent-uid';
+      component.establishment.dataOwner = 'Parent' as typeof component.establishment.dataOwner;
+      component.allUsers = [
+        component.user,
+        {
+          ...component.user,
+          uid: 'another-user-uid',
+          isPrimary: false,
+        },
+      ];
+
+      component.deleteUserNavigation(mockEvent());
+
+      expect(routerSpy.calls.mostRecent().args[0]).toEqual(['select-primary-user-delete']);
+    });
+
+    it('should require a replacement when the last primary user belongs to a workplace-owned subsidiary', async () => {
+      const { component, routerSpy } = await setup();
+
+      component.establishment.parentUid = 'parent-uid';
+      component.establishment.dataOwner = 'Workplace' as typeof component.establishment.dataOwner;
+      component.allUsers = [component.user];
+
+      component.deleteUserNavigation(mockEvent());
+
+      expect(routerSpy.calls.mostRecent().args[0]).toEqual(['select-primary-user-delete']);
+    });
+
+    it('should require a replacement when deleting a primary user from a parent workplace', async () => {
+      const { component, routerSpy } = await setup();
+      component.establishment.parentUid = undefined;
+      component.establishment.dataOwner = 'Workplace' as typeof component.establishment.dataOwner;
+      component.allUsers = [component.user];
+
+      component.deleteUserNavigation(mockEvent());
+
+      expect(routerSpy.calls.mostRecent().args[0]).toEqual(['select-primary-user-delete']);
+    });
   });
 
   describe('getBreadcrumbsJourney', () => {
