@@ -165,7 +165,10 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
     this.workerService.setState({ ...this.worker, ...data });
 
     if (this.cameFromCWPNewTocarePage) {
-      this.returnToHomeIfNoNewToCareWorkersRemain();
+      const currentWorkerUid = this.worker.uid!;
+      this.careWorkforcePathwayService.setNewToCareWorkerAsReviewed(currentWorkerUid);
+
+      this.router.navigate(this.returnUrl);
       return;
     }
 
@@ -176,27 +179,5 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
   protected formValueIsEmpty(): boolean {
     const { careWorkforcePathwayRoleCategory } = this.form.value;
     return careWorkforcePathwayRoleCategory === null;
-  }
-
-  private returnToHomeIfNoNewToCareWorkersRemain(): void {
-    const establishmentUid = this.establishmentService.establishment.uid;
-
-    this.careWorkforcePathwayService.getWorkersWhoMeetNewToCareCriteria(establishmentUid).subscribe({
-      next: (workers) => {
-        if (workers.length === 0) {
-          this.router.navigate(['/dashboard'], { fragment: 'home' }).then(() => {
-            this.alertService.addAlert({
-              type: 'success',
-              message: 'Care Workforce Pathway role categories reviewed',
-            });
-          });
-        } else {
-          this.router.navigate(this.returnUrl);
-        }
-      },
-      error: () => {
-        this.router.navigate(this.returnUrl);
-      },
-    });
   }
 }

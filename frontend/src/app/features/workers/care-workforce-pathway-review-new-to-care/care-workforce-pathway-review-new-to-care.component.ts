@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
-import { CWPGetWorkersWhoMeetNewToCareCriteriaResponse } from '@core/services/care-workforce-pathway.service';
+import {
+  CareWorkforcePathwayService,
+  CWPGetWorkersWhoMeetNewToCareCriteriaResponse,
+} from '@core/services/care-workforce-pathway.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
 
@@ -20,15 +23,16 @@ export class CareWorkforcePathwayNewToCareComponent implements OnInit {
     private router: Router,
     private alertService: AlertService,
     private route: ActivatedRoute,
+    private careWorkforcePathwayService: CareWorkforcePathwayService,
   ) {}
 
   ngOnInit(): void {
     this.backLinkService.showBackLink();
     this.workersToShow = this.route.snapshot.data?.workersWhoMeetNewToCareCriteria;
-  }
 
-  formatMainStartDate(date: string | null) {
-    return date ? dayjs(date).format('D MMM YYYY') : '';
+    if (!this.workersToShow?.length) {
+      this.returnToStartingPoint(true);
+    }
   }
 
   public setReturnToThisPage(): void {
@@ -36,8 +40,14 @@ export class CareWorkforcePathwayNewToCareComponent implements OnInit {
     this.workerService.setReturnTo({ url: [urlOfThisPage] });
   }
 
-  public returnToHome(): void {
-    this.router.navigate(['/dashboard'], { fragment: 'home' }).then(() => {
+  public returnToStartingPoint(redirectOnPageLoad: boolean = false): void {
+    const startPointTab = this.careWorkforcePathwayService.workerSummaryJourneyStartingPoint;
+    const navigationExtras = { fragment: startPointTab } as NavigationExtras;
+    if (redirectOnPageLoad) {
+      navigationExtras.replaceUrl = true;
+    }
+
+    this.router.navigate(['/dashboard'], navigationExtras).then(() => {
       this.alertService.addAlert({
         type: 'success',
         message: 'Care Workforce Pathway role categories reviewed',
