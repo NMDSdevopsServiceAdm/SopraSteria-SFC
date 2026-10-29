@@ -31,7 +31,7 @@ describe('StaffSummaryComponent', () => {
   async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;
     establishment.updatePayForMultiStaffViewed = overrides?.updatePayForMultiStaffViewed ?? false;
-    establishment.cwpRoleCategoriesBannerViewed = overrides?.cwpRoleCategoriesBannerViewed ?? false;
+    establishment.cwpRoleCategoriesNewPillLinkVisited = overrides?.cwpRoleCategoriesNewPillLinkVisited ?? false;
     establishment.uid = workplaceUid;
 
     const workersCountForCWPSummary = overrides?.workersCountForCWPSummary ?? null;
@@ -408,12 +408,12 @@ describe('StaffSummaryComponent', () => {
   describe('Check your staff Care Workforce Pathway role categories link', () => {
     const linkText = 'Check your staff Care Workforce Pathway role categories';
     const defaultOverrides = {
-      cwpRoleCategoriesBannerViewed: false,
+      cwpRoleCategoriesNewPillLinkVisited: false,
       workersCountForCWPSummary: { workerCount: 1 },
       permissions: ['canViewWorker', 'canEditWorker', 'canViewEstablishment', 'canEditEstablishment'],
     };
 
-    it('should show a link with new pill when cwpRoleCategoriesBannerViewed is false, workersCountForCWPSummary > 0', async () => {
+    it('should show a link with new pill when cwpRoleCategoriesNewPillLinkVisited is false, workersCountForCWPSummary > 0', async () => {
       const { getByTestId } = await setup(defaultOverrides);
 
       const newPillWithLink = getByTestId('care-workforce-pathway-workers-summary-link');
@@ -423,10 +423,10 @@ describe('StaffSummaryComponent', () => {
       expect(within(newPillWithLink).getByTestId('new-pill')).toBeTruthy();
     });
 
-    it('should show the link without the new pill when cwpRoleCategoriesBannerViewed is true', async () => {
+    it('should show the link without the new pill when cwpRoleCategoriesNewPillLinkVisited is true', async () => {
       const overrides = {
         ...defaultOverrides,
-        cwpRoleCategoriesBannerViewed: true,
+        cwpRoleCategoriesNewPillLinkVisited: true,
       };
 
       const { getByTestId } = await setup(overrides);
@@ -465,10 +465,10 @@ describe('StaffSummaryComponent', () => {
       expect(link).toBeFalsy();
     });
 
-    it('should call updateSingleEstablishmentField if cwpRoleCategoriesBannerViewed is false', async () => {
+    it('should call updateSingleEstablishmentField if cwpRoleCategoriesNewPillLinkVisited is false', async () => {
       const { fixture, getByText, updateSingleFieldSpy } = await setup({
         ...defaultOverrides,
-        cwpRoleCategoriesBannerViewed: false,
+        cwpRoleCategoriesNewPillLinkVisited: false,
       });
 
       const link = getByText(linkText);
@@ -476,15 +476,15 @@ describe('StaffSummaryComponent', () => {
       fixture.autoDetectChanges();
 
       expect(updateSingleFieldSpy).toHaveBeenCalledWith(workplaceUid, {
-        property: 'cwpRoleCategoriesBannerViewed',
+        property: 'cwpRoleCategoriesNewPillLinkVisited',
         value: true,
       });
     });
 
-    it(`should not call updateSingleEstablishmentField if cwpRoleCategoriesBannerViewed is true`, async () => {
+    it(`should not call updateSingleEstablishmentField if cwpRoleCategoriesNewPillLinkVisited is true`, async () => {
       const overrides = {
         ...defaultOverrides,
-        cwpRoleCategoriesBannerViewed: true,
+        cwpRoleCategoriesNewPillLinkVisited: true,
       };
       const { fixture, getByText, updateSingleFieldSpy } = await setup(overrides);
 
