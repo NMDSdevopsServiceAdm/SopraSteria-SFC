@@ -112,6 +112,7 @@ class Establishment extends EntityValidator {
     this._lastStaffRecordMessageDismissedAt = null;
     this._nursesQuestionsMiniFlowViewed = null;
     this._cwpRoleCategoriesBannerViewed = null;
+    this._cwpRoleCategoriesNewPillLinkVisited = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -464,6 +465,9 @@ class Establishment extends EntityValidator {
   }
   get cwpRoleCategoriesBannerViewed() {
     return this._cwpRoleCategoriesBannerViewed;
+  }
+  get cwpRoleCategoriesNewPillLinkVisited() {
+    return this._cwpRoleCategoriesNewPillLinkVisited;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -1510,6 +1514,7 @@ class Establishment extends EntityValidator {
         this._lastStaffRecordMessageDismissedAt = fetchResults.lastStaffRecordMessageDismissedAt;
         this._nursesQuestionsMiniFlowViewed = fetchResults.nursesQuestionsMiniFlowViewed;
         this._cwpRoleCategoriesBannerViewed = fetchResults.cwpRoleCategoriesBannerViewed;
+        this._cwpRoleCategoriesNewPillLinkVisited = fetchResults.cwpRoleCategoriesNewPillLinkVisited;
 
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
@@ -1991,6 +1996,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.lastStaffRecordMessageDismissedAt = this.lastStaffRecordMessageDismissedAt;
         myDefaultJSON.nursesQuestionsMiniFlowViewed = this.nursesQuestionsMiniFlowViewed;
         myDefaultJSON.cwpRoleCategoriesBannerViewed = this.cwpRoleCategoriesBannerViewed;
+        myDefaultJSON.cwpRoleCategoriesNewPillLinkVisited = this.cwpRoleCategoriesNewPillLinkVisited;
       }
 
       if (this.showSharingPermissionsBanner !== null) {
