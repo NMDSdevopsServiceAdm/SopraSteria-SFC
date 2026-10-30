@@ -7,7 +7,6 @@ import {
   CWPGetWorkersWhoMeetNewToCareCriteriaResponse,
 } from '@core/services/care-workforce-pathway.service';
 import { WorkerService } from '@core/services/worker.service';
-import dayjs from 'dayjs';
 
 @Component({
   selector: 'app-care-workforce-pathway-new-to-care',
@@ -16,6 +15,7 @@ import dayjs from 'dayjs';
 })
 export class CareWorkforcePathwayNewToCareComponent implements OnInit {
   public workersToShow: CWPGetWorkersWhoMeetNewToCareCriteriaResponse['workers'] = [];
+  public buttonText = 'Return to home';
 
   constructor(
     private workerService: WorkerService,
@@ -32,6 +32,10 @@ export class CareWorkforcePathwayNewToCareComponent implements OnInit {
 
     if (!this.workersToShow?.length) {
       this.returnToStartingPoint(true);
+    }
+
+    if (this.careWorkforcePathwayService.workerSummaryJourneyStartingPoint === 'staff-records') {
+      this.buttonText = 'Return to staff records';
     }
   }
 

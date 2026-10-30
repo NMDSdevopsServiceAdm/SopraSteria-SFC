@@ -194,9 +194,9 @@ describe('CareWorkforcePathwayNewToCareComponent', () => {
   });
 
   it('should navigate to the dashboard when Return to home is clicked', async () => {
-    const { getByTestId, navigateSpy } = await setup();
+    const { getByText, navigateSpy } = await setup();
 
-    await userEvent.click(getByTestId('returnToHomeButton'));
+    userEvent.click(getByText('Return to home'));
 
     expect(navigateSpy).toHaveBeenCalledWith(['/dashboard'], {
       fragment: 'home',
@@ -204,15 +204,25 @@ describe('CareWorkforcePathwayNewToCareComponent', () => {
   });
 
   it('should display a success alert after navigating home', async () => {
-    const { fixture, getByTestId, addAlertSpy } = await setup();
+    const { fixture, getByText, addAlertSpy } = await setup();
 
-    userEvent.click(getByTestId('returnToHomeButton'));
+    userEvent.click(getByText('Return to home'));
 
     await fixture.whenStable();
 
     expect(addAlertSpy).toHaveBeenCalledWith({
       type: 'success',
       message: 'Care Workforce Pathway role categories reviewed',
+    });
+  });
+
+  it('should show a different return button when visited from staff records link', async () => {
+    const { getByText, navigateSpy } = await setup({ workerSummaryJourneyStartingPoint: 'staff-records' });
+
+    userEvent.click(getByText('Return to staff records'));
+
+    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard'], {
+      fragment: 'staff-records',
     });
   });
 
