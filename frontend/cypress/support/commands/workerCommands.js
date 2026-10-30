@@ -15,10 +15,11 @@ Cypress.Commands.add('insertTestWorker', (args) => {
     mainJobFKValue = '10',
     completed = true,
     careWorkforcePathwayRoleCategoryFK = null,
+    MainJobStartDateValue = null,
   } = args;
   const queryString = `INSERT INTO cqc."Worker"
-    ("WorkerUID", "EstablishmentFK", "NameOrIdValue", "ContractValue", "MainJobFKValue", "CompletedValue", "CareWorkforcePathwayRoleCategoryFK", "updatedby")
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`;
+    ("WorkerUID", "EstablishmentFK", "NameOrIdValue", "ContractValue", "MainJobFKValue", "CompletedValue", "CareWorkforcePathwayRoleCategoryFK", "MainJobStartDateValue", "updatedby")
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`;
   const parameters = [
     uuidv4(),
     establishmentID,
@@ -27,6 +28,7 @@ Cypress.Commands.add('insertTestWorker', (args) => {
     mainJobFKValue,
     completed,
     careWorkforcePathwayRoleCategoryFK,
+    MainJobStartDateValue,
     'admin1',
   ];
 
