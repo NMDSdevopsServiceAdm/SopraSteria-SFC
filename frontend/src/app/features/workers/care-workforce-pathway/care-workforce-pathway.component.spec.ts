@@ -382,10 +382,6 @@ describe('CareWorkforcePathwayRoleComponent', () => {
       },
     };
 
-    const mockWorkersFromBackend = [
-      { uid: 'mockuid', nameOrId: 'mock worker' },
-    ] as CWPGetWorkersWhoMeetNewToCareCriteriaResponse['workers'];
-
     it('should show the existing heading and Staff records caption', async () => {
       const { getByRole, getByTestId } = await setup(overrideReturnTo);
 
@@ -411,9 +407,6 @@ describe('CareWorkforcePathwayRoleComponent', () => {
     it('should return to the Review New to Care page when submitted', async () => {
       const { component, fixture, getByText, routerSpy, careWorkforcePathwayService } = await setup(overrideReturnTo);
 
-      spyOn(careWorkforcePathwayService, 'getWorkersWhoMeetNewToCareCriteria').and.returnValue(
-        of(mockWorkersFromBackend),
-      );
       const setNewToCareWorkerAsReviewedSpy = spyOn(careWorkforcePathwayService, 'setNewToCareWorkerAsReviewed');
 
       const workerUid = component.worker.uid!;

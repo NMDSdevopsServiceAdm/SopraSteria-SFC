@@ -10,6 +10,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { FinalQuestionComponent } from '../final-question/final-question.component';
+import { CWPRoleCategoryNewtoCareId } from '@core/constants/constants';
 
 @Component({
   selector: 'app-care-workforce-pathway',
@@ -164,7 +165,9 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
   _onSuccess(data: any) {
     this.workerService.setState({ ...this.worker, ...data });
 
-    if (this.cameFromCWPNewTocarePage) {
+    const selectedNewToCare = this.form.value?.careWorkforcePathwayRoleCategory === CWPRoleCategoryNewtoCareId;
+
+    if ((this.cameFromCWPSummaryPage || this.cameFromCWPNewTocarePage) && selectedNewToCare) {
       const currentWorkerUid = this.worker.uid!;
       this.careWorkforcePathwayService.setNewToCareWorkerAsReviewed(currentWorkerUid);
 
