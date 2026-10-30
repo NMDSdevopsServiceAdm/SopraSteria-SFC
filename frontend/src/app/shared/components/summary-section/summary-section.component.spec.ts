@@ -20,6 +20,7 @@ import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 
 describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
@@ -90,6 +91,8 @@ describe('Summary section', () => {
     const payAndPensionService = injector.inject(PayAndPensionService) as PayAndPensionService;
     const payAndPensionServiceSpy = spyOn(payAndPensionService, 'setInPayAndPensionsMiniFlow');
 
+    const careWorkforcePathwayService = injector.inject(CareWorkforcePathwayService) as CareWorkforcePathwayService;
+
     return {
       ...setupTools,
       component,
@@ -101,6 +104,7 @@ describe('Summary section', () => {
       setReturnToSpy,
       localStorageSpy,
       payAndPensionServiceSpy,
+      careWorkforcePathwayService,
     };
   };
 
@@ -1413,10 +1417,11 @@ describe('Summary section', () => {
           cwpRoleCategoriesBannerViewed: false,
         };
 
-        const { fixture, getByTestId, setReturnToSpy, updateSingleFieldSpy } = await setup({
+        const { fixture, getByTestId, updateSingleFieldSpy, careWorkforcePathwayService } = await setup({
           establishment,
           numberOfStaffIncludedInCWPRoleCategories: 1,
         });
+        const startWorkerSummaryJourneySpy = spyOn(careWorkforcePathwayService, 'startWorkerSummaryJourney');
 
         const updateBannerArea = getByTestId('update-banner-area');
 
@@ -1431,7 +1436,7 @@ describe('Summary section', () => {
         userEvent.click(link);
         await fixture.whenStable();
 
-        expect(setReturnToSpy).toHaveBeenCalled();
+        expect(startWorkerSummaryJourneySpy).toHaveBeenCalledWith('home');
 
         expect(updateSingleFieldSpy).toHaveBeenCalledWith(establishment.uid, {
           property: 'cwpRoleCategoriesBannerViewed',

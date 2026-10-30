@@ -382,10 +382,6 @@ describe('CareWorkforcePathwayRoleComponent', () => {
       },
     };
 
-    const mockWorkersFromBackend = [
-      { uid: 'mockuid', nameOrId: 'mock worker' },
-    ] as CWPGetWorkersWhoMeetNewToCareCriteriaResponse['workers'];
-
     it('should show the existing heading and Staff records caption', async () => {
       const { getByRole, getByTestId } = await setup(overrideReturnTo);
 
@@ -409,11 +405,11 @@ describe('CareWorkforcePathwayRoleComponent', () => {
     });
 
     it('should return to the Review New to Care page when submitted', async () => {
-      const { fixture, getByText, routerSpy, careWorkforcePathwayService } = await setup(overrideReturnTo);
+      const { component, fixture, getByText, routerSpy, careWorkforcePathwayService } = await setup(overrideReturnTo);
 
-      spyOn(careWorkforcePathwayService, 'getWorkersWhoMeetNewToCareCriteria').and.returnValue(
-        of(mockWorkersFromBackend),
-      );
+      const setNewToCareWorkerAsReviewedSpy = spyOn(careWorkforcePathwayService, 'setNewToCareWorkerAsReviewed');
+
+      const workerUid = component.worker.uid!;
 
       userEvent.click(getByText('New to care'));
       userEvent.click(getByText('Save'));
@@ -421,10 +417,12 @@ describe('CareWorkforcePathwayRoleComponent', () => {
       await fixture.whenStable();
 
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'staff-record', 'review-new-to-care']);
+      expect(setNewToCareWorkerAsReviewedSpy).toHaveBeenCalledWith(workerUid);
     });
 
     it('should return to the Review New to Care page when clicked the Cancel button', async () => {
-      const { fixture, getByText, routerSpy, alertSpy } = await setup(overrideReturnTo);
+      const { fixture, getByText, routerSpy, alertSpy, careWorkforcePathwayService } = await setup(overrideReturnTo);
+      const setNewToCareWorkerAsReviewedSpy = spyOn(careWorkforcePathwayService, 'setNewToCareWorkerAsReviewed');
 
       userEvent.click(getByText('Cancel'));
 
@@ -432,23 +430,8 @@ describe('CareWorkforcePathwayRoleComponent', () => {
 
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'staff-record', 'review-new-to-care']);
       expect(alertSpy).not.toHaveBeenCalled();
-    });
 
-    it('should return to home when no worker meet the New to care criteria', async () => {
-      const { fixture, getByText, routerSpy, alertSpy, careWorkforcePathwayService } = await setup(overrideReturnTo);
-
-      spyOn(careWorkforcePathwayService, 'getWorkersWhoMeetNewToCareCriteria').and.returnValue(of([]));
-
-      userEvent.click(getByText('New to care'));
-      userEvent.click(getByText('Save'));
-
-      await fixture.whenStable();
-
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
-      expect(alertSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: 'Care Workforce Pathway role categories reviewed',
-      });
+      expect(setNewToCareWorkerAsReviewedSpy).not.toHaveBeenCalled();
     });
   });
 });

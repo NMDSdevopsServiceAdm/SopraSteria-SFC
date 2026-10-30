@@ -1491,7 +1491,6 @@ module.exports = function (sequelize, DataTypes) {
 
   Worker.getAllWorkersWhoMeetNewToCareCriteria = async function (establishmentId) {
     const oneYearAgo = dayjs(new Date()).subtract(1, 'year').toDate();
-    const today = dayjs(new Date()).format('YYYY-MM-DDT00:00:00');
 
     const workers = await this.findAll({
       attributes: [
@@ -1505,9 +1504,6 @@ module.exports = function (sequelize, DataTypes) {
         establishmentFk: establishmentId,
         archived: false,
         CareWorkforcePathwayRoleCategoryFK: CWPNewToCareRoleCategoryID,
-        CareWorkforcePathwayRoleCategoryChangedAt: {
-          [Op.or]: [{ [Op.is]: null }, { [Op.lt]: today }],
-        },
         MainJobStartDateValue: {
           [Op.or]: [{ [Op.is]: null }, { [Op.lt]: oneYearAgo }],
         },
