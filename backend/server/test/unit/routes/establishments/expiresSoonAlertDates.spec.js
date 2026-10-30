@@ -3,7 +3,7 @@ const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
 const models = require('../../../../models');
 
-const expiresSoonAlertDates = require('../../../../routes/establishments/expiresSoonAlertDates');
+const expiresSoonAlertDates = require('../../../../routes/establishments/training/expiresSoonAlertDates');
 
 describe('server/routes/establishments/expiresSoonAlertDates', () => {
   const establishmentId = 'a131313dasd123325453bac';
