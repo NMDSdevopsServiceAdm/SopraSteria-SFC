@@ -25,7 +25,7 @@ import {
 export class CareWorkforcePathwayService {
   private _awarenessAnswersTruthyIds = [1, 2, 3];
   private _workerSummaryPaginationSettings: null | CWPWorkerSummaryPaginationSettings = null;
-  private _workerSummaryJourneyStartPoint: CWPWorkerSummaryJourneyStartPoint = null;
+  private _workerSummaryJourneyStartingPoint: CWPWorkerSummaryJourneyStartingPoint = null;
   private _newToCareWorkersReviewed: workerUid[] = [];
 
   constructor(private http: HttpClient) {}
@@ -99,8 +99,8 @@ export class CareWorkforcePathwayService {
     return DefaultPaginationSettingsForCWPWorkerSummary;
   }
 
-  get workerSummaryJourneyStartPoint(): CWPWorkerSummaryJourneyStartPoint {
-    return this._workerSummaryJourneyStartPoint ?? 'home';
+  get workerSummaryJourneyStartingPoint(): CWPWorkerSummaryJourneyStartingPoint {
+    return this._workerSummaryJourneyStartingPoint ?? 'home';
   }
 
   get newToCareWorkersReviewed(): workerUid[] {
@@ -111,13 +111,13 @@ export class CareWorkforcePathwayService {
     this._newToCareWorkersReviewed.push(workerUid);
   }
 
-  startWorkerSummaryJourney(startPoint: CWPWorkerSummaryJourneyStartPoint): void {
-    this._workerSummaryJourneyStartPoint = startPoint;
+  startWorkerSummaryJourney(startingPoint: CWPWorkerSummaryJourneyStartingPoint): void {
+    this._workerSummaryJourneyStartingPoint = startingPoint;
     this._newToCareWorkersReviewed = [];
   }
 
   resetWorkerSummaryJourney(): void {
-    this._workerSummaryJourneyStartPoint = null;
+    this._workerSummaryJourneyStartingPoint = null;
     this._newToCareWorkersReviewed = [];
   }
 }
@@ -167,5 +167,5 @@ const DefaultPaginationSettingsForCWPWorkerSummary: CWPWorkerSummaryPaginationSe
   sortBy: Object.keys(SortStaffOptionsForCWPWorkerSummary)[0],
 };
 
-export type CWPWorkerSummaryJourneyStartPoint = 'home' | 'staff-records';
+export type CWPWorkerSummaryJourneyStartingPoint = 'home' | 'staff-records';
 type workerUid = string;

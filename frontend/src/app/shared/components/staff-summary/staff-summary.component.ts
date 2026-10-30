@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
@@ -34,6 +35,7 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
     protected tabsService: TabsService,
     protected previousRouteService: PreviousRouteService,
     protected sortByService: SortByService,
+    protected careWorkforcePathwayService: CareWorkforcePathwayService,
   ) {
     super(permissionsService, workerService, router, route, establishmentService, tabsService, sortByService);
   }
@@ -89,6 +91,7 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
     if (this.showNewPillForCwpWorkerSummaryLink) {
       this.setCWPRoleCategoriesNewPillLinkVisited();
     }
+    this.careWorkforcePathwayService.startWorkerSummaryJourney('staff-records');
     this.router.navigate(['workplace', this.workplaceUid, 'staff-record', 'care-workforce-pathway-workers-summary']);
   }
 }

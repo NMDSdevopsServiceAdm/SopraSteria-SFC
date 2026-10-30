@@ -24,6 +24,7 @@ import userEvent from '@testing-library/user-event';
 import { PaginationComponent } from '../pagination/pagination.component';
 import { TablePaginationWrapperComponent } from '../table-pagination-wrapper/table-pagination-wrapper.component';
 import { StaffSummaryComponent } from './staff-summary.component';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 
 describe('StaffSummaryComponent', () => {
   const workplaceUid = 'mocked-uid';
@@ -93,6 +94,8 @@ describe('StaffSummaryComponent', () => {
       of(null),
     );
 
+    const careWorkforcePathwayService = injector.inject(CareWorkforcePathwayService) as CareWorkforcePathwayService;
+
     const localStorageSetSpy = spyOn(localStorage, 'setItem');
     const localStorageGetSpy = spyOn(localStorage, 'getItem');
 
@@ -108,6 +111,7 @@ describe('StaffSummaryComponent', () => {
       getAllWorkersSpy,
       localStorageSetSpy,
       localStorageGetSpy,
+      careWorkforcePathwayService,
     };
   }
 
@@ -493,6 +497,17 @@ describe('StaffSummaryComponent', () => {
       fixture.autoDetectChanges();
 
       expect(updateSingleFieldSpy).not.toHaveBeenCalled();
+    });
+
+    it('should call `startWorkerSummaryJourney` on careWorkforcePathwayService to record the starting point', async () => {
+      const { fixture, getByText, careWorkforcePathwayService } = await setup(defaultOverrides);
+      const startWorkerSummaryJourneySpy = spyOn(careWorkforcePathwayService, 'startWorkerSummaryJourney');
+
+      const link = getByText(linkText);
+      fireEvent.click(link);
+      fixture.autoDetectChanges();
+
+      expect(startWorkerSummaryJourneySpy).toHaveBeenCalledWith('staff-records');
     });
   });
 });
