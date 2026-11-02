@@ -5,8 +5,10 @@ const getErrorWarningArray = (report, type) => {
   const filterWarnings = (msg) => msg.warnCode && msg.warnType;
   const findResult = (results, type, item) => {
     return type === 'error'
-      ? results.find((res) => res.errCode === item.errCode)
-      : results.find((res) => res.warnCode === item.warnCode);
+      ? results.find((res) => res.errCode === item.errCode && res.errType === item.errType && res.error === item.error)
+      : results.find(
+          (res) => res.warnCode === item.warnCode && res.warnType === item.warnType && res.warning === item.warning,
+        );
   };
 
   const results = [];
@@ -14,7 +16,7 @@ const getErrorWarningArray = (report, type) => {
   report
     .filter((msg) => (type === 'error' ? filterErrors(msg) : filterWarnings(msg)))
     .sort((a, b) => a.lineNumber - b.lineNumber)
-    .map((item) => {
+    .forEach((item) => {
       const { lineNumber, name, source, worker, ...commonInfo } = item;
       const errWarn = {
         lineNumber,
