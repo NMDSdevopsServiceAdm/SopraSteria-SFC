@@ -1,0 +1,23 @@
+@import 'govuk-frontend/govuk/base';
+.asc-summary-box {
+  background-color: govuk-colour('light-grey');
+  padding: 20px 40px;
+
+  & > .asc-summary-box--title {
+    display: flex;
+    align-items: center;
+    column-gap: 6px;
+  }
+
+  & > strong {
+    font-size: 36px;
+  }
+
+  &.asc-summary-box--success > strong {
+    color: govuk-colour('green');
+  }
+
+  &.asc-summary-box--failed > strong {
+    color: govuk-colour('red');
+  }
+}

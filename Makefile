@@ -22,6 +22,9 @@ test-be:
 test-bu:
 	npm run test --prefix lambdas/bulkUpload
 
+test-send-emails-lambda:
+	npm run test --prefix lambdas/sendingEmails/sendEmails
+
 db-migrate:
 	cd backend && export NODE_ENV=localhost && npm run db:migrate
 
