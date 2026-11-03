@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 
 const { getErrorWarningArray } = require('../../../utils/errorWarningArray');
 
-describe.only('getErrorWarningArray', () => {
+describe('getErrorWarningArray', () => {
   const mockErrorReport = [
     {
       origin: 'Workers',
