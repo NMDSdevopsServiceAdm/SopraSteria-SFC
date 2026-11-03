@@ -14,7 +14,6 @@ import {
   LocalIdentifiersRequest,
   LocalIdentifiersResponse,
   mandatoryTraining,
-  PensionContribution,
   setPermission,
   UpdateJobsRequest,
 } from '@core/model/establishment.model';
@@ -253,7 +252,7 @@ export class EstablishmentService {
   }
 
   updateCapacity(establishmentId, data) {
-    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/capacity`, data);
+    return this.http.put<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/capacity`, data);
   }
 
   workplaceOrSubHasTrainingCertificates(workplaceUid: string) {
@@ -273,7 +272,7 @@ export class EstablishmentService {
   }
 
   updateEstablishmentFieldWithAudit(establishmentId: string, property: string, data: any) {
-    return this.http.post<any>(
+    return this.http.put<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/establishmentField/${property}`,
       data,
     );
@@ -284,50 +283,36 @@ export class EstablishmentService {
   }
 
   updateServiceUsers(establishmentId, data) {
-    return this.http.post<any>(
+    return this.http.put<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/serviceUsers`,
       data,
     );
   }
 
   updateOtherServices(establishmentId, data: PostServicesModel) {
-    return this.http.post<PostServicesModel>(
+    return this.http.put<PostServicesModel>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/services`,
       data,
     );
   }
 
   updateMainService(establishmentId: string, data: MainServiceRequest) {
-    return this.http.post<MainServiceRequest>(
+    return this.http.put<MainServiceRequest>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/mainService`,
       data,
     );
   }
 
   updateSingleEstablishmentField(establishmentId: string, data: any): Observable<any> {
-    return this.http.post<any>(
+    return this.http.put<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/updateSingleEstablishmentField`,
-      data,
-    );
-  }
-
-  updatePensionContribution(establishmentId: string, pensionData: PensionContribution): Observable<any> {
-    return this.http.post<Establishment>(
-      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/pensionContribution`,
-      pensionData,
-    );
-  }
-
-  updateLocalAuthorities(establishmentId, data) {
-    return this.http.post<Establishment>(
-      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/localAuthorities`,
       data,
     );
   }
 
   updateJobs(establishmentId: string, data: UpdateJobsRequest): Observable<Partial<Establishment>> {
     return this.http
-      .post<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/jobs`, data)
+      .put<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/jobs`, data)
       .pipe(
         mergeMap((response) => {
           this.setState({ ...this.establishment, ...response });
@@ -347,8 +332,8 @@ export class EstablishmentService {
     );
   }
 
-  updateLocationDetails(establishmentId, data: CQCLocationChangeRequest): Observable<any> {
-    return this.http.post<Establishment>(
+  updateLocationDetails(establishmentId: string, data: CQCLocationChangeRequest): Observable<any> {
+    return this.http.put<Establishment>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/locationDetails`,
       data,
     );
@@ -458,7 +443,7 @@ export class EstablishmentService {
   }
 
   public setExpiresSoonAlertDates(establishmentId: string, expiresSoonAlertDate: string): Observable<any> {
-    return this.http.post<any>(
+    return this.http.put<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/expiresSoonAlertDates`,
       { expiresSoonAlertDate },
     );
@@ -505,8 +490,8 @@ export class EstablishmentService {
     establishmentUid: string,
     payload: UpdateStaffKindDelegatedHealthcareActivitiesPayload,
   ) {
-    return this.http.post<UpdateStaffKindDelegatedHealthcareActivitiesResponse>(
-      `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/updateStaffKindDelegatedHealthcareActivities`,
+    return this.http.put<UpdateStaffKindDelegatedHealthcareActivitiesResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/staffKindDelegatedHealthcareActivities`,
       payload,
     );
   }

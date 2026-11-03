@@ -98,10 +98,10 @@ const updateLocationDetails = async (req, res) => {
     }
   } catch (err) {
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
-      console.error('Establishment::mainService POST: ', err.message);
+      console.error('Establishment PUT /locationDetails failed: ', err.message);
       return res.status(400).send(err.safe);
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
-      console.error('Establishment::mainService POST: ', err.message);
+      console.error('Establishment PUT /locationDetails failed: ', err.message);
       return res.status(500).send(err.safe);
     } else {
       console.error('Unexpected exception: ', err);
@@ -110,6 +110,6 @@ const updateLocationDetails = async (req, res) => {
 };
 
 router.route('/').get(hasPermission('canViewEstablishment'), getLocationDetails);
-router.route('/').post(hasPermission('canEditEstablishment'), updateLocationDetails);
+router.route('/').put(hasPermission('canEditEstablishment'), updateLocationDetails);
 
 module.exports = router;

@@ -16,10 +16,9 @@ const updatePostcode = async (req, res) => {
   }
 };
 
-
 const router = require('express').Router();
 
-router.route('/').post(updatePostcode);
+router.route('/').put(updatePostcode);
 
 module.exports = router;
 module.exports.updatePostcode = updatePostcode;

@@ -68,7 +68,7 @@ router.use('/:id/internationalRecruitment', InternationalRecruitment);
 router.use('/:id/hasTrainingCertificates', HasTrainingCertificates);
 router.use('/:id/careWorkforcePathway', CareWorkforcePathway);
 router.use('/:id/establishmentField', EstablishmentField);
-router.use('/:id/updateStaffKindDelegatedHealthcareActivities', UpdateStaffKindDelegatedHealthcareActivities);
+router.use('/:id/staffKindDelegatedHealthcareActivities', UpdateStaffKindDelegatedHealthcareActivities);
 router.use('/:id/delegatedHealthcareActivities', DelegatedHealthcareActivities);
 router.use('/:id/trainingCourse', TrainingCourse);
 

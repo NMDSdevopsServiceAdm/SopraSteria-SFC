@@ -31,7 +31,7 @@ const setExpiresSoonAlertDate = async (req, res) => {
 };
 
 router.route('/').get(getExpiresSoonAlertDate);
-router.route('/').post(
+router.route('/').put(
   celebrate({
     body: Joi.object().keys({
       expiresSoonAlertDate: Joi.string().valid('30', '60', '90'),

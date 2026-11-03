@@ -88,10 +88,10 @@ const updateCapacity = async (req, res) => {
     }
   } catch (err) {
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
-      console.error('Establishment::services POST: ', err.message);
+      console.error('Establishment PUT /capacity failed: ', err.message);
       return res.status(400).send(err.safe);
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
-      console.error('Establishment::services POST: ', err.message);
+      console.error('Establishment PUT /capacity failed: ', err.message);
       return res.status(500).send(err.safe);
     } else {
       console.error('Unexpected exception: ', err);
@@ -100,6 +100,6 @@ const updateCapacity = async (req, res) => {
 };
 
 router.route('/').get(hasPermission('canViewEstablishment'), getCapacity);
-router.route('/').post(hasPermission('canEditEstablishment'), updateCapacity);
+router.route('/').put(hasPermission('canEditEstablishment'), updateCapacity);
 
 module.exports = router;

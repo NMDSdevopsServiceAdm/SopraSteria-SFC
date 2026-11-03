@@ -100,7 +100,7 @@ const updateEstablishmentFieldWithAudit = async (req, res) => {
     await thisEstablishment.save(req.username);
     return res.status(200).json(thisEstablishment.toJSON(false, false, false, true, false, filteredProperties));
   } catch (error) {
-    console.error('Establishment::%s POST: ', property, error.message);
+    console.error('Establishment::%s PUT: ', property, error.message);
     if (error instanceof HttpError) {
       return res.status(error.statusCode).send(error.message);
     }
@@ -140,7 +140,7 @@ const checkIfRequestBodyIsAllowed = (req) => {
 };
 
 router.route('/:property').get(hasPermission('canViewEstablishment'), getEstablishmentField);
-router.route('/:property').post(hasPermission('canEditEstablishment'), updateEstablishmentFieldWithAudit);
+router.route('/:property').put(hasPermission('canEditEstablishment'), updateEstablishmentFieldWithAudit);
 
 module.exports = router;
 module.exports.getEstablishmentField = getEstablishmentField;

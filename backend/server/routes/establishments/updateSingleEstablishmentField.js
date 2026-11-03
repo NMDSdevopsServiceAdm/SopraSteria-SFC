@@ -28,10 +28,10 @@ const updateEstablishment = async (req, res) => {
       return res.status(200).send({ data });
     } catch (err) {
       if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
-        console.error('Establishment::share POST: ', err.message);
+        console.error('Establishment PUT /updateSingleEstablishmentField failed: ', err.message);
         return res.status(400).send(err.safe);
       } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
-        console.error('Establishment::share POST: ', err.message);
+        console.error('Establishment PUT /updateSingleEstablishmentField failed', err.message);
         return res.status(500).send(err.safe);
       } else {
         console.error('Unexpected exception: ', err);
@@ -43,7 +43,7 @@ const updateEstablishment = async (req, res) => {
   }
 };
 
-router.route('/').post(hasPermission('canEditEstablishment'), updateEstablishment);
+router.route('/').put(hasPermission('canEditEstablishment'), updateEstablishment);
 
 module.exports = router;
 module.exports.updateEstablishment = updateEstablishment;

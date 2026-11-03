@@ -43,25 +43,7 @@ describe('EstablishmentService', () => {
         `${environment.appRunnerEndpoint}/api/establishment/establishmentId/updateSingleEstablishmentField`,
       );
 
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual(requestBody);
-    });
-  });
-
-  describe('updatePensionContribution', () => {
-    it('should call updatePensionContribution for a given establishment with the correct data', () => {
-      const requestBody = {
-        pension: 'Yes',
-        pensionContribution: '100',
-      };
-
-      service.updatePensionContribution('establishmentId', requestBody).subscribe();
-
-      const req = http.expectOne(
-        `${environment.appRunnerEndpoint}/api/establishment/establishmentId/pensionContribution`,
-      );
-
-      expect(req.request.method).toBe('POST');
+      expect(req.request.method).toBe('PUT');
       expect(req.request.body).toEqual(requestBody);
     });
   });
@@ -113,7 +95,7 @@ describe('EstablishmentService', () => {
       const expectedRequest = http.expectOne(updateJobsEndpoint);
       expectedRequest.flush(mockResponse);
 
-      expect(expectedRequest.request.method).toBe('POST');
+      expect(expectedRequest.request.method).toBe('PUT');
       expect(expectedRequest.request.body).toEqual(payload);
       expect(onSuccessSpy).toHaveBeenCalledWith(mockResponse);
     });
@@ -207,14 +189,14 @@ describe('EstablishmentService', () => {
       activities: [{ id: 1 }, { id: 2 }],
     } as UpdateStaffKindDelegatedHealthcareActivitiesPayload;
 
-    const endpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/updateStaffKindDelegatedHealthcareActivities`;
+    const endpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/staffKindDelegatedHealthcareActivities`;
 
     it('should make call to expected backend endpoint', async () => {
       service.updateStaffKindDelegatedHealthcareActivities(mockWorkplaceUid, payload).subscribe();
 
       const expectedRequest = http.expectOne(endpoint);
 
-      expect(expectedRequest.request.method).toBe('POST');
+      expect(expectedRequest.request.method).toBe('PUT');
       expect(expectedRequest.request.body).toEqual(payload);
     });
   });

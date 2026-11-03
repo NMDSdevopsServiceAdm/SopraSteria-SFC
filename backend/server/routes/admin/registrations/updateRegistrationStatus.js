@@ -27,7 +27,7 @@ const updateRegistrationStatus = async (req, res) => {
 
 const router = require('express').Router();
 
-router.route('/').post(updateRegistrationStatus);
+router.route('/').put(updateRegistrationStatus);
 
 module.exports = router;
 module.exports.updateRegistrationStatus = updateRegistrationStatus;

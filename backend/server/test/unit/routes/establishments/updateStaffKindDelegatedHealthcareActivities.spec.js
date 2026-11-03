@@ -3,7 +3,9 @@ const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 
 const Establishment = require('../../../../models/classes/establishment');
-const updateStaffKindDelegatedHealthcareActivities = require('../../../../routes/establishments/updateStaffKindDelegatedHealthcareActivities');
+const {
+  updateStaffKindDelegatedHealthcareActivities,
+} = require('../../../../routes/establishments/updateStaffKindDelegatedHealthcareActivities');
 
 describe('updateStaffKindDelegatedHealthcareActivities', () => {
   let mockEstablishmentInstance;

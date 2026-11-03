@@ -84,10 +84,10 @@ const updateMainService = async (req, res) => {
     }
   } catch (err) {
     if (err instanceof EstablishmentExceptions.EstablishmentJsonException) {
-      console.error('Establishment::mainService POST: ', err.message);
+      console.error('Establishment PUT /mainService failed: ', err.message);
       return res.status(400).json(err.safe);
     } else if (err instanceof EstablishmentExceptions.EstablishmentSaveException) {
-      console.error('Establishment::mainService POST: ', err.message);
+      console.error('Establishment PUT /mainService failed: ', err.message);
       return res.status(500).json(err.safe);
     } else {
       console.error('Unexpected exception: ', err);
@@ -166,7 +166,7 @@ async function setMainService(req, res, establishment) {
 }
 
 router.route('/').get(hasPermission('canViewEstablishment'), getMainService);
-router.route('/').post(hasPermission('canEditEstablishment'), updateMainService);
+router.route('/').put(hasPermission('canEditEstablishment'), updateMainService);
 
 module.exports = router;
 module.exports.setMainService = setMainService;
