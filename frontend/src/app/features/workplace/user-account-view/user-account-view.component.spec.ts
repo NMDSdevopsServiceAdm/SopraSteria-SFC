@@ -22,7 +22,12 @@ import { of } from 'rxjs';
 import { UserAccountViewComponent } from './user-account-view.component';
 
 describe('UserAccountViewComponent', () => {
-  async function setup(isPrimary = true, uidLinkedToMockUsers = 'activeEditUsers', isEdit = true) {
+  async function setup(overrides: any = {}) {
+    const isPrimary = overrides?.isPrimary ?? true;
+    const uidLinkedToMockUsers = overrides?.uidLinkedToMockUsers ?? 'activeEditUsers';
+    const isEdit = overrides?.isEdit ?? true;
+    const permissions = overrides?.permissions ?? ['canEditUser'];
+
     let userType;
     if (isPrimary) {
       userType = primaryEditUser;
@@ -40,7 +45,7 @@ describe('UserAccountViewComponent', () => {
         WindowRef,
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(['canEditUser']),
+          useFactory: MockPermissionsService.factory(permissions),
           deps: [HttpClient, Router, UserService],
         },
         {
@@ -113,25 +118,25 @@ describe('UserAccountViewComponent', () => {
   });
 
   it('should display Change link when logged in user can edit user and user is not primary', async () => {
-    const { getByText } = await setup(false);
+    const { getByText } = await setup({ isPrimary: false });
 
     expect(getByText('Change')).toBeTruthy();
   });
 
   it('should display Change link when logged in user can edit user, user is primary but there is more than one active edit user linked to the establishment', async () => {
-    const { getByText } = await setup(true);
+    const { getByText } = await setup();
 
     expect(getByText('Change')).toBeTruthy();
   });
 
   it('should not display Change link when user is primary and only active edit user linked to the establishment', async () => {
-    const { queryByText } = await setup(true, 'singleEditUser');
+    const { queryByText } = await setup({ uidLinkedToMockUsers: 'singleEditUser' });
 
     expect(queryByText('Change')).toBeFalsy();
   });
 
   it('should not display Change link when logged in user does not have edit permissions for the user', async () => {
-    const { component, fixture, permissionsService, queryByText } = await setup(true);
+    const { component, fixture, permissionsService, queryByText } = await setup();
 
     const spy = spyOn(permissionsService, 'can');
     spy.and.returnValue(false);
@@ -143,14 +148,10 @@ describe('UserAccountViewComponent', () => {
   });
 
   it('should not display Delete link when logged in user has read-only access and user has read-only access', async () => {
-    const userIsPrimary = false;
-    const userIsEdit = false;
-
-    const { queryByText, component, fixture, permissionsService, userService } = await setup(
-      userIsPrimary,
-      'activeEditUsers',
-      userIsEdit,
-    );
+    const { queryByText, component, fixture, permissionsService, userService } = await setup({
+      isPrimary: false,
+      isEdit: false,
+    });
 
     const readOnlyUser = component.user;
 
@@ -166,14 +167,10 @@ describe('UserAccountViewComponent', () => {
   });
 
   it('should display Delete link when logged in user has edit access and user has read-only access', async () => {
-    const userIsPrimary = false;
-    const userIsEdit = false;
-
-    const { queryByText, component, fixture, permissionsService, userService, routerSpy } = await setup(
-      userIsPrimary,
-      'activeEditUsers',
-      userIsEdit,
-    );
+    const { queryByText, component, fixture, permissionsService, userService, routerSpy } = await setup({
+      isPrimary: false,
+      isEdit: false,
+    });
     const editUser = component.user;
 
     component.ngOnInit();
@@ -191,14 +188,10 @@ describe('UserAccountViewComponent', () => {
   });
 
   it('should not display delete link when logged in user has read only access and user has edit access', async () => {
-    const userIsPrimary = false;
-    const userIsEdit = true;
-
-    const { queryByText, component, fixture, permissionsService, userService } = await setup(
-      userIsPrimary,
-      'activeEditUsers',
-      userIsEdit,
-    );
+    const { queryByText, component, fixture, permissionsService, userService } = await setup({
+      isPrimary: false,
+      isEdit: true,
+    });
     const readOnlyUser = component.user;
 
     component.ngOnInit();
@@ -216,14 +209,10 @@ describe('UserAccountViewComponent', () => {
   });
 
   it('should not display a delete link when logged in user is an edit user, and goes onto their details page', async () => {
-    const userIsPrimary = false;
-    const userIsEdit = true;
-
-    const { queryByText, component, fixture, permissionsService, userService } = await setup(
-      userIsPrimary,
-      'activeEditUsers',
-      userIsEdit,
-    );
+    const { queryByText, component, fixture, permissionsService, userService } = await setup({
+      isPrimary: false,
+      isEdit: true,
+    });
     const editUser = component.user;
 
     spyOnProperty(userService, 'loggedInUser$').and.returnValue(of(editUser));
@@ -237,15 +226,10 @@ describe('UserAccountViewComponent', () => {
   });
 
   it('should display a delete link when logged in user is an edit user, and user is an edit user', async () => {
-    const userIsPrimary = false;
-    const userIsEdit = true;
-
-    const { getByText, component, fixture, permissionsService, userService, routerSpy } = await setup(
-      userIsPrimary,
-      'activeEditUsers',
-      userIsEdit,
-    );
-
+    const { getByText, component, fixture, permissionsService, userService, routerSpy } = await setup({
+      isPrimary: false,
+      isEdit: true,
+    });
     const editUser = component.user;
 
     spyOnProperty(userService, 'loggedInUser$').and.returnValue(of(editUser));
@@ -264,14 +248,7 @@ describe('UserAccountViewComponent', () => {
   });
 
   it('should display a delete link when logged in user is an edit user, and user is an primary user', async () => {
-    const userIsPrimary = true;
-    const userIsEdit = true;
-
-    const { queryByText, component, fixture, permissionsService, userService, routerSpy } = await setup(
-      userIsPrimary,
-      'activeEditUsers',
-      userIsEdit,
-    );
+    const { queryByText, component, fixture, permissionsService, userService, routerSpy } = await setup();
     const editUser = component.user;
 
     spyOnProperty(userService, 'loggedInUser$').and.returnValue(of(editUser));
@@ -287,21 +264,20 @@ describe('UserAccountViewComponent', () => {
     expect(deleteButton).toBeTruthy();
     expect(routerSpy.calls.mostRecent().args[0]).toEqual(['select-primary-user-delete']);
   });
+
   describe('deleteUserNavigation', () => {
-    const mockEvent = () =>
-      ({
-        preventDefault: jasmine.createSpy('preventDefault'),
-      } as unknown as Event);
+    const overridesForDeleteLink = { isEdit: true, permissions: ['canEditUser', 'canDeleteUser'] };
 
     it('should navigate directly to delete-user when deleting the last primary user of a parent-owned subsidiary', async () => {
-      const { component, routerSpy } = await setup();
+      const { component, routerSpy, getByText } = await setup(overridesForDeleteLink);
 
       component.establishment.parentUid = 'parent-uid';
       component.establishment.dataOwner = 'Parent' as typeof component.establishment.dataOwner;
 
       component.allUsers = [component.user];
 
-      component.deleteUserNavigation(mockEvent());
+      const deleteButton = getByText('Delete this user');
+      fireEvent.click(deleteButton);
 
       const route = getTestBed().inject(ActivatedRoute);
 
@@ -309,7 +285,7 @@ describe('UserAccountViewComponent', () => {
     });
 
     it('should require a replacement when a parent-owned subsidiary has multiple users', async () => {
-      const { component, routerSpy } = await setup();
+      const { component, getByText, routerSpy } = await setup(overridesForDeleteLink);
 
       component.establishment.parentUid = 'parent-uid';
       component.establishment.dataOwner = 'Parent' as typeof component.establishment.dataOwner;
@@ -322,30 +298,31 @@ describe('UserAccountViewComponent', () => {
         },
       ];
 
-      component.deleteUserNavigation(mockEvent());
+      const deleteButton = getByText('Delete this user');
+      fireEvent.click(deleteButton);
 
       expect(routerSpy.calls.mostRecent().args[0]).toEqual(['select-primary-user-delete']);
     });
 
     it('should require a replacement when the last primary user belongs to a workplace-owned subsidiary', async () => {
-      const { component, routerSpy } = await setup();
+      const { getByText, component, routerSpy } = await setup(overridesForDeleteLink);
 
       component.establishment.parentUid = 'parent-uid';
       component.establishment.dataOwner = 'Workplace' as typeof component.establishment.dataOwner;
-      component.allUsers = [component.user];
 
-      component.deleteUserNavigation(mockEvent());
+      const deleteButton = getByText('Delete this user');
+      fireEvent.click(deleteButton);
 
       expect(routerSpy.calls.mostRecent().args[0]).toEqual(['select-primary-user-delete']);
     });
 
-    it('should require a replacement when deleting a primary user from a parent workplace', async () => {
-      const { component, routerSpy } = await setup();
+    it('should require a replacement when deleting a primary user from a standalone workplace', async () => {
+      const { getByText, component, routerSpy } = await setup(overridesForDeleteLink);
       component.establishment.parentUid = undefined;
       component.establishment.dataOwner = 'Workplace' as typeof component.establishment.dataOwner;
-      component.allUsers = [component.user];
 
-      component.deleteUserNavigation(mockEvent());
+      const deleteButton = getByText('Delete this user');
+      fireEvent.click(deleteButton);
 
       expect(routerSpy.calls.mostRecent().args[0]).toEqual(['select-primary-user-delete']);
     });
