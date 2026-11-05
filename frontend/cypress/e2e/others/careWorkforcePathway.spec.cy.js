@@ -6,7 +6,6 @@ import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
 import { answerCWPAwarenessQuestion, answerCWPUseQuestion } from '../../support/page_objects/workplaceQuestionPages';
 
 const establishmentID = StandAloneEstablishment.id;
-const cwpWorkersSummaryPath = 'care-workforce-pathway-workers-summary';
 const homePagePath = 'dashboard#home';
 const testWorkers = ['test CWP worker 1', 'test CWP worker 2'];
 
@@ -103,93 +102,33 @@ describe('Care workforce pathway journey', { tags: '@others' }, () => {
       onHomePage.assertUpdateBannerNotShowing(cwpAwarenessFlagMessage);
     });
   });
-
-  describe.skip('answer role category for workers from homepage panel', () => {
-    // Blue update banner for Care workforce pathway worker question is disabled temporarily, as CWP roles category update is planned ahead
-    before(() => {
-      testWorkers.forEach((workerName) => {
-        cy.deleteTestWorkerFromDb(workerName);
-      });
-      cy.setWorkplaceCWPAwarenessQuestionViewed(establishmentID);
-    });
-
-    beforeEach(() => {
-      testWorkers.forEach((workerName) => {
-        cy.deleteTestWorkerFromDb(workerName);
-      });
-
-      cy.insertTestWorker({ establishmentID, workerName: testWorkers[0] });
-      cy.insertTestWorker({ establishmentID, workerName: testWorkers[1] });
-      cy.reload();
-
-      cy.intercept(
-        'GET',
-        '/api/establishment/*/careWorkforcePathway/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer',
-      ).as('careWorkforcePathway');
-      cy.loginAsUser(StandAloneEstablishment.editUserLoginName, userPassword);
-
-      cy.wait('@careWorkforcePathway');
-
-      cy.url().should('contain', homePagePath);
-    });
-
-    it('should show a flag in homepage summary panel if some workers have not got the answer for CWP questions', () => {
-      cy.get('[data-testid="update-banner-area"]').should(
-        'contain',
-        'Where are your staff on the care workforce pathway?',
-      );
-    });
-
-    it('the flag should direct user to a summary page, which allows them to answer the CWP question for each worker', () => {
-      visitCWPWorkersSummaryPage();
-      expectCWPWorkersSummaryPageToHaveWorkers(testWorkers);
-
-      answerCWPRoleCategoryForWorker(testWorkers[0], 'New to care');
-
-      // should return user to the CWP worker summary page and show an alert.
-      cy.url().should('contain', cwpWorkersSummaryPath);
-      expectCWPWorkersSummaryPageToHaveWorkers([testWorkers[1]]);
-
-      answerCWPRoleCategoryForWorker(testWorkers[1], 'Practice leader');
-
-      // should return user to homepage and show an alert. also the flag should disappear from summary box
-      cy.url().should('contain', homePagePath);
-      cy.get('[data-testid="update-banner-area"]').should(
-        'not.contain',
-        'Where are your staff on the care workforce pathway?',
-      );
-
-      expectWorkerToHaveCWPRoleCategory(testWorkers[0], 'New to care');
-      expectWorkerToHaveCWPRoleCategory(testWorkers[1], 'Practice leader');
-    });
-  });
 });
 
-const visitCWPWorkersSummaryPage = () => {
-  cy.get('[data-testid="update-banner-area"]').should('contain', 'Where are your staff on the care workforce pathway?');
-  cy.get('[data-testid="update-banner-area"]').contains('Answer questions').click();
+// const visitCWPWorkersSummaryPage = () => {
+//   cy.get('[data-testid="update-banner-area"]').should('contain', 'Where are your staff on the care workforce pathway?');
+//   cy.get('[data-testid="update-banner-area"]').contains('Answer questions').click();
 
-  cy.url().should('contain', cwpWorkersSummaryPath);
-  cy.get('h1').should('contain', 'Where are your staff on the care workforce pathway?');
-};
+//   cy.url().should('contain', cwpWorkersSummaryPath);
+//   cy.get('h1').should('contain', 'Where are your staff on the care workforce pathway?');
+// };
 
-const expectCWPWorkersSummaryPageToHaveWorkers = (workerNames) => {
-  cy.get('a:contains("Choose a category")').should('have.length', workerNames.length);
-  workerNames.forEach((workerName, index) => {
-    cy.get(`[data-testid="worker-row-${index}"]`).should('contain', workerName).and('contain', 'Choose a category');
-  });
-};
+// const expectCWPWorkersSummaryPageToHaveWorkers = (workerNames) => {
+//   cy.get('a:contains("Choose a category")').should('have.length', workerNames.length);
+//   workerNames.forEach((workerName, index) => {
+//     cy.get(`[data-testid="worker-row-${index}"]`).should('contain', workerName).and('contain', 'Choose a category');
+//   });
+// };
 
-const expectWorkerToHaveCWPRoleCategory = (workerName, cwpRoleCategory) => {
-  cy.get('a').contains('Staff records').click();
-  cy.get('a').contains(workerName).click();
-  cy.get('h1').should('contain', 'Staff record');
-  cy.get('div').contains('Care workforce pathway role category').parent().should('contain', cwpRoleCategory);
-};
+// const expectWorkerToHaveCWPRoleCategory = (workerName, cwpRoleCategory) => {
+//   cy.get('a').contains('Staff records').click();
+//   cy.get('a').contains(workerName).click();
+//   cy.get('h1').should('contain', 'Staff record');
+//   cy.get('div').contains('Care workforce pathway role category').parent().should('contain', cwpRoleCategory);
+// };
 
-const answerCWPRoleCategoryForWorker = (workerName, cwpRoleCategory) => {
-  cy.contains(workerName).parents().get('a').contains('Choose a category').click();
-  cy.get('h1').should('contain', 'Where are your staff on the care workforce pathway?');
-  cy.getByLabel(cwpRoleCategory).check();
-  cy.get('button').contains('Save').click();
-};
+// const answerCWPRoleCategoryForWorker = (workerName, cwpRoleCategory) => {
+//   cy.contains(workerName).parents().get('a').contains('Choose a category').click();
+//   cy.get('h1').should('contain', 'Where are your staff on the care workforce pathway?');
+//   cy.getByLabel(cwpRoleCategory).check();
+//   cy.get('button').contains('Save').click();
+// };

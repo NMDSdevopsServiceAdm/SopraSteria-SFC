@@ -4,6 +4,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { UpdateBannerProps } from '@core/model/update-banner.model';
 import { Worker } from '@core/model/worker.model';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { TabsService } from '@core/services/tabs.service';
@@ -87,6 +88,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private router: Router,
     private payAndPensionService: PayAndPensionService,
+    private careWorkforcePathwayService: CareWorkforcePathwayService,
   ) {}
 
   ngOnInit(): void {
@@ -547,7 +549,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
         linkTo: ['/workplace', this.workplace.uid, 'staff-record', 'care-workforce-pathway-workers-summary'],
         onLinkClicked: () => {
           this.setCWPRoleCategoriesBannerViewed();
-          this.setReturnToHomeTab();
+          this.careWorkforcePathwayService.startWorkerSummaryJourney('home');
         },
       });
     }

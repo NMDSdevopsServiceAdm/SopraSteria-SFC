@@ -25,6 +25,8 @@ import {
 export class CareWorkforcePathwayService {
   private _awarenessAnswersTruthyIds = [1, 2, 3];
   private _workerSummaryPaginationSettings: null | CWPWorkerSummaryPaginationSettings = null;
+  private _workerSummaryJourneyStartingPoint: CWPWorkerSummaryJourneyStartingPoint = null;
+  private _newToCareWorkersReviewed: workerUid[] = [];
 
   constructor(private http: HttpClient) {}
 
@@ -69,7 +71,10 @@ export class CareWorkforcePathwayService {
       .get<CWPGetWorkersWhoMeetNewToCareCriteriaResponse>(
         `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/workersWhoMeetNewToCareCriteria`,
       )
-      .pipe(map((res) => res.workers));
+      .pipe(
+        map((res) => res.workers),
+        map((workers) => workers.filter((worker) => !this._newToCareWorkersReviewed.includes(worker.uid))),
+      );
   }
 
   getAllCareWorkforcePathwayUseReasons(): Observable<CWPGetUseReasonsResponse> {
@@ -92,6 +97,28 @@ export class CareWorkforcePathwayService {
 
   get defaultPaginationSettings(): CWPWorkerSummaryPaginationSettings {
     return DefaultPaginationSettingsForCWPWorkerSummary;
+  }
+
+  get workerSummaryJourneyStartingPoint(): CWPWorkerSummaryJourneyStartingPoint {
+    return this._workerSummaryJourneyStartingPoint ?? 'home';
+  }
+
+  get newToCareWorkersReviewed(): workerUid[] {
+    return this._newToCareWorkersReviewed;
+  }
+
+  setNewToCareWorkerAsReviewed(workerUid: string): void {
+    this._newToCareWorkersReviewed.push(workerUid);
+  }
+
+  startWorkerSummaryJourney(startingPoint: CWPWorkerSummaryJourneyStartingPoint): void {
+    this._workerSummaryJourneyStartingPoint = startingPoint;
+    this._newToCareWorkersReviewed = [];
+  }
+
+  resetWorkerSummaryJourney(): void {
+    this._workerSummaryJourneyStartingPoint = null;
+    this._newToCareWorkersReviewed = [];
   }
 }
 
@@ -139,3 +166,6 @@ const DefaultPaginationSettingsForCWPWorkerSummary: CWPWorkerSummaryPaginationSe
   pageIndex: 0,
   sortBy: Object.keys(SortStaffOptionsForCWPWorkerSummary)[0],
 };
+
+export type CWPWorkerSummaryJourneyStartingPoint = 'home' | 'staff-records';
+type workerUid = string;

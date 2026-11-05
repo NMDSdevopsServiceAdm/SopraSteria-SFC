@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
@@ -34,6 +35,7 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
     protected tabsService: TabsService,
     protected previousRouteService: PreviousRouteService,
     protected sortByService: SortByService,
+    protected careWorkforcePathwayService: CareWorkforcePathwayService,
   ) {
     super(permissionsService, workerService, router, route, establishmentService, tabsService, sortByService);
   }
@@ -49,7 +51,7 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
     const workersCountForCWPSummary = this.route.snapshot.data?.workersCountForCWPSummary?.workerCount;
     this.showCwpWorkerSummaryLink = userHasEditPermissions && workersCountForCWPSummary >= 1;
     this.showNewPillForCwpWorkerSummaryLink =
-      this.showCwpWorkerSummaryLink && !this.workplace?.cwpRoleCategoriesBannerViewed;
+      this.showCwpWorkerSummaryLink && !this.workplace?.cwpRoleCategoriesNewPillLinkVisited;
   }
 
   public getWorkerRecordPath(event: Event, worker: Worker) {
@@ -75,9 +77,9 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
     this.router.navigate(['workplace', this.workplaceUid, 'staff-record', 'update-pay-for-multiple-staff']);
   }
 
-  private setCWPRoleCategoriesBannerViewed(): void {
+  private setCWPRoleCategoriesNewPillLinkVisited(): void {
     const data = {
-      property: 'cwpRoleCategoriesBannerViewed',
+      property: 'cwpRoleCategoriesNewPillLinkVisited',
       value: true,
     };
     this.subscriptions.add(
@@ -87,8 +89,9 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
 
   public visitCWPWorkerSummary(): void {
     if (this.showNewPillForCwpWorkerSummaryLink) {
-      this.setCWPRoleCategoriesBannerViewed();
+      this.setCWPRoleCategoriesNewPillLinkVisited();
     }
+    this.careWorkforcePathwayService.startWorkerSummaryJourney('staff-records');
     this.router.navigate(['workplace', this.workplaceUid, 'staff-record', 'care-workforce-pathway-workers-summary']);
   }
 }

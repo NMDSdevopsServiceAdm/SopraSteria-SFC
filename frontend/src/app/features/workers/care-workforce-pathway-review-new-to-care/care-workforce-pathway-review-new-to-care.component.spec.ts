@@ -13,6 +13,7 @@ import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { CareWorkforcePathwayNewToCareComponent } from './care-workforce-pathway-review-new-to-care.component';
+import { MockCareWorkforcePathwayService } from '@core/test-utils/MockCareWorkforcePathwayService';
 
 describe('CareWorkforcePathwayNewToCareComponent', () => {
   const mockWorkers: CWPGetAllWorkersResponse['workers'] = [
@@ -40,6 +41,7 @@ describe('CareWorkforcePathwayNewToCareComponent', () => {
 
   const setup = async (overrides: any = {}) => {
     const mockWorkersToShow = overrides.workersToShow ?? mockWorkers;
+    const workerSummaryJourneyStartingPoint = overrides?.workerSummaryJourneyStartingPoint ?? 'home';
 
     const showBackLinkSpy = jasmine.createSpy('showBackLink');
     const setReturnToSpy = jasmine.createSpy('setReturnTo');
@@ -64,6 +66,12 @@ describe('CareWorkforcePathwayNewToCareComponent', () => {
           useValue: { setReturnTo: setReturnToSpy },
         },
         {
+          provide: CareWorkforcePathwayService,
+          useFactory: MockCareWorkforcePathwayService.factory({
+            _workerSummaryJourneyStartingPoint: workerSummaryJourneyStartingPoint,
+          }),
+        },
+        {
           provide: AlertService,
           useValue: { addAlert: addAlertSpy },
         },
@@ -72,6 +80,7 @@ describe('CareWorkforcePathwayNewToCareComponent', () => {
           provide: Router,
           useValue: routerStub,
         },
+
         {
           provide: ActivatedRoute,
           useValue: {
@@ -185,9 +194,9 @@ describe('CareWorkforcePathwayNewToCareComponent', () => {
   });
 
   it('should navigate to the dashboard when Return to home is clicked', async () => {
-    const { getByTestId, navigateSpy } = await setup();
+    const { getByText, navigateSpy } = await setup();
 
-    await userEvent.click(getByTestId('returnToHomeButton'));
+    userEvent.click(getByText('Return to home'));
 
     expect(navigateSpy).toHaveBeenCalledWith(['/dashboard'], {
       fragment: 'home',
@@ -195,9 +204,11 @@ describe('CareWorkforcePathwayNewToCareComponent', () => {
   });
 
   it('should display a success alert after navigating home', async () => {
-    const { getByTestId, addAlertSpy } = await setup();
+    const { fixture, getByText, addAlertSpy } = await setup();
 
-    await userEvent.click(getByTestId('returnToHomeButton'));
+    userEvent.click(getByText('Return to home'));
+
+    await fixture.whenStable();
 
     expect(addAlertSpy).toHaveBeenCalledWith({
       type: 'success',
@@ -205,23 +216,25 @@ describe('CareWorkforcePathwayNewToCareComponent', () => {
     });
   });
 
-  it('should not display the table when there are no workers to show', async () => {
-    const { queryByRole } = await setup({ workersToShow: [] });
+  it('should show a different return button when visited from staff records link', async () => {
+    const { getByText, navigateSpy } = await setup({ workerSummaryJourneyStartingPoint: 'staff-records' });
 
-    expect(queryByRole('table')).toBeFalsy();
+    userEvent.click(getByText('Return to staff records'));
+
+    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard'], {
+      fragment: 'staff-records',
+    });
   });
 
-  describe('formatMainStartDate', () => {
-    it('should return an empty string when the date is null', async () => {
-      const { component } = await setup();
+  it('should redirect to the home tab when there are no workers to show', async () => {
+    const { navigateSpy } = await setup({ workersToShow: [] });
 
-      expect(component.formatMainStartDate(null)).toEqual('');
-    });
+    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home', replaceUrl: true });
+  });
 
-    it('should format the date as D MMM YYYY', async () => {
-      const { component } = await setup();
+  it('should redirect to the staff records tab when there are no workers to show and journey started from staff records tab', async () => {
+    const { navigateSpy } = await setup({ workersToShow: [], workerSummaryJourneyStartingPoint: 'staff-records' });
 
-      expect(component.formatMainStartDate('2025-10-09')).toEqual('9 Oct 2025');
-    });
+    expect(navigateSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'staff-records', replaceUrl: true });
   });
 });

@@ -150,23 +150,6 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
     });
   });
 
-  it('should redirect to home when no workers meet the New to care criteria', async () => {
-    const { fixture, getByRole, routerSpy, route } = await setup({
-      workersWhoMeetNewToCareCriteria: [],
-    });
-
-    userEvent.click(getByRole('button', { name: 'Confirm role categories' }));
-    await fixture.whenStable();
-
-    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
-      fragment: 'home',
-    });
-
-    expect(routerSpy).not.toHaveBeenCalledWith(['../review-new-to-care'], {
-      relativeTo: route,
-    });
-  });
-
   it('should redirect to home page if all workers have been answered', async () => {
     const { fixture, routerSpy } = await setup({ workersToShow: [] });
 

@@ -134,19 +134,9 @@ export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit, OnDe
   }
 
   public visitReviewNewToCarePage(): void {
-    this.subscriptions.add(
-      this.careWorkforcePathwayService
-        .getWorkersWhoMeetNewToCareCriteria(this.workplaceUid)
-        .subscribe((newToCareWorkers) => {
-          if (newToCareWorkers?.length > 0) {
-            this.router.navigate(['../review-new-to-care'], {
-              relativeTo: this.route,
-            });
-          } else {
-            this.returnToHome();
-          }
-        }),
-    );
+    this.router.navigate(['../review-new-to-care'], {
+      relativeTo: this.route,
+    });
   }
 
   public returnToHome(): void {
