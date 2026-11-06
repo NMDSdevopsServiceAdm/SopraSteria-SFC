@@ -14,13 +14,19 @@ import { map } from 'rxjs/operators';
 import { JobRole } from '@core/model/job.model';
 import { Params } from '@angular/router';
 import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
-import { CareWorkforcePathwayWorkplaceAwareness } from '@core/model/establishment.model';
+import {
+  CareWorkforcePathwayWorkplaceAwareness,
+  SortStaffOptionsForCWPWorkerSummary,
+} from '@core/model/establishment.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CareWorkforcePathwayService {
   private _awarenessAnswersTruthyIds = [1, 2, 3];
+  private _workerSummaryPaginationSettings: null | CWPWorkerSummaryPaginationSettings = null;
+  private _workerSummaryJourneyStartingPoint: CWPWorkerSummaryJourneyStartingPoint = null;
+  private _newToCareWorkersReviewed: workerUid[] = [];
 
   constructor(private http: HttpClient) {}
 
@@ -40,11 +46,9 @@ export class CareWorkforcePathwayService {
       .pipe(map((res) => res.careWorkforcePathwayRoleCategories));
   }
 
-  getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer(
-    establishmentId: string,
-  ): Observable<CWPGetNumberOfWorkersResponse> {
+  countWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentId: string): Observable<CWPCountWorkersResponse> {
     return this.http
-      .get<CWPGetNumberOfWorkersResponse>(
+      .get<CWPCountWorkersResponse>(
         `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer`,
       )
       .pipe(map((res) => res));
@@ -60,6 +64,19 @@ export class CareWorkforcePathwayService {
     );
   }
 
+  getWorkersWhoMeetNewToCareCriteria(
+    establishmentId: string,
+  ): Observable<CWPGetWorkersWhoMeetNewToCareCriteriaResponse['workers']> {
+    return this.http
+      .get<CWPGetWorkersWhoMeetNewToCareCriteriaResponse>(
+        `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/workersWhoMeetNewToCareCriteria`,
+      )
+      .pipe(
+        map((res) => res.workers),
+        map((workers) => workers.filter((worker) => !this._newToCareWorkersReviewed.includes(worker.uid))),
+      );
+  }
+
   getAllCareWorkforcePathwayUseReasons(): Observable<CWPGetUseReasonsResponse> {
     return this.http.get<CWPGetUseReasonsResponse>(
       `${environment.appRunnerEndpoint}/api/careWorkforcePathway/useReasons`,
@@ -69,17 +86,86 @@ export class CareWorkforcePathwayService {
   isAwareOfCareWorkforcePathway(awarenessAnswer: CareWorkforcePathwayWorkplaceAwareness): boolean {
     return this._awarenessAnswersTruthyIds.includes(awarenessAnswer?.id);
   }
+
+  get workerSummaryPaginationSettings(): CWPWorkerSummaryPaginationSettings | null {
+    return this._workerSummaryPaginationSettings;
+  }
+
+  set workerSummaryPaginationSettings(settings: CWPWorkerSummaryPaginationSettings | null) {
+    this._workerSummaryPaginationSettings = settings;
+  }
+
+  get defaultPaginationSettings(): CWPWorkerSummaryPaginationSettings {
+    return DefaultPaginationSettingsForCWPWorkerSummary;
+  }
+
+  get workerSummaryJourneyStartingPoint(): CWPWorkerSummaryJourneyStartingPoint {
+    return this._workerSummaryJourneyStartingPoint ?? 'home';
+  }
+
+  get newToCareWorkersReviewed(): workerUid[] {
+    return this._newToCareWorkersReviewed;
+  }
+
+  setNewToCareWorkerAsReviewed(workerUid: string): void {
+    this._newToCareWorkersReviewed.push(workerUid);
+  }
+
+  startWorkerSummaryJourney(startingPoint: CWPWorkerSummaryJourneyStartingPoint): void {
+    this._workerSummaryJourneyStartingPoint = startingPoint;
+    this._newToCareWorkersReviewed = [];
+  }
+
+  resetWorkerSummaryJourney(): void {
+    this._workerSummaryJourneyStartingPoint = null;
+    this._newToCareWorkersReviewed = [];
+  }
 }
 
-export type CWPGetNumberOfWorkersResponse = {
-  noOfWorkersWhoRequireAnswers: number;
+export type CWPCountWorkersResponse = {
+  workerCount: number;
 };
 
 export type CWPGetAllWorkersResponse = {
-  workers: { uid: string; nameOrId: string; mainJob: JobRole }[];
+  workers: {
+    uid: string;
+    nameOrId: string;
+    mainJob: JobRole;
+    MainJobStartDateValue: string | null;
+    CareWorkforcePathwayRoleCategorySavedAt?: string | null;
+    CareWorkforcePathwayRoleCategoryChangedAt?: string | null;
+    careWorkforcePathwayRoleCategory: CareWorkforcePathwayRoleCategory;
+  }[];
   workerCount: number;
+};
+
+export type CWPGetWorkersWhoMeetNewToCareCriteriaResponse = {
+  workers: {
+    uid: string;
+    nameOrId: string;
+    mainJob: JobRole;
+    MainJobStartDateValue: string | null;
+    CareWorkforcePathwayRoleCategorySavedAt?: string | null;
+    CareWorkforcePathwayRoleCategoryChangedAt?: string | null;
+    careWorkforcePathwayRoleCategory: CareWorkforcePathwayRoleCategory;
+  }[];
 };
 
 export type CWPGetUseReasonsResponse = {
   allReasons: Array<CareWorkforcePathwayUseReason>;
 };
+
+export type CWPWorkerSummaryPaginationSettings = {
+  pageIndex: number;
+  itemsPerPage: number;
+  sortBy: string;
+};
+
+const DefaultPaginationSettingsForCWPWorkerSummary: CWPWorkerSummaryPaginationSettings = {
+  itemsPerPage: 15,
+  pageIndex: 0,
+  sortBy: Object.keys(SortStaffOptionsForCWPWorkerSummary)[0],
+};
+
+export type CWPWorkerSummaryJourneyStartingPoint = 'home' | 'staff-records';
+type workerUid = string;

@@ -7,7 +7,7 @@ import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver {
+export class CountWorkersForCWPSummaryResolver {
   constructor(
     private permissionsService: PermissionsService,
     private careWorkforcePathwayService: CareWorkforcePathwayService,
@@ -15,20 +15,16 @@ export class GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver {
   ) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    const queryParams = { pageIndex: 0, itemsPerPage: 15 };
-
     const workplaceUid = route.paramMap.get('establishmentuid')
       ? route.paramMap.get('establishmentuid')
       : this.establishmentService.establishmentId;
 
-    if (!this.permissionsService.can(workplaceUid, 'canEditWorker')) return of(null);
+    if (!this.permissionsService.can(workplaceUid, 'canViewWorker')) return of(null);
 
-    return this.careWorkforcePathwayService
-      .getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(workplaceUid, queryParams)
-      .pipe(
-        catchError(() => {
-          return of(null);
-        }),
-      );
+    return this.careWorkforcePathwayService.countWorkersWhoRequireCareWorkforcePathwayRoleAnswer(workplaceUid).pipe(
+      catchError(() => {
+        return of(null);
+      }),
+    );
   }
 }

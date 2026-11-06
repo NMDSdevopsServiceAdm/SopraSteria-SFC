@@ -10,4 +10,23 @@ const JobRoleId = {
   REGISTERED_NURSE: 23,
 };
 
-module.exports = { UserAccountStatus, MaxLoginAttempts, MaxFindUsernameAttempts, JobRoleId };
+const CWPRoleCategoryGroup = {
+  CareProviding: 'Care Providing',
+  SeniorLeadership: 'Senior leadership',
+  NonCareProviding: 'Non-care providing',
+  Others: 'others',
+};
+
+const CWPRoleCategoryGroupValues = Object.values(CWPRoleCategoryGroup);
+
+const CWPNewToCareRoleCategoryID = 1;
+
+module.exports = {
+  UserAccountStatus,
+  MaxLoginAttempts,
+  MaxFindUsernameAttempts,
+  JobRoleId,
+  CWPRoleCategoryGroup,
+  CWPRoleCategoryGroupValues,
+  CWPNewToCareRoleCategoryID,
+};

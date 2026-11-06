@@ -7,7 +7,12 @@ const WorkplaceCSVValidator =
 const Establishment = require('../../../../../models/classes/establishment').Establishment;
 const WorkerCsvValidator =
   require('../../../../../../../lambdas/bulkUpload/classes/workerCSVValidator.js').WorkerCsvValidator;
-const mappings = require('../../../../../models/BulkImport/BUDI').mappings;
+const { mappings } = require('../../../../../../reference/BUDIMappings');
+const workerMappings = {
+  ...mappings,
+  JOB_ROLE_CWP_EXCLUSIONS: [],
+  CWP_CATEGORY: [],
+};
 
 const models = require('../../../../../models');
 const sandbox = require('sinon').createSandbox();
@@ -104,7 +109,7 @@ const validateAPIObject = (establishmentRow) => {
   };
 };
 const generateWorkerFromCsv = (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {
-  const worker = new WorkerCsvValidator(currentLine, lineNumber, allCurrentEstablishments, mappings);
+  const worker = new WorkerCsvValidator(currentLine, lineNumber, allCurrentEstablishments, workerMappings);
   worker.validate();
 
   return worker.toJSON(true);

@@ -4,6 +4,7 @@ const httpMocks = require('node-mocks-http');
 const models = require('../../../models');
 
 const { getAllCareWorkforcePathwayRoleCategories } = require('../../../routes/careWorkforcePathwayRoleCategories');
+const { CWPRoleCategoryGroup } = require('../../../data/constants');
 
 describe('careWorkforcePathwayRoleCategories', () => {
   afterEach(() => {
@@ -18,19 +19,15 @@ describe('careWorkforcePathwayRoleCategories', () => {
   const categories = [
     {
       id: 1,
-      seq: 10,
       title: 'New to care',
       description: "Is in a care-providing role that's a start point for a career in social care",
-      analysisFileCode: 1,
-      bulkUploadCode: 1,
+      group: CWPRoleCategoryGroup.CareProviding,
     },
     {
       id: 2,
-      seq: 20,
       title: 'Care or support worker',
       description: "Is established in their role, they've consolidated their skills and experience",
-      analysisFileCode: 2,
-      bulkUploadCode: 2,
+      group: CWPRoleCategoryGroup.CareProviding,
     },
   ];
 
@@ -39,11 +36,13 @@ describe('careWorkforcePathwayRoleCategories', () => {
       id: 1,
       title: 'New to care',
       description: "Is in a care-providing role that's a start point for a career in social care",
+      group: CWPRoleCategoryGroup.CareProviding,
     },
     {
       id: 2,
       title: 'Care or support worker',
       description: "Is established in their role, they've consolidated their skills and experience",
+      group: CWPRoleCategoryGroup.CareProviding,
     },
   ];
 

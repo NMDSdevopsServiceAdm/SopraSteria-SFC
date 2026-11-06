@@ -236,6 +236,48 @@ Cypress.Commands.add('resetNursesQuestionForWorkplace', (establishmentID) => {
   cy.task('multipleDbQueries', dbQueries);
 });
 
+Cypress.Commands.add('resetCWPRoleCategoriesBannerForWorkplace', (establishmentID, value = false) => {
+  const queryString = `UPDATE cqc."Establishment"
+    SET "CWPRoleCategoriesBannerViewed" = $2
+    WHERE "EstablishmentID" = $1;`;
+
+  const parameters = [establishmentID, value];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
+Cypress.Commands.add('archiveActiveWorkersForCWPTest', (establishmentID) => {
+  const queryString = `
+    UPDATE cqc."Worker"
+    SET "Archived" = true
+    WHERE "EstablishmentFK" = $1
+      AND "Archived" = false
+    RETURNING "ID";
+  `;
+
+  return cy.task('dbQuery', {
+    queryString,
+    parameters: [establishmentID],
+  });
+});
+
+Cypress.Commands.add('restoreWorkersForCWPTest', (workerIds) => {
+  if (!workerIds.length) {
+    return cy.wrap(null);
+  }
+
+  const queryString = `
+    UPDATE cqc."Worker"
+    SET "Archived" = false
+    WHERE "ID" = ANY($1);
+  `;
+
+  return cy.task('dbQuery', {
+    queryString,
+    parameters: [workerIds],
+  });
+});
+
 Cypress.Commands.add('setWorkplaceCWPAwarenessQuestionViewed', (establishmentID) => {
   const queryString = `UPDATE cqc."Establishment"
       SET "CWPAwarenessQuestionViewed" = true

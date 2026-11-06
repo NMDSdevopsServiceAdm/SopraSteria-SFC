@@ -3,9 +3,9 @@ const { isEmpty } = require('lodash');
 const { build_training_provider_mappings } = require('./trainingProvider');
 const { CONTRACT_TYPE } = require('./contractType');
 const { COUNTRY } = require('./country');
-const { CWP_CATEGORY } = require('./cwpCategory');
+const { build_cwp_category_mappings } = require('./cwpCategory');
 const { ETHNICITY } = require('./ethnicity');
-const { JOB_ROLES } = require('./jobRoles');
+const { JOB_ROLES, build_job_role_cwp_exclusion_mappings } = require('./jobRoles');
 const { NATIONALITY } = require('./nationality');
 const { QUALIFICATION_LEVELS } = require('./qualificationLevels');
 const { QUALIFICATIONS } = require('./qualifications');
@@ -20,6 +20,8 @@ const getMappingsFromDatabase = async () => {
     mappingsFromDatabase = {
       TRAINING_PROVIDER: await build_training_provider_mappings(),
       NURSE_FIELD_OF_PRACTICE: await build_nurse_field_of_practice_mappings(),
+      CWP_CATEGORY: await build_cwp_category_mappings(),
+      JOB_ROLE_CWP_EXCLUSIONS: await build_job_role_cwp_exclusion_mappings(),
     };
   }
 
@@ -36,7 +38,6 @@ exports.mappings = {
   QUALIFICATIONS,
   RECRUITMENT,
   TRAINING_CATEGORY,
-  CWP_CATEGORY,
 };
 
 exports.getMappingsFromDatabase = getMappingsFromDatabase;

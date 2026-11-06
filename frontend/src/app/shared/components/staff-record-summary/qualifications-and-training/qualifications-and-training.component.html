@@ -4,7 +4,7 @@
     class="govuk-summary-list__row"
     [ngClass]="{
       'govuk-summary-list__row--no-bottom-border':
-        (wdfView && worker.wdf?.careCertificate?.isEligible === Eligibility.NO) || showWdfConfirmations.careCertificate
+        (wdfView && worker.wdf?.careCertificate?.isEligible === Eligibility.NO) || showWdfConfirmations.careCertificate,
     }"
   >
     <dt class="govuk-summary-list__key">Care Certificate</dt>
@@ -13,31 +13,32 @@
       {{ worker.careCertificate || '-' }}
     </dd>
     @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      @if (!showWdfConfirmations.careCertificate) {
-      <app-summary-record-change
-        [explanationText]="' care certificate'"
-        [link]="getRoutePath('care-certificate', wdfView)"
-        [hasData]="!!worker.careCertificate"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-      }
-    </dd>
+      <dd class="govuk-summary-list__actions">
+        @if (!showWdfConfirmations.careCertificate) {
+          <app-summary-record-change
+            [explanationText]="' care certificate'"
+            [link]="getRoutePath('care-certificate', wdfView)"
+            [hasData]="!!worker.careCertificate"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        }
+      </dd>
     }
   </div>
   @if (wdfView && worker.wdf?.careCertificate?.isEligible === Eligibility.NO) {
-  <app-wdf-warning-message
-    [overallWdfEligibility]="overallWdfEligibility"
-    data-testid="careCertificateWdfWarning"
-  ></app-wdf-warning-message>
-  } @if (showWdfConfirmations.careCertificate) {
-  <app-wdf-field-confirmation
-    [changeLink]="getRoutePath('care-certificate', wdfView)"
-    (fieldConfirmation)="this.confirmField('careCertificate')"
-    (setReturnClicked)="this.setReturn()"
-    [workerUid]="worker.uid"
-    [staffRecordView]="true"
-  ></app-wdf-field-confirmation>
+    <app-wdf-warning-message
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="careCertificateWdfWarning"
+    ></app-wdf-warning-message>
+  }
+  @if (showWdfConfirmations.careCertificate) {
+    <app-wdf-field-confirmation
+      [changeLink]="getRoutePath('care-certificate', wdfView)"
+      (fieldConfirmation)="this.confirmField('careCertificate')"
+      (setReturnClicked)="this.setReturn()"
+      [workerUid]="worker.uid"
+      [staffRecordView]="true"
+    ></app-wdf-field-confirmation>
   }
 
   <div class="govuk-summary-list__row">
@@ -47,14 +48,14 @@
       {{ worker.level2CareCertificate?.value || '-' }}
     </dd>
     @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="' level 2 adult social care certificate'"
-        [link]="getRoutePath('level-2-care-certificate', wdfView)"
-        [hasData]="!!worker.level2CareCertificate?.value"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
+      <dd class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' level 2 adult social care certificate'"
+          [link]="getRoutePath('level-2-care-certificate', wdfView)"
+          [hasData]="!!worker.level2CareCertificate?.value"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
     }
   </div>
 
@@ -64,14 +65,14 @@
       {{ worker.apprenticeshipTraining || '-' | closedEndedAnswer }}
     </dd>
     @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="' apprenticeship training'"
-        [link]="getRoutePath('apprenticeship-training', wdfView)"
-        [hasData]="!!worker.apprenticeshipTraining"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
+      <dd class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' apprenticeship training'"
+          [link]="getRoutePath('apprenticeship-training', wdfView)"
+          [hasData]="!!worker.apprenticeshipTraining"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
     }
   </div>
 
@@ -80,7 +81,7 @@
     [ngClass]="{
       'govuk-summary-list__row--no-bottom-border':
         (wdfView && worker.wdf?.qualificationInSocialCare?.isEligible === Eligibility.NO) ||
-        showWdfConfirmations.qualificationInSocialCare
+        showWdfConfirmations.qualificationInSocialCare,
     }"
   >
     <dt class="govuk-summary-list__key">Has a social care qualification</dt>
@@ -88,78 +89,84 @@
       {{ worker.qualificationInSocialCare || '-' | closedEndedAnswer }}
     </dd>
     @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      @if (!showWdfConfirmations.qualificationInSocialCare) {
-      <app-summary-record-change
-        [explanationText]="' relevant social care qualification'"
-        [link]="getRoutePath('social-care-qualification', wdfView)"
-        [hasData]="!!worker.qualificationInSocialCare"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-      }
-    </dd>
+      <dd class="govuk-summary-list__actions">
+        @if (!showWdfConfirmations.qualificationInSocialCare) {
+          <app-summary-record-change
+            [explanationText]="' relevant social care qualification'"
+            [link]="getRoutePath('social-care-qualification', wdfView)"
+            [hasData]="!!worker.qualificationInSocialCare"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        }
+      </dd>
     }
   </div>
   @if (wdfView && worker.wdf?.qualificationInSocialCare?.isEligible === Eligibility.NO) {
-  <app-wdf-warning-message
-    [overallWdfEligibility]="overallWdfEligibility"
-    data-testid="qualificationInSocialCareWdfWarning"
-  ></app-wdf-warning-message>
-  } @if (showWdfConfirmations.qualificationInSocialCare) {
-  <app-wdf-field-confirmation
-    [changeLink]="getRoutePath('social-care-qualification', wdfView)"
-    (fieldConfirmation)="this.confirmField('qualificationInSocialCare')"
-    (setReturnClicked)="this.setReturn()"
-    [workerUid]="worker.uid"
-    [staffRecordView]="true"
-  ></app-wdf-field-confirmation>
-  } @if (displaySocialCareQualifications) {
-  <div
-    class="govuk-summary-list__row"
-    [ngClass]="{
-      'govuk-summary-list__row--no-bottom-border':
-        (wdfView && worker.wdf?.socialCareQualification?.isEligible === Eligibility.NO) ||
-        showWdfConfirmations.socialCareQualification
-    }"
-  >
-    <dt class="govuk-summary-list__key">Highest level of social care qualification</dt>
-    <dd class="govuk-summary-list__value">
-      {{ worker.socialCareQualification?.title | closedEndedAnswer }}
-    </dd>
-    @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      @if (!showWdfConfirmations.socialCareQualification) {
-      <app-summary-record-change
-        [explanationText]="' social care qualification level'"
-        [link]="getRoutePath('social-care-qualification-level', wdfView)"
-        [hasData]="!!worker.socialCareQualification"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
+    <app-wdf-warning-message
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="qualificationInSocialCareWdfWarning"
+    ></app-wdf-warning-message>
+  }
+  @if (showWdfConfirmations.qualificationInSocialCare) {
+    <app-wdf-field-confirmation
+      [changeLink]="getRoutePath('social-care-qualification', wdfView)"
+      (fieldConfirmation)="this.confirmField('qualificationInSocialCare')"
+      (setReturnClicked)="this.setReturn()"
+      [workerUid]="worker.uid"
+      [staffRecordView]="true"
+    ></app-wdf-field-confirmation>
+  }
+  @if (displaySocialCareQualifications) {
+    <div
+      class="govuk-summary-list__row"
+      [ngClass]="{
+        'govuk-summary-list__row--no-bottom-border':
+          (wdfView && worker.wdf?.socialCareQualification?.isEligible === Eligibility.NO) ||
+          showWdfConfirmations.socialCareQualification,
+      }"
+    >
+      <dt class="govuk-summary-list__key">Highest level of social care qualification</dt>
+      <dd class="govuk-summary-list__value">
+        {{ worker.socialCareQualification?.title | closedEndedAnswer }}
+      </dd>
+      @if (canEditWorker) {
+        <dd class="govuk-summary-list__actions">
+          @if (!showWdfConfirmations.socialCareQualification) {
+            <app-summary-record-change
+              [explanationText]="' social care qualification level'"
+              [link]="getRoutePath('social-care-qualification-level', wdfView)"
+              [hasData]="!!worker.socialCareQualification"
+              (setReturnClicked)="this.setReturn()"
+            ></app-summary-record-change>
+          }
+        </dd>
       }
-    </dd>
+    </div>
+    @if (wdfView && worker.wdf?.socialCareQualification?.isEligible === Eligibility.NO) {
+      <app-wdf-warning-message
+        [overallWdfEligibility]="overallWdfEligibility"
+        data-testid="socialCareQualificationWdfWarning"
+      ></app-wdf-warning-message>
     }
-  </div>
-  @if (wdfView && worker.wdf?.socialCareQualification?.isEligible === Eligibility.NO) {
-  <app-wdf-warning-message
-    [overallWdfEligibility]="overallWdfEligibility"
-    data-testid="socialCareQualificationWdfWarning"
-  ></app-wdf-warning-message>
-  } @if (showWdfConfirmations.socialCareQualification) {
-  <app-wdf-field-confirmation
-    [changeLink]="getRoutePath('social-care-qualification-level', wdfView)"
-    (fieldConfirmation)="this.confirmField('socialCareQualification'); this.confirmField('qualificationInSocialCare')"
-    (setReturnClicked)="this.setReturn()"
-    [workerUid]="worker.uid"
-    [staffRecordView]="true"
-  ></app-wdf-field-confirmation>
-  } }
+    @if (showWdfConfirmations.socialCareQualification) {
+      <app-wdf-field-confirmation
+        [changeLink]="getRoutePath('social-care-qualification-level', wdfView)"
+        (fieldConfirmation)="
+          this.confirmField('socialCareQualification'); this.confirmField('qualificationInSocialCare')
+        "
+        (setReturnClicked)="this.setReturn()"
+        [workerUid]="worker.uid"
+        [staffRecordView]="true"
+      ></app-wdf-field-confirmation>
+    }
+  }
 
   <div
     class="govuk-summary-list__row"
     [ngClass]="{
       'govuk-summary-list__row--no-bottom-border':
         (wdfView && worker.wdf?.otherQualification?.isEligible === Eligibility.NO) ||
-        showWdfConfirmations.otherQualification
+        showWdfConfirmations.otherQualification,
     }"
   >
     <dt class="govuk-summary-list__key">Other qualifications</dt>
@@ -167,86 +174,94 @@
       {{ worker.otherQualification || '-' | closedEndedAnswer }}
     </dd>
     @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      @if (!showWdfConfirmations.otherQualification) {
-      <app-summary-record-change
-        [explanationText]="' other qualifications'"
-        [link]="getRoutePath('other-qualifications', wdfView)"
-        [hasData]="!!worker.otherQualification"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-      }
-    </dd>
+      <dd class="govuk-summary-list__actions">
+        @if (!showWdfConfirmations.otherQualification) {
+          <app-summary-record-change
+            [explanationText]="' other qualifications'"
+            [link]="getRoutePath('other-qualifications', wdfView)"
+            [hasData]="!!worker.otherQualification"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        }
+      </dd>
     }
   </div>
   @if (wdfView && worker.wdf?.otherQualification?.isEligible === Eligibility.NO) {
-  <app-wdf-warning-message
-    [overallWdfEligibility]="overallWdfEligibility"
-    data-testid="otherQualificationWdfWarning"
-  ></app-wdf-warning-message>
-  } @if (showWdfConfirmations.otherQualification) {
-  <app-wdf-field-confirmation
-    [changeLink]="getRoutePath('other-qualifications', wdfView)"
-    (fieldConfirmation)="this.confirmField('otherQualification')"
-    (setReturnClicked)="this.setReturn()"
-    [workerUid]="worker.uid"
-    [staffRecordView]="true"
-  ></app-wdf-field-confirmation>
-  } @if (displayOtherQualifications) {
-  <div
-    class="govuk-summary-list__row"
-    [ngClass]="{
-      'govuk-summary-list__row--no-bottom-border':
-        (wdfView && worker.wdf?.highestQualification?.isEligible === Eligibility.NO) ||
-        showWdfConfirmations.highestQualification
-    }"
-  >
-    <dt class="govuk-summary-list__key">Highest level of other qualifications</dt>
-    <dd class="govuk-summary-list__value">
-      {{ worker.highestQualification?.title || '-' }}
-    </dd>
-    @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      @if (!showWdfConfirmations.highestQualification) {
-      <app-summary-record-change
-        [explanationText]="' other qualification level'"
-        [link]="getRoutePath('other-qualifications-level', wdfView)"
-        [hasData]="!!worker.highestQualification"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
+    <app-wdf-warning-message
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="otherQualificationWdfWarning"
+    ></app-wdf-warning-message>
+  }
+  @if (showWdfConfirmations.otherQualification) {
+    <app-wdf-field-confirmation
+      [changeLink]="getRoutePath('other-qualifications', wdfView)"
+      (fieldConfirmation)="this.confirmField('otherQualification')"
+      (setReturnClicked)="this.setReturn()"
+      [workerUid]="worker.uid"
+      [staffRecordView]="true"
+    ></app-wdf-field-confirmation>
+  }
+  @if (displayOtherQualifications) {
+    <div
+      class="govuk-summary-list__row"
+      [ngClass]="{
+        'govuk-summary-list__row--no-bottom-border':
+          (wdfView && worker.wdf?.highestQualification?.isEligible === Eligibility.NO) ||
+          showWdfConfirmations.highestQualification,
+      }"
+    >
+      <dt class="govuk-summary-list__key">Highest level of other qualifications</dt>
+      <dd class="govuk-summary-list__value">
+        {{ worker.highestQualification?.title || '-' }}
+      </dd>
+      @if (canEditWorker) {
+        <dd class="govuk-summary-list__actions">
+          @if (!showWdfConfirmations.highestQualification) {
+            <app-summary-record-change
+              [explanationText]="' other qualification level'"
+              [link]="getRoutePath('other-qualifications-level', wdfView)"
+              [hasData]="!!worker.highestQualification"
+              (setReturnClicked)="this.setReturn()"
+            ></app-summary-record-change>
+          }
+        </dd>
       }
-    </dd>
+    </div>
+    @if (wdfView && worker.wdf?.highestQualification?.isEligible === Eligibility.NO) {
+      <app-wdf-warning-message
+        [overallWdfEligibility]="overallWdfEligibility"
+        data-testid="highestQualificationWdfWarning"
+      ></app-wdf-warning-message>
     }
-  </div>
-  @if (wdfView && worker.wdf?.highestQualification?.isEligible === Eligibility.NO) {
-  <app-wdf-warning-message
-    [overallWdfEligibility]="overallWdfEligibility"
-    data-testid="highestQualificationWdfWarning"
-  ></app-wdf-warning-message>
-  } @if (showWdfConfirmations.highestQualification) {
-  <app-wdf-field-confirmation
-    [changeLink]="getRoutePath('other-qualifications-level', wdfView)"
-    (fieldConfirmation)="this.confirmField('highestQualification'); this.confirmField('otherQualification')"
-    (setReturnClicked)="this.setReturn()"
-    [workerUid]="worker.uid"
-    [staffRecordView]="true"
-  ></app-wdf-field-confirmation>
-  } }
-
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">Care workforce pathway role category</dt>
-    <dd class="govuk-summary-list__value">
-      {{ worker.careWorkforcePathwayRoleCategory | CWPRoleCategoryTitle }}
-    </dd>
-    @if (canEditWorker) {
-    <dd class="govuk-summary-list__actions">
-      <app-summary-record-change
-        [explanationText]="' care workforce pathway role category'"
-        [link]="getRoutePath('care-workforce-pathway', wdfView)"
-        [hasData]="!!worker.careWorkforcePathwayRoleCategory"
+    @if (showWdfConfirmations.highestQualification) {
+      <app-wdf-field-confirmation
+        [changeLink]="getRoutePath('other-qualifications-level', wdfView)"
+        (fieldConfirmation)="this.confirmField('highestQualification'); this.confirmField('otherQualification')"
         (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
+        [workerUid]="worker.uid"
+        [staffRecordView]="true"
+      ></app-wdf-field-confirmation>
     }
-  </div>
+  }
+
+  @if (!worker.mainJob.excludedFromCareWorkforcePathway) {
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Care workforce pathway role category</dt>
+      <dd class="govuk-summary-list__value">
+        <app-display-cwp-role-category
+          [careWorkforcePathwayRoleCategory]="worker.careWorkforcePathwayRoleCategory"
+        ></app-display-cwp-role-category>
+      </dd>
+      @if (canEditWorker) {
+        <dd class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="' care workforce pathway role category'"
+            [link]="getRoutePath('care-workforce-pathway', wdfView)"
+            [hasData]="!!worker.careWorkforcePathwayRoleCategory"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      }
+    </div>
+  }
 </dl>

@@ -16,6 +16,7 @@ export const runTestsForPayAndPensionsMiniFlow = (mockEstablishmentData) => {
     describe('main service with payAndPensionsGroup as 1', () => {
       before(() => {
         cy.resetPayAndPensionWorkplaceQuestions(establishmentId);
+        cy.resetCWPRoleCategoriesBannerForWorkplace(establishmentId, true);
         cy.setWorkplaceMainService(establishmentId, mainServiceWithPayAndPensionsGroup1.id);
         cy.reload();
       });

@@ -12,7 +12,7 @@ import { StandAloneAccountComponent } from '@core/components/standAloneAccount/s
 import { SubsidiaryAccountComponent } from '@core/components/subsidiaryAccount/subsidiaryAccount.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
-import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
+import { CountWorkersForCWPSummaryResolver } from '@core/resolvers/careWorkforcePathway/count-workers-for-cwp-summary.resolver';
 import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
@@ -218,7 +218,7 @@ import { PasswordSavedConfirmationComponent } from '@shared/components/password-
     GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
     FundingReportResolver,
     HelpPageResolver,
-    GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+    CountWorkersForCWPSummaryResolver,
     GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
     FeatureFlagsResolver,
     provideHttpClient(withInterceptorsFromDi()),

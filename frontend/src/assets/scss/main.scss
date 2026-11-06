@@ -50,5 +50,8 @@ html {
 @import 'components/button-menu';
 @import 'components/asc-card';
 
+// Feature-specific styles
+@import 'features/care-workforce-pathway';
+
 // CMS
 @import 'cms/cms';

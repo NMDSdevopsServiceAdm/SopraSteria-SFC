@@ -1033,6 +1033,16 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'NursesQuestionsMiniFlowViewed',
       },
+      cwpRoleCategoriesBannerViewed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'CWPRoleCategoriesBannerViewed',
+      },
+      cwpRoleCategoriesNewPillLinkVisited: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        field: 'CWPRoleCategoriesNewPillLinkVisited',
+      },
     },
     {
       defaultScope: {
@@ -1828,6 +1838,7 @@ module.exports = function (sequelize, DataTypes) {
             'Level2CareCertificateValue',
             'Level2CareCertificateYear',
             'CareWorkforcePathwayRoleCategoryFK',
+            'CWPRoleCategoryIsAlsoNominatedIndividual',
             'carryOutDelegatedHealthcareActivities',
           ],
           as: 'workers',

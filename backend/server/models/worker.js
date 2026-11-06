@@ -1,7 +1,8 @@
 const dayjs = require('dayjs');
+const lodash = require('lodash');
 const { Op } = require('sequelize');
-const { unsetDHAAnswerOnJobRoleChange } = require('./hooks/workerHooks');
-const { JobRoleId } = require('../data/constants');
+const { unsetDHAAnswerOnJobRoleChange, unsetCWPRoleCategoryOnJobRoleChange } = require('./hooks/workerHooks');
+const { JobRoleId, CWPNewToCareRoleCategoryID } = require('../data/constants');
 
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
@@ -1003,6 +1004,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CareWorkforcePathwayRoleCategoryFK"',
       },
+      CWPRoleCategoryIsAlsoNominatedIndividual: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        field: '"CWPRoleCategoryIsAlsoNominatedIndividual"',
+      },
       CareWorkforcePathwayRoleCategorySavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
@@ -1409,46 +1415,117 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Worker.countAllWorkersWithoutCareWorkforceCategory = async function (establishmentId) {
+  Worker.countAllWorkersForCareWorkforcePathwayRoleCategory = async function (establishmentId) {
     return await this.count({
       where: {
         establishmentFk: establishmentId,
         archived: false,
-        CareWorkforcePathwayRoleCategoryFK: null,
-      },
-    });
-  };
-
-  Worker.getAndCountAllWorkersWithoutCareWorkforceCategory = async function ({
-    establishmentId,
-    itemsPerPage,
-    pageIndex,
-  }) {
-    const { count, rows } = await this.findAndCountAll({
-      attributes: ['uid', 'NameOrIdValue'],
-      where: {
-        establishmentFk: establishmentId,
-        archived: false,
-        CareWorkforcePathwayRoleCategoryFK: null,
       },
       include: [
         {
           model: sequelize.models.job,
           as: 'mainJob',
           attributes: ['title'],
+          where: {
+            excludedFromCareWorkforcePathway: false,
+          },
         },
       ],
-      order: [['NameOrIdValue', 'ASC']],
+    });
+  };
+
+  const sortByOptions = {
+    staffNameAsc: [['nameOrId', 'ASC']],
+    staffNameDesc: [['nameOrId', 'DESC']],
+    jobRoleAsc: [[sequelize.literal('"mainJob.title"'), 'ASC']],
+    jobRoleDesc: [[sequelize.literal('"mainJob.title"'), 'DESC']],
+    cwpRoleAsc: [[sequelize.literal('"careWorkforcePathwayRoleCategory.title"'), 'ASC']],
+    cwpRoleDesc: [[sequelize.literal('"careWorkforcePathwayRoleCategory.title"'), 'DESC']],
+  };
+
+  Worker.getAndCountAllWorkersForCareWorkforcePathwayRoleCategory = async function ({
+    establishmentId,
+    itemsPerPage,
+    pageIndex,
+    sortBy,
+  }) {
+    const order = sortByOptions[sortBy] ?? sortByOptions.staffNameAsc;
+
+    const { count, rows } = await this.findAndCountAll({
+      attributes: ['uid', ['NameOrIdValue', 'nameOrId'], 'CWPRoleCategoryIsAlsoNominatedIndividual'],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['title'],
+          where: {
+            excludedFromCareWorkforcePathway: false,
+          },
+        },
+        {
+          model: sequelize.models.careWorkforcePathwayRoleCategory,
+          as: 'careWorkforcePathwayRoleCategory',
+        },
+      ],
+      order,
       offset: itemsPerPage * pageIndex,
       limit: itemsPerPage,
     });
 
     const workers = rows.map((worker) => {
-      const { uid, mainJob, NameOrIdValue: nameOrId } = worker;
-      return { uid, mainJob, nameOrId };
+      if (worker.CWPRoleCategoryIsAlsoNominatedIndividual) {
+        return lodash.merge({}, worker.toJSON(), {
+          careWorkforcePathwayRoleCategory: { isNominatedIndividual: worker.CWPRoleCategoryIsAlsoNominatedIndividual },
+        });
+      } else {
+        return worker.toJSON();
+      }
     });
 
     return { count, workers };
+  };
+
+  Worker.getAllWorkersWhoMeetNewToCareCriteria = async function (establishmentId) {
+    const oneYearAgo = dayjs(new Date()).subtract(1, 'year').toDate();
+
+    const workers = await this.findAll({
+      attributes: [
+        'uid',
+        ['NameOrIdValue', 'nameOrId'],
+        'MainJobStartDateValue',
+        'CareWorkforcePathwayRoleCategorySavedAt',
+        'CareWorkforcePathwayRoleCategoryChangedAt',
+      ],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+        CareWorkforcePathwayRoleCategoryFK: CWPNewToCareRoleCategoryID,
+        MainJobStartDateValue: {
+          [Op.or]: [{ [Op.is]: null }, { [Op.lt]: oneYearAgo }],
+        },
+      },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['title'],
+          where: {
+            excludedFromCareWorkforcePathway: false,
+          },
+        },
+        {
+          model: sequelize.models.careWorkforcePathwayRoleCategory,
+          as: 'careWorkforcePathwayRoleCategory',
+        },
+      ],
+      order: [['nameOrId', 'ASC']],
+    });
+
+    return workers;
   };
 
   Worker.countAllWorkersWithoutDelegatedHealthCareActivities = async function (establishmentId) {
@@ -1589,6 +1666,7 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Worker.addHook('beforeSave', 'unsetDHAAnswerOnJobRoleChange', unsetDHAAnswerOnJobRoleChange);
+  Worker.addHook('beforeSave', 'unsetCWPRoleCategoryOnJobRoleChange', unsetCWPRoleCategoryOnJobRoleChange);
 
   return Worker;
 };

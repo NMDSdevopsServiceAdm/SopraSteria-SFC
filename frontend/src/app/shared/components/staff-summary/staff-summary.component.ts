@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
@@ -15,10 +16,15 @@ import { StaffSummaryDirective } from '@shared/directives/staff-summary/staff-su
   standalone: false,
 })
 export class StaffSummaryComponent extends StaffSummaryDirective implements OnInit {
-  public showNewPill: boolean = false;
   public workplaceUid: string;
+
+  public showNewPillForUpdatePay: boolean = false;
   public showUpdatePayForMultipleStaffLink = false;
   public updatePayForMultipleStaffLinkText = 'Update pay for multiple staff';
+
+  public showNewPillForCwpWorkerSummaryLink: boolean = false;
+  public showCwpWorkerSummaryLink = false;
+  public cwpWorkerSummaryLinkText = 'Check your staff Care Workforce Pathway role categories';
 
   constructor(
     protected permissionsService: PermissionsService,
@@ -29,17 +35,23 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
     protected tabsService: TabsService,
     protected previousRouteService: PreviousRouteService,
     protected sortByService: SortByService,
+    protected careWorkforcePathwayService: CareWorkforcePathwayService,
   ) {
     super(permissionsService, workerService, router, route, establishmentService, tabsService, sortByService);
   }
 
   protected init(): void {
-    this.showNewPill = !this.workplace?.updatePayForMultiStaffViewed;
+    this.showNewPillForUpdatePay = !this.workplace?.updatePayForMultiStaffViewed;
     this.workplaceUid = this.workplace.uid;
     const userHasEditPermissions =
       this.permissionsService.can(this.workplaceUid, 'canEditWorker') &&
       this.permissionsService.can(this.workplaceUid, 'canEditEstablishment');
     this.showUpdatePayForMultipleStaffLink = userHasEditPermissions && this.workerCount > 1;
+
+    const workersCountForCWPSummary = this.route.snapshot.data?.workersCountForCWPSummary?.workerCount;
+    this.showCwpWorkerSummaryLink = userHasEditPermissions && workersCountForCWPSummary >= 1;
+    this.showNewPillForCwpWorkerSummaryLink =
+      this.showCwpWorkerSummaryLink && !this.workplace?.cwpRoleCategoriesNewPillLinkVisited;
   }
 
   public getWorkerRecordPath(event: Event, worker: Worker) {
@@ -58,10 +70,28 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
     );
   }
 
-  public handleOnClick(): void {
-    if (this.showNewPill) {
+  public visitUpdatePayForMultipleStaff(): void {
+    if (this.showNewPillForUpdatePay) {
       this.setUpdatePayForMultiStaffViewed();
     }
     this.router.navigate(['workplace', this.workplaceUid, 'staff-record', 'update-pay-for-multiple-staff']);
+  }
+
+  private setCWPRoleCategoriesNewPillLinkVisited(): void {
+    const data = {
+      property: 'cwpRoleCategoriesNewPillLinkVisited',
+      value: true,
+    };
+    this.subscriptions.add(
+      this.establishmentService.updateSingleEstablishmentField(this.workplaceUid, data).subscribe(),
+    );
+  }
+
+  public visitCWPWorkerSummary(): void {
+    if (this.showNewPillForCwpWorkerSummaryLink) {
+      this.setCWPRoleCategoriesNewPillLinkVisited();
+    }
+    this.careWorkforcePathwayService.startWorkerSummaryJourney('staff-records');
+    this.router.navigate(['workplace', this.workplaceUid, 'staff-record', 'care-workforce-pathway-workers-summary']);
   }
 }

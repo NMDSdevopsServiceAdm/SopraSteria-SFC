@@ -8,10 +8,8 @@
  */
 
 const { v4: uuidv4 } = require('uuid');
-uuidv4();
 
 // database models
-const { Op } = require('sequelize');
 const models = require('../index');
 
 const EntityValidator = require('./validations/entityValidator').EntityValidator;
@@ -28,7 +26,6 @@ const WorkerProperties = require('./worker/workerProperties').WorkerPropertyMana
 const JSON_DOCUMENT_TYPE = require('./worker/workerProperties').JSON_DOCUMENT;
 const SEQUELIZE_DOCUMENT_TYPE = require('./worker/workerProperties').SEQUELIZE_DOCUMENT;
 
-const TrainingCertificateRoute = require('../../routes/establishments/workerCertificate/trainingCertificate');
 const WorkerCertificateService = require('../../routes/establishments/workerCertificate/workerCertificateService');
 
 // WDF Calculator
@@ -1015,7 +1012,7 @@ class Worker extends EntityValidator {
           {
             model: models.job,
             as: 'mainJob',
-            attributes: ['id', 'title', 'canDoDelegatedHealthcareActivities'],
+            attributes: ['id', 'title', 'canDoDelegatedHealthcareActivities', 'excludedFromCareWorkforcePathway'],
           },
           {
             model: models.ethnicity,
@@ -1055,7 +1052,6 @@ class Worker extends EntityValidator {
           {
             model: models.careWorkforcePathwayRoleCategory,
             as: 'careWorkforcePathwayRoleCategory',
-            attributes: ['id', 'title', 'description'],
           },
         ],
       };

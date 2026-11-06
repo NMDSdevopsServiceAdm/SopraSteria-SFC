@@ -25,6 +25,7 @@ const MutipleTrainingRecordsRoute = require('./training/multiple');
 const TrainingAndQualificationsRoutes = require('./trainingAndQualifications');
 
 const { hasPermission } = require('../../utils/security/hasPermission');
+const { WorkerSortByOptions } = require('../../data/sortByOptions');
 
 const viewWorker = async (req, res) => {
   const workerId = req.params.workerId;
@@ -347,7 +348,7 @@ const parseIntWithDefault = (numberString, defaultValue) => {
 
 const getWorkersWithPayData = async (req, res) => {
   try {
-    const allowedSortByOptions = ['staffNameAsc', 'staffNameDesc', 'jobRoleAsc', 'jobRoleDesc'];
+    const allowedSortByOptions = WorkerSortByOptions;
     const establishmentId = req.establishmentId;
 
     const itemsPerPage = parseIntWithDefault(req.query.itemsPerPage, 15);

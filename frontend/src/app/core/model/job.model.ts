@@ -4,6 +4,7 @@ export interface Job {
   other?: boolean;
   jobRoleGroup?: string;
   canDoDelegatedHealthcareActivities?: boolean;
+  excludedFromCareWorkforcePathway?: boolean;
 }
 
 export interface JobGroup {
@@ -22,6 +23,7 @@ export interface JobRole {
   title?: string;
   other?: string;
   canDoDelegatedHealthcareActivities?: boolean;
+  excludedFromCareWorkforcePathway?: boolean;
 }
 
 export interface GetJobsResponse {

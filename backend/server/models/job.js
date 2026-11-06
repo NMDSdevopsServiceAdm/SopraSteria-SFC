@@ -49,6 +49,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'IsCareProvidingRole',
       },
+      excludedFromCareWorkforcePathway: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        field: 'ExcludedFromCareWorkforcePathway',
+      },
     },
     {
       tableName: '"Job"',

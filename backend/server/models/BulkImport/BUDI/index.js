@@ -54,9 +54,11 @@ class BUDI {
         });
     }
 
-    const careWorkforcePathwayCategoryFetch = await dbmodels.careWorkforcePathwayRoleCategory.findAll({
-      order: [['id', 'ASC']],
-    });
+    const careWorkforcePathwayCategoryFetch = await dbmodels.careWorkforcePathwayRoleCategory
+      .scope('bulkUpload')
+      .findAll({
+        order: [['id', 'ASC']],
+      });
 
     if (Array.isArray(careWorkforcePathwayCategoryFetch)) {
       ALL_CAREWORKFORCEPATHWAYCATEGORIES = careWorkforcePathwayCategoryFetch.map((thisCareWorkforcePathwayCategory) => {

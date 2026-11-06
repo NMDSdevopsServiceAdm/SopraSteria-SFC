@@ -52,7 +52,8 @@ const buildWorkerCsv = build('WorkerCSV', {
     UNIQUEWORKERID: '3',
     YEAROFENTRY: '',
     ZEROHRCONT: '2',
-    CWPCATEGORY: '1',
+    CWPCATEGORY: '',
+    CWPNOMIND: '',
   },
 });
 
@@ -78,7 +79,36 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       { ASC: 3, BUDI: 3 },
       { ASC: 4, BUDI: 4 },
     ];
-    Object.assign(mappings, { NURSE_FIELD_OF_PRACTICE: mockNurseFieldOfPracticeMappings });
+    const mockCwpCategoryMappings = [
+      { ASC: 1, BUDI: 1 },
+      { ASC: 2, BUDI: 2 },
+      { ASC: 3, BUDI: 3 },
+      { ASC: 4, BUDI: 4 },
+      { ASC: 5, BUDI: 5 },
+      { ASC: 6, BUDI: 6 },
+      { ASC: 7, BUDI: 7, group: 'Senior leadership' },
+      { ASC: 8, BUDI: 9 },
+      { ASC: 9, BUDI: 10 },
+      { ASC: 10, BUDI: 11 },
+      { ASC: 11, BUDI: 12 },
+      { ASC: 12, BUDI: 13 },
+      { ASC: 13, BUDI: 14 },
+      { ASC: 14, BUDI: 15 },
+      { ASC: 15, BUDI: 16 },
+      { ASC: 16, BUDI: 17 },
+      { ASC: 101, BUDI: 999 },
+      { ASC: 102, BUDI: 998 },
+    ];
+    const mockJobRoleCwpExclusions = [
+      { ASC: 10, excludedFromCareWorkforcePathway: false },
+      { ASC: 23, excludedFromCareWorkforcePathway: true },
+    ];
+
+    Object.assign(mappings, {
+      NURSE_FIELD_OF_PRACTICE: mockNurseFieldOfPracticeMappings,
+      CWP_CATEGORY: mockCwpCategoryMappings,
+      JOB_ROLE_CWP_EXCLUSIONS: mockJobRoleCwpExclusions,
+    });
   });
 
   describe('validations', () => {
@@ -2375,27 +2405,30 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
   describe(' _validateCwpCategory()', () => {
     describe('Valid inputs', () => {
-      const allowedCwpCategoryValues = [1, 2, 3, 4, 5, 6, 7, 998, 999];
+      const allowedCwpCategoryValues = [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 998, 999];
 
-      it(`should not add warning when the CWPCATEGORY value is valid:(${allowedCwpCategoryValues})`, async () => {
-        const worker = buildWorkerCsv({
-          overrides: {
-            STATUS: 'NEW',
-            CWPCATEGORY: allowedCwpCategoryValues,
-          },
+      allowedCwpCategoryValues.forEach((category) => {
+        it(`should not add warning when CWPCATEGORY is ${category}`, () => {
+          const worker = buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              CWPCATEGORY: String(category),
+            },
+          });
+
+          const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+          validator.validate();
+          validator.transform();
+
+          expect(validator._validationErrors).to.deep.equal([]);
         });
-        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
-
-        validator.validate();
-        validator.transform();
-
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._validationErrors.length).to.equal(0);
       });
     });
 
     describe('Invalid inputs', () => {
       const invalidInputs = ['995', '8888', '666'];
+
       invalidInputs.forEach((invalidCwpCategoryInput) => {
         it(`should add warning when the CWPCATEGORY value is invalid: (${invalidCwpCategoryInput})`, async () => {
           const worker = buildWorkerCsv({
@@ -2404,6 +2437,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
               CWPCATEGORY: invalidCwpCategoryInput,
             },
           });
+
           const expectedWarning = {
             column: 'CWPCATEGORY',
             lineNumber: 2,
@@ -2425,6 +2459,143 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           expect(validator._careWorkForcePathwayCategory).to.equal(null);
         });
       });
+
+      it('should warn when CWPCATEGORY is invalid and CWPNOMIND is populated', () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            MAINJOBROLE: '8',
+            CWPCATEGORY: '555',
+            CWPNOMIND: '1',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        const cwpWarnings = validator._validationErrors.filter((error) =>
+          ['CWPCATEGORY', 'CWPNOMIND'].includes(error.column),
+        );
+
+        expect(cwpWarnings).to.have.lengthOf(2);
+
+        expect(cwpWarnings.map((error) => error.warning)).to.include(
+          'The code you have entered for CWPCATEGORY is incorrect and will be ignored',
+        );
+
+        expect(cwpWarnings.map((error) => error.warning)).to.include(
+          'The code you have entered for CWPNOMIND will be ignored as CWPCATEGORY is invalid',
+        );
+
+        expect(validator._careWorkForcePathwayCategory).to.equal(null);
+      });
+    });
+  });
+
+  describe('_validateCwpNominatedIndividual()', () => {
+    it('should accept CWPNOMIND when category is Senior leadership', () => {
+      const worker = buildWorkerCsv({
+        overrides: {
+          STATUS: 'NEW',
+          MAINJOBROLE: '8',
+          CWPCATEGORY: '7',
+          CWPNOMIND: '1',
+        },
+      });
+
+      const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+      validator.validate();
+      validator.transform();
+
+      const nominatedWarnings = validator._validationErrors.filter((error) => error.column === 'CWPNOMIND');
+
+      expect(nominatedWarnings).to.have.lengthOf(0);
+      expect(validator._cwpNominatedIndividual).to.equal(true);
+    });
+
+    it('should warn when CWPNOMIND is invalid for Senior leadership', () => {
+      const worker = buildWorkerCsv({
+        overrides: {
+          STATUS: 'NEW',
+          MAINJOBROLE: '8',
+          CWPCATEGORY: '7',
+          CWPNOMIND: '2',
+        },
+      });
+
+      const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+      validator.validate();
+      validator.transform();
+
+      const nominatedWarnings = validator._validationErrors.filter((error) => error.column === 'CWPNOMIND');
+
+      expect(nominatedWarnings).to.have.lengthOf(1);
+      expect(nominatedWarnings[0].warning).to.equal(
+        'The code you have entered for CWPNOMIND is incorrect and will be ignored',
+      );
+      expect(validator._cwpNominatedIndividual).to.not.equal(true);
+    });
+
+    it('should warn when CWPNOMIND is provided for a non-Senior leadership category', () => {
+      const worker = buildWorkerCsv({
+        overrides: {
+          STATUS: 'NEW',
+          MAINJOBROLE: '8',
+          CWPCATEGORY: '2',
+          CWPNOMIND: '1',
+        },
+      });
+
+      const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+      validator.validate();
+      validator.transform();
+
+      const nominatedWarnings = validator._validationErrors.filter((error) => error.column === 'CWPNOMIND');
+
+      expect(nominatedWarnings).to.have.lengthOf(1);
+      expect(nominatedWarnings[0].warning).to.equal(
+        'The code you have entered for CWPNOMIND will be ignored as the chosen CWPCATEGORY cannot be a nominated individual',
+      );
+      expect(validator._cwpNominatedIndividual).to.not.equal(true);
+    });
+  });
+
+  describe('CWP excluded main job roles', () => {
+    it('should warn for both CWP fields when MAINJOBROLE is excluded', () => {
+      const worker = buildWorkerCsv({
+        overrides: {
+          STATUS: 'NEW',
+          MAINJOBROLE: '16',
+          CWPCATEGORY: '7',
+          CWPNOMIND: '1',
+        },
+      });
+
+      const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+      validator.validate();
+      validator.transform();
+
+      const cwpWarnings = validator._validationErrors.filter((error) =>
+        ['CWPCATEGORY', 'CWPNOMIND'].includes(error.column),
+      );
+
+      expect(cwpWarnings).to.have.lengthOf(2);
+
+      expect(cwpWarnings.map((error) => error.warning)).to.include(
+        'The code you have entered for CWPCATEGORY will be ignored as your MAINJOBROLE is excluded',
+      );
+
+      expect(cwpWarnings.map((error) => error.warning)).to.include(
+        'The code you have entered for CWPNOMIND will be ignored as your MAINJOBROLE is excluded',
+      );
+
+      expect(validator._careWorkForcePathwayCategory).to.equal(null);
+      expect(validator._cwpNominatedIndividual).to.not.equal(true);
     });
   });
 });

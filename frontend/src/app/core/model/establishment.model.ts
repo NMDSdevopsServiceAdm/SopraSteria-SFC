@@ -195,6 +195,8 @@ export interface Establishment {
   leaversSavedAt?: string;
   lastStaffRecordMessageDismissedAt?: Date;
   nursesQuestionsMiniFlowViewed?: boolean;
+  cwpRoleCategoriesBannerViewed?: boolean;
+  cwpRoleCategoriesNewPillLinkVisited?: boolean;
 }
 export interface UpdateJobsRequest {
   leavers?: Leaver[] | string;
@@ -295,7 +297,7 @@ export const StaffSummarySortByParamMap = {
 } as const;
 
 export type SortByKey = keyof typeof StaffSummarySortByParamMap;
-export type SortByParam = typeof StaffSummarySortByParamMap[SortByKey];
+export type SortByParam = (typeof StaffSummarySortByParamMap)[SortByKey];
 
 export enum SortStaffOptions {
   '0_asc' = 'Staff name (A to Z)',
@@ -366,4 +368,13 @@ export enum FilterTrainingAndQualsOptions {
   '0_showall' = 'Show all',
   '1_expired' = 'Expired',
   '2_expires_soon' = 'Expires soon',
+}
+
+export enum SortStaffOptionsForCWPWorkerSummary {
+  'staffNameAsc' = 'Staff name (A to Z)',
+  'staffNameDesc' = 'Staff name (Z to A)',
+  'cwpRoleAsc' = 'CWP role category (A to Z)',
+  'cwpRoleDesc' = 'CWP role category (Z to A)',
+  'jobRoleAsc' = 'Job role (A to Z)',
+  'jobRoleDesc' = 'Job role (Z to A)',
 }

@@ -18,9 +18,9 @@ export class RequireCWPAnswerForSomeWorkersGuard implements CanActivate {
   canActivate: CanActivateFn = async (route, _state) => {
     const establishmentUid = this.establishmentService.establishment?.uid ?? route.paramMap.get('establishmentuid');
     const response = await this.careWorkforcePathwayService
-      .getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentUid)
+      .countWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentUid)
       .toPromise();
-    const numberOfWorkers = response?.noOfWorkersWhoRequireAnswers ?? 0;
+    const numberOfWorkers = response?.workerCount ?? 0;
 
     if (numberOfWorkers > 0) {
       return true;

@@ -1,0 +1,22 @@
+@let cwpRoleCategory = careWorkforcePathwayRoleCategory();
+@if (!cwpRoleCategory) {
+  -
+} @else {
+  @let title = cwpRoleCategory.title;
+  @let isNominatedIndividual = cwpRoleCategory.isNominatedIndividual;
+  @switch (title) {
+    @case ('I do not know') {
+      Not known
+    }
+    @default {
+      @if (isNominatedIndividual) {
+        <ul class="govuk-list govuk-!-margin-bottom-0">
+          <li>{{ title }}</li>
+          <li class="govuk-!-margin-bottom-0">Nominated individual</li>
+        </ul>
+      } @else {
+        {{ title }}
+      }
+    }
+  }
+}

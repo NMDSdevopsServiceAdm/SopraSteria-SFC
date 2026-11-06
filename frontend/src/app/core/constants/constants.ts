@@ -37,3 +37,4 @@ export const AnnualSalaryLimitsForSeniorManagement = {
 };
 
 export const SeniorManagementJobId = 26;
+export const CWPRoleCategoryNewtoCareId = 1;

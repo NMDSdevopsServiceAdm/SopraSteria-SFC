@@ -21,6 +21,7 @@ export const runTestsForDHAHomeTabFlag = (mockEstablishmentData) => {
     before(() => {
       cy.archiveAllWorkersInWorkplace(establishmentId);
       cy.setWorkplaceMainService(establishmentId, mainServiceThatCanDoDHA.id);
+      cy.resetCWPRoleCategoriesBannerForWorkplace(establishmentId, true);
       cy.resetWorkplaceDHAAnswers(establishmentId);
       cy.setWorkplaceDHAAnswers(establishmentId, { staffDoDelegatedHealthcareActivities: 'Yes' });
     });

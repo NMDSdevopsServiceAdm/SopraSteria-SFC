@@ -37,3 +37,18 @@ exports.JOB_ROLES = [
   { ASC: 38, BUDI: 51 },
   { ASC: 39, BUDI: 52 },
 ];
+const models = require('../server/models/index');
+
+const build_job_role_cwp_exclusion_mappings = async () => {
+  const jobs = await models.job.findAll({
+    attributes: ['id', 'excludedFromCareWorkforcePathway'],
+    raw: true,
+  });
+
+  return jobs.map((job) => ({
+    ASC: job.id,
+    excludedFromCareWorkforcePathway: job.excludedFromCareWorkforcePathway,
+  }));
+};
+
+exports.build_job_role_cwp_exclusion_mappings = build_job_role_cwp_exclusion_mappings;

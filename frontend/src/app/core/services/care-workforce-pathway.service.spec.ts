@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { CareWorkforcePathwayService } from './care-workforce-pathway.service';
 import { environment } from 'src/environments/environment';
 import { provideHttpClient } from '@angular/common/http';
+import dayjs from 'dayjs';
 
 describe('CareWorkforcePathwayService', () => {
   let service: CareWorkforcePathwayService;
@@ -38,7 +39,7 @@ describe('CareWorkforcePathwayService', () => {
   });
 
   it('should call the /api/${establishmentId}/careWorkforcePathway/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer endpoint', () => {
-    service.getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentId).subscribe();
+    service.countWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentId).subscribe();
 
     const req = http.expectOne(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer`,
@@ -94,6 +95,17 @@ describe('CareWorkforcePathwayService', () => {
         const actual = service.isAwareOfCareWorkforcePathway(inputValue);
         expect(actual).toEqual(expected);
       });
+    });
+  });
+
+  describe('getWorkersWhoMeetNewToCareCriteria', () => {
+    const endpoint = '/careWorkforcePathway/workersWhoMeetNewToCareCriteria';
+
+    it('should call the expected endpoint', () => {
+      service.getWorkersWhoMeetNewToCareCriteria(establishmentId).subscribe();
+
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}${endpoint}`);
+      expect(req.request.method).toBe('GET');
     });
   });
 });

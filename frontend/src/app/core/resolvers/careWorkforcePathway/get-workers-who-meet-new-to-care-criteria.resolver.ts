@@ -3,11 +3,10 @@ import { ActivatedRouteSnapshot } from '@angular/router';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, of } from 'rxjs';
 
 @Injectable()
-export class GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver {
+export class GetWorkersWhoMeetNewToCareCriteriaResolver {
   constructor(
     private permissionsService: PermissionsService,
     private careWorkforcePathwayService: CareWorkforcePathwayService,
@@ -19,11 +18,11 @@ export class GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver {
       ? route.paramMap.get('establishmentuid')
       : this.establishmentService.establishmentId;
 
-    if (!this.permissionsService.can(workplaceUid, 'canViewWorker')) return of(null);
+    if (!this.permissionsService.can(workplaceUid, 'canEditWorker')) return of([]);
 
-    return this.careWorkforcePathwayService.getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer(workplaceUid).pipe(
+    return this.careWorkforcePathwayService.getWorkersWhoMeetNewToCareCriteria(workplaceUid).pipe(
       catchError(() => {
-        return of(null);
+        return of([]);
       }),
     );
   }

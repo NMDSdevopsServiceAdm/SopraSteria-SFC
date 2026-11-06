@@ -4,6 +4,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { UpdateBannerProps } from '@core/model/update-banner.model';
 import { Worker } from '@core/model/worker.model';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { TabsService } from '@core/services/tabs.service';
@@ -37,7 +38,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   @Input() workplacesCount: number;
   @Input() isParentSubsidiaryView: boolean;
   @Input() noOfWorkersWhoRequireInternationalRecruitment: number;
-  @Input() noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
+  @Input() numberOfStaffIncludedInCWPRoleCategories: number;
   @Input() noOfWorkersWithDelegatedHealthcareUnanswered: number;
   @Input() workplacesNeedAttention: boolean;
   @Input() showCheckCqcDetails: boolean;
@@ -87,6 +88,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private router: Router,
     private payAndPensionService: PayAndPensionService,
+    private careWorkforcePathwayService: CareWorkforcePathwayService,
   ) {}
 
   ngOnInit(): void {
@@ -420,6 +422,13 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     this.updateSingleEstablishmentField(nursesQuestionData);
   }
 
+  private setCWPRoleCategoriesBannerViewed(): void {
+    const cwpRoleCategoriesBannerViewedData = {
+      property: 'cwpRoleCategoriesBannerViewed',
+      value: true,
+    };
+    this.updateSingleEstablishmentField(cwpRoleCategoriesBannerViewedData);
+  }
   public navigateToYourOtherWorkplaces(event: Event, yourOtherWorkplacesSortValue: string) {
     event.preventDefault();
     localStorage.setItem('yourOtherWorkplacesSortValue', yourOtherWorkplacesSortValue);
@@ -427,12 +436,9 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   }
 
   public setupUpdateBanner() {
+    this.setupUpdateBannerForCWPRoleCategories();
     this.setupUpdateBannerForPayAndPensionWorkplaceQuestions();
     this.setupUpdateBannerForCWPWorkplaceAwareness();
-
-    // Blue update banner for Care workforce pathway worker question is disabled temporarily, as CWP roles category update is planned ahead
-    // this.setupUpdateBannerForCWPWorkerQuestion();
-
     this.setupUpdateBannerForDHAWorkplaceQuestion();
     this.setupUpdateBannerForDHAWorkerQuestion();
     this.setupUpdateBannerForNursesQuestions();
@@ -515,7 +521,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
     if (!CWPAwarenessQuestionViewed && !careWorkforcePathwayWorkplaceAwareness && this.canEditEstablishment) {
       this.updateBanner.set({
-        content: 'How aware of the care workforce pathway is your workplace?',
+        content: 'How aware of the Care Workforce Pathway is your workplace?',
         linkText: 'Answer questions',
         linkAriaDescription: ' about How aware of the care workforce pathway is your workplace',
         linkTo: this.establishmentService.buildPathForWorkplaceSummary(
@@ -530,18 +536,21 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  private setupUpdateBannerForCWPWorkerQuestion() {
+  private setupUpdateBannerForCWPRoleCategories() {
     if (this.updateBanner()) {
       return;
     }
-    const showBanner = this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0 && this.canEditWorker;
-
-    if (showBanner) {
+    const hasEligibleWorkers = this.numberOfStaffIncludedInCWPRoleCategories > 0;
+    if (!this.workplace.cwpRoleCategoriesBannerViewed && this.canEditWorker && hasEligibleWorkers) {
       this.updateBanner.set({
-        content: 'Where are your staff on the care workforce pathway?',
-        linkText: 'Answer questions',
-        linkAriaDescription: ' about Where are your staff on the care workforce pathway',
+        content: 'The full list of Care Workforce Pathway role categories is now available.',
+        linkText: 'Review records',
+        linkAriaDescription: 'Review care workforce pathway role categories',
         linkTo: ['/workplace', this.workplace.uid, 'staff-record', 'care-workforce-pathway-workers-summary'],
+        onLinkClicked: () => {
+          this.setCWPRoleCategoriesBannerViewed();
+          this.careWorkforcePathwayService.startWorkerSummaryJourney('home');
+        },
       });
     }
   }
