@@ -1101,6 +1101,11 @@ module.exports = function (sequelize, DataTypes) {
         default: 'Online',
         field: '"DataSource"',
       },
+      adminOverrides: {
+        type: DataTypes.JSONB,
+        allowNull: true,
+        field: 'AdminOverrides',
+      },
     },
     {
       scopes: {
@@ -1663,6 +1668,19 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     return allNurses;
+  };
+
+  Worker.prototype.updateWorkerWithAdminOverrides = async function (sequelizeChanges, workerClassChanges) {
+    Object.entries(sequelizeChanges).forEach(([field, updatedValue]) => {
+      this[field] = updatedValue;
+      this.changed(field, true);
+    });
+
+    const updatedAdminOverrides = { ...(this.adminOverrides ?? {}), ...workerClassChanges };
+    this.adminOverrides = updatedAdminOverrides;
+
+    await this.save();
+    this.update(sequelizeChanges);
   };
 
   Worker.addHook('beforeSave', 'unsetDHAAnswerOnJobRoleChange', unsetDHAAnswerOnJobRoleChange);
