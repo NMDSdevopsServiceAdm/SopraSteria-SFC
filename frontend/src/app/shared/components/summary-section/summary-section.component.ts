@@ -309,7 +309,8 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     }
 
     if (this.trainingCounts?.totalRecords === 0 && this.trainingCounts?.totalTraining == 0) {
-      this.sections[2].link = false;
+      this.sections[2].orangeFlag = false;
+      this.sections[2].showMessageAsText = true;
       this.sections[2].message = 'Manage your staff training and qualifications';
       return;
     }
