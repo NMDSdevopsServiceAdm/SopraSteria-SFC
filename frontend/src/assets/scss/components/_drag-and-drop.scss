@@ -1,14 +1,22 @@
-.govuk-drag-and-drop {
-  border: none !important;
-  border-radius: 0px;
+ngx-dropzone.govuk-drag-and-drop {
+  border: 2px solid transparent;
+  border-radius: 5px;
   outline: 3px dashed #0b0c0c;
   padding: 0px 40px;
-  transition: outline-offset 0.1s ease-in-out, background-color 0.1s linear;
-}
 
-.ngx-dz-hovered {
-  background-color: #b1b4b6;
-  outline-color: #6f777b;
+  &.ngx-dz-hovered {
+    border: 2px solid transparent;
+    outline: 3px solid #0b0c0c;
+    background-color: #f3f3f3;
+  }
+
+  &:focus-within {
+    border: 2px solid #0b0c0c;
+    outline: 3px solid;
+    outline-color: #ffd000;
+    background-color: #f3f3f3;
+    box-shadow: inset 0 0 0 2px;
+  }
 }
 
 .govuk-drag-and-drop span {
