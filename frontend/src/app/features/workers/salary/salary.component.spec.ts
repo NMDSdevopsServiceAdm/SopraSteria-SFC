@@ -1,10 +1,11 @@
-import { provideHttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { AuthService } from '@core/services/auth.service';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithOverrides, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -12,40 +13,47 @@ import userEvent from '@testing-library/user-event';
 import { SalaryComponent } from './salary.component';
 
 describe('SalaryComponent', () => {
-  async function setup(insideFlow = true) {
-    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId, queryByText } = await render(
-      SalaryComponent,
-      {
-        imports: [SharedModule, RouterModule, ReactiveFormsModule],
-        providers: [
-          UntypedFormBuilder,
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              parent: {
-                snapshot: {
-                  data: {
-                    establishment: { uid: 'mocked-uid' },
-                  },
-                  url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
-                },
-              },
+  async function setup(overrides: any = {}) {
+    const mockWorker = { annualHourlyPay: null };
+
+    const insideFlow = overrides?.insideFlow ?? true;
+    const isAdmin = overrides?.isAdmin ?? false;
+
+    const setupTools = await render(SalaryComponent, {
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
+      providers: [
+        UntypedFormBuilder,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            parent: {
               snapshot: {
-                params: {},
+                data: {
+                  establishment: { uid: 'mocked-uid' },
+                },
+                url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
               },
             },
+            snapshot: {
+              params: {},
+            },
           },
-          {
-            provide: WorkerService,
-            useClass: MockWorkerServiceWithUpdateWorker,
-          },
-          provideHttpClient(),
-          provideHttpClientTesting(),
-        ],
-      },
-    );
+        },
+        {
+          provide: WorkerService,
+          useFactory: MockWorkerServiceWithOverrides.factory({ worker: mockWorker }),
+          deps: [HttpClient],
+        },
+        {
+          provide: AuthService,
+          useValue: { isAdmin },
+        },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+    });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -53,21 +61,18 @@ describe('SalaryComponent', () => {
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const workerServiceSpy = spyOn(workerService, 'updateWorker').and.callThrough();
+    const updateWorkerAsAdminSpy = spyOn(workerService, 'updateWorkerAsAdmin').and.callThrough();
+
     const submitSpy = spyOn(component, 'setSubmitAction').and.callThrough();
 
     return {
+      ...setupTools,
       component,
-      fixture,
       router,
-      getByText,
-      getAllByText,
-      getByLabelText,
-      getByTestId,
-      queryByTestId,
       submitSpy,
       routerSpy,
       workerServiceSpy,
-      queryByText,
+      updateWorkerAsAdminSpy,
     };
   }
 
@@ -84,7 +89,7 @@ describe('SalaryComponent', () => {
     });
 
     it('should not render the progress bar when outside the flow', async () => {
-      const { queryByTestId } = await setup(false);
+      const { queryByTestId } = await setup({ insideFlow: false });
 
       expect(queryByTestId('progress-bar')).toBeFalsy();
     });
@@ -189,16 +194,16 @@ describe('SalaryComponent', () => {
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if outside the flow`, async () => {
-      const { getByText } = await setup(false);
+      const { getByText } = await setup({ insideFlow: false });
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
 
     it('should call submit data and return to the staff record summary when Annual salary is selected, in-range annual salary is entered and save and return is clicked', async () => {
-      const { fixture, getByLabelText, component, getByText, submitSpy, routerSpy, workerServiceSpy } = await setup(
-        false,
-      );
+      const { fixture, getByLabelText, component, getByText, submitSpy, routerSpy, workerServiceSpy } = await setup({
+        insideFlow: false,
+      });
 
       const form = component.form;
       form.controls.terms.setValue('');
@@ -226,7 +231,7 @@ describe('SalaryComponent', () => {
     });
 
     it('return to the staff record summary when cancel is clicked', async () => {
-      const { component, getByText, submitSpy, routerSpy, workerServiceSpy } = await setup(false);
+      const { component, getByText, submitSpy, routerSpy, workerServiceSpy } = await setup({ insideFlow: false });
 
       userEvent.click(getByText('Cancel'));
       expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: false });
@@ -242,7 +247,7 @@ describe('SalaryComponent', () => {
 
     it('should call submit data and return to the funding staff record summary when Annual salary is selected, in-range annual salary is entered and save and return is clicked in funding version of page', async () => {
       const { fixture, router, getByLabelText, component, getByText, submitSpy, routerSpy, workerServiceSpy } =
-        await setup(false);
+        await setup({ insideFlow: false });
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
@@ -268,7 +273,9 @@ describe('SalaryComponent', () => {
     });
 
     it('return to the funding staff record summary when cancel is clicked in funding version of page', async () => {
-      const { component, getByText, submitSpy, routerSpy, workerServiceSpy, fixture, router } = await setup(false);
+      const { component, getByText, submitSpy, routerSpy, workerServiceSpy, fixture, router } = await setup({
+        insideFlow: false,
+      });
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
@@ -283,98 +290,109 @@ describe('SalaryComponent', () => {
 
   describe('error messages', () => {
     it('returns an error if Hourly is selected and no hourly rate is entered', async () => {
-      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup(false);
-      const form = component.form;
-      form.controls.terms.setValue('');
-      form.controls.hourlyRate.setValue('');
-      form.controls.annualRate.setValue('');
-      fixture.detectChanges();
+      const { getByText, getAllByText, getByLabelText, workerServiceSpy } = await setup({ insideFlow: false });
+
       fireEvent.click(getByLabelText('Hourly'));
-      fixture.detectChanges();
       fireEvent.click(getByText('Save and return'));
-      fixture.detectChanges();
+
       expect(getAllByText('Enter their standard hourly rate').length).toEqual(2);
+      expect(workerServiceSpy).not.toHaveBeenCalled();
     });
 
     it('returns an error if Hourly is selected and an out of range hourly salary is entered', async () => {
-      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup(false);
+      const { getByText, getAllByText, getByLabelText, queryByText, workerServiceSpy } = await setup({
+        insideFlow: false,
+      });
 
-      const form = component.form;
-      form.controls.terms.setValue('');
-      form.controls.hourlyRate.setValue('400');
-      form.controls.annualRate.setValue('');
+      userEvent.click(getByLabelText('Hourly'));
+      userEvent.type(getByLabelText('Standard hourly rate'), '400');
+      userEvent.click(getByText('Save and return'));
 
-      fixture.detectChanges();
-      fireEvent.click(getByLabelText('Hourly'));
-      fixture.detectChanges();
-      fireEvent.click(getByText('Save and return'));
-      fixture.detectChanges();
+      expect(queryByText('There is a problem')).toBeTruthy();
       expect(getAllByText('Standard hourly rate must be between £2.50 and £200.00').length).toEqual(2);
+      expect(workerServiceSpy).not.toHaveBeenCalled();
+    });
+
+    it('should skip the hourly rate validation if user is admin', async () => {
+      const { getByText, queryByText, getByLabelText, workerServiceSpy, updateWorkerAsAdminSpy } = await setup({
+        insideFlow: false,
+        isAdmin: true,
+      });
+
+      userEvent.click(getByLabelText('Hourly'));
+      userEvent.type(getByLabelText('Standard hourly rate'), '400');
+      userEvent.click(getByText('Save and return'));
+
+      expect(queryByText('There is a problem')).toBeFalsy();
+      expect(workerServiceSpy).not.toHaveBeenCalled();
+      expect(updateWorkerAsAdminSpy).toHaveBeenCalled();
     });
 
     it('returns an error if Hourly is selected and more than 2 decimal places are entered', async () => {
-      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup(false);
+      const { getByText, getAllByText, getByLabelText, workerServiceSpy } = await setup({ insideFlow: false });
 
-      const form = component.form;
-      form.controls.terms.setValue('');
-      form.controls.hourlyRate.setValue('4.444');
-      form.controls.annualRate.setValue('');
+      userEvent.click(getByLabelText('Hourly'));
+      userEvent.type(getByLabelText('Standard hourly rate'), '4.444');
+      userEvent.click(getByText('Save and return'));
 
-      fixture.detectChanges();
-      fireEvent.click(getByLabelText('Hourly'));
-      fixture.detectChanges();
-      fireEvent.click(getByText('Save and return'));
-      fixture.detectChanges();
       expect(
         getAllByText('Standard hourly rate can only have 1 or 2 digits after the decimal point when you include pence')
           .length,
       ).toEqual(2);
+      expect(workerServiceSpy).not.toHaveBeenCalled();
     });
 
     it('returns an error if Annual salary is selected and no Annual salary is entered', async () => {
-      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup(false);
-      const form = component.form;
-      form.controls.terms.setValue('');
-      form.controls.hourlyRate.setValue('');
-      form.controls.annualRate.setValue('');
-      fixture.detectChanges();
-      fireEvent.click(getByLabelText('Annual salary'));
-      fixture.detectChanges();
-      fireEvent.click(getByText('Save and return'));
-      fixture.detectChanges();
+      const { getByText, getAllByText, getByLabelText, workerServiceSpy } = await setup({ insideFlow: false });
+
+      userEvent.click(getByLabelText('Annual salary'));
+      userEvent.click(getByText('Save and return'));
+
       expect(getAllByText('Enter their standard annual salary').length).toEqual(2);
+      expect(workerServiceSpy).not.toHaveBeenCalled();
     });
 
     it('returns an error if Annual salary is selected and an out of range annual salary is entered when job role is senior management', async () => {
-      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup(false);
-      const form = component.form;
+      const { component, getByText, getAllByText, getByLabelText, workerServiceSpy } = await setup({
+        insideFlow: false,
+      });
+
       component.worker.mainJob.jobId = 26;
       component.initiated = false;
       component.ngOnInit();
 
-      form.controls.terms.setValue('');
-      form.controls.hourlyRate.setValue('');
-      form.controls.annualRate.setValue('5000000');
-      fixture.detectChanges();
-      fireEvent.click(getByLabelText('Annual salary'));
-      fixture.detectChanges();
-      fireEvent.click(getByText('Save and return'));
-      fixture.detectChanges();
+      userEvent.click(getByLabelText('Annual salary'));
+      userEvent.type(getByLabelText('Standard annual salary'), '5000000');
+      userEvent.click(getByText('Save and return'));
+
       expect(getAllByText('Standard annual salary must be between £500 and £250,000').length).toEqual(2);
+      expect(workerServiceSpy).not.toHaveBeenCalled();
     });
 
     it('returns an error if Annual salary is selected and a decimal number is entered', async () => {
-      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup();
-      const form = component.form;
-      form.controls.terms.setValue('');
-      form.controls.hourlyRate.setValue('');
-      form.controls.annualRate.setValue('50000.50');
-      fixture.detectChanges();
-      fireEvent.click(getByLabelText('Annual salary'));
-      fixture.detectChanges();
-      fireEvent.click(getByText('Save and continue'));
-      fixture.detectChanges();
+      const { getByText, getAllByText, getByLabelText, workerServiceSpy } = await setup();
+
+      userEvent.click(getByLabelText('Annual salary'));
+      userEvent.type(getByLabelText('Standard annual salary'), '50000.50');
+      userEvent.click(getByText('Save and continue'));
+
       expect(getAllByText('Standard annual salary must not include pence').length).toEqual(2);
+      expect(workerServiceSpy).not.toHaveBeenCalled();
+    });
+
+    it('should allow an annual salary limit over the limit if user is admin', async () => {
+      const { getByText, queryByText, getByLabelText, workerServiceSpy, updateWorkerAsAdminSpy } = await setup({
+        insideFlow: false,
+        isAdmin: true,
+      });
+
+      userEvent.click(getByLabelText('Annual salary'));
+      userEvent.type(getByLabelText('Standard annual salary'), '9999999');
+      userEvent.click(getByText('Save and return'));
+
+      expect(queryByText('There is a problem')).toBeFalsy();
+      expect(workerServiceSpy).not.toHaveBeenCalled();
+      expect(updateWorkerAsAdminSpy).toHaveBeenCalled();
     });
   });
 });

@@ -116,7 +116,9 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   protected init() {}
   protected setupFormErrorsMap() {}
   protected setupServerErrorsMap() {}
-  protected generateUpdateProps() {}
+  protected generateUpdateProps(): null | Record<string, any> {
+    throw new Error('To be implemented by children component');
+  }
   protected onSuccess() {}
   protected addErrorLinkFunctionality(): void {}
   protected addAlert(): void {}
@@ -202,13 +204,17 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         ),
       );
     } else {
-      this.subscriptions.add(
-        this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
-          (data) => this._onSuccess(data),
-          (error) => this.onError(error),
-        ),
-      );
+      this._updateWorker(this.worker.uid, props);
     }
+  }
+
+  _updateWorker(workerUid: string, props: Record<string, any>): void {
+    this.subscriptions.add(
+      this.workerService.updateWorker(this.workplace.uid, workerUid, props).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
+    );
   }
 
   _onSuccess(data) {

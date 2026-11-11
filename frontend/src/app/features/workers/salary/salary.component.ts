@@ -16,6 +16,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-salary',
@@ -26,9 +27,8 @@ import { QuestionComponent } from '../question/question.component';
 export class SalaryComponent extends QuestionComponent {
   public hourly = HourlyPayRateLimits;
   public annually: any;
-  public intPattern = INT_PATTERN.toString();
-  public salaryPattern = SALARY_PATTERN.toString();
   public section = 'Employment details';
+  public isAdmin = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -39,11 +39,9 @@ export class SalaryComponent extends QuestionComponent {
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
     private decimalPipe: DecimalPipe,
+    private authService: AuthService,
   ) {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
-
-    this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
-    this.salaryPattern = this.salaryPattern.substring(1, this.salaryPattern.length - 1);
 
     this.form = this.formBuilder.group({
       terms: null,
@@ -55,6 +53,13 @@ export class SalaryComponent extends QuestionComponent {
   init() {
     this.annually =
       this.worker.mainJob.jobId === SeniorManagementJobId ? AnnualSalaryLimitsForSeniorManagement : AnnualSalaryLimits;
+
+    this.isAdmin = this.authService.isAdmin;
+    if (this.isAdmin) {
+      this.hourly = { min: 0, max: 99999.99, asString: { min: '£0.00', max: '£99999.99' } };
+      this.annually = { min: 0, max: 9999999, asString: { min: '£0.00', max: '£9999999' } };
+    }
+
     this.setValidators();
     this.setAnnualHourlyPay();
     this.next = this.getRoutePath('care-certificate');
@@ -77,14 +82,14 @@ export class SalaryComponent extends QuestionComponent {
             Validators.required,
             Validators.min(this.hourly.min),
             Validators.max(this.hourly.max),
-            Validators.pattern(this.salaryPattern),
+            Validators.pattern(SALARY_PATTERN),
           ]);
         } else if (value === 'Annually') {
           annualRate.setValidators([
             Validators.required,
             Validators.min(this.annually.min),
             Validators.max(this.annually.max),
-            Validators.pattern(this.intPattern),
+            Validators.pattern(INT_PATTERN),
           ]);
         }
 
@@ -185,6 +190,24 @@ export class SalaryComponent extends QuestionComponent {
         rate,
       },
     };
+  }
+
+  _updateWorker(workerUid: string, props: Record<string, any>) {
+    if (this.isAdmin) {
+      this._updateWorkerAsAdmin(workerUid, props);
+      return;
+    } else {
+      super._updateWorker(workerUid, props);
+    }
+  }
+
+  _updateWorkerAsAdmin(workerUid: string, props: Record<string, any>) {
+    this.subscriptions.add(
+      this.workerService.updateWorkerAsAdmin(this.workplace.uid, workerUid, props).subscribe({
+        next: (data) => this._onSuccess(data),
+        error: (error) => this.onError(error),
+      }),
+    );
   }
 
   protected addErrorLinkFunctionality(): void {

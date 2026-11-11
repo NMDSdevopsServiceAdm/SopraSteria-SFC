@@ -197,6 +197,13 @@ export class WorkerService {
     );
   }
 
+  updateWorkerAsAdmin(workplaceUid: string, workerId: string, props: Record<string, any>) {
+    return this.http.put<WorkerEditResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/asAdmin`,
+      props,
+    );
+  }
+
   deleteWorker(workplaceUid: string, workerId: string, reason?: any) {
     return this.http.request<any>(
       'delete',
