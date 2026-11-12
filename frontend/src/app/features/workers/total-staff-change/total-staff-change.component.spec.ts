@@ -16,11 +16,14 @@ import { getTestBed } from '@angular/core/testing';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
 import { of } from 'rxjs';
+import { AuthService } from '@core/services/auth.service';
 
 describe('TotalStaffChangeComponent', () => {
   const establishment = establishmentBuilder() as Establishment;
 
   async function setup(overrides: any = {}) {
+    const isAdmin = overrides?.isAdmin ?? false;
+
     const setupTools = await render(TotalStaffChangeComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       declarations: [],
@@ -64,7 +67,13 @@ describe('TotalStaffChangeComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        {
+          provide: AuthService,
+          useValue: { isAdmin },
+        },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;
@@ -72,12 +81,19 @@ describe('TotalStaffChangeComponent', () => {
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const router = injector.inject(Router) as Router;
+
     const updateEstablishmentFieldWithAuditSpy = spyOn(
       establishmentService,
       'updateEstablishmentFieldWithAudit',
     ).and.callFake((_uid, _property, { numberOfStaff }) => {
       return of({ ...establishment, numberOfStaff });
     });
+
+    const updateEstablishmentFieldAsAdmin = spyOn(establishmentService, 'updateEstablishmentFieldAsAdmin').and.callFake(
+      (_uid, { numberOfStaff }) => {
+        return of({ numberOfStaff });
+      },
+    );
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
@@ -86,6 +102,7 @@ describe('TotalStaffChangeComponent', () => {
       component,
       establishmentService,
       updateEstablishmentFieldWithAuditSpy,
+      updateEstablishmentFieldAsAdmin,
       routerSpy,
     };
   }
@@ -135,7 +152,7 @@ describe('TotalStaffChangeComponent', () => {
     });
   });
 
-  it('should call the updateEstablishmentFieldWithAuditSpy endpoint when submitting', async () => {
+  it('should call the updateEstablishmentFieldWithAudit endpoint when submitting', async () => {
     const { component, fixture, updateEstablishmentFieldWithAuditSpy } = await setup({
       numberOfStaff: 5,
     });
@@ -146,6 +163,30 @@ describe('TotalStaffChangeComponent', () => {
     expect(updateEstablishmentFieldWithAuditSpy).toHaveBeenCalledWith(component.workplace.uid, 'NumberOfStaff', {
       numberOfStaff: 10,
     });
+  });
+
+  it('should show an error when the number is > 999', async () => {
+    const { fixture, queryByText, updateEstablishmentFieldWithAuditSpy } = await setup({
+      numberOfStaff: 5,
+    });
+
+    await fillInNumberAndSubmitForm('9999');
+    fixture.detectChanges();
+
+    expect(queryByText('There is a problem')).toBeTruthy();
+    expect(updateEstablishmentFieldWithAuditSpy).not.toHaveBeenCalled();
+  });
+
+  it('should accept an input of > 999 if user is admin', async () => {
+    const { component, fixture, queryByText, updateEstablishmentFieldWithAuditSpy, updateEstablishmentFieldAsAdmin } =
+      await setup({ numberOfStaff: 5, isAdmin: true });
+
+    await fillInNumberAndSubmitForm('9999');
+    fixture.detectChanges();
+
+    expect(queryByText('There is a problem')).toBeFalsy();
+    expect(updateEstablishmentFieldWithAuditSpy).not.toHaveBeenCalled();
+    expect(updateEstablishmentFieldAsAdmin).toHaveBeenCalledWith(component.workplace.uid, { numberOfStaff: 9999 });
   });
 
   it('should update numberOfStaff in establishment service if backend call is successful', async () => {

@@ -4,6 +4,7 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
+import { AuthService } from '@core/services/auth.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -12,9 +13,9 @@ import { VacanciesAndTurnoverService, WorkplaceUpdatePage } from '@core/services
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-update-total-number-of-staff',
-    templateUrl: './update-total-number-of-staff.component.html',
-    standalone: false
+  selector: 'app-update-total-number-of-staff',
+  templateUrl: './update-total-number-of-staff.component.html',
+  standalone: false,
 })
 export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
@@ -25,6 +26,7 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
 
   private workplace: Establishment;
   private subscriptions: Subscription = new Subscription();
+  private isAdmin: boolean = false;
   public min = TotalStaffConstraints.min;
   public max = TotalStaffConstraints.max;
 
@@ -37,10 +39,12 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
     private backLinkService: BackLinkService,
     private errorSummaryService: ErrorSummaryService,
     private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
+    this.isAdmin = this.authService.isAdmin;
 
     this.setupForm();
     this.setupFormError();
@@ -50,7 +54,10 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
   }
 
   private setupForm(): void {
-    this.form = this.totalStaffFormService.createForm(this.formBuilder, true);
+    this.form = this.totalStaffFormService.createForm(this.formBuilder, {
+      updateOnSubmit: true,
+      overrideUpperLimit: this.isAdmin,
+    });
   }
 
   private setBackLink(): void {
@@ -82,11 +89,28 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
 
     const property = 'NumberOfStaff';
     const props = { numberOfStaff: totalStaffNumber };
+
+    if (this.isAdmin) {
+      return this._updateEstablishmentAsAdmin(this.workplace.uid, props);
+    } else {
+      return this._updateEstablishment(this.workplace.uid, property, props);
+    }
+  }
+
+  _updateEstablishment(workplaceUid: string, property: string, props: Record<string, number>) {
     this.subscriptions.add(
-      this.establishmentService.updateEstablishmentFieldWithAudit(this.workplace.uid, property, props).subscribe(
+      this.establishmentService.updateEstablishmentFieldWithAudit(workplaceUid, property, props).subscribe(
         (data) => this.onSuccess(data),
         (error) => this.onError(error),
       ),
+    );
+  }
+
+  _updateEstablishmentAsAdmin(workplaceUid: string, props: Record<string, number>) {
+    this.subscriptions.add(
+      this.establishmentService
+        .updateEstablishmentFieldAsAdmin(workplaceUid, props)
+        .subscribe({ next: (data) => this.onSuccess(data), error: (error) => this.onError(error) }),
     );
   }
 

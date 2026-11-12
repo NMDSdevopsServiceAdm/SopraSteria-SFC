@@ -20,12 +20,21 @@ export const TotalStaffConstraints = { min: 0, max: 999 };
 export class TotalStaffFormService {
   public isParent: boolean;
   public workplace: Establishment;
+  public maxTotalStaff: number = TotalStaffConstraints.max;
 
   constructor(public establishmentService: EstablishmentService) {}
 
-  public createForm(formBuilder: UntypedFormBuilder, updateOnSubmit = false): UntypedFormGroup {
+  public createForm(
+    formBuilder: UntypedFormBuilder,
+    options: CreateFormOptions = { updateOnSubmit: false, overrideUpperLimit: false },
+  ): UntypedFormGroup {
+    const updateOnSubmit = options?.updateOnSubmit ?? false;
+    const overrideUpperLimit = options?.overrideUpperLimit ?? false;
+
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace?.isParent;
+
+    this.maxTotalStaff = overrideUpperLimit ? 9999999 : TotalStaffConstraints.max;
 
     return formBuilder.group(
       {
@@ -35,7 +44,7 @@ export class TotalStaffFormService {
             Validators.required,
             this.nonIntegerValidator(new RegExp('d*[.]d*')),
             Validators.min(TotalStaffConstraints.min),
-            Validators.max(TotalStaffConstraints.max),
+            Validators.max(this.maxTotalStaff),
             Validators.pattern('^[0-9]+$'),
           ],
         ],
@@ -62,15 +71,15 @@ export class TotalStaffFormService {
           },
           {
             name: 'nonInteger',
-            message: `Number of staff must be a whole number between  ${TotalStaffConstraints.min} and ${TotalStaffConstraints.max}`,
+            message: `Number of staff must be a whole number between  ${TotalStaffConstraints.min} and ${this.maxTotalStaff}`,
           },
           {
             name: 'min',
-            message: `Number of staff must be a whole number between  ${TotalStaffConstraints.min} and ${TotalStaffConstraints.max}`,
+            message: `Number of staff must be a whole number between  ${TotalStaffConstraints.min} and ${this.maxTotalStaff}`,
           },
           {
             name: 'max',
-            message: `Number of staff must be a whole number between  ${TotalStaffConstraints.min} and ${TotalStaffConstraints.max}`,
+            message: `Number of staff must be a whole number between  ${TotalStaffConstraints.min} and ${this.maxTotalStaff}`,
           },
           {
             name: 'pattern',
@@ -80,4 +89,9 @@ export class TotalStaffFormService {
       },
     ];
   }
+}
+
+interface CreateFormOptions {
+  updateOnSubmit?: boolean;
+  overrideUpperLimit?: boolean;
 }

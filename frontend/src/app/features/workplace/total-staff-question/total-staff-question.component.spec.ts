@@ -13,7 +13,6 @@ import { JobService } from '@core/services/job.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
-import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { MockJobService } from '@core/test-utils/MockJobService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
@@ -23,6 +22,8 @@ import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { TotalStaffQuestionComponent } from './total-staff-question.component';
+import { of } from 'rxjs';
+import { getTestBed } from '@angular/core/testing';
 
 const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
 
@@ -37,20 +38,16 @@ describe('TotalStaffQuestionComponent', () => {
 
   async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;
+    const isAdmin = overrides?.isAdmin ?? false;
 
     const setupTools = await render(TotalStaffQuestionComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       declarations: [],
-      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         UntypedFormBuilder,
         {
           provide: WindowRef,
           useValue: WindowRef,
-        },
-        {
-          provide: Contracts,
-          useValue: Contracts,
         },
         {
           provide: PermissionsService,
@@ -78,7 +75,7 @@ describe('TotalStaffQuestionComponent', () => {
         },
         {
           provide: AuthService,
-          useValue: MockAuthService,
+          useValue: { isAdmin },
         },
         {
           provide: ActivatedRoute,
@@ -104,9 +101,19 @@ describe('TotalStaffQuestionComponent', () => {
 
     const component = setupTools.fixture.componentInstance;
 
+    const injector = getTestBed();
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const updateEstablishmentFieldAsAdminSpy = spyOn(
+      establishmentService,
+      'updateEstablishmentFieldAsAdmin',
+    ).and.callFake((_uid, { numberOfStaff }) => {
+      return of({ numberOfStaff });
+    });
+
     return {
       ...setupTools,
       component,
+      updateEstablishmentFieldAsAdminSpy,
     };
   }
 
@@ -229,6 +236,23 @@ describe('TotalStaffQuestionComponent', () => {
       expect(form.valid).toBeFalsy();
       expect(errorMsgs).toBeTruthy();
       expect(errorMsgs.length).toEqual(2);
+    });
+
+    it('should allow a number greater than 999 when user is admin', async () => {
+      const { fixture, getByText, getByLabelText, queryByText, updateEstablishmentFieldAsAdminSpy } = await setup({
+        isAdmin: true,
+      });
+      const input = getByLabelText('Number of staff');
+      userEvent.type(input, '9999');
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(queryByText('Number of staff must be a whole number between 0 and 999')).toBeFalsy();
+      expect(queryByText('There is a problem')).toBeFalsy();
+
+      expect(updateEstablishmentFieldAsAdminSpy).toHaveBeenCalledWith('mocked-uid', { numberOfStaff: '9999' });
     });
 
     it('validates input is greater than or equal to 0', async () => {

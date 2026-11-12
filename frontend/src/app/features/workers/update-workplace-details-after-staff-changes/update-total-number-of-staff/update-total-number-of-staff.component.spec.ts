@@ -17,6 +17,7 @@ import lodash from 'lodash';
 import { of, throwError } from 'rxjs';
 
 import { UpdateTotalNumberOfStaffComponent } from './update-total-number-of-staff.component';
+import { AuthService } from '@core/services/auth.service';
 
 describe('UpdateTotalNumberOfStaffComponent', () => {
   const mockEstablishment = establishmentBuilder() as Establishment;
@@ -26,6 +27,7 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
     const numberOfStaff = overrides?.numberOfStaff ?? 10;
     const addToVisitedPagesSpy = jasmine.createSpy('addToVisitedPages');
     const addToSubmittedPagesSpy = jasmine.createSpy('addToSubmittedPages');
+    const isAdmin = overrides?.isAdmin ?? false;
 
     const setupTools = await render(UpdateTotalNumberOfStaffComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -39,6 +41,7 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
               return of({ numberOfStaff });
             },
             updateEstablishmentFieldWithAudit() {},
+            updateEstablishmentFieldAsAdmin() {},
             setState() {},
           },
         },
@@ -55,24 +58,38 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
           }),
         },
         {
+          provide: AuthService,
+          useValue: { isAdmin },
+        },
+        {
           provide: VacanciesAndTurnoverService,
           useFactory: MockVacanciesAndTurnoverService.factory({
             addToVisitedPages: addToVisitedPagesSpy,
             addToSubmittedPages: addToSubmittedPagesSpy,
           }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const router = injector.inject(Router) as Router;
+
     const updateEstablishmentFieldWithAuditSpy = spyOn(
       establishmentService,
       'updateEstablishmentFieldWithAudit',
     ).and.callFake((_uid, _property, { numberOfStaff }) => {
       return of({ ...mockEstablishment, numberOfStaff });
+    });
+
+    const updateEstablishmentFieldAsAdminSpy = spyOn(
+      establishmentService,
+      'updateEstablishmentFieldAsAdmin',
+    ).and.callFake((_uid, { numberOfStaff }) => {
+      return of({ numberOfStaff });
     });
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
@@ -80,6 +97,7 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
       ...setupTools,
       component,
       updateEstablishmentFieldWithAuditSpy,
+      updateEstablishmentFieldAsAdminSpy,
       routerSpy,
       mockEstablishment,
       establishmentService,
@@ -242,6 +260,31 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
 
       expectErrorMessageAppears('Number of staff must be a whole number between 0 and 999');
       expect(updateEstablishmentFieldWithAuditSpy).not.toHaveBeenCalled();
+    });
+
+    it('should reject a number over 999', async () => {
+      const { fixture, updateEstablishmentFieldWithAuditSpy, updateEstablishmentFieldAsAdminSpy } = await setup({
+        isAdmin: false,
+      });
+
+      await fillInNumberAndSubmitForm('9999');
+      fixture.detectChanges();
+
+      expectErrorMessageAppears('Number of staff must be a whole number between 0 and 999');
+      expect(updateEstablishmentFieldWithAuditSpy).not.toHaveBeenCalled();
+      expect(updateEstablishmentFieldAsAdminSpy).not.toHaveBeenCalled();
+    });
+
+    it('should accept a number over 999 when user is admin', async () => {
+      const { fixture, queryByText, updateEstablishmentFieldWithAuditSpy, updateEstablishmentFieldAsAdminSpy } =
+        await setup({ isAdmin: true });
+
+      await fillInNumberAndSubmitForm('9999');
+      fixture.detectChanges();
+
+      expect(queryByText('Number of staff must be a whole number between 0 and 999')).toBeFalsy();
+      expect(updateEstablishmentFieldWithAuditSpy).not.toHaveBeenCalled();
+      expect(updateEstablishmentFieldAsAdminSpy).toHaveBeenCalledWith(mockEstablishment.uid, { numberOfStaff: 9999 });
     });
 
     it('should return to the previous page after updating staff record', async () => {

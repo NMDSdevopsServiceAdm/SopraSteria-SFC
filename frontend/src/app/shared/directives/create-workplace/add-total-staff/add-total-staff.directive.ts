@@ -43,7 +43,7 @@ export class AddTotalStaffDirective implements OnInit, AfterViewInit {
     public totalStaffFormService: TotalStaffFormService,
     public establishmentService: EstablishmentService,
   ) {
-    this.form = totalStaffFormService.createForm(formBuilder, true);
+    this.form = totalStaffFormService.createForm(formBuilder, { updateOnSubmit: true });
   }
 
   public ngOnInit(): void {
