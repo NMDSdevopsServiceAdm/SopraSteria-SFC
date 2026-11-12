@@ -1043,6 +1043,11 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: false,
         field: 'CWPRoleCategoriesNewPillLinkVisited',
       },
+      adminOverrides: {
+        type: DataTypes.JSONB,
+        allowNull: true,
+        field: 'AdminOverrides',
+      },
     },
     {
       defaultScope: {
