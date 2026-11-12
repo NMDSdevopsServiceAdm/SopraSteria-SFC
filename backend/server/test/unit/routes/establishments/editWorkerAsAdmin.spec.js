@@ -67,6 +67,7 @@ describe('editWorkerAsAdmin', () => {
 
   it('should respond with 500 if error occured', async () => {
     worker.updateWorkerWithAdminOverrides.rejects(new Error('some database error'));
+    sinon.stub(console, 'error');
 
     const req = httpMocks.createRequest(request);
     const res = httpMocks.createResponse();

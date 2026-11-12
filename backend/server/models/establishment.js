@@ -3009,6 +3009,19 @@ module.exports = function (sequelize, DataTypes) {
     return !!result;
   };
 
+  Establishment.prototype.updateWithAdminOverrides = async function (sequelizeChanges, establishmentClassChanges) {
+    Object.entries(sequelizeChanges).forEach(([field, updatedValue]) => {
+      this[field] = updatedValue;
+      this.changed(field, true);
+    });
+
+    const updatedAdminOverrides = { ...(this.adminOverrides ?? {}), ...establishmentClassChanges };
+    this.adminOverrides = updatedAdminOverrides;
+
+    await this.save();
+    this.update(sequelizeChanges);
+  };
+
   Establishment.addHook('beforeSave', 'clearDHAWorkerAnswersOnWorkplaceChange', clearDHAWorkerAnswersOnWorkplaceChange);
   Establishment.addHook('beforeSave', 'clearDHAWorkplaceAnswerOnChange', clearDHAWorkplaceAnswerOnChange);
   Establishment.addHook('beforeSave', 'clearDoDHAWorkplaceOnMainServiceChange', clearDoDHAWorkplaceOnMainServiceChange);
