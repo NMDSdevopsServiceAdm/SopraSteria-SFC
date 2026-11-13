@@ -1900,10 +1900,29 @@ class WorkerCsvValidator {
     );
   }
 
+  _salaryMatchAdminOverrides() {
+    const annualHourlyPayFromAdminOverrides = this._currentWorker?.adminOverrides?.annualHourlyPay;
+
+    if (!annualHourlyPayFromAdminOverrides) {
+      return false;
+    }
+
+    const salaryTypeMatch = this._salaryInt === annualHourlyPayFromAdminOverrides?.value;
+    const salaryAmountMatch =
+      parseInt(this._currentLine.SALARY, 10) === parseInt(annualHourlyPayFromAdminOverrides?.rate, 10);
+
+    return salaryTypeMatch && salaryAmountMatch;
+  }
+
   _validateSalary() {
     const salaryIsFilled = this._currentLine.SALARY?.length > 0;
 
     if (!salaryIsFilled) {
+      return true;
+    }
+
+    if (this._currentWorker?.adminOverrides && this._salaryMatchAdminOverrides()) {
+      console.log('LOG: Skip validation for Salary due to admin override');
       return true;
     }
 
@@ -2985,9 +3004,21 @@ class WorkerCsvValidator {
 
     return true;
   }
+
+  _logSessionInfo() {
+    console.log('Start worker validation');
+    if (this._currentWorker) {
+      console.log('Worker UID:', this._currentWorker.uid);
+    } else {
+      console.log('Worker not in database');
+    }
+  }
+
   // returns true on success, false is any attribute of Worker fails
   validate() {
     let status = true;
+
+    this._logSessionInfo();
 
     status = !this._validateLocalId() ? false : status;
     status = !this._validateUniqueWorkerId() ? false : status;

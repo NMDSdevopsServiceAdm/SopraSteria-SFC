@@ -1617,6 +1617,25 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         expect(validator._validationErrors.length).to.equal(1);
       });
 
+      it('should not give an error when the Salary is over £250000 but match the admin override record', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'UPDATE',
+            SALARY: '260000',
+            MAINJOBROLE: '1',
+          },
+        });
+        const currentWorker = { adminOverrides: { annualHourlyPay: { value: 'Annually', rate: 260000 } } };
+
+        const validator = new WorkerCsvValidator(worker, 2, currentWorker, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._validationErrors.length).to.equal(0);
+      });
+
       it(`should give a warning when SalaryInt was "Don't know" and Salary column was filled`, async () => {
         const worker = buildWorkerCsv({
           overrides: {
