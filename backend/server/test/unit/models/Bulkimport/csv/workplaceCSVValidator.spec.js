@@ -2561,6 +2561,58 @@ describe('Bulk Upload - Establishment CSV', () => {
         expect(establishment.validationErrors).to.be.empty;
       });
     });
+
+    describe('_validateTotalPermTemp (number of staff)', () => {
+      it('should show an error if TOTALPERMTEMP is missing', async () => {
+        establishmentRow.TOTALPERMTEMP = '';
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1200,
+            errType: 'TOTAL_PERM_TEMP_ERROR',
+            error: 'TOTALPERMTEMP must be a number from 0 to 999 if this is correct call support on 0113 241 0969',
+            source: '',
+            column: 'TOTALPERMTEMP',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      const invalidValues = ['-10', '9999', 'abc', false, undefined];
+
+      invalidValues.forEach((value) => {
+        it('should show an error if TOTALPERMTEMP is not a valid value', async () => {
+          establishmentRow.TOTALPERMTEMP = value;
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+          expect(establishment.validationErrors).to.deep.equal([
+            {
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              errCode: 1200,
+              errType: 'TOTAL_PERM_TEMP_ERROR',
+              error: 'TOTALPERMTEMP must be a number from 0 to 999 if this is correct call support on 0113 241 0969',
+              source: value,
+              column: 'TOTALPERMTEMP',
+              name: establishmentRow.LOCALESTID,
+            },
+          ]);
+        });
+      });
+
+      it('should not show an error if TOTALPERMTEMP is over 999 but match the admin override record', async () => {
+        const allCurrentEstablishments = [{ key: 'main_workplace', adminOverrides: { numberOfStaff: 9999 } }];
+        establishmentRow.STATUS = 'UPDATE';
+        establishmentRow.LOCALESTID = 'main_workplace';
+        establishmentRow.TOTALPERMTEMP = '9999';
+        const establishment = await generateEstablishmentFromCsv(establishmentRow, 1, allCurrentEstablishments);
+
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+    });
   });
 
   describe('Cross Validations', () => {
