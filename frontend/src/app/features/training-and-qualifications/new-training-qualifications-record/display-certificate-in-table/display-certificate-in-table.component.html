@@ -1,0 +1,45 @@
+@let certificatesCount = certificates()?.length ?? 0;
+@if (certificatesCount === 1) {
+  <span>
+    <a href="#" class="govuk-link govuk-link--no-visited-state" (click)="handleDownload($event)">
+      <img alt="" src="/assets/images/icon-download.svg" class="govuk-util__vertical-align-bottom" /><span
+        class="govuk-!-margin-left-1"
+        >Download</span
+      >
+      <span class="govuk-visually-hidden">the certificate {{ certificates()[0].filename }}</span>
+    </a>
+  </span>
+}
+
+@if (certificatesCount > 1) {
+  @if (canEditWorker()) {
+    <span>
+      <a [routerLink]="linkToRecordPage()" class="govuk-link govuk-link--no-visited-state"> Select a download </a>
+    </span>
+  } @else {
+    <span>
+      <a href="#" class="govuk-link govuk-link--no-visited-state" (click)="handleDownload($event)">
+        <img alt="" src="/assets/images/icon-download.svg" class="govuk-util__vertical-align-bottom" /><span
+          class="govuk-!-margin-left-1"
+          >Download all</span
+        >
+        <span class="govuk-visually-hidden"> certificates</span>
+      </a>
+    </span>
+  }
+}
+
+@if (certificatesCount === 0) {
+  @if (canEditWorker()) {
+    <span>
+      <app-select-upload-file
+        accept=".pdf"
+        buttonText="Upload file"
+        buttonClasses="govuk-!-margin-bottom-0 govuk-!-padding-top-1 govuk-!-padding-bottom-1"
+        (selectFiles)="handleUpload($event)"
+      ></app-select-upload-file>
+    </span>
+  } @else {
+    <span>-</span>
+  }
+}
