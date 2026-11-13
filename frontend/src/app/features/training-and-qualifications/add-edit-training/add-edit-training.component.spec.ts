@@ -472,7 +472,7 @@ describe('AddEditTrainingComponent', () => {
           expect((within(expiryDate).getByLabelText('Month') as HTMLInputElement).value).toEqual('1');
           expect((within(expiryDate).getByLabelText('Year') as HTMLInputElement).value).toEqual('2027');
         });
-        // need to confirm with Jackie
+
         it('should change the expiry date if it is auto filled according the validaty', async () => {
           const mockTrainingRecord = { ...defaultMockTrainingRecord, doesNotExpire: false, expires: '2025-12-03' };
           const { fixture, getInputByRole, getByTestId } = await setup({
