@@ -9,6 +9,7 @@ import userEvent from '@testing-library/user-event';
 
 import { NewTrainingComponent } from './new-training.component';
 import { provideRouter, RouterModule } from '@angular/router';
+import { WorkersModule } from '@features/workers/workers.module';
 
 describe('NewTrainingComponent', async () => {
   const trainingCategories = [
@@ -100,7 +101,7 @@ describe('NewTrainingComponent', async () => {
   async function setup(override: any = {}) {
     const mockTrainingCategories = override?.trainingCategories ?? trainingCategories;
     const { fixture, getByTestId, getByLabelText, queryAllByText } = await render(NewTrainingComponent, {
-      imports: [SharedModule, RouterModule],
+      imports: [SharedModule, RouterModule, WorkersModule],
       providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
       componentProperties: {
         canEditWorker: true,
@@ -498,14 +499,14 @@ describe('NewTrainingComponent', async () => {
       expect(within(trainingRecordWithCertificateRow).getByText('Download')).toBeTruthy();
     });
 
-    it('should not display Download link when training record has one certificate associated with it but user does not have edit permissions', async () => {
+    it('should display Download link when training record has one certificate associated with it but user does not have edit permissions', async () => {
       const { component, fixture, getByTestId } = await setup({ canEditWorker: false });
 
       component.trainingCategories[0].trainingRecords[0].trainingCertificates = singleTrainingCertificate();
       fixture.detectChanges();
 
       const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
-      expect(within(trainingRecordWithCertificateRow).queryByText('Download')).toBeFalsy();
+      expect(within(trainingRecordWithCertificateRow).queryByText('Download')).toBeTruthy();
     });
 
     it('should trigger download file emitter when Download link is clicked', async () => {
@@ -540,7 +541,7 @@ describe('NewTrainingComponent', async () => {
       expect(within(trainingRecordWithCertificateRow).getByText('Select a download')).toBeTruthy();
     });
 
-    it('should not display Select a download link when training record has more than one certificate associated with it but user does not have edit permissions', async () => {
+    it('should display a "Download all" link when training record has more than one certificate associated with it but user does not have edit permissions', async () => {
       const { component, fixture, getByTestId } = await setup({ canEditWorker: false });
 
       component.trainingCategories[0].trainingRecords[0].trainingCertificates = multipleTrainingCertificates();
@@ -548,6 +549,7 @@ describe('NewTrainingComponent', async () => {
 
       const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
       expect(within(trainingRecordWithCertificateRow).queryByText('Select a download')).toBeFalsy();
+      expect(within(trainingRecordWithCertificateRow).queryByText('Download all')).toBeTruthy();
     });
 
     it('should have href of training record on Select a download link', async () => {
@@ -574,7 +576,7 @@ describe('NewTrainingComponent', async () => {
       expect(within(trainingRecordWithCertificateRow).getByText('Upload file')).toBeTruthy();
     });
 
-    it('should not display Upload file button when training record has no certificates associated with it but user does not have edit permissions', async () => {
+    it('should display a "-" when training record has no certificates associated with it but user does not have edit permissions', async () => {
       const { component, fixture, getByTestId } = await setup({ canEditWorker: false });
 
       component.trainingCategories[0].trainingRecords[0].trainingCertificates = [];
@@ -582,6 +584,7 @@ describe('NewTrainingComponent', async () => {
 
       const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
       expect(within(trainingRecordWithCertificateRow).queryByText('Upload file')).toBeFalsy();
+      expect(within(trainingRecordWithCertificateRow).queryByText('-')).toBeTruthy();
     });
 
     it('should trigger the upload file emitter when a file is selected by the Upload file button', async () => {

@@ -9,9 +9,9 @@ import {
 } from '@core/model/qualification.model';
 
 @Component({
-    selector: 'app-new-qualifications',
-    templateUrl: './new-qualifications.component.html',
-    standalone: false
+  selector: 'app-new-qualifications',
+  templateUrl: './new-qualifications.component.html',
+  standalone: false,
 })
 export class NewQualificationsComponent {
   @Input() qualificationsByGroup: QualificationsByGroup;
@@ -23,18 +23,13 @@ export class NewQualificationsComponent {
   @ViewChild('content') public content: ElementRef;
 
   public handleDownloadCertificate(
-    event: Event,
     qualificationGroup: QualificationGroup,
     qualificationRecord: BasicQualificationRecord,
   ) {
-    event.preventDefault();
-
-    const filesToDownload = [
-      {
-        uid: qualificationRecord.qualificationCertificates[0].uid,
-        filename: qualificationRecord.qualificationCertificates[0].filename,
-      },
-    ];
+    const filesToDownload = qualificationRecord.qualificationCertificates.map((certificate) => {
+      const { uid, filename } = certificate;
+      return { uid, filename };
+    });
 
     this.downloadFile.emit({
       recordType: 'qualification',
