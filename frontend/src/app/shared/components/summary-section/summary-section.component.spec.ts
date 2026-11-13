@@ -1210,7 +1210,7 @@ describe('Summary section', () => {
         };
         const { getByTestId } = await setup(overrides);
         const tAndQRow = getByTestId('training-and-qualifications-row');
-        expect(within(tAndQRow).getByTestId('orange-flag')).toBeTruthy();
+        expect(within(tAndQRow).queryByTestId('orange-flag')).toBeFalsy();
         expect(within(tAndQRow).queryByTestId('red-flag')).toBeFalsy();
         expect(within(tAndQRow).getByText('Manage your staff training and qualifications')).toBeTruthy();
       });

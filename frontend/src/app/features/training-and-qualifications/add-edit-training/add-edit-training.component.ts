@@ -225,7 +225,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
     const expiryDateIsEmpty = Object.values(this.expiresDate().internalState).every((input) => input === null);
 
-    if (completedDate && validity && expiryDateIsEmpty) {
+    if (completedDate && validity) {
       const newExpiryDate = DateUtil.expectedExpiryDate(completedDate, validity);
 
       this.form.patchValue({

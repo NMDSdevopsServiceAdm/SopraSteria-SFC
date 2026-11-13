@@ -473,7 +473,7 @@ describe('AddEditTrainingComponent', () => {
           expect((within(expiryDate).getByLabelText('Year') as HTMLInputElement).value).toEqual('2027');
         });
 
-        it('should not change the expiry date if it is already filled', async () => {
+        it('should change the expiry date if it is auto filled according the validaty', async () => {
           const mockTrainingRecord = { ...defaultMockTrainingRecord, doesNotExpire: false, expires: '2025-12-03' };
           const { fixture, getInputByRole, getByTestId } = await setup({
             trainingRecord: mockTrainingRecord,
@@ -482,7 +482,8 @@ describe('AddEditTrainingComponent', () => {
           const validityPeriodInMonth = getInputByRole('textbox', {
             name: /How many months/,
           });
-          userEvent.type(validityPeriodInMonth, '24');
+          await userEvent.clear(validityPeriodInMonth);
+          await userEvent.type(validityPeriodInMonth, '24');
 
           const completedDate = getByTestId('completedDate');
           fillInDate(completedDate, '2025', '01', '08');
@@ -490,9 +491,9 @@ describe('AddEditTrainingComponent', () => {
           fixture.detectChanges();
 
           const expiryDate = getByTestId('expiresDate');
-          expect((within(expiryDate).getByLabelText('Day') as HTMLInputElement).value).toEqual('3');
-          expect((within(expiryDate).getByLabelText('Month') as HTMLInputElement).value).toEqual('12');
-          expect((within(expiryDate).getByLabelText('Year') as HTMLInputElement).value).toEqual('2025');
+          expect((within(expiryDate).getByLabelText('Day') as HTMLInputElement).value).toEqual('7');
+          expect((within(expiryDate).getByLabelText('Month') as HTMLInputElement).value).toEqual('1');
+          expect((within(expiryDate).getByLabelText('Year') as HTMLInputElement).value).toEqual('2027');
         });
       });
 
