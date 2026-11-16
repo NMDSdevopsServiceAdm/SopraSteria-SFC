@@ -99,7 +99,7 @@ import { RegisteredNursesResolver } from '@core/resolvers/registered-nurses.reso
 import { SelectSortByComponent } from '@shared/components/select-sort-by/select-sort-by.component';
 import { CareWorkforcePathwayNewToCareComponent } from './care-workforce-pathway-review-new-to-care/care-workforce-pathway-review-new-to-care.component';
 import { GetWorkersWhoMeetNewToCareCriteriaResolver } from '@core/resolvers/careWorkforcePathway/get-workers-who-meet-new-to-care-criteria.resolver';
-import { DisplayCertificateInTableComponent } from '@features/training-and-qualifications/new-training-qualifications-record/display-certificate/display-certificate.component';
+import { DisplayCertificateInTableComponent } from '@features/training-and-qualifications/new-training-qualifications-record/display-certificate-in-table/display-certificate-in-table.component';
 
 @NgModule({
   imports: [

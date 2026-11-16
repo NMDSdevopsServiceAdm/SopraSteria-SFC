@@ -3,7 +3,7 @@ import { Certificate } from '@core/model/trainingAndQualifications.model';
 
 @Component({
   selector: 'app-display-certificate',
-  templateUrl: './display-certificate.component.html',
+  templateUrl: './display-certificate-in-table.component.html',
   standalone: false,
 })
 export class DisplayCertificateInTableComponent {
