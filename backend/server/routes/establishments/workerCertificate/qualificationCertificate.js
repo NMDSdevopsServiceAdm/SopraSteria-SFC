@@ -71,7 +71,7 @@ const deleteCertificatesEndpoint = async (req, res) => {
 
 router.route('/').post(hasPermission('canEditWorker'), requestUploadUrlEndpoint);
 router.route('/').put(hasPermission('canEditWorker'), confirmUploadEndpoint);
-router.route('/download').post(hasPermission('canEditWorker'), getPresignedUrlForCertificateDownloadEndpoint);
+router.route('/download').post(hasPermission('canViewWorker'), getPresignedUrlForCertificateDownloadEndpoint);
 router.route('/delete').post(hasPermission('canEditWorker'), deleteCertificatesEndpoint);
 
 module.exports = router;

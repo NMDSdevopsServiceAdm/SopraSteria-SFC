@@ -107,8 +107,21 @@ const establishmentIDorUIDIsInvalid = (claim) => isEstablishmentIDNaN(claim) || 
 
 const isEstablishmentIdUID = (req) => uuidV4Regex.test(req.params.id);
 
-const isReadOnlyTryingToNotGET = (roleCheck, req, claim) =>
-  roleCheck && req.method !== 'GET' && claim.role == 'Read' && req.path !== '/benchmarks/usage';
+const specialAllowPathForReadOnlyUser = (path) => {
+  const benchMarksUsagePath = '/benchmarks/usage';
+
+  const uuidRegex = '[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}';
+  const certificateDownloadPath = new RegExp(
+    `/worker/${uuidRegex}/(training|qualification)/${uuidRegex}/certificate/download`,
+    'i',
+  );
+
+  return path === benchMarksUsagePath || certificateDownloadPath.test(path);
+};
+
+const isReadOnlyTryingToNotGET = (roleCheck, req, claim) => {
+  return roleCheck && req.method !== 'GET' && claim.role == 'Read' && !specialAllowPathForReadOnlyUser(req.path);
+};
 
 const subsidaryEstablishmentClaimMismatch = (establishmentMatchesClaim, claim) =>
   !establishmentMatchesClaim && !claim.isParent;
