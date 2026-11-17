@@ -137,6 +137,10 @@
   width: 100%;
 }
 
+.asc-util__width-55-percent {
+  width: 55%;
+}
+
 .asc-util__width-85-percent {
   width: 85%;
 }
@@ -238,4 +242,8 @@ dl.asc__name-value-pair {
 
 .asc-util__break-word-on-overflow {
   overflow-wrap: break-word;
+}
+
+.asc-util__display-none {
+  display: none;
 }

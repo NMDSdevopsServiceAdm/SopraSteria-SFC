@@ -153,6 +153,7 @@ import { SearchInputAutoSuggestComponent } from './components/search-input-auto-
 import { UpdateBannerComponent } from './components/update-banner/update-banner.component';
 import { DisplaySlvDataComponent } from './components/display-slv-data/display-slv-data.component';
 import { DisplayCwpRoleCategoryComponent } from './components/display-cwp-role-category/display-cwp-role-category.component';
+import { NgxDropzoneModule } from 'ngx-dropzone';
 
 @NgModule({
   imports: [
@@ -165,6 +166,7 @@ import { DisplayCwpRoleCategoryComponent } from './components/display-cwp-role-c
     CdkListboxModule,
     AddWorkplaceDetailsPathPipe,
     WorkplaceSummaryPathPipe,
+    NgxDropzoneModule,
   ],
   declarations: [
     AbsoluteNumberPipe,

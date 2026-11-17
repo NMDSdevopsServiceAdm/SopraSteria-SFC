@@ -5,27 +5,26 @@
     <div id="uploadCertificate-hint" class="govuk-hint govuk-!-margin-bottom-4">
       The certificate must be a PDF file that's no larger than 5MB
     </div>
-    <div class="govuk__flex govuk__align-items-center">
+    <div class="govuk-!-margin-bottom-3 asc-util__width-55-percent">
       <app-select-upload-file
         accept=".pdf"
         multiple="true"
         buttonId="uploadCertificate"
-        buttonClasses="govuk-!-margin-bottom-4 govuk-!-margin-right-2"
+        buttonClasses="govuk-!-margin-bottom-4 govuk-!-margin-right-2 govuk-!-padding-left-4 govuk-!-padding-right-4"
         (selectFiles)="onSelectFiles($event)"
         [aria-describedby]="getUploadComponentAriaDescribedBy()"
+        buttonText="Select file"
+        [showDragAndDropZone]="true"
+        [dragAndDropZoneText]="'Drag and drop the certificate here'"
       ></app-select-upload-file>
-      <span
-        id="uploadCertificate-aria-text"
-        class="govuk-body"
-        aria-live="polite"
-        [class.govuk-visually-hidden]="filesToUpload?.length > 0"
-      >
+      <span id="uploadCertificate-aria-text" class="govuk-body govuk-visually-hidden" aria-live="polite">
         {{ filesToUpload?.length > 0 ? filesToUpload.length + ' file chosen' : 'No file chosen' }}
       </span>
     </div>
+
     <div id="uploadCertificate-errors">
       @for (errorMessage of certificateErrors; track errorMessage) {
-      <app-validation-error-message [errorMessage]="errorMessage"></app-validation-error-message>
+        <app-validation-error-message [errorMessage]="errorMessage"></app-validation-error-message>
       }
     </div>
   </fieldset>
