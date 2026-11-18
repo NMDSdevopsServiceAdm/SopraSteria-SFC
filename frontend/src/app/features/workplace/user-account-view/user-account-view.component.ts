@@ -22,7 +22,8 @@ import { take, withLatestFrom } from 'rxjs/operators';
 })
 export class UserAccountViewComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  public canDeleteUser: boolean;
+  public showDeleteButton: boolean;
+  public deleteButtonRoute: string[];
   public canEditUser: boolean;
   public canNavigate: boolean;
   public canResendActivationLink: boolean;
@@ -139,27 +140,54 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   public deleteUserNavigation(event: Event): void {
     event.preventDefault();
 
-    const isParentOwnedSub = !!this.establishment.parentUid && this.establishment.dataOwner === 'Parent';
-
-    const isLastUser = this.allUsers.length === 1 && this.allUsers[0].uid === this.user.uid;
-
-    const canDeleteWithoutReplacement = isParentOwnedSub && isLastUser;
-
-    const route = this.user.isPrimary && !canDeleteWithoutReplacement ? 'select-primary-user-delete' : 'delete-user';
-
-    this.router.navigate([route], { relativeTo: this.route });
+    this.router.navigate(this.deleteButtonRoute, { relativeTo: this.route });
   }
 
   private setPermissions(): void {
     const hasCanEditUserPermission = this.permissionsService.can(this.establishment.uid, 'canEditUser');
     const isPending = this.user.username === null;
 
-    this.canDeleteUser =
-      this.permissionsService.can(this.establishment.uid, 'canDeleteUser') && this.loggedInUser.uid !== this.user.uid;
-
     this.canResendActivationLink = hasCanEditUserPermission && isPending;
     this.canEditUser = hasCanEditUserPermission && (!this.user.isPrimary || this.moreThanOneActiveEditUser());
     this.canNavigate = isAdminRole(this.loggedInUser.role);
+    this.setupDeleteUserButton();
+  }
+
+  private setupDeleteUserButton(): void {
+    this.showDeleteButton = false;
+
+    const hasDeletePermission = this.permissionsService.can(this.establishment.uid, 'canDeleteUser');
+    const isDeletingSelfAccount = this.loggedInUser.uid === this.user.uid;
+
+    if (!hasDeletePermission || isDeletingSelfAccount) {
+      return;
+    }
+
+    const notPrimaryUser = !this.user.isPrimary;
+
+    if (notPrimaryUser) {
+      this.showDeleteButton = true;
+      this.deleteButtonRoute = ['delete-user'];
+      return;
+    }
+
+    const otherUserCanBeMadePrimary =
+      this.userService.filterActiveNonPrimaryEditUsers(this.allUsers, this.user.uid!)?.length >= 1;
+
+    if (otherUserCanBeMadePrimary) {
+      this.showDeleteButton = true;
+      this.deleteButtonRoute = ['select-primary-user-delete'];
+      return;
+    }
+
+    const isParentOwnedSub = !!this.establishment.parentUid && this.establishment.dataOwner === 'Parent';
+    const canDeletePrimaryUserWithoutReplacement = isParentOwnedSub;
+
+    if (canDeletePrimaryUserWithoutReplacement) {
+      this.showDeleteButton = true;
+      this.deleteButtonRoute = ['delete-user'];
+      return;
+    }
   }
 
   public moreThanOneActiveEditUser(): boolean {
