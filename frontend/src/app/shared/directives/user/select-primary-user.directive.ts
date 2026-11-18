@@ -92,7 +92,7 @@ export class SelectPrimaryUserDirective implements OnInit, OnDestroy, AfterViewI
   private getUsersWhichCanBeMadePrimary(): void {
     this.subscriptions.add(
       this.userService.getAllUsersForEstablishment(this.workplaceUid).subscribe((allUsers) => {
-        this.users = this.filterActiveNonPrimaryEditUsers(allUsers);
+        this.users = this.userService.filterActiveNonPrimaryEditUsers(allUsers, this.currentUserUid);
       }),
     );
   }
@@ -142,12 +142,12 @@ export class SelectPrimaryUserDirective implements OnInit, OnDestroy, AfterViewI
     ];
   }
 
-  public filterActiveNonPrimaryEditUsers(allUsers: UserDetails[]): UserDetails[] {
-    return filter(
-      allUsers,
-      (user) => user.status === 'Active' && user.role === Roles.Edit && user.uid !== this.currentUserUid,
-    );
-  }
+  // public filterActiveNonPrimaryEditUsers(allUsers: UserDetails[]): UserDetails[] {
+  //   return filter(
+  //     allUsers,
+  //     (user) => user.status === 'Active' && user.role === Roles.Edit && user.uid !== this.currentUserUid,
+  //   );
+  // }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public cancelNavigation(): void {}

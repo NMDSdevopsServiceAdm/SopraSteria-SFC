@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
+import { Roles } from '@core/model/roles.enum';
 import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -198,6 +199,12 @@ export class UserService {
     return this.http
       .get<GetAllUsersResponse>(`${environment.appRunnerEndpoint}/api/user/establishment/${workplaceUid}`)
       .pipe(map((response) => response.users));
+  }
+
+  public filterActiveNonPrimaryEditUsers(allUsers: UserDetails[], currentUserUid: string): Array<UserDetails> {
+    return allUsers.filter(
+      (user) => user.status === 'Active' && user.role === Roles.Edit && user.uid !== currentUserUid,
+    );
   }
 
   public updateLastViewedVacanciesAndTurnoverMessage() {

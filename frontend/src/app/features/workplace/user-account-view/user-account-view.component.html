@@ -6,26 +6,27 @@
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <div class="govuk-button-heading-group">
       @if (canResendActivationLink) {
-      <a
-        class="govuk-list govuk-list--inline"
-        draggable="false"
-        role="button"
-        (click)="resendActivationLink($event)"
-        href="#"
-      >
-        Resend the user set-up email</a
-      >
-      } @if (canDeleteUser) {
-      <a
-        class="govuk-list govuk-button-link govuk-list--inline govuk__flex govuk__align-items-center govuk-util__float-right govuk-!-margin-left-9"
-        draggable="false"
-        role="button"
-        href="#"
-        (click)="deleteUserNavigation($event)"
-      >
-        <img src="/assets/images/bin.svg" alt="" />
-        <span class="govuk-!-margin-left-1">Delete this user</span></a
-      >
+        <a
+          class="govuk-list govuk-list--inline"
+          draggable="false"
+          role="button"
+          (click)="resendActivationLink($event)"
+          href="#"
+        >
+          Resend the user set-up email</a
+        >
+      }
+      @if (showDeleteButton) {
+        <a
+          class="govuk-list govuk-button-link govuk-list--inline govuk__flex govuk__align-items-center govuk-util__float-right govuk-!-margin-left-9"
+          draggable="false"
+          role="button"
+          href="#"
+          (click)="deleteUserNavigation($event)"
+        >
+          <img src="/assets/images/bin.svg" alt="" />
+          <span class="govuk-!-margin-left-1">Delete this user</span></a
+        >
       }
     </div>
   </div>
@@ -34,7 +35,7 @@
   <div class="govuk-grid-column-full">
     <app-summary-list [canNavigate]="canNavigate" [topBorder]="true" [summaryList]="userInfo"></app-summary-list>
     @if (canEditUser) {
-    <app-summary-list [topBorder]="true" [summaryList]="loginInfo"></app-summary-list>
+      <app-summary-list [topBorder]="true" [summaryList]="loginInfo"></app-summary-list>
     }
     <dl
       class="govuk-summary-list govuk-summary-list--no-border govuk-summary-list--wrap-border govuk-!-margin-bottom-0"
@@ -43,19 +44,21 @@
         <dt class="govuk-summary-list__key">Permissions</dt>
         <dd class="govuk-summary-list__value">
           {{ user.isPrimary ? 'Primary edit' : user.role === 'Read' ? 'Read only' : user.role }}
-          @if (user.role === 'Read') { @if (isStaffRecordReadOnlyEnabled) {
-          <div>Workplace and staff</div>
-          } @else {
-          <div>Workplace only</div>
-          } }
+          @if (user.role === 'Read') {
+            @if (isStaffRecordReadOnlyEnabled) {
+              <div>Workplace and staff</div>
+            } @else {
+              <div>Workplace only</div>
+            }
+          }
         </dd>
         @if (canEditUser) {
-        <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['permissions']">
-            Change
-            <span class="govuk-visually-hidden"> user permissions</span>
-          </a>
-        </dd>
+          <dd class="govuk-summary-list__actions">
+            <a [routerLink]="['permissions']">
+              Change
+              <span class="govuk-visually-hidden"> user permissions</span>
+            </a>
+          </dd>
         }
       </div>
     </dl>
