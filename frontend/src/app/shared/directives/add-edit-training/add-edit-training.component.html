@@ -194,7 +194,7 @@
               <fieldset class="govuk-fieldset">
                 <legend class="govuk-fieldset__legend">How was this training course delivered?</legend>
                 <div class="govuk-radios">
-                  @for (option of howWasItDeliveredOptions | keyvalue; track option.key) {
+                  @for (option of howWasItDeliveredOptions | keyvalue: null; track option.key) {
                     @let id = 'howWasItDelivered-' + option.key;
                     <div class="govuk-radios__item">
                       <input
