@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
+import { AuthService } from '@core/services/auth.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -12,9 +13,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-total-staff-change',
-    templateUrl: './total-staff-change.component.html',
-    standalone: false
+  selector: 'app-total-staff-change',
+  templateUrl: './total-staff-change.component.html',
+  standalone: false,
 })
 export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
@@ -26,6 +27,7 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewIn
   public returnCopy: boolean;
   public formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
+  private isAdmin: boolean = false;
 
   constructor(
     public errorSummaryService: ErrorSummaryService,
@@ -36,8 +38,10 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewIn
     private establishmentService: EstablishmentService,
     private workerService: WorkerService,
     private totalStaffFormService: TotalStaffFormService,
+    private authService: AuthService,
   ) {
-    this.form = totalStaffFormService.createForm(formBuilder);
+    this.isAdmin = this.authService.isAdmin;
+    this.form = totalStaffFormService.createForm(formBuilder, { overrideUpperLimit: this.isAdmin });
   }
 
   ngOnInit() {
@@ -79,15 +83,28 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewIn
     }
 
     const { totalStaff } = this.form.value;
-
-    const property = 'NumberOfStaff';
     const props = { numberOfStaff: Number(totalStaff) };
-    this.subscriptions.add(
-      this.establishmentService.updateEstablishmentFieldWithAudit(this.workplace.uid, property, props).subscribe(
-        (data) => this.onSuccess(data),
-        (error) => this.onError(error),
-      ),
-    );
+
+    this.updateEstablishment(props);
+  }
+
+  protected updateEstablishment(props: Record<string, number>): void {
+    const property = 'NumberOfStaff';
+
+    if (this.isAdmin) {
+      this.subscriptions.add(
+        this.establishmentService
+          .updateEstablishmentFieldAsAdmin(this.workplace.uid, props)
+          .subscribe({ next: (data) => this.onSuccess(data), error: (error) => this.onError(error) }),
+      );
+    } else {
+      this.subscriptions.add(
+        this.establishmentService.updateEstablishmentFieldWithAudit(this.workplace.uid, property, props).subscribe(
+          (data) => this.onSuccess(data),
+          (error) => this.onError(error),
+        ),
+      );
+    }
   }
 
   private onSuccess(data: { numberOfStaff: number }) {

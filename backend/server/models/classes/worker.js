@@ -1068,6 +1068,10 @@ class Worker extends EntityValidator {
         this._lastWdfEligibility = fetchResults.lastWdfEligibility;
         this._wdfEligible = fetchResults.wdfEligible;
 
+        if (fetchResults.adminOverrides) {
+          this.adminOverrides = fetchResults.adminOverrides;
+        }
+
         const nurseFieldOfPractice = await fetchResults.getNurseFieldOfPractice({
           attributes: ['id', 'label'],
           raw: true,
@@ -1431,6 +1435,10 @@ class Worker extends EntityValidator {
 
       if (this._newWorkplaceId !== null) {
         myDefaultJSON.newWorkplaceId = this._newWorkplaceId;
+      }
+
+      if (this.adminOverrides) {
+        myDefaultJSON.adminOverrides = this.adminOverrides;
       }
 
       // TODO: JSON schema validation

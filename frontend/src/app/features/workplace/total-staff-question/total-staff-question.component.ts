@@ -8,6 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { TotalStaffFormService } from '@core/services/total-staff-form.service';
 
 import { WorkplaceQuestion } from '../question/question.component';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-total-staff-question',
@@ -17,6 +18,7 @@ import { WorkplaceQuestion } from '../question/question.component';
 export class TotalStaffQuestionComponent extends WorkplaceQuestion {
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails> = [];
+  private isAdmin: boolean = false;
 
   constructor(
     public errorSummaryService: ErrorSummaryService,
@@ -25,9 +27,15 @@ export class TotalStaffQuestionComponent extends WorkplaceQuestion {
     protected backService: BackService,
     protected establishmentService: EstablishmentService,
     private totalStaffFormService: TotalStaffFormService,
+    private authService: AuthService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
-    this.form = totalStaffFormService.createForm(formBuilder, true);
+
+    this.isAdmin = this.authService.isAdmin;
+    this.form = totalStaffFormService.createForm(formBuilder, {
+      updateOnSubmit: true,
+      overrideUpperLimit: this.isAdmin,
+    });
   }
 
   public setupFormErrorsMap(): void {
@@ -56,13 +64,22 @@ export class TotalStaffQuestionComponent extends WorkplaceQuestion {
     };
   }
 
-  protected updateEstablishment(props): void {
+  protected updateEstablishment(props: Record<string, number>): void {
     const property = 'NumberOfStaff';
-    this.subscriptions.add(
-      this.establishmentService.updateEstablishmentFieldWithAudit(this.establishment.uid, property, props).subscribe(
-        (data) => this._onSuccess(data),
-        (error) => this.onError(error),
-      ),
-    );
+
+    if (this.isAdmin) {
+      this.subscriptions.add(
+        this.establishmentService
+          .updateEstablishmentFieldAsAdmin(this.establishment.uid, props)
+          .subscribe({ next: (data) => this._onSuccess(data), error: (error) => this.onError(error) }),
+      );
+    } else {
+      this.subscriptions.add(
+        this.establishmentService.updateEstablishmentFieldWithAudit(this.establishment.uid, property, props).subscribe(
+          (data) => this._onSuccess(data),
+          (error) => this.onError(error),
+        ),
+      );
+    }
   }
 }

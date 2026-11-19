@@ -47,6 +47,7 @@ class WorkplaceCSVValidator {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
     this._allCurrentEstablishments = allCurrentEstablishments;
+    this._currentEstablishment = null;
     this.mappings = mappings;
 
     this._validationErrors = [];
@@ -371,6 +372,17 @@ class WorkplaceCSVValidator {
     }
 
     return this._id;
+  }
+
+  get currentEstablishment() {
+    if (this._currentEstablishment) {
+      return this._currentEstablishment;
+    }
+
+    this._currentEstablishment = this._allCurrentEstablishments.find(
+      (currentEstablishment) => currentEstablishment.key === this._key,
+    );
+    return this._currentEstablishment;
   }
 
   static headers() {
@@ -1685,7 +1697,24 @@ class WorkplaceCSVValidator {
     return true;
   }
 
+  _numberOfStaffMatchAdminOverrides() {
+    const numberOfStaffFromAdminOverrides = this.currentEstablishment?.adminOverrides?.numberOfStaff;
+
+    if (!numberOfStaffFromAdminOverrides) {
+      return false;
+    }
+
+    const valueFromCsvFile = parseInt(this._currentLine?.TOTALPERMTEMP, 10);
+    const valueFromAdminOverrides = parseInt(this.currentEstablishment?.adminOverrides?.numberOfStaff, 10);
+    return valueFromAdminOverrides > 0 && valueFromCsvFile === valueFromAdminOverrides;
+  }
+
   _validateTotalPermTemp() {
+    if (this.currentEstablishment?.adminOverrides && this._numberOfStaffMatchAdminOverrides()) {
+      console.log('LOG: Skip validation for TOTALPERMTEMP (total number of staff) due to admin override');
+      return true;
+    }
+
     // mandatory
     const MAX_TOTAL = 999;
     const myTotalPermTemp = parseInt(this._currentLine.TOTALPERMTEMP, 10);
@@ -1697,7 +1726,7 @@ class WorkplaceCSVValidator {
         errCode: WorkplaceCSVValidator.TOTAL_PERM_TEMP_ERROR,
         errType: 'TOTAL_PERM_TEMP_ERROR',
         error: 'TOTALPERMTEMP is missing',
-        source: this._currentLine.PERMCQC,
+        source: this._currentLine.TOTALPERMTEMP,
         column: 'TOTALPERMTEMP',
         name: this._currentLine.LOCALESTID,
       });
@@ -1708,7 +1737,7 @@ class WorkplaceCSVValidator {
         errCode: WorkplaceCSVValidator.TOTAL_PERM_TEMP_ERROR,
         errType: 'TOTAL_PERM_TEMP_ERROR',
         error: `TOTALPERMTEMP must be a number from 0 to ${MAX_TOTAL} if this is correct call support on 0113 241 0969`,
-        source: myTotalPermTemp,
+        source: this._currentLine.TOTALPERMTEMP,
         column: 'TOTALPERMTEMP',
         name: this._currentLine.LOCALESTID,
       });
@@ -1719,7 +1748,7 @@ class WorkplaceCSVValidator {
         errCode: WorkplaceCSVValidator.TOTAL_PERM_TEMP_ERROR,
         errType: 'TOTAL_PERM_TEMP_ERROR',
         error: 'Total Permanent and Temporary (TOTALPERMTEMP) cannot be 0 except when MAINSERVICE is head office',
-        source: myTotalPermTemp,
+        source: this._currentLine.TOTALPERMTEMP,
         column: 'TOTALPERMTEMP',
         name: this._currentLine.LOCALESTID,
       });

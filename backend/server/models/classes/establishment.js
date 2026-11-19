@@ -1516,6 +1516,10 @@ class Establishment extends EntityValidator {
         this._cwpRoleCategoriesBannerViewed = fetchResults.cwpRoleCategoriesBannerViewed;
         this._cwpRoleCategoriesNewPillLinkVisited = fetchResults.cwpRoleCategoriesNewPillLinkVisited;
 
+        if (fetchResults.adminOverrides) {
+          this.adminOverrides = fetchResults.adminOverrides;
+        }
+
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -2010,6 +2014,10 @@ class Establishment extends EntityValidator {
       // bulk upload status
       if (this._status) {
         myDefaultJSON.status = this._status;
+      }
+
+      if (this.adminOverrides) {
+        myDefaultJSON.adminOverrides = this.adminOverrides;
       }
 
       myDefaultJSON.created = this.created ? this.created.toJSON() : null;

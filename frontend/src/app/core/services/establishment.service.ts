@@ -279,6 +279,13 @@ export class EstablishmentService {
     );
   }
 
+  updateEstablishmentFieldAsAdmin(establishmentId: string, data: Record<string, any>) {
+    return this.http.post<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/establishmentField/asAdmin`,
+      data,
+    );
+  }
+
   public updateWorkplace(workplaceUid: string, data): Observable<any> {
     return this.http.put<any>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}`, data);
   }

@@ -4,6 +4,7 @@ const lodash = require('lodash');
 const Establishment = require('../../models/classes/establishment');
 const { hasPermission } = require('../../utils/security/hasPermission');
 const HttpError = require('../../utils/errors/httpError');
+const { updateEstablishmentFieldAsAdminRouter } = require('./editWorkplaceAsAdmin');
 
 const allowedProperties = [
   'EmployerType',
@@ -139,6 +140,7 @@ const checkIfRequestBodyIsAllowed = (req) => {
   }
 };
 
+router.use('/asAdmin', updateEstablishmentFieldAsAdminRouter);
 router.route('/:property').get(hasPermission('canViewEstablishment'), getEstablishmentField);
 router.route('/:property').post(hasPermission('canEditEstablishment'), updateEstablishmentFieldWithAudit);
 

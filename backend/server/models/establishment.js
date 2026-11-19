@@ -1043,6 +1043,11 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: false,
         field: 'CWPRoleCategoriesNewPillLinkVisited',
       },
+      adminOverrides: {
+        type: DataTypes.JSONB,
+        allowNull: true,
+        field: 'AdminOverrides',
+      },
     },
     {
       defaultScope: {
@@ -3002,6 +3007,19 @@ module.exports = function (sequelize, DataTypes) {
     );
 
     return !!result;
+  };
+
+  Establishment.prototype.updateWithAdminOverrides = async function (sequelizeChanges, establishmentClassChanges) {
+    Object.entries(sequelizeChanges).forEach(([field, updatedValue]) => {
+      this[field] = updatedValue;
+      this.changed(field, true);
+    });
+
+    const updatedAdminOverrides = { ...(this.adminOverrides ?? {}), ...establishmentClassChanges };
+    this.adminOverrides = updatedAdminOverrides;
+
+    await this.save();
+    this.update(sequelizeChanges);
   };
 
   Establishment.addHook('beforeSave', 'clearDHAWorkerAnswersOnWorkplaceChange', clearDHAWorkerAnswersOnWorkplaceChange);
