@@ -39,7 +39,13 @@ describe('trainingCSVValidator', () => {
         { ASC: 2, BUDI: 2 },
         { ASC: 63, BUDI: 999 },
       ];
-      Object.assign(mappings, { TRAINING_PROVIDER: mockTrainingProviderMappings });
+      const howDeliveredMapping = [
+        { ASC: 'Face to face', BUDI: 1 },
+        { ASC: 'E-learning', BUDI: 2 },
+        { ASC: 'Online with a live trainer', BUDI: 3 },
+        { ASC: 'A mix of delivery methods', BUDI: 4 },
+      ];
+      Object.assign(mappings, { TRAINING_PROVIDER: mockTrainingProviderMappings, HOW_DELIVERED: howDeliveredMapping });
     });
 
     describe('_validateAccredited()', () => {
@@ -728,6 +734,8 @@ describe('trainingCSVValidator', () => {
       const validValues = [
         { HOWDELIVERED: '1', expected: TrainingCourseDeliveryMode.FaceToFace },
         { HOWDELIVERED: '2', expected: TrainingCourseDeliveryMode.ELearning },
+        { HOWDELIVERED: '3', expected: TrainingCourseDeliveryMode.OnlineWithLiveTrainer },
+        { HOWDELIVERED: '4', expected: TrainingCourseDeliveryMode.MixOfDeliveryMethods },
       ];
 
       validValues.forEach(({ HOWDELIVERED, expected }) => {

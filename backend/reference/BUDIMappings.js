@@ -12,6 +12,7 @@ const { QUALIFICATIONS } = require('./qualifications');
 const { RECRUITMENT } = require('./recruitment');
 const { TRAINING_CATEGORY } = require('./trainingCategory');
 const { build_nurse_field_of_practice_mappings } = require('./nurseFieldOfPractice');
+const { build_training_how_delivered_mappings } = require('./trainingHowDelivered');
 
 let mappingsFromDatabase = {};
 
@@ -22,6 +23,7 @@ const getMappingsFromDatabase = async () => {
       NURSE_FIELD_OF_PRACTICE: await build_nurse_field_of_practice_mappings(),
       CWP_CATEGORY: await build_cwp_category_mappings(),
       JOB_ROLE_CWP_EXCLUSIONS: await build_job_role_cwp_exclusion_mappings(),
+      HOW_DELIVERED: build_training_how_delivered_mappings(),
     };
   }
 

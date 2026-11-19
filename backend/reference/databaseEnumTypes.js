@@ -1,7 +1,7 @@
 const Enum = {
   YesNoDontKnow: ['Yes', 'No', "Don't know"],
   TrainingCourseDeliveredBy: ['In-house staff', 'External provider'],
-  TrainingCourseDeliveryMode: ['Face to face', 'E-learning'],
+  TrainingCourseDeliveryMode: ['Face to face', 'E-learning', 'Online with a live trainer', 'A mix of delivery methods'],
 };
 
 const TrainingCourseDeliveredBy = {
@@ -12,6 +12,8 @@ const TrainingCourseDeliveredBy = {
 const TrainingCourseDeliveryMode = {
   FaceToFace: Enum.TrainingCourseDeliveryMode[0],
   ELearning: Enum.TrainingCourseDeliveryMode[1],
+  OnlineWithLiveTrainer: Enum.TrainingCourseDeliveryMode[2],
+  MixOfDeliveryMethods: Enum.TrainingCourseDeliveryMode[3],
 };
 
 const WorkerCareCertificate = {

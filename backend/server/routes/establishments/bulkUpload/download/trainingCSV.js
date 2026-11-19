@@ -95,6 +95,12 @@ const convertHowDelivered = (howWasItDelivered) => {
     case TrainingCourseDeliveryMode.ELearning: {
       return '2';
     }
+    case TrainingCourseDeliveryMode.OnlineWithLiveTrainer: {
+      return '3';
+    }
+    case TrainingCourseDeliveryMode.MixOfDeliveryMethods: {
+      return '4';
+    }
     default: {
       return '';
     }
