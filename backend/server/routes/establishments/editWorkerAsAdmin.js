@@ -1,4 +1,9 @@
+const express = require('express');
+const router = express.Router({ mergeParams: true });
+
 const models = require('../../models');
+const { hasPermission } = require('../../utils/security/hasPermission');
+const { isAdmin } = require('../../utils/security/isAuthenticated');
 const HttpError = require('../../utils/errors/httpError');
 
 const editWorkerAsAdmin = async (req, res) => {
@@ -59,4 +64,6 @@ const extractWorkerProperty = (updatedWorker) => {
   return { annualHourlyPay: { value, rate } };
 };
 
-module.exports = { editWorkerAsAdmin };
+router.put('/', isAdmin, hasPermission('canEditWorker'), editWorkerAsAdmin);
+
+module.exports = { editWorkerAsAdmin, editWorkerAsAdminRouter: router };

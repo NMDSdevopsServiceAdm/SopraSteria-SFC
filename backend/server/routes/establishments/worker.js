@@ -25,9 +25,8 @@ const MutipleTrainingRecordsRoute = require('./training/multiple');
 const TrainingAndQualificationsRoutes = require('./trainingAndQualifications');
 
 const { hasPermission } = require('../../utils/security/hasPermission');
-const { isAdmin } = require('../../utils/security/isAuthenticated');
 const { WorkerSortByOptions } = require('../../data/sortByOptions');
-const { editWorkerAsAdmin } = require('./editWorkerAsAdmin');
+const { editWorkerAsAdminRouter } = require('./editWorkerAsAdmin');
 
 const viewWorker = async (req, res) => {
   const workerId = req.params.workerId;
@@ -465,7 +464,7 @@ router.use('/:workerId/qualification', QualificationRoutes);
 router.use('/:workerId/mandatoryTraining', MandatoryTrainingRoutes);
 router.use('/:workerId/trainingAndQualifications', TrainingAndQualificationsRoutes);
 
-router.route('/:workerId/asAdmin').put(hasPermission('canEditWorker'), isAdmin, editWorkerAsAdmin);
+router.use('/:workerId/asAdmin', editWorkerAsAdminRouter);
 
 module.exports = router;
 module.exports.editWorker = editWorker;
