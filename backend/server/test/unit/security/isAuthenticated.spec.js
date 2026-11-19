@@ -1044,7 +1044,9 @@ describe('isAuthenticated', () => {
   });
 
   describe('isReadOnlyTryingToNotGET', () => {
-    it('returns true if role check is true, req method is not GET, claim role is read only and the req.path is not /benchmarks/usage', async () => {
+    // NOTE: This is a middleware to prevent READ user calling PUT/POST/DELETE/PATCH methods on unexpected endpoints
+    // When return true, backend will respond with a 403 error
+    it('returns true if role check is true, req method is not GET, claim role is read only and the req.path is not one of the special allowed cases', async () => {
       const claim = { role: 'Read' };
       const req = {
         path: '/something',
@@ -1056,7 +1058,7 @@ describe('isAuthenticated', () => {
       expect(result).to.be.true;
     });
 
-    it('returns false if role check is false, req method is not GET, claim role is read only and the req.path is not /benchmarks/usage', async () => {
+    it('returns false if role check is false', async () => {
       const claim = { role: 'Read' };
       const req = {
         path: '/something',
@@ -1068,7 +1070,7 @@ describe('isAuthenticated', () => {
       expect(result).to.be.false;
     });
 
-    it('returns false if role check is true, req method is GET, claim role is read only and the req.path is not /benchmarks/usage', async () => {
+    it('returns false if req method is GET', async () => {
       const claim = { role: 'Read' };
       const req = {
         path: '/something',
@@ -1080,7 +1082,7 @@ describe('isAuthenticated', () => {
       expect(result).to.be.false;
     });
 
-    it('returns false if role check is true, req method is not GET, claim role is not read only and the req.path is not /benchmarks/usage', async () => {
+    it('returns false if claim role is not read only', async () => {
       const claim = { role: 'Edit' };
       const req = {
         path: '/something',
@@ -1092,16 +1094,42 @@ describe('isAuthenticated', () => {
       expect(result).to.be.false;
     });
 
-    it('returns false if role check is true, req method is not GET, claim role is read only and the req.path is /benchmarks/usage', async () => {
-      const claim = { role: 'Read' };
-      const req = {
-        path: '/benchmarks/usage',
-        method: 'POST',
-      };
-      const roleCheck = true;
+    describe('special endpoints that READ user are allowed to call POST method', () => {
+      it('returns false if the req.path is /benchmarks/usage', async () => {
+        const claim = { role: 'Read' };
+        const req = {
+          path: '/benchmarks/usage',
+          method: 'POST',
+        };
+        const roleCheck = true;
 
-      const result = isReadOnlyTryingToNotGET(roleCheck, req, claim);
-      expect(result).to.be.false;
+        const result = isReadOnlyTryingToNotGET(roleCheck, req, claim);
+        expect(result).to.be.false;
+      });
+
+      it('returns false if the req.path is training certificate download endpoint', async () => {
+        const claim = { role: 'Read' };
+        const req = {
+          path: '/worker/2cc5aa85-b60e-4d06-8356-c946a03d3067/training/4b67e8d2-8bc8-4dcb-86f7-4b3245a43b97/certificate/download',
+          method: 'POST',
+        };
+        const roleCheck = true;
+
+        const result = isReadOnlyTryingToNotGET(roleCheck, req, claim);
+        expect(result).to.be.false;
+      });
+
+      it('returns false if the req.path is qualification certificate download endpoint', async () => {
+        const claim = { role: 'Read' };
+        const req = {
+          path: '/worker/2cc5aa85-b60e-4d06-8356-c946a03d3067/qualification/4b67e8d2-8bc8-4dcb-86f7-4b3245a43b97/certificate/download',
+          method: 'POST',
+        };
+        const roleCheck = true;
+
+        const result = isReadOnlyTryingToNotGET(roleCheck, req, claim);
+        expect(result).to.be.false;
+      });
     });
   });
 
