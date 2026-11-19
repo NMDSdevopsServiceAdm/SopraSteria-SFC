@@ -14,11 +14,12 @@ import userEvent from '@testing-library/user-event';
 import { cloneDeep } from 'lodash';
 
 import { NewQualificationsComponent } from './new-qualifications.component';
+import { WorkersModule } from '@features/workers/workers.module';
 
 describe('NewQualificationsComponent', () => {
   async function setup(override: any = {}) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(NewQualificationsComponent, {
-      imports: [SharedModule, RouterModule],
+      imports: [SharedModule, RouterModule, WorkersModule],
       providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
       componentProperties: {
         canEditWorker: true,
@@ -202,14 +203,14 @@ describe('NewQualificationsComponent', () => {
       expect(within(recordRow).getByText('Download')).toBeTruthy();
     });
 
-    it('should not display Download link when qualification record has one certificate associated with it but user does not have edit permissions', async () => {
+    it('should display a download link when qualification record has one certificate associated with it but user does not have edit permissions', async () => {
       const { getByTestId } = await setupWithCertificates({
         certificates: singleQualificationCertificate(),
         canEditWorker: false,
       });
 
       const recordRow = getByTestId(qualificationUid);
-      expect(within(recordRow).queryByText('Download')).toBeFalsy();
+      expect(within(recordRow).queryByText('Download')).toBeTruthy();
     });
 
     it('should trigger download file emitter when Download link is clicked', async () => {
@@ -238,7 +239,7 @@ describe('NewQualificationsComponent', () => {
       expect(within(recordRow).getByText('Select a download')).toBeTruthy();
     });
 
-    it('should not display Select a download link when qualification record has more than one certificate associated with it but user does not have edit permissions', async () => {
+    it('should display a "Download all" link when qualification record has more than one certificate associated with it but user does not have edit permissions', async () => {
       const { getByTestId } = await setupWithCertificates({
         certificates: multipleQualificationCertificates(),
         canEditWorker: false,
@@ -246,6 +247,7 @@ describe('NewQualificationsComponent', () => {
 
       const recordRow = getByTestId('firstAwardQualUid');
       expect(within(recordRow).queryByText('Select a download')).toBeFalsy();
+      expect(within(recordRow).queryByText('Download all')).toBeTruthy();
     });
 
     it('should have href of qualification record on Select a download link', async () => {
@@ -263,11 +265,12 @@ describe('NewQualificationsComponent', () => {
       expect(within(recordRow).getByRole('button', { name: 'Upload file' })).toBeTruthy();
     });
 
-    it('should not display Upload file button when qualification record has no certificates associated with it but user does not have edit permissions', async () => {
+    it('should display a "-" when qualification record has no certificates associated with it but user does not have edit permissions', async () => {
       const { getByTestId } = await setupWithCertificates({ certificates: [], canEditWorker: false });
 
       const recordRow = getByTestId(qualificationUid);
       expect(within(recordRow).queryByRole('button', { name: 'Upload file' })).toBeFalsy();
+      expect(within(recordRow).getByText('-')).toBeTruthy();
     });
 
     it('should trigger the upload file emitter when a file is selected by the Upload file button', async () => {

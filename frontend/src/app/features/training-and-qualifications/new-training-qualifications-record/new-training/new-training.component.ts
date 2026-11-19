@@ -56,8 +56,7 @@ export class NewTrainingComponent implements OnChanges, OnInit {
     });
   }
 
-  handleDownloadCertificate(event: Event, trainingRecord: TrainingRecord) {
-    event.preventDefault();
+  handleDownloadCertificate(trainingRecord: TrainingRecord) {
     this.downloadFile.emit({
       recordType: 'training',
       recordUid: trainingRecord.uid,

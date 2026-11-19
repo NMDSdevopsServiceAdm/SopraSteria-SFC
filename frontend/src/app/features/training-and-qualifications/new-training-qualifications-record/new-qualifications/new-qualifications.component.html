@@ -46,53 +46,20 @@
                   </td>
                   <td class="govuk-table__cell">{{ qualificationRecord?.year ? qualificationRecord.year : '-' }}</td>
                   <td class="govuk-table__cell">
-                    @if (canEditWorker) {
-                      @if (qualificationRecord.qualificationCertificates?.length === 1) {
-                        <span>
-                          <a
-                            href="#"
-                            class="govuk-link govuk-link--no-visited-state"
-                            (click)="handleDownloadCertificate($event, qualificationGroup, qualificationRecord)"
-                          >
-                            <img
-                              alt=""
-                              src="/assets/images/icon-download.svg"
-                              class="govuk-util__vertical-align-bottom"
-                            /><span class="govuk-!-margin-left-1">Download</span>
-                            <span class="govuk-visually-hidden"
-                              >the certificate {{ qualificationRecord.qualificationCertificates[0].filename }}</span
-                            >
-                          </a>
-                        </span>
-                      }
-                      @if (qualificationRecord.qualificationCertificates?.length > 1) {
-                        <span>
-                          <a
-                            [routerLink]="['../qualification', qualificationRecord.uid]"
-                            class="govuk-link govuk-link--no-visited-state"
-                          >
-                            Select a download
-                          </a>
-                        </span>
-                      }
-                      @if (qualificationRecord.qualificationCertificates?.length === 0) {
-                        <span>
-                          <app-select-upload-file
-                            accept=".pdf"
-                            multiple="true"
-                            buttonText="Upload file"
-                            buttonClasses="govuk-!-margin-bottom-0 govuk-!-padding-top-1 govuk-!-padding-bottom-1"
-                            (selectFiles)="handleUploadCertificate($event, qualificationGroup, qualificationRecord)"
-                          ></app-select-upload-file>
-                        </span>
-                      }
-                    }
                     @if (pdfRenderingMode) {
                       @if (qualificationRecord.qualificationCertificates?.length > 0) {
                         Uploaded
                       } @else {
                         Not uploaded
                       }
+                    } @else {
+                      <app-display-certificate
+                        [canEditWorker]="canEditWorker"
+                        [certificates]="qualificationRecord.qualificationCertificates"
+                        [linkToRecordPage]="['../qualification', qualificationRecord.uid]"
+                        (onDownload)="handleDownloadCertificate(qualificationGroup, qualificationRecord)"
+                        (onUpload)="handleUploadCertificate($event, qualificationGroup, qualificationRecord)"
+                      ></app-display-certificate>
                     }
                   </td>
                 </tr>
