@@ -449,7 +449,7 @@ class Training extends EntityValidator {
 
     //howWasItDelivered
     if (document.howWasItDelivered) {
-      const ALLOWED_VALUES = ['Face to face', 'E-learning'];
+      const ALLOWED_VALUES = models.workerTraining.getAttributes().howWasItDelivered.values;
       if (!ALLOWED_VALUES.includes(document.howWasItDelivered)) {
         this._validations.push(
           new ValidationMessage(ValidationMessage.WARNING, 120, `unexpected value - ${document.howWasItDelivered}`, [
