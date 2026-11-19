@@ -1,3 +1,5 @@
+const { TrainingCourseDeliveryMode } = require('../../../../reference/databaseEnumTypes');
+
 const mockTrainingCourses = [
   {
     id: 1,
@@ -16,7 +18,7 @@ const mockTrainingCourses = [
     trainingProvider: null,
     externalProviderName: null,
     otherTrainingProviderName: null,
-    howWasItDelivered: 'Face to face',
+    howWasItDelivered: TrainingCourseDeliveryMode.FaceToFace,
     doesNotExpire: false,
     validityPeriodInMonth: 24,
     created: '2025-10-13T12:57:20.737Z',

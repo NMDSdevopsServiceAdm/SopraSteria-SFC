@@ -4,6 +4,7 @@ const lodash = require('lodash');
 const { mockTrainingCourses } = require('../mockdata/trainingCourse');
 const models = require('../../../models/index');
 const { NotFoundError } = require('../../../utils/errors/customErrors');
+const { TrainingCourseDeliveryMode } = require('../../../../reference/databaseEnumTypes');
 
 describe('TrainingCourse model', () => {
   afterEach(() => {
@@ -32,7 +33,7 @@ describe('TrainingCourse model', () => {
       accredited: 'Yes',
       deliveredBy: 'In-house staff',
       otherTrainingProviderName: null,
-      howWasItDelivered: 'E-learning',
+      howWasItDelivered: TrainingCourseDeliveryMode.ELearning,
       doesNotExpire: true,
       validityPeriodInMonth: null,
     };

@@ -23,6 +23,7 @@ const {
   trainingCourseWithLinkableRecords,
 } = require('../../../mockdata/trainingCourse');
 const { NotFoundError } = require('../../../../../utils/errors/customErrors');
+const { TrainingCourseDeliveryMode } = require('../../../../../../reference/databaseEnumTypes');
 
 describe('/api/establishment/:uid/trainingCourse/', () => {
   const mockTransaction = {};
@@ -129,7 +130,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
         deliveredBy: 'In-house staff',
         trainingProviderId: null,
         otherTrainingProviderName: null,
-        howWasItDelivered: 'Face to face',
+        howWasItDelivered: TrainingCourseDeliveryMode.FaceToFace,
         doesNotExpire: false,
         validityPeriodInMonth: 24,
       },
@@ -153,7 +154,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
         accredited: 'Yes',
         deliveredBy: 'In-house staff',
         otherTrainingProviderName: null,
-        howWasItDelivered: 'Face to face',
+        howWasItDelivered: TrainingCourseDeliveryMode.FaceToFace,
         doesNotExpire: false,
         validityPeriodInMonth: 24,
         createdBy: mockUsername,
@@ -262,7 +263,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       accredited: 'Yes',
       deliveredBy: 'In-house staff',
       otherTrainingProviderName: null,
-      howWasItDelivered: 'E-learning',
+      howWasItDelivered: TrainingCourseDeliveryMode.ELearning,
       doesNotExpire: true,
       validityPeriodInMonth: null,
     };
@@ -279,7 +280,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       accredited: 'Yes',
       deliveredBy: 'In-house staff',
       otherTrainingProviderName: null,
-      howWasItDelivered: 'E-learning',
+      howWasItDelivered: TrainingCourseDeliveryMode.ELearning,
       doesNotExpire: true,
       validityPeriodInMonth: null,
     };

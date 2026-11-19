@@ -7,15 +7,15 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TrainingCourse } from '@core/model/training-course.model';
-import { DeliveredBy } from '@core/model/training.model';
+import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
 import { TrainingCourseService } from '@core/services/training-course.service';
+import { trainingCategories as mockTrainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 import { MockTrainingCourseService, trainingCourseBuilder } from '@core/test-utils/MockTrainingCourseService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { TrainingCourseDetailsComponent } from './training-course-details.component';
-import { trainingCategories as mockTrainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 
 describe('TrainingCourseDetailsComponent', () => {
   const otherTrainingProviderId = 63;
@@ -183,7 +183,7 @@ describe('TrainingCourseDetailsComponent', () => {
       ...trainingCourseBuilder(),
       trainingProviderId: 1,
       otherTrainingProviderName: null,
-      howWasItDelivered: 'E-learning',
+      howWasItDelivered: HowWasItDelivered.ELearning,
       doesNotExpire: false,
       validityPeriodInMonth: 24,
     };
@@ -201,7 +201,7 @@ describe('TrainingCourseDetailsComponent', () => {
         expect(getInputByRole('radio', { name: mockTrainingCourse.accredited }).checked).toBeTrue();
         expect(getInputByRole('radio', { name: mockTrainingCourse.deliveredBy }).checked).toBeTrue();
         expect(getInputByLabelText('Provider name').value).toEqual(expectedTrainingProviderName);
-        expect(getInputByRole('radio', { name: 'E-learning' }).checked).toBeTrue();
+        expect(getInputByRole('radio', { name: HowWasItDelivered.ELearning }).checked).toBeTrue();
         expect(getInputByLabelText(/How many months is/).value).toEqual('24');
         expect(getInputByRole('checkbox', { name: 'This training does not expire' }).checked).toBeFalse();
       });
@@ -230,7 +230,7 @@ describe('TrainingCourseDetailsComponent', () => {
       deliveredBy: 'External provider',
       trainingProviderId: 63,
       otherTrainingProviderName: 'Some other training',
-      howWasItDelivered: 'Face to face',
+      howWasItDelivered: HowWasItDelivered.FaceToFace,
       doesNotExpire: true,
       validityPeriodInMonth: null,
     };
@@ -512,7 +512,7 @@ describe('TrainingCourseDetailsComponent', () => {
         userEvent.click(getByLabelText('Yes'));
         userEvent.click(getByLabelText('External provider'));
         userEvent.type(getByLabelText('Provider name'), 'Care skill academy');
-        userEvent.click(getByLabelText('Face to face'));
+        userEvent.click(getByLabelText(HowWasItDelivered.FaceToFace));
         userEvent.type(getByLabelText(/^How many months/), '24');
 
         userEvent.click(getByRole('button', { name: 'Continue' }));
@@ -524,7 +524,7 @@ describe('TrainingCourseDetailsComponent', () => {
           trainingProviderId: otherTrainingProviderId,
           otherTrainingProviderName: 'Care skill academy',
           externalProviderName: null,
-          howWasItDelivered: 'Face to face',
+          howWasItDelivered: HowWasItDelivered.FaceToFace,
           validityPeriodInMonth: 24,
           doesNotExpire: null,
         } as Partial<TrainingCourse>;
@@ -553,7 +553,7 @@ describe('TrainingCourseDetailsComponent', () => {
         userEvent.clear(getByLabelText('Provider name'));
         userEvent.type(getByLabelText('Provider name'), 'Care skill academy');
 
-        userEvent.click(getByLabelText('Face to face'));
+        userEvent.click(getByLabelText(HowWasItDelivered.FaceToFace));
         userEvent.type(getByLabelText(/^How many months/), '24');
 
         userEvent.click(getByRole('button', { name: 'Continue' }));
@@ -566,7 +566,7 @@ describe('TrainingCourseDetailsComponent', () => {
           trainingProviderId: otherTrainingProviderId,
           otherTrainingProviderName: 'Care skill academy',
           externalProviderName: null,
-          howWasItDelivered: 'Face to face',
+          howWasItDelivered: HowWasItDelivered.FaceToFace,
           validityPeriodInMonth: 24,
           doesNotExpire: null,
         } as Partial<TrainingCourse>;

@@ -243,7 +243,7 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
       it('should show the How was the training course delivered value', async () => {
         const { getByTestId } = await setup();
         const key = getByTestId('course-delivery-method-value');
-        expect(key.textContent.trim()).toEqual('E-learning');
+        expect(key.textContent.trim()).toEqual(HowWasItDelivered.ELearning);
       });
     });
 

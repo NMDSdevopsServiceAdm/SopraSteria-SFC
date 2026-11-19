@@ -1,13 +1,19 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { allMandatoryTrainingCategories, TrainingCategory, TrainingRecord } from '@core/model/training.model';
-import { MandatoryTrainingService, TrainingService } from '@core/services/training.service';
 import { Observable, of } from 'rxjs';
 
-import { AllJobs, JobsWithDuplicates } from '../../../mockdata/jobs';
-import { workerBuilder } from './MockWorkerService';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import {
+  allMandatoryTrainingCategories,
+  HowWasItDelivered,
+  TrainingCategory,
+  TrainingRecord,
+} from '@core/model/training.model';
+import { MandatoryTrainingService, TrainingService } from '@core/services/training.service';
 import { build, BuildTimeConfig, fake, oneOf } from '@jackfranklin/test-data-bot';
+
+import { AllJobs, JobsWithDuplicates } from '../../../mockdata/jobs';
 import { trainingCategories } from './MockTrainingCategoriesService';
+import { workerBuilder } from './MockWorkerService';
 
 const workers = [workerBuilder(), workerBuilder()];
 @Injectable()
@@ -64,7 +70,7 @@ export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService
     expires: '2021-01-01',
     notes: 'This is a note',
     title: 'Title',
-    howWasItDelivered: 'Face to face',
+    howWasItDelivered: HowWasItDelivered.FaceToFace,
     externalProviderName: null,
     otherTrainingProviderName: null,
     deliveredBy: null,
@@ -102,7 +108,7 @@ export class MockTrainingServiceWithProviderNameFromList extends MockTrainingSer
     expires: '2021-01-01',
     notes: 'This is a note',
     title: 'Title',
-    howWasItDelivered: 'Face to face',
+    howWasItDelivered: HowWasItDelivered.FaceToFace,
     externalProviderName: 'Care Skills Academy',
     otherTrainingProviderName: null,
     deliveredBy: 'External provider',
@@ -120,7 +126,7 @@ export class MockTrainingServiceWithProviderNameFromFreeText extends MockTrainin
     expires: '2021-01-01',
     notes: 'This is a note',
     title: 'Title',
-    howWasItDelivered: 'Face to face',
+    howWasItDelivered: HowWasItDelivered.FaceToFace,
     externalProviderName: null,
     otherTrainingProviderName: 'Free text provider',
     deliveredBy: 'External provider',

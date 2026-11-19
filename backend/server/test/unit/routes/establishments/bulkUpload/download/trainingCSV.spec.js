@@ -22,8 +22,8 @@ const trainingRecords = [apiTrainingBuilder(), apiTrainingBuilder(), apiTraining
 
 const inHouseStaff = 'In-house staff';
 const externalProvider = 'External provider';
-const faceToFace = 'Face to face';
-const eLearning = 'E-learning';
+const faceToFace = TrainingCourseDeliveryMode.FaceToFace;
+const eLearning = TrainingCourseDeliveryMode.ELearning;
 
 describe('trainingCSV', () => {
   describe('toCSV()', () => {

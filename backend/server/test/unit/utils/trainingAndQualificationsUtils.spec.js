@@ -30,7 +30,10 @@ const {
   grandTotalCountsForMockWorkplaceAAndB,
   grandTotalCareCertAndQualificationLevelsForWorkplaceAAndB,
 } = require('../mockdata/trainingAndQualifications');
-const { WorkerSocialCareQualificationLevel } = require('../../../../reference/databaseEnumTypes');
+const {
+  WorkerSocialCareQualificationLevel,
+  TrainingCourseDeliveryMode,
+} = require('../../../../reference/databaseEnumTypes');
 
 describe('trainingAndQualificationsUtils', () => {
   describe('getTrainingTotals', () => {
@@ -256,7 +259,7 @@ describe('trainingAndQualificationsUtils', () => {
 
           isMandatory: 'No',
           deliveredBy: 'External provider',
-          howWasItDelivered: 'Face to face',
+          howWasItDelivered: TrainingCourseDeliveryMode.FaceToFace,
           trainingCertificateUploaded: 'Yes',
           trainingProviderName: 'Care skill training',
           validityPeriodInMonth: 24,
@@ -310,7 +313,7 @@ describe('trainingAndQualificationsUtils', () => {
 
           isMandatory: 'No',
           deliveredBy: 'In-house staff',
-          howWasItDelivered: 'Face to face',
+          howWasItDelivered: TrainingCourseDeliveryMode.FaceToFace,
           trainingCertificateUploaded: 'No',
           trainingProviderName: null,
           validityPeriodInMonth: 12,
@@ -345,7 +348,7 @@ describe('trainingAndQualificationsUtils', () => {
           trainingCertificateUploaded: 'No',
           deliveredBy: 'External provider',
           trainingProviderName: null,
-          howWasItDelivered: 'E-learning',
+          howWasItDelivered: TrainingCourseDeliveryMode.ELearning,
         });
       });
 
@@ -401,7 +404,7 @@ describe('trainingAndQualificationsUtils', () => {
           trainingCertificateUploaded: 'Yes',
           deliveredBy: 'External provider',
           trainingProviderName: 'Care skill academy',
-          howWasItDelivered: 'Face to face',
+          howWasItDelivered: TrainingCourseDeliveryMode.FaceToFace,
         });
       });
     });

@@ -6,6 +6,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { HowWasItDelivered } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
 import { TrainingCertificateService } from '@core/services/certificate.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -31,7 +32,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
     deliveredBy: 'External provider',
     trainingProviderId: null,
     otherTrainingProviderName: null,
-    howWasItDelivered: 'Face to face',
+    howWasItDelivered: HowWasItDelivered.FaceToFace,
     doesNotExpire: false,
     validityPeriodInMonth: 24,
     completed: '2024-01-01',
