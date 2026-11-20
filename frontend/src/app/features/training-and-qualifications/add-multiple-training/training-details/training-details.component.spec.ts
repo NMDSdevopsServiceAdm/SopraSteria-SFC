@@ -22,7 +22,6 @@ import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceW
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import sinon from 'sinon';
 
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { MultipleTrainingDetailsComponent } from './training-details.component';
@@ -177,7 +176,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     userEvent.type(getByLabelText('Provider name'), 'Care skills academy');
     userEvent.type(getByLabelText('How many months is the training valid for before it expires?'), '');
     userEvent.type(getByLabelText('This training does not expire'), 'true');
-    userEvent.click(getByLabelText('E-learning'));
+    userEvent.click(getByLabelText(HowWasItDelivered.ELearning));
     const completedDate = getByTestId('completedDate');
     userEvent.type(within(completedDate).getByLabelText('Day'), '1');
     userEvent.type(within(completedDate).getByLabelText('Month'), '1');
@@ -195,7 +194,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       title: 'Training',
       accredited: 'Yes',
       deliveredBy: 'External provider',
-      howWasItDelivered: 'E-learning',
+      howWasItDelivered: HowWasItDelivered.ELearning,
       validityPeriodInMonth: null,
       doesNotExpire: true,
       completed: '2020-01-01',
@@ -234,7 +233,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       accredited: 'Yes',
       deliveredBy: null,
       externalProviderName: null,
-      howWasItDelivered: 'Face to face',
+      howWasItDelivered: HowWasItDelivered.FaceToFace,
       validityPeriodInMonth: 12,
       doesNotExpire: null,
       completed: '2020-01-01',
@@ -320,7 +319,7 @@ describe('MultipleTrainingDetailsComponent', () => {
             accredited: 'Yes',
             deliveredBy: 'External provider',
             externalProviderName: 'Care Skills Academy',
-            howWasItDelivered: 'Face to face',
+            howWasItDelivered: HowWasItDelivered.FaceToFace,
             validityPeriodInMonth: null,
             doesNotExpire: null,
             completed: { day: 1, month: 1, year: 2020 },
@@ -346,7 +345,7 @@ describe('MultipleTrainingDetailsComponent', () => {
             accredited: 'Yes',
             deliveredBy: 'External provider',
             externalProviderName: 'Free text provider',
-            howWasItDelivered: 'Face to face',
+            howWasItDelivered: HowWasItDelivered.FaceToFace,
             validityPeriodInMonth: null,
             doesNotExpire: null,
             completed: { day: 1, month: 1, year: 2020 },

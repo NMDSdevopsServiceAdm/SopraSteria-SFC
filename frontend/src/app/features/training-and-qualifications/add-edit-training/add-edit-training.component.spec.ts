@@ -581,7 +581,7 @@ describe('AddEditTrainingComponent', () => {
         accredited: 'Yes',
         deliveredBy: 'External provider',
         externalProviderName: 'Care skills academy',
-        howWasItDelivered: 'E-learning',
+        howWasItDelivered: HowWasItDelivered.ELearning,
         doesNotExpire: false,
         validityPeriodInMonth: 24,
         completed: { day: 2, month: 1, year: 2020 },
@@ -900,7 +900,7 @@ describe('AddEditTrainingComponent', () => {
         accredited: 'Yes',
         deliveredBy: 'External provider',
         externalProviderName: 'Care skills academy',
-        howWasItDelivered: 'E-learning',
+        howWasItDelivered: HowWasItDelivered.ELearning,
         doesNotExpire: false,
         validityPeriodInMonth: 24,
         completed: { day: 2, month: 1, year: 2020 },
@@ -919,7 +919,7 @@ describe('AddEditTrainingComponent', () => {
           title: 'Communication Training 1',
           accredited: 'Yes',
           deliveredBy: 'External provider',
-          howWasItDelivered: 'E-learning',
+          howWasItDelivered: HowWasItDelivered.ELearning,
           doesNotExpire: false,
           validityPeriodInMonth: 24,
           completed: '2020-01-02',
@@ -960,7 +960,7 @@ describe('AddEditTrainingComponent', () => {
       userEvent.type(getByLabelText('Provider name'), 'Care skills academy');
       userEvent.type(getByLabelText('How many months is the training valid for before it expires?'), '');
       userEvent.type(getByLabelText('This training does not expire'), 'true');
-      userEvent.click(getByLabelText('E-learning'));
+      userEvent.click(getByLabelText(HowWasItDelivered.ELearning));
 
       const completedDate = getByTestId('completedDate');
       fillInDate(completedDate, '2020', '4', '10');
@@ -977,7 +977,7 @@ describe('AddEditTrainingComponent', () => {
         accredited: 'Yes',
         deliveredBy: 'External provider',
         externalProviderName: 'Care skills academy',
-        howWasItDelivered: 'E-learning',
+        howWasItDelivered: HowWasItDelivered.ELearning,
         validityPeriodInMonth: null,
         doesNotExpire: true,
         completed: { day: 10, month: 4, year: 2020 },
@@ -992,7 +992,7 @@ describe('AddEditTrainingComponent', () => {
         title: 'Some training',
         accredited: 'Yes',
         deliveredBy: 'External provider',
-        howWasItDelivered: 'E-learning',
+        howWasItDelivered: HowWasItDelivered.ELearning,
         validityPeriodInMonth: null,
         doesNotExpire: true,
         completed: '2020-04-10',
@@ -1150,7 +1150,7 @@ describe('AddEditTrainingComponent', () => {
             title: 'Communication Training 1',
             accredited: 'Yes',
             deliveredBy: 'External provider',
-            howWasItDelivered: 'E-learning',
+            howWasItDelivered: HowWasItDelivered.ELearning,
             validityPeriodInMonth: 24,
             doesNotExpire: false,
             completed: '2020-01-02',

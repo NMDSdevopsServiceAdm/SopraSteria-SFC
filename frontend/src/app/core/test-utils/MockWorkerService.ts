@@ -4,6 +4,7 @@ import { Params } from '@angular/router';
 import { QualificationsByGroup, QualificationType } from '@core/model/qualification.model';
 import {
   CreateTrainingRecordResponse,
+  HowWasItDelivered,
   MultipleTrainingResponse,
   TrainingRecordRequest,
 } from '@core/model/training.model';
@@ -399,7 +400,7 @@ export const trainingRecord = {
   expires: '2021-01-02',
   deliveredBy: 'External provider',
   externalProviderName: 'Care skills academy',
-  howWasItDelivered: 'E-learning',
+  howWasItDelivered: HowWasItDelivered.ELearning,
   validityPeriodInMonth: 24,
   doesNotExpire: false,
   isMatchedToTrainingCourse: false,

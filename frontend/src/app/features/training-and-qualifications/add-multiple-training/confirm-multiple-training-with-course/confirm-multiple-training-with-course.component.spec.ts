@@ -54,8 +54,10 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
   const notes = 'Some notes';
 
   async function setup(overrides: any = {}) {
-    const selectedTrainingCourseToUse = 'customTrainingCourse' in overrides ? overrides.customTrainingCourse : selectedTrainingCourse;
-    const courseCompletionDateToUse = 'customCourseCompletionDate' in overrides ? overrides.customCourseCompletionDate : courseCompletionDate;
+    const selectedTrainingCourseToUse =
+      'customTrainingCourse' in overrides ? overrides.customTrainingCourse : selectedTrainingCourse;
+    const courseCompletionDateToUse =
+      'customCourseCompletionDate' in overrides ? overrides.customCourseCompletionDate : courseCompletionDate;
     const notesToUse = 'customNotes' in overrides ? overrides.customNotes : notes;
     const workersToUse = 'customWorkers' in overrides ? overrides.customWorkers : workers;
 
@@ -234,7 +236,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
       expect(within(trainingRecordDetails).getByText('Yes')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('External provider')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('Care skills academy')).toBeTruthy();
-      expect(within(trainingRecordDetails).getByText('E-learning')).toBeTruthy();
+      expect(within(trainingRecordDetails).getByText(HowWasItDelivered.ELearning)).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('12 months')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('21 August 2024')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('Some notes')).toBeTruthy();
@@ -246,7 +248,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
         const trainingRecordDetails = getByTestId('training-record-details');
         const trainingCourseCompletionDateKey = within(trainingRecordDetails).getByText('Training completion date');
 
-        const trainingCourseCompletionDateRow = trainingCourseCompletionDateKey.parentElement
+        const trainingCourseCompletionDateRow = trainingCourseCompletionDateKey.parentElement;
 
         const trainingCourseCompletionDateValue = within(trainingCourseCompletionDateRow).getByText('21 August 2024');
         const changeLink = within(trainingCourseCompletionDateRow).getByRole('link', { name: 'Change' });
@@ -272,7 +274,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
           customTrainingCourse: {
             ...selectedTrainingCourse,
             deliveredBy: DeliveredBy.InHouseStaff,
-          }
+          },
         });
         const trainingRecordDetails = getByTestId('training-record-details');
 
@@ -286,12 +288,12 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
             customTrainingCourse: {
               ...selectedTrainingCourse,
               deliveredBy: DeliveredBy.InHouseStaff,
-            }
+            },
           });
           const trainingRecordDetails = getByTestId('training-record-details');
           const trainingCourseCompletionDateKey = within(trainingRecordDetails).getByText('Training completion date');
 
-          const trainingCourseCompletionDateRow = trainingCourseCompletionDateKey.parentElement
+          const trainingCourseCompletionDateRow = trainingCourseCompletionDateKey.parentElement;
 
           const trainingCourseCompletionDateValue = within(trainingCourseCompletionDateRow).getByText('21 August 2024');
           const changeLink = within(trainingCourseCompletionDateRow).getByRole('link', { name: 'Change' });
@@ -320,15 +322,13 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
       });
     });
 
-
-
     describe('When there is missing data', () => {
       it('should display "-" if training course data from the training service is missing', async () => {
         const { getByTestId } = await setup({
           customTrainingCourse: {
             ...selectedTrainingCourse,
             accredited: null,
-          }
+          },
         });
         const trainingRecordDetails = getByTestId('training-record-details');
         expect(within(trainingRecordDetails).queryAllByText('-').length).toEqual(1);
@@ -345,7 +345,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
 
       it('should display "No notes added" if there are no notes', async () => {
         const { getByTestId } = await setup({
-          customNotes: null
+          customNotes: null,
         });
         const trainingRecordDetails = getByTestId('training-record-details');
 
@@ -367,8 +367,8 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
           const { getByTestId } = await setup({
             customTrainingCourse: {
               ...selectedTrainingCourse,
-              validityPeriodInMonth: 1
-            }
+              validityPeriodInMonth: 1,
+            },
           });
           const trainingRecordDetails = getByTestId('training-record-details');
           expect(within(trainingRecordDetails).getByText('1 month')).toBeTruthy();
@@ -431,9 +431,11 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
         notes: null,
         trainingCourseFK: selectedTrainingCourse.id,
       };
-      const { createMultipleTrainingRecordsSpy, fixture, getByText } = await setup(
-        { trainingRecordDetails, customCourseCompletionDate: null, customNotes: null }
-      );
+      const { createMultipleTrainingRecordsSpy, fixture, getByText } = await setup({
+        trainingRecordDetails,
+        customCourseCompletionDate: null,
+        customNotes: null,
+      });
 
       const button = getByText('Save training records');
       fireEvent.click(button);
@@ -513,7 +515,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
     });
 
     it('should navigate back to the dashboard and add an alert', async () => {
-      const { fixture, getByText, routerSpy, alertSpy,  } = await setup({ customWorkers: workers.slice(0, -1), });
+      const { fixture, getByText, routerSpy, alertSpy } = await setup({ customWorkers: workers.slice(0, -1) });
 
       const button = getByText('Save training records');
       fireEvent.click(button);

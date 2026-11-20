@@ -194,30 +194,21 @@
               <fieldset class="govuk-fieldset">
                 <legend class="govuk-fieldset__legend">How was this training course delivered?</legend>
                 <div class="govuk-radios">
-                  <div class="govuk-radios__item">
-                    <input
-                      class="govuk-radios__input"
-                      id="howWasItDelivered-FaceToFace"
-                      [formControlName]="'howWasItDelivered'"
-                      type="radio"
-                      [value]="howWasItDeliveredOptions.FaceToFace"
-                    />
-                    <label class="govuk-label govuk-radios__label" for="howWasItDelivered-FaceToFace">
-                      {{ howWasItDeliveredOptions.FaceToFace }}
-                    </label>
-                  </div>
-                  <div class="govuk-radios__item">
-                    <input
-                      class="govuk-radios__input"
-                      id="howWasItDelivered-ELearning"
-                      [formControlName]="'howWasItDelivered'"
-                      type="radio"
-                      [value]="howWasItDeliveredOptions.ELearning"
-                    />
-                    <label class="govuk-label govuk-radios__label" for="howWasItDelivered-ELearning">
-                      {{ howWasItDeliveredOptions.ELearning }}
-                    </label>
-                  </div>
+                  @for (option of howWasItDeliveredOptions | keyvalue: null; track option.key) {
+                    @let id = 'howWasItDelivered-' + option.key;
+                    <div class="govuk-radios__item">
+                      <input
+                        class="govuk-radios__input"
+                        [id]="id"
+                        [formControlName]="'howWasItDelivered'"
+                        type="radio"
+                        [value]="option.value"
+                      />
+                      <label class="govuk-label govuk-radios__label" [for]="id">
+                        {{ option.value }}
+                      </label>
+                    </div>
+                  }
                 </div>
               </fieldset>
             </div>

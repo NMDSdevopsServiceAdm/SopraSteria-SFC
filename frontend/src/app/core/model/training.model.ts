@@ -167,4 +167,6 @@ export enum DeliveredBy {
 export enum HowWasItDelivered {
   FaceToFace = 'Face to face',
   ELearning = 'E-learning',
+  OnlineWithLiveTrainer = 'Online with a live trainer',
+  MixOfDeliveryMethods = 'A mix of delivery methods',
 }

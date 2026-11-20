@@ -21,6 +21,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { ConfirmMultipleTrainingComponent } from './confirm-multiple-training.component';
+import { HowWasItDelivered } from '@core/model/training.model';
 
 describe('ConfirmMultipleTrainingComponent', () => {
   const selectedTraining = {
@@ -31,7 +32,7 @@ describe('ConfirmMultipleTrainingComponent', () => {
     title: 'Title',
     howWasItDelivered: 'External',
     externalProviderName: 'Care Skills Academy',
-    deliveredBy: 'Face to face',
+    deliveredBy: HowWasItDelivered.FaceToFace,
   };
   async function setup(overrides: any = { incompleteTraining: false, isPrimaryWorkplace: true }) {
     const setupTools = await render(ConfirmMultipleTrainingComponent, {
@@ -142,7 +143,7 @@ describe('ConfirmMultipleTrainingComponent', () => {
             ...selectedTraining,
             howWasItDelivered: 'External',
             externalProviderName: 'Care Skills Academy',
-            deliveredBy: 'Face to face',
+            deliveredBy: HowWasItDelivered.FaceToFace,
             validityPeriodInMonth: 12,
             otherTrainingProviderName: null,
           },
@@ -158,7 +159,7 @@ describe('ConfirmMultipleTrainingComponent', () => {
       expect(within(trainingRecordDetails).getByText('This is a note')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('External')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('Care Skills Academy')).toBeTruthy();
-      expect(within(trainingRecordDetails).getByText('Face to face')).toBeTruthy();
+      expect(within(trainingRecordDetails).getByText(HowWasItDelivered.FaceToFace)).toBeTruthy();
     });
 
     describe('When the external training provider is recorded as free text', () => {
@@ -169,7 +170,7 @@ describe('ConfirmMultipleTrainingComponent', () => {
               ...selectedTraining,
               howWasItDelivered: 'External',
               externalProviderName: null,
-              deliveredBy: 'Face to face',
+              deliveredBy: HowWasItDelivered.FaceToFace,
               validityPeriodInMonth: 12,
               otherTrainingProviderName: 'Udemy',
             },
@@ -198,7 +199,7 @@ describe('ConfirmMultipleTrainingComponent', () => {
               ...selectedTraining,
               howWasItDelivered: 'External',
               externalProviderName: 'Care Skills Academy',
-              deliveredBy: 'Face to face',
+              deliveredBy: HowWasItDelivered.FaceToFace,
               validityPeriodInMonth: 1,
             },
           },

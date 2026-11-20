@@ -298,12 +298,7 @@ class TrainingCsvValidator {
   }
 
   _convertHowDelivered(key) {
-    const howDeliveredValues = {
-      1: 'Face to face',
-      2: 'E-learning',
-    };
-
-    return howDeliveredValues[key];
+    return this.BUDI.howWasItDelivered(this.BUDI.TO_ASC, Number(key));
   }
 
   _validateValidity() {
