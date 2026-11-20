@@ -42,3 +42,13 @@
   font-weight: 700;
   line-height: 25px;
 }
+
+.asc-card__training-and-quals {
+  height: 320px;
+}
+
+@media (max-width: 1024px) {
+  .asc-card__training-and-quals {
+    height: 444px;
+  }
+}
