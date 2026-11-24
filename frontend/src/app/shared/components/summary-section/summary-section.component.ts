@@ -301,12 +301,14 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.sections[2].redFlag = true;
       this.sections[2].message = 'You need to check your training records';
       this.sections[2].scrollToId = 'training-info-panel';
+      this.sections[2].route = ['./workplace', this.workplace.uid, 'manage-training-and-qualification-records'];
       return;
     }
 
     if (hasExpiringSoon) {
       this.sections[2].message = 'You need to check your training records';
       this.sections[2].scrollToId = 'training-info-panel';
+      this.sections[2].route = ['./workplace', this.workplace.uid, 'manage-training-and-qualification-records'];
       return;
     }
 

@@ -1099,9 +1099,11 @@ describe('Summary section', () => {
 
         userEvent.click(within(tAndQRow).getByText('You need to check your training records'));
 
-        expect(navigateAndScrollSpy).toHaveBeenCalledWith(['/dashboard'], 'training-info-panel', {
-          fragment: 'training-and-qualifications',
-        });
+        expect(navigateAndScrollSpy).toHaveBeenCalledWith(
+          ['./workplace', Establishment.uid, 'manage-training-and-qualification-records'],
+          'training-info-panel',
+          {},
+        );
       });
     });
 
