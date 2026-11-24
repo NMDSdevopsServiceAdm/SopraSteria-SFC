@@ -346,5 +346,12 @@ describe('careWorkforcePathwayRoleCategories Property', () => {
       const json = careWorkforcePathwayRoleCategoryProperty.toJSON();
       expect(json.careWorkforcePathwayRoleCategory).to.deep.equal(property);
     });
+
+    it('should return the value as undefined if not touched', () => {
+      const careWorkforcePathwayRoleCategoryProperty = new careWorkforcePathwayRoleCategoryPropertyClass();
+
+      const json = careWorkforcePathwayRoleCategoryProperty.toJSON();
+      expect(json.careWorkforcePathwayRoleCategory).to.deep.equal(undefined);
+    });
   });
 });

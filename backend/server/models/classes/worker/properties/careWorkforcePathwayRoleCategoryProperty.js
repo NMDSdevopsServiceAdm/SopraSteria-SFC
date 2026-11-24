@@ -82,6 +82,12 @@ exports.CareWorkforcePathwayRoleCategoryProperty = class CareWorkforcePathwayRol
 
   toJSON(withHistory = false, showPropertyHistoryOnly = true) {
     if (!withHistory) {
+      if (!this._changed && this.property === null) {
+        return {
+          careWorkforcePathwayRoleCategory: undefined,
+        };
+      }
+
       // simple form
       return {
         careWorkforcePathwayRoleCategory: this.property,
