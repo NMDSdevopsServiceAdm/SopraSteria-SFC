@@ -1,14 +1,28 @@
+@if (workerCount === 0) {
+  <div class="govuk-grid-row asc-alert-wrapper" data-testid="no-staff-records">
+    <app-inset-text color="warning" [removeTopMargin]="true"
+      >You need to <a href="#" (click)="navigateToStaffRecords($event)">add some staff records</a> before you can add
+      training and qualification records</app-inset-text
+    >
+  </div>
+}
 <div class="govuk-!-margin-top-6">
   @for (rowNumber of [1, 2]; track rowNumber) {
     <div class="govuk-grid-row">
       @let firstCardInRow = 3 * (rowNumber - 1);
       @let lastCardInRow = firstCardInRow + 3;
+
       @for (card of cards.slice(firstCardInRow, lastCardInRow); track card.linkText) {
         <div class="govuk-grid-column-one-third asc-card-padding">
           <app-card [image]="card.imageSrc" [customClass]="'asc-card__training-and-quals'">
-            <a [routerLink]="card.linkUrl" class="govuk-link govuk-link--no-visited-state asc-card-link" href="#">
-              {{ card.linkText }}
-            </a>
+            @if (card.displayLink) {
+              <a [routerLink]="card.linkUrl" class="govuk-link govuk-link--no-visited-state asc-card-link" href="#">
+                {{ card.linkText }}
+              </a>
+            } @else {
+              <span class="govuk-body asc-card-link">{{ card.linkText }}</span>
+            }
+
             <p class="govuk-!-margin-0 asc-card-description">{{ card.description }}</p>
           </app-card>
         </div>
