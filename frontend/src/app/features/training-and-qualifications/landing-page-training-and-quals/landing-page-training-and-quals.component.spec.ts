@@ -1,20 +1,21 @@
-import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { LandingPageTrainingAndQualsComponent } from './landing-page-training-and-quals.component';
-import { workerBuilder } from '@core/test-utils/MockWorkerService';
-import { Establishment } from '@core/model/establishment.model';
-import { render } from '@testing-library/angular';
-import { Worker } from '@core/model/worker.model';
-import { SharedModule } from '@shared/shared.module';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { getTestBed } from '@angular/core/testing';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { getByTestId, within } from '@testing-library/dom';
-import userEvent from '@testing-library/user-event';
+import { getTestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Establishment } from '@core/model/establishment.model';
+import { Worker } from '@core/model/worker.model';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { trainingCourseBuilder } from '@core/test-utils/MockTrainingCourseService';
+import { workerBuilder } from '@core/test-utils/MockWorkerService';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
+import { within } from '@testing-library/dom';
+import userEvent from '@testing-library/user-event';
 
-fdescribe('LandingPageTrainingAndQualsComponent', () => {
+import { LandingPageTrainingAndQualsComponent } from './landing-page-training-and-quals.component';
+
+describe('LandingPageTrainingAndQualsComponent', () => {
   const mockEstablishment = establishmentBuilder() as Establishment;
   const mockEstablishmentUid = mockEstablishment.uid;
 

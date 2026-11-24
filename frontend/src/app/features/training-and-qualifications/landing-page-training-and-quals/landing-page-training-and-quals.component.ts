@@ -26,7 +26,7 @@ export class LandingPageTrainingAndQualsComponent {
 
   ngOnInit() {
     this.workplace = this.route.snapshot.data.establishment;
-    this.workplaceUid = this.workplace.uid;
+    this.workplaceUid = this.workplace?.uid;
     this.workers = this.route.snapshot.data.workers?.workers;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.trainingCourses = this.route.snapshot.data.trainingCourses;
