@@ -111,11 +111,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
   }
 
   private getHeader(): void {
-    if (this.tab === 'training-and-qualifications') {
-      this.header = `${this.tabsMap[this.tab]} (${this.tAndQCount})`;
-    } else {
-      this.header = this.tabsMap[this.tab];
-    }
+    this.header = this.tabsMap[this.tab];
   }
 
   public navigateToDeleteWorkplace(event: Event): void {
