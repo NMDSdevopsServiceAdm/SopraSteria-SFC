@@ -43,6 +43,7 @@ import {
   allWorkplacesJourney,
   benchmarksTabJourney,
   deleteWorkplaceJourney,
+  manageTrainingAndQualificationsRecordsJourney,
   myWorkplaceJourney,
   staffRecordsTabJourney,
   trainingAndQualificationsTabJourney,
@@ -60,7 +61,10 @@ export class BreadcrumbService {
   private readonly _overrideMessage$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
   public readonly overrideMessage$: Observable<string> = this._overrideMessage$.asObservable();
 
-  constructor(private router: Router, private location: Location) {
+  constructor(
+    private router: Router,
+    private location: Location,
+  ) {
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
@@ -293,6 +297,10 @@ export class BreadcrumbService {
       }
       case JourneyType.TRAINING_AND_QUALIFICATIONS_TAB: {
         routes = trainingAndQualificationsTabJourney;
+        break;
+      }
+      case JourneyType.MANAGE_TRAINING_AND_QUALIFICATION_RECORDS: {
+        routes = manageTrainingAndQualificationsRecordsJourney;
         break;
       }
       case JourneyType.TRAINING_COURSE: {
