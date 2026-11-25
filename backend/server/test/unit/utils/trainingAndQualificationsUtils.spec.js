@@ -304,7 +304,7 @@ describe('trainingAndQualificationsUtils', () => {
           categoryFK: 5,
           trainingName: 'Old age care training',
           expiryDate: new Date(after90Days),
-          status: 'Up-to-date',
+          status: 'Expiring soon',
           dateCompleted: new Date('2020-01-01T00:00:00.000Z'),
           accredited: 'Yes',
 

@@ -38,8 +38,9 @@ export class TrainingStatusService {
   }
 
   public getDaysDifference(expires: Date) {
-    const expiringDate = dayjs(expires);
-    const currentDate = dayjs();
-    return expiringDate.diff(currentDate, 'days');
+    const expiringDate = dayjs(expires).startOf('day');
+    const currentDate = dayjs().startOf('day');
+
+    return expiringDate.diff(currentDate, 'day');
   }
 }

@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
-const models = require('../../models');
+const models = require('../../../models');
 const { celebrate, Joi, errors } = require('celebrate');
-const { hasPermission } = require('../../utils/security/hasPermission');
+const { hasPermission } = require('../../../utils/security/hasPermission');
 
 const getExpiresSoonAlertDate = async (req, res) => {
   try {
