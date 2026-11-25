@@ -82,7 +82,7 @@ describe('LandingPageTrainingAndQualsComponent', () => {
     },
     {
       linkText: 'Link saved courses to your existing records',
-      expectedHref: `/workplace/${mockEstablishmentUid}/training-course/add-and-manage-training-courses`,
+      expectedHref: `/workplace/${mockEstablishmentUid}/update-records-with-training-course-details/select-a-training-course`,
     },
     {
       linkText: 'Set mandatory training categories',

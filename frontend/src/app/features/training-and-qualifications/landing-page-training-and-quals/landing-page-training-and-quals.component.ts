@@ -60,7 +60,12 @@ export class LandingPageTrainingAndQualsComponent {
       {
         imageSrc: '/assets/images/link-courses.svg',
         linkText: 'Link saved courses to your existing records',
-        linkUrl: ['/workplace', this.workplaceUid, 'training-course', 'add-and-manage-training-courses'],
+        linkUrl: [
+          '/workplace',
+          this.workplaceUid,
+          'update-records-with-training-course-details',
+          'select-a-training-course',
+        ],
         description: 'Quickly apply course details to existing training records.',
         displayLink: this.workerCount > 0 && this.trainingCourses?.length > 0,
       },
