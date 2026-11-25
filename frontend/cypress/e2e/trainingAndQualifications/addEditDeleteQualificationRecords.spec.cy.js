@@ -2,15 +2,15 @@
 /// <reference types="cypress" />
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 import { userPassword } from '../../support/configData';
+import { clickIntoWorkerTAndQRecordPage } from './trainingCourse/helpers';
 
 describe('qualification record', { tags: '@trainingAndQualifications' }, () => {
   const workerName1 = 'Test worker';
   const workerName2 = 'Test worker 2';
 
   before(() => {
-    cy.revertUserAttributes(StandAloneEstablishment.editUserLoginName);
-    cy.deleteWorkerTrainingRecord({ establishmentID: StandAloneEstablishment.id, workerName: workerName1 });
-    cy.deleteWorkerTrainingRecord({ establishmentID: StandAloneEstablishment.id, workerName: workerName2 });
+    cy.deleteWorkerQualificationsRecord({ establishmentID: StandAloneEstablishment.id, workerName: workerName1 });
+    cy.deleteWorkerQualificationsRecord({ establishmentID: StandAloneEstablishment.id, workerName: workerName2 });
 
     cy.deleteTestWorkerFromDb(workerName1);
     cy.deleteTestWorkerFromDb(workerName2);
@@ -35,7 +35,7 @@ describe('qualification record', { tags: '@trainingAndQualifications' }, () => {
   const qualificationName = 'Adult care worker (standard, level 2)';
 
   it('should add successfully', () => {
-    cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+    clickIntoWorkerTAndQRecordPage(workerName1);
     cy.contains('a', 'Add a qualification record').click();
 
     // select qualification
@@ -62,7 +62,7 @@ describe('qualification record', { tags: '@trainingAndQualifications' }, () => {
       workerName: workerName1,
       categoryId: 121,
     });
-    cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+    clickIntoWorkerTAndQRecordPage(workerName1);
     cy.contains('a', qualificationName).click();
 
     // update qualification record details
@@ -80,7 +80,7 @@ describe('qualification record', { tags: '@trainingAndQualifications' }, () => {
       workerName: workerName1,
       categoryId: 121,
     });
-    cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+    clickIntoWorkerTAndQRecordPage(workerName1);
     cy.contains('a', qualificationName).click();
 
     // update qualification record details

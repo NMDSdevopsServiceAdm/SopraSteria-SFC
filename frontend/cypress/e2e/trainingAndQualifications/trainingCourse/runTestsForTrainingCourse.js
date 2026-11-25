@@ -47,9 +47,7 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
         validityPeriodInMonth: 24,
       };
 
-      onHomePage.clickTab('Training and qualifications');
-      cy.contains('Add and manage training').click();
-      cy.get('a').contains('Add training courses').click();
+      clickIntoAddAndManageTrainingCourses();
 
       cy.get('a').contains('Add a training course').click();
 

@@ -2,7 +2,11 @@
 /// <reference types="cypress" />
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
-import { clickAddLinkForRow, clickIntoWorkerTAndQRecordPage } from './trainingCourse/helpers';
+import {
+  clickAddLinkForRow,
+  clickIntoManageTAndQRecordPage,
+  clickIntoWorkerTAndQRecordPage,
+} from './trainingCourse/helpers';
 import { userPassword } from '../../support/configData';
 
 describe('mandatory training', { tags: '@mandatoryTraining' }, () => {
@@ -135,6 +139,7 @@ describe('mandatory training', { tags: '@mandatoryTraining' }, () => {
     });
 
     it('should show a warning and an Add link for each missing mandatory training of a worker', () => {
+      clickIntoManageTAndQRecordPage();
       cy.contains('a', '1 staff is missing mandatory training').should('be.visible').as('missingWarning');
       cy.get('@missingWarning').click();
 
@@ -179,8 +184,7 @@ describe('mandatory training', { tags: '@mandatoryTraining' }, () => {
 });
 
 function clickIntoMandatoryTrainingPage() {
-  cy.contains('button', 'Add and manage training').click();
-  cy.contains('a', 'Manage mandatory training').click();
+  cy.contains('a', 'Set mandatory training categories').click();
 
   cy.get('h1').should('contain', 'Add and manage mandatory training categories');
 }

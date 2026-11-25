@@ -6,6 +6,7 @@ import {
   clickUpdateLinkForRow,
   clickIntoWorkerTAndQRecordPage,
   expectTrainingRecordPageToHaveCourseDetails,
+  clickIntoManageTAndQRecordPage,
 } from './trainingCourse/helpers';
 import { userPassword } from '../../support/configData';
 
@@ -50,7 +51,7 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
 
   describe('no training courses', () => {
     it('should add successfully when picking an external provider not on the select list', () => {
-      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+      clickIntoWorkerTAndQRecordPage(workerName1);
       cy.contains('a', 'Add a training record').click();
 
       // select training category
@@ -87,7 +88,7 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
     });
 
     it('should add successfully when picking an external provider from the select list', () => {
-      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+      clickIntoWorkerTAndQRecordPage(workerName1);
       cy.contains('a', 'Add a training record').click();
 
       // select training category
@@ -137,7 +138,7 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
     });
 
     it('should add successfully when no training course is picked', () => {
-      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+      clickIntoWorkerTAndQRecordPage(workerName1);
       cy.contains('a', 'Add a training record').click();
 
       // add a training record
@@ -172,7 +173,7 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
     });
 
     it('should add successfully when a training course is picked', () => {
-      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+      clickIntoWorkerTAndQRecordPage(workerName1);
       cy.contains('a', 'Add a training record').click();
 
       // add a training record
@@ -212,7 +213,7 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
     cy.intercept('GET', '/api/trainingCategories').as('trainingCategories');
 
     cy.addWorkerTraining({ establishmentID, workerName: workerName1, categoryId: 4 });
-    cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+    clickIntoWorkerTAndQRecordPage(workerName1);
     cy.contains('a', trainingName).click();
 
     // update training record details
@@ -241,7 +242,7 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
 
   it('should delete successfully', () => {
     cy.addWorkerTraining({ establishmentID, workerName: workerName1, categoryId: 4 });
-    cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+    clickIntoWorkerTAndQRecordPage(workerName1);
     cy.contains('a', trainingName).click();
 
     // training record
@@ -308,7 +309,7 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
       });
       cy.reload();
 
-      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+      clickIntoWorkerTAndQRecordPage(workerName1);
       cy.contains('a', trainingName).click();
 
       cy.contains('button', 'Select a training course').click();
@@ -351,7 +352,7 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
 
       cy.reload();
 
-      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+      clickIntoWorkerTAndQRecordPage(workerName1);
       cy.contains('a', trainingCourseName).click();
 
       cy.get('h1').should('contain', 'Training record details');
@@ -400,7 +401,7 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
 
       cy.reload();
 
-      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+      clickIntoWorkerTAndQRecordPage(workerName1);
       cy.contains('a', trainingCourseName).click();
 
       cy.contains('Select a different training course').click();
@@ -437,8 +438,8 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
       before(() => {
         cy.deleteAllTrainingCourses(establishmentID);
       });
+
       it('should add successfully when there are no saved training courses', () => {
-        cy.contains('button', 'Add and manage training').click();
         cy.contains('a', 'Add multiple training records').click();
 
         // select staff
@@ -512,7 +513,6 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
       });
 
       it('should add successfully when no training courses are picked', () => {
-        cy.contains('button', 'Add and manage training').click();
         cy.contains('a', 'Add multiple training records').click();
 
         // select staff
@@ -574,7 +574,6 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
       });
 
       it('should add successfully when a training courses is picked', () => {
-        cy.contains('button', 'Add and manage training').click();
         cy.contains('a', 'Add multiple training records').click();
 
         // select staff
@@ -621,7 +620,7 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
         cy.get('[data-testid="generic_alert"]').contains('2 training records added');
 
         //check dates have been saved correctly
-        cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+        clickIntoWorkerTAndQRecordPage(workerName1);
         cy.contains('a', trainingCourseName).click();
 
         cy.get('[data-testid="completedDate"]').within(() => {
@@ -692,8 +691,7 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
 
         // change expiry alerts to 30 days
         onHomePage.clickTab('Training and qualifications');
-        cy.contains('button', 'Add and manage training').click();
-        cy.contains('a', 'Manage expiry alerts').click();
+        cy.contains('a', 'Change when expiry alerts appear').click();
 
         cy.get('h1').should('contain', 'Manage expiry alerts');
         cy.getByLabel('30 days before the training expires').click();
@@ -734,7 +732,7 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
       });
 
       it('should show a warning and an Update link for each expired training of a worker', () => {
-        onHomePage.clickTab('Training and qualifications');
+        clickIntoManageTAndQRecordPage();
         cy.contains('a', '2 records have expired').should('be.visible').as('expiryWarning');
         cy.get('@expiryWarning').click();
 

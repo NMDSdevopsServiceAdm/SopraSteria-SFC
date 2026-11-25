@@ -16,9 +16,10 @@ describe('Standalone staff records page as edit user', { tags: '@staffRecords' }
   const testWorkerNames = ['Cypress test worker', 'Mr Cool', 'Mr Warm', 'Mr Smith', 'Bob', , worker1, worker2, worker3];
 
   before(() => {
-    testWorkerNames.forEach((workerName) =>
-      cy.deleteWorkerQualificationsRecord({ establishmentID: establishmentId, workerName }),
-    );
+    testWorkerNames.forEach((workerName) => {
+      cy.deleteWorkerQualificationsRecord({ establishmentID: establishmentId, workerName });
+      cy.deleteWorkerTrainingRecord({ establishmentID: establishmentId, workerName });
+    });
     testWorkerNames.forEach((workerName) => cy.deleteTestWorkerFromDb(workerName));
     cy.resetStartersLeaversVacancies(establishmentId);
   });
