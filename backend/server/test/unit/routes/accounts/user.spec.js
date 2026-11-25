@@ -533,6 +533,45 @@ describe('user.js', () => {
         expect(res.statusCode).to.equal(200);
         expect(GovNotifySendEmail.sendUpdateUserDetails).not.to.have.been.called;
       });
+
+      it('should allow admin to change a read user to edit when edit user limit is reached', async () => {
+        sinon.stub(User.prototype, 'userRole').value('Read');
+
+        User.fetchUserTypeCounts.restore();
+        sinon.stub(User, 'fetchUserTypeCounts').resolves({ Edit: 3, Read: 1 });
+
+        const req = {
+          ...defaultReq,
+          role: 'Admin',
+          body: { ...normalUser, role: 'Edit' },
+        };
+        const res = httpMocks.createResponse();
+
+        await updateNormalUser(req, res);
+
+        expect(res.statusCode).to.equal(200);
+        expect(User.prototype.save).to.have.been.called;
+        expect(User.fetchUserTypeCounts).not.to.have.been.called;
+      });
+
+      it('should prevent primary user from changing a read user to edit when edit user limit is reached', async () => {
+        sinon.stub(User.prototype, 'userRole').value('Read');
+
+        User.fetchUserTypeCounts.restore();
+        sinon.stub(User, 'fetchUserTypeCounts').resolves({ Edit: 3, Read: 1 });
+
+        const req = {
+          ...defaultReq,
+          role: 'Edit',
+          body: { ...normalUser, role: 'Edit' },
+        };
+        const res = httpMocks.createResponse();
+
+        await updateNormalUser(req, res);
+
+        expect(res.statusCode).to.equal(400);
+        expect(User.prototype.save).not.to.have.been.called;
+      });
     });
 
     describe('updateAdminUser  PUT /api/user/admin/:userId', () => {
