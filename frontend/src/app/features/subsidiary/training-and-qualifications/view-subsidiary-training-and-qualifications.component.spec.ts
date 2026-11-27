@@ -56,7 +56,6 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(permissions),
-          // deps: [HttpClient, Router, UserService],
         },
         { provide: Router, useFactory: MockRouter.factory({ navigate: routerSpy }) },
         {
