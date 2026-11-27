@@ -13,9 +13,9 @@ import {
 import { TrainingRecord } from '@core/model/training.model';
 
 const revealText = {
-  title: 'Why is it a good idea to update records with training course details?',
+  title: 'Why is it a good idea to link courses to your existing training records?',
   paragraph:
-    "It's a good idea because your training records will then be consistent with each other, sharing the same details, like course name and validity. We match records to courses by category and when you update them they'll:",
+    "It's a good idea because your training records will then be consistent with each other, sharing the same details, like course name and validity. We match records to courses by category and when you link them they'll:",
   bullets: [
     'take the name of the training course',
     'say whether the training is accredited',
