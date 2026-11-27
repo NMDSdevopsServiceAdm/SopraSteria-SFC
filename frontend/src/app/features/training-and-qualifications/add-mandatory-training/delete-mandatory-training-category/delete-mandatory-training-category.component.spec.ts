@@ -88,6 +88,10 @@ describe('DeleteMandatoryTrainingCategoryComponent', () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
+  it('should display a preheader', async () => {
+    const { getByText } = await setup();
+    expect(getByText('Set mandatory training categories')).toBeTruthy();
+  });
 
   it('should display the heading', async () => {
     const { getByText } = await setup();

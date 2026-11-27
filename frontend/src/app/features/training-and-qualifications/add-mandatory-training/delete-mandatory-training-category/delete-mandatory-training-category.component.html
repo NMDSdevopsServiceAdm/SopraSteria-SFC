@@ -1,5 +1,6 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-three-quarters">
+    <span class="govuk-caption-l">Set mandatory training categories</span>
     <h1 class="govuk-heading-l">You're about to remove this mandatory training category</h1>
   </div>
 </div>
@@ -18,14 +19,12 @@
         <dt class="govuk-summary-list__key">Job roles</dt>
         <dd class="govuk-summary-list__value">
           @if (selectedCategory?.jobs?.length != allJobRolesCount) {
-            <ul class="govuk-list govuk-!-margin-bottom-0">
-              @for (job of selectedCategory?.jobs; track job.title) {
-                <li>{{ job.title }}</li>
-              }
-            </ul>
-          } @else {
-            All
-          }
+          <ul class="govuk-list govuk-!-margin-bottom-0">
+            @for (job of selectedCategory?.jobs; track job.title) {
+            <li>{{ job.title }}</li>
+            }
+          </ul>
+          } @else { All }
         </dd>
       </div>
     </dl>
