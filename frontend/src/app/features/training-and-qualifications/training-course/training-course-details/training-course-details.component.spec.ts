@@ -121,7 +121,7 @@ describe('TrainingCourseDetailsComponent', () => {
 
         const expectedHeadingText = 'Training course details';
         expect(getByRole('heading', { level: 1 }).textContent).toContain(expectedHeadingText);
-        expect(getByText('Training and qualifications')).toBeTruthy();
+        expect(getByText('Build and manage your list of courses')).toBeTruthy();
       });
 
       it('should show the training category of the selected course', async () => {

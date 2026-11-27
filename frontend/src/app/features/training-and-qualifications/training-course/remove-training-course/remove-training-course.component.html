@@ -1,9 +1,9 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds" data-testid="heading">
-    <span class="govuk-caption-l">Add and update training courses</span>
+    <span class="govuk-caption-l">Build and manage your list of courses</span>
     <h1 class="govuk-heading-l govuk-!-padding-right-8">
-      What happens when you remove
-      {{ journeyType === 'RemoveAll' ? 'all training courses?' : 'a training course?' }}
+      Are you sure you want to remove
+      {{ journeyType === 'RemoveAll' ? 'these courses?' : 'this course?' }}
     </h1>
   </div>
 </div>
@@ -38,24 +38,18 @@
     </ul>
 
     <div class="govuk-!-margin-top-7">
-      @switch (journeyType) {
-        @case ('RemoveSingle') {
-          <p class="govuk-!-padding-top-1 govuk__nowrap">
-            <strong>Training course name:</strong> {{ trainingCourseName }}
-          </p>
+      @switch (journeyType) { @case ('RemoveSingle') {
+      <p class="govuk-!-padding-top-1 govuk__nowrap"><strong>Training course name:</strong> {{ trainingCourseName }}</p>
+      } @case ('RemoveAll') {
+      <p class="govuk-!-padding-top-1 govuk-!-margin-bottom-2 govuk__nowrap">
+        <strong>Training course name</strong>
+      </p>
+      <ul class="govuk-list" id="training-course-list" data-testid="training-courses">
+        @for (course of trainingCourses; track course.uid) {
+        <li>{{ course.name }}</li>
         }
-
-        @case ('RemoveAll') {
-          <p class="govuk-!-padding-top-1 govuk-!-margin-bottom-2 govuk__nowrap">
-            <strong>Training course name</strong>
-          </p>
-          <ul class="govuk-list" id="training-course-list" data-testid="training-courses">
-            @for (course of trainingCourses; track course.uid) {
-              <li>{{ course.name }}</li>
-            }
-          </ul>
-        }
-      }
+      </ul>
+      } }
     </div>
 
     <div class="govuk-button-group govuk-!-margin-top-8">
