@@ -752,8 +752,8 @@ describe('AddEditTrainingComponent', () => {
       const { getByTestId } = await setup(overrides);
 
       const includeTrainingCourseTextContents = [
-        'Why is it a good idea to update records with training course details?',
-        "It's a good idea because your training records will then be consistent with each other, sharing the same details, like course name and validity. We match records to courses by category and when you update them they'll:",
+        'Why is it a good idea to link courses to your existing training records?',
+        "It's a good idea because your training records will then be consistent with each other, sharing the same details, like course name and validity. We match records to courses by category and when you link them they'll:",
         'take the name of the training course',
         'say whether the training is accredited',
         'say how the training was delivered and who delivered it',

@@ -88,7 +88,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
       }
       case 'Edit': {
         this.heading = 'Training course details';
-        this.sectionHeading = 'Training and qualifications';
+        this.sectionHeading = 'Build and manage your list of courses';
         break;
       }
     }

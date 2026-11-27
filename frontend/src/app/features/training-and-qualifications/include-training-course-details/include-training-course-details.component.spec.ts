@@ -152,7 +152,7 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
         const { getByTestId } = await setup();
         const toggle = getByTestId('details-toggle');
         expect(toggle.textContent.trim()).toEqual(
-          'Why is it a good idea to update records with training course details?',
+          'Why is it a good idea to link courses to your existing training records?',
         );
       });
     });
