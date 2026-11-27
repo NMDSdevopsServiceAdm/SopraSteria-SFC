@@ -44,6 +44,7 @@ import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-wo
 import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/no-of-workers-with-delegated-healthcare-activities-unanswered.resolver';
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
 import { WorkplaceDataRoutes, workplaceQuestionsForFundingPage } from '@features/workplace/workplace-data-routing';
+import { ManageTrainingAndQualificationRecordsComponent } from '@features/training-and-qualifications/manage-training-and-qualification-records/manage-training-and-qualification-records.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -181,6 +182,13 @@ const routes: Routes = [
         data: {
           title: 'Data Area',
         },
+      },
+
+      {
+        path: 'manage-training-and-qualification-records',
+        component: ManageTrainingAndQualificationRecordsComponent,
+        resolve: { workers: WorkersResolver, trainingCourses: TrainingCourseResolver },
+        data: { title: 'Training and qualifications' },
       },
       {
         path: 'add-and-manage-mandatory-training',

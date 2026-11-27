@@ -62,8 +62,7 @@ export const runTestsForUpdateTrainingRecordsWithCourseDetails = (mockEstablishm
 
     it('should be able to update multiple training records with training course details', () => {
       onHomePage.clickTab('Training and qualifications');
-      cy.contains('Add and manage training').click();
-      cy.get('a').contains('Update records with training course details').click();
+      cy.contains('a', 'Link saved courses to your existing records').click();
 
       // should show a plain text but not a link, for courses that have no records to link to
       cy.get('a').contains(trainingCourseWithoutLinkableRecords).should('not.exist');

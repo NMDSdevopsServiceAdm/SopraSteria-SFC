@@ -154,6 +154,7 @@ import { UpdateBannerComponent } from './components/update-banner/update-banner.
 import { DisplaySlvDataComponent } from './components/display-slv-data/display-slv-data.component';
 import { DisplayCwpRoleCategoryComponent } from './components/display-cwp-role-category/display-cwp-role-category.component';
 import { NgxDropzoneModule } from 'ngx-dropzone';
+import { LandingPageTrainingAndQualsComponent } from '@features/training-and-qualifications/landing-page-training-and-quals/landing-page-training-and-quals.component';
 
 @NgModule({
   imports: [
@@ -314,6 +315,7 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
     UpdateBannerComponent,
     DisplaySlvDataComponent,
     DisplayCwpRoleCategoryComponent,
+    LandingPageTrainingAndQualsComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -455,6 +457,7 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
     UpdateBannerComponent,
     DisplaySlvDataComponent,
     DisplayCwpRoleCategoryComponent,
+    LandingPageTrainingAndQualsComponent,
   ],
   providers: [
     DialogService,

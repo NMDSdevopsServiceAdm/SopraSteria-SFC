@@ -88,6 +88,26 @@ export const trainingAndQualificationsTabJourney: JourneyRoute = {
   ],
 };
 
+export const manageTrainingAndQualificationsRecordsJourney: JourneyRoute = {
+  children: [
+    {
+      title: 'Training and qualifications',
+      path: Path.DASHBOARD,
+      fragment: 'training-and-qualifications',
+      children: [
+        {
+          title: 'Manage training and qualification records',
+          path: Path.TRAINING_AND_QUALIFICATIONS_RECORD,
+          referrer: {
+            path: Path.DASHBOARD,
+            fragment: 'training-and-qualifications',
+          },
+        },
+      ],
+    },
+  ],
+};
+
 export function benchmarksTabJourney(isOldTab: boolean = false): JourneyRoute {
   return {
     children: [

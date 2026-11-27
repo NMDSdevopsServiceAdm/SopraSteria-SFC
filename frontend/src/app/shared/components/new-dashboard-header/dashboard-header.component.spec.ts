@@ -48,6 +48,7 @@ describe('NewDashboardHeaderComponent', () => {
   ) => {
     const role = override.isAdmin ? Roles.Admin : Roles.Edit;
     const updatedDate = override.updateDate ? '01/02/2023' : null;
+
     const setupTools = await render(NewDashboardHeaderComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
@@ -457,7 +458,7 @@ describe('NewDashboardHeaderComponent', () => {
   });
 
   describe('training and qualifications tab', () => {
-    it('should display the workplace name, the tab name the number of t and qs, the nmdsId number and the last updated date', async () => {
+    it('should display the workplace name, the tab name, the nmdsId number and the last updated date', async () => {
       const override = {
         tab: 'training-and-qualifications',
         updateDate: true,
@@ -468,7 +469,7 @@ describe('NewDashboardHeaderComponent', () => {
       const workplace = component.workplace;
 
       expect(getByText(workplace.name)).toBeTruthy();
-      expect(getByText('Training and qualifications (5)')).toBeTruthy();
+      expect(getByText('Training and qualifications')).toBeTruthy();
       expect(getByText(`Workplace ID: ${workplace.nmdsId}`)).toBeTruthy();
       expect(getByTestId('separator')).toBeTruthy();
       expect(getByTestId('lastUpdatedDate')).toBeTruthy();
@@ -492,148 +493,6 @@ describe('NewDashboardHeaderComponent', () => {
       const { queryByTestId } = await setup(override);
 
       expect(queryByTestId('contact-info')).toBeFalsy();
-    });
-
-    describe('"Add and manage training" button', () => {
-      it('should be visible if canEditWorker is true', async () => {
-        const override = {
-          tab: 'training-and-qualifications',
-          updateDate: false,
-          canAddWorker: false,
-          canEditWorker: true,
-          hasWorkers: true,
-        };
-
-        const { getByText } = await setup(override);
-        const button = getByText('Add and manage training');
-
-        expect(button).toBeTruthy();
-      });
-
-      it('should not be visible if canEditWorker is not true', async () => {
-        const override = {
-          tab: 'training-and-qualifications',
-        };
-        const { queryByText } = await setup(override);
-
-        expect(queryByText('Add and manage training')).toBeFalsy();
-      });
-
-      it('should not be visible if there are no workers', async () => {
-        const override = {
-          tab: 'training-and-qualifications',
-          updateDate: false,
-          canAddWorker: false,
-          canEditWorker: true,
-          hasWorkers: false,
-        };
-        const { queryByText } = await setup(override);
-
-        expect(queryByText('Add and manage training')).toBeFalsy();
-      });
-
-      it('should not display the sub-menus initially', async () => {
-        const override = {
-          tab: 'training-and-qualifications',
-          updateDate: false,
-          canAddWorker: false,
-          canEditWorker: true,
-          hasWorkers: true,
-        };
-
-        const { fixture } = await setup(override);
-        const subMenus: HTMLElement = fixture.nativeElement.querySelector('.asc-button-menu__wrapper');
-
-        expect(subMenus.hidden).toBeTruthy();
-      });
-
-      it('should display the sub-menus when the button is clicked', async () => {
-        const override = {
-          tab: 'training-and-qualifications',
-          updateDate: false,
-          canAddWorker: false,
-          canEditWorker: true,
-          hasWorkers: true,
-        };
-
-        const { fixture, getByText } = await setup(override);
-        const subMenus: HTMLElement = fixture.nativeElement.querySelector('.asc-button-menu__wrapper');
-        const button = getByText('Add and manage training');
-
-        button.click();
-        fixture.detectChanges();
-
-        expect(subMenus.hidden).toBeFalsy();
-      });
-
-      it('should display the correct sub-menu links', async () => {
-        const override = {
-          tab: 'training-and-qualifications',
-          updateDate: false,
-          canAddWorker: false,
-          canEditWorker: true,
-          hasWorkers: true,
-        };
-
-        const { component, fixture, getByText } = await setup(override);
-        const button = getByText('Add and manage training');
-
-        button.click();
-        fixture.detectChanges();
-
-        const workplaceUid = component.workplace.uid;
-
-        const addMultipleTrainingRecordsSubMenu = getByText('Add multiple training records');
-        expect(addMultipleTrainingRecordsSubMenu).toBeTruthy();
-        expect(addMultipleTrainingRecordsSubMenu.getAttribute('href')).toEqual(
-          `/workplace/${workplaceUid}/add-multiple-training/select-staff`,
-        );
-
-        const addAndManageTrainingCoursesSubMenu = getByText('Add training courses');
-        expect(addAndManageTrainingCoursesSubMenu).toBeTruthy();
-        expect(addAndManageTrainingCoursesSubMenu.getAttribute('href')).toEqual(
-          `/workplace/${workplaceUid}/training-course/add-and-manage-training-courses`,
-        );
-
-        const updateRecordsWithTrainingCourseDetailsSubMenu = getByText('Update records with training course details');
-        expect(updateRecordsWithTrainingCourseDetailsSubMenu).toBeTruthy();
-        expect(updateRecordsWithTrainingCourseDetailsSubMenu.getAttribute('href')).toEqual(
-          `/workplace/${workplaceUid}/update-records-with-training-course-details/select-a-training-course`,
-        );
-
-        const addAMandatoryTrainingCategorySubMenu = getByText('Manage mandatory training');
-        expect(addAMandatoryTrainingCategorySubMenu).toBeTruthy();
-        expect(addAMandatoryTrainingCategorySubMenu.getAttribute('href')).toEqual(
-          `/workplace/${workplaceUid}/add-and-manage-mandatory-training`,
-        );
-
-        const manageExpiryAlertsSubMenu = getByText('Manage expiry alerts');
-        expect(manageExpiryAlertsSubMenu).toBeTruthy();
-        expect(manageExpiryAlertsSubMenu.getAttribute('href')).toEqual(
-          `/workplace/${workplaceUid}/change-expires-soon-alerts`,
-        );
-      });
-
-      it('should not  display the `Update records with training course details` in the sub-menu links', async () => {
-        const override = {
-          tab: 'training-and-qualifications',
-          updateDate: false,
-          canAddWorker: false,
-          canEditWorker: true,
-          hasWorkers: true,
-        };
-
-        const { component, fixture, getByText, queryByText } = await setup(override);
-        const button = getByText('Add and manage training');
-
-        component.hasTrainingCourse = false;
-
-        button.click();
-        fixture.detectChanges();
-
-        const addAndManageTrainingCourseDetailsSubMenu = queryByText('Update records with training course details');
-        expect(addAndManageTrainingCourseDetailsSubMenu).toBeNull();
-      });
     });
 
     it('should render conditional column width classes', async () => {

@@ -74,6 +74,7 @@ import { HowDoYouPayForSleepInsComponent } from './how-do-you-pay-for-sleep-ins/
 import { TravelTimePayResolver } from '@core/resolvers/travel-time-pay.resolver';
 import { TravelTimePayComponent } from './travel-time-pay/travel-time-pay.component';
 import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workplace-pension/staff-opt-out-of-workplace-pension.component';
+import { ManageTrainingAndQualificationRecordsComponent } from '@features/training-and-qualifications/manage-training-and-qualification-records/manage-training-and-qualification-records.component';
 
 @NgModule({
   imports: [
@@ -137,6 +138,7 @@ import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workp
     HowDoYouPayForSleepInsComponent,
     TravelTimePayComponent,
     StaffOptOutOfWorkplacePensionComponent,
+    ManageTrainingAndQualificationRecordsComponent,
   ],
   providers: [
     DialogService,

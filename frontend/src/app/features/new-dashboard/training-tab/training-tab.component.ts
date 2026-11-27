@@ -1,4 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingRecordCategories } from '@core/model/training.model';
@@ -14,9 +15,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-new-training-tab',
-    templateUrl: './training-tab.component.html',
-    standalone: false
+  selector: 'app-new-training-tab',
+  templateUrl: './training-tab.component.html',
+  standalone: false,
 })
 export class NewTrainingTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
@@ -48,6 +49,7 @@ export class NewTrainingTabComponent implements OnInit, OnDestroy {
     private tabsService: TabsService,
     private trainingService: TrainingService,
     private alertService: AlertService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -59,19 +61,9 @@ export class NewTrainingTabComponent implements OnInit, OnDestroy {
     // we need to remove any staff that were selected
     this.trainingService.resetSelectedStaff();
 
-    this.getAllTrainingByCategory();
     this.trainingTotals();
-  }
 
-  private getAllTrainingByCategory(): void {
-    this.subscriptions.add(
-      this.trainingCategoryService
-        .getCategoriesWithTraining(this.workplace.id)
-        .pipe(take(1))
-        .subscribe((trainingCategories) => {
-          this.trainingCategories = trainingCategories;
-        }),
-    );
+    this.redirectIfNotEditUser();
   }
 
   public navigateToStaffRecords(event: Event): void {
@@ -88,13 +80,10 @@ export class NewTrainingTabComponent implements OnInit, OnDestroy {
     this.staffMissingMandatoryTraining = this.trainingCounts.staffMissingMandatoryTraining;
   }
 
-  public handleViewTrainingByCategory(visible: boolean): void {
-    this.viewTrainingByCategory = visible;
-  }
-
-  public updateSortByValue(properties: { section: string; sortByValue: string }): void {
-    const { section, sortByValue } = properties;
-    section === 'staff-summary' ? (this.staffSortByValue = sortByValue) : (this.trainingSortByValue = sortByValue);
+  public redirectIfNotEditUser(): void {
+    if (!this.canEditWorker) {
+      this.router.navigate(['./workplace', this.workplace.uid, 'manage-training-and-qualification-records']);
+    }
   }
 
   ngOnDestroy(): void {

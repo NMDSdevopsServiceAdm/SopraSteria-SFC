@@ -9,8 +9,7 @@ export const clickIntoTrainingCourse = (courseName) => {
 
 export const clickIntoAddAndManageTrainingCourses = () => {
   onHomePage.clickTab('Training and qualifications');
-  cy.contains('Add and manage training').click();
-  cy.get('a').contains('Add training courses').click();
+  cy.contains('Build and manage your list of courses').click();
 
   cy.get('h1').should('contain.text', 'Add and manage training courses for your workplace');
 };
@@ -161,8 +160,14 @@ const shouldHaveDate = (dateString) => {
   cy.getByLabel('Year').should('have.value', year);
 };
 
+export const clickIntoManageTAndQRecordPage = () => {
+  cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
+  cy.contains('a', 'Manage training and qualification records').click();
+};
+
 export const clickIntoWorkerTAndQRecordPage = (workerName) => {
   cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
+  cy.contains('a', 'Manage training and qualification records').click();
   cy.get('[data-testid="training-worker-table"]').contains(workerName).click();
   cy.url().should('contain', 'training-and-qualifications-record');
 };

@@ -30,6 +30,8 @@ import { UserAccountEditPermissionsComponent } from './user-account-edit-permiss
 import { UsersComponent } from './users/users.component';
 import { ChangeDataPermissionsComponent } from './change-data-permissions/change-data-permissions.component';
 import { WorkplaceDataRoutes, workplaceQuestionsForFundingPage } from './workplace-data-routing';
+import { ManageTrainingAndQualificationRecordsComponent } from '@features/training-and-qualifications/manage-training-and-qualification-records/manage-training-and-qualification-records.component';
+import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -231,6 +233,13 @@ const routes: Routes = [
         data: {
           title: 'Data Area',
         },
+      },
+
+      {
+        path: 'manage-training-and-qualification-records',
+        component: ManageTrainingAndQualificationRecordsComponent,
+        resolve: { workers: WorkersResolver, trainingCourses: TrainingCourseResolver },
+        data: { title: 'Training and qualifications' },
       },
 
       {
